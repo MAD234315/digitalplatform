@@ -10,10 +10,12 @@ import type { StockFilter } from "./use-products-filter";
 
 const STOCK_OPTIONS: { value: StockFilter; label: string }[] = [
   { value: "all", label: "All" },
+  { value: "latest", label: "Latest" },
   { value: "in-stock", label: "In stock" },
   { value: "limited", label: "Low stock" },
   { value: "out", label: "Out" },
 ];
+
 
 export function ProductsFilterBar({
   categories,
@@ -79,10 +81,12 @@ export function ProductsFilterBar({
               const isActive = stock === opt.value;
               const count = stockCounts[opt.value] ?? 0;
               const dotColor =
+                opt.value === "latest" ? "var(--primary)" :
                 opt.value === "in-stock" ? "var(--whatsapp)" :
                 opt.value === "limited" ? "var(--amber)" :
                 opt.value === "out" ? "var(--danger)" :
                 undefined;
+
               return (
                 <button
                   key={opt.value}
