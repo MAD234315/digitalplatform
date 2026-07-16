@@ -308,23 +308,34 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
 
   return (
     <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
-      {/* image + logo tile */}
-      <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+      {/* Compact media strip — per-category glyph on a name-derived gradient */}
+      <div className="relative aspect-[16/6] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+        <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
 
-        <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.5), transparent 70%)" }} />
-        <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
+        {/* Centered category glyph acts as the product image */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span aria-hidden className="text-4xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
+        </div>
+
+        {/* Initials chip — small brand mark, top-left */}
+        <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white font-display text-[13px] shadow-soft" style={{ color: "var(--primary)" }}>
           {initials}
         </div>
-        <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1.5 max-w-[70%]">
+
+        {/* Category tag, bottom-left */}
+        <div className="absolute bottom-2 left-3 text-[10px] uppercase tracking-[0.18em] text-white/90">
+          {p.category}
+        </div>
+
+        {/* Badges, top-right */}
+        <div className="absolute right-2 top-2 flex flex-wrap justify-end gap-1 max-w-[70%]">
           {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
           {p.badges.includes("high-demand") && <Badge tone="hot">🔥 High Demand</Badge>}
           {p.loot && <Badge tone="loot">Loot</Badge>}
           <AvailabilityBadge availability={p.availability} />
         </div>
-        <div className="absolute bottom-3 left-4 right-4 text-[10px] uppercase tracking-[0.18em] text-white/85">
-          {p.category}
-        </div>
       </div>
+
 
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
@@ -404,6 +415,47 @@ function gradientFor(name: string): string {
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
   const h2 = (h + 40) % 360;
   return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${h2} 75% 40%))`;
+}
+
+/**
+ * Emoji glyph that acts as a lightweight product image.
+ * Product name keywords take priority so recognisable brands get a fitting
+ * icon even inside a shared category; falls back to a category-level default.
+ */
+function glyphForCategory(category: string, name: string): string {
+  const n = name.toLowerCase();
+  // Name-level overrides for common brands / product families
+  if (/(netflix|prime|hotstar|disney|zee|sony ?liv|jio ?cinema|hulu|apple ?tv)/.test(n)) return "🎬";
+  if (/(spotify|apple ?music|youtube ?music|gaana|wynk|tidal|deezer)/.test(n)) return "🎧";
+  if (/(youtube|yt)/.test(n)) return "▶️";
+  if (/(chatgpt|openai|gpt|claude|gemini|perplexity|copilot|midjourney|leonardo|stable ?diffusion|runway|elevenlabs|grok)/.test(n)) return "🤖";
+  if (/(canva|figma|adobe|photoshop|illustrator|lightroom|premiere|after ?effects|coreldraw)/.test(n)) return "🎨";
+  if (/(microsoft|office|windows|excel|word|powerpoint|outlook|onedrive|365)/.test(n)) return "🪟";
+  if (/(google ?one|google ?drive|dropbox|icloud|mega|pcloud)/.test(n)) return "☁️";
+  if (/(github|gitlab|jetbrains|intellij|pycharm|vscode|cursor|replit|vercel|netlify|aws|azure|render|fly\.io)/.test(n)) return "⚙️";
+  if (/(coursera|udemy|skillshare|masterclass|linkedin ?learning|duolingo|quizlet|chegg)/.test(n)) return "🎓";
+  if (/(notion|evernote|todoist|asana|trello|monday|clickup|obsidian|slack)/.test(n)) return "📊";
+  if (/(vpn|nord|express|surfshark|proton|windscribe)/.test(n)) return "🛡️";
+  if (/(gift ?card|voucher|amazon|flipkart|steam|playstation|xbox|nintendo|google ?play)/.test(n)) return "🎁";
+  if (/(zoom|meet|webex|teams)/.test(n)) return "📹";
+  if (/(grammarly|quillbot|deepl|linguee)/.test(n)) return "✍️";
+  if (/(telegram|whatsapp|signal|discord)/.test(n)) return "💬";
+
+  // Category-level defaults
+  const c = category.toLowerCase();
+  if (/ai/.test(c)) return "🤖";
+  if (/stream|entertain|ott|video/.test(c)) return "🎬";
+  if (/music|audio/.test(c)) return "🎧";
+  if (/design|creative|graphic/.test(c)) return "🎨";
+  if (/dev|code|program/.test(c)) return "⚙️";
+  if (/microsoft|office/.test(c)) return "🪟";
+  if (/productivity|business/.test(c)) return "📊";
+  if (/education|learning|course/.test(c)) return "🎓";
+  if (/gift|card|voucher/.test(c)) return "🎁";
+  if (/cloud|storage/.test(c)) return "☁️";
+  if (/vpn|security|privacy/.test(c)) return "🛡️";
+  if (/game|gaming/.test(c)) return "🎮";
+  return "✨";
 }
 
 type BadgeTone = "available" | "limited" | "out" | "hot" | "new" | "loot";
