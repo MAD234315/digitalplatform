@@ -417,6 +417,47 @@ function gradientFor(name: string): string {
   return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${h2} 75% 40%))`;
 }
 
+/**
+ * Emoji glyph that acts as a lightweight product image.
+ * Product name keywords take priority so recognisable brands get a fitting
+ * icon even inside a shared category; falls back to a category-level default.
+ */
+function glyphForCategory(category: string, name: string): string {
+  const n = name.toLowerCase();
+  // Name-level overrides for common brands / product families
+  if (/(netflix|prime|hotstar|disney|zee|sony ?liv|jio ?cinema|hulu|apple ?tv)/.test(n)) return "🎬";
+  if (/(spotify|apple ?music|youtube ?music|gaana|wynk|tidal|deezer)/.test(n)) return "🎧";
+  if (/(youtube|yt)/.test(n)) return "▶️";
+  if (/(chatgpt|openai|gpt|claude|gemini|perplexity|copilot|midjourney|leonardo|stable ?diffusion|runway|elevenlabs|grok)/.test(n)) return "🤖";
+  if (/(canva|figma|adobe|photoshop|illustrator|lightroom|premiere|after ?effects|coreldraw)/.test(n)) return "🎨";
+  if (/(microsoft|office|windows|excel|word|powerpoint|outlook|onedrive|365)/.test(n)) return "🪟";
+  if (/(google ?one|google ?drive|dropbox|icloud|mega|pcloud)/.test(n)) return "☁️";
+  if (/(github|gitlab|jetbrains|intellij|pycharm|vscode|cursor|replit|vercel|netlify|aws|azure|render|fly\.io)/.test(n)) return "⚙️";
+  if (/(coursera|udemy|skillshare|masterclass|linkedin ?learning|duolingo|quizlet|chegg)/.test(n)) return "🎓";
+  if (/(notion|evernote|todoist|asana|trello|monday|clickup|obsidian|slack)/.test(n)) return "📊";
+  if (/(vpn|nord|express|surfshark|proton|windscribe)/.test(n)) return "🛡️";
+  if (/(gift ?card|voucher|amazon|flipkart|steam|playstation|xbox|nintendo|google ?play)/.test(n)) return "🎁";
+  if (/(zoom|meet|webex|teams)/.test(n)) return "📹";
+  if (/(grammarly|quillbot|deepl|linguee)/.test(n)) return "✍️";
+  if (/(telegram|whatsapp|signal|discord)/.test(n)) return "💬";
+
+  // Category-level defaults
+  const c = category.toLowerCase();
+  if (/ai/.test(c)) return "🤖";
+  if (/stream|entertain|ott|video/.test(c)) return "🎬";
+  if (/music|audio/.test(c)) return "🎧";
+  if (/design|creative|graphic/.test(c)) return "🎨";
+  if (/dev|code|program/.test(c)) return "⚙️";
+  if (/microsoft|office/.test(c)) return "🪟";
+  if (/productivity|business/.test(c)) return "📊";
+  if (/education|learning|course/.test(c)) return "🎓";
+  if (/gift|card|voucher/.test(c)) return "🎁";
+  if (/cloud|storage/.test(c)) return "☁️";
+  if (/vpn|security|privacy/.test(c)) return "🛡️";
+  if (/game|gaming/.test(c)) return "🎮";
+  return "✨";
+}
+
 type BadgeTone = "available" | "limited" | "out" | "hot" | "new" | "loot";
 
 const badgeToneStyle: Record<BadgeTone, { bg: string; fg: string; ring?: string }> = {
