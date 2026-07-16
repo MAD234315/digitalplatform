@@ -13,7 +13,8 @@ const LINKS = [
 ] as const;
 
 export function SiteNav() {
-  const { location } = useRouterState();
+  // Subscribe only to pathname so unrelated router state changes don't re-render the header.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
