@@ -88,6 +88,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               foundingDate: "2020",
               description:
                 "Trusted marketplace for premium digital subscriptions, AI tools, software licenses and gift cards.",
+              logo: {
+                "@type": "ImageObject",
+                url: `${SITE_URL}/favicon.ico`,
+              },
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  contactType: "customer support",
+                  telephone: "+91-96521-91369",
+                  email: "Productcreator11@zohomail.in",
+                  availableLanguage: ["en", "hi"],
+                  areaServed: "IN",
+                  hoursAvailable: {
+                    "@type": "OpeningHoursSpecification",
+                    dayOfWeek: [
+                      "Monday", "Tuesday", "Wednesday", "Thursday",
+                      "Friday", "Saturday", "Sunday",
+                    ],
+                    opens: "10:00",
+                    closes: "22:00",
+                  },
+                },
+              ],
+              sameAs: ["https://wa.me/919652191369"],
             },
             {
               "@type": "WebSite",
@@ -96,6 +120,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               name: "Digital Platform",
               publisher: { "@id": ORG_ID },
               inLanguage: "en",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: `${SITE_URL}/products?q={search_term_string}`,
+                },
+                "query-input": "required name=search_term_string",
+              },
             },
           ],
         }),

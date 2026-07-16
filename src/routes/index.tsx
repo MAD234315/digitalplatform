@@ -7,11 +7,30 @@ import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { OG_IMAGE, SITE_URL } from "@/lib/site-config";
+import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 
 const URL = SITE_URL + "/";
 const TITLE = "Digital Platform — Premium Digital Subscriptions & AI Tools";
 const DESC = "Trusted digital marketplace since 2020. 200+ premium subscriptions, AI tools, software licenses & gift cards — updated daily, priced honestly.";
+
+/** Home-page structured data: WebPage tying together Organization + WebSite. */
+const HOME_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": URL + "#webpage",
+  url: URL,
+  name: TITLE,
+  description: DESC,
+  isPartOf: { "@id": WEBSITE_ID },
+  about: { "@id": ORG_ID },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: OG_IMAGE,
+    width: 1200,
+    height: 630,
+  },
+  inLanguage: "en",
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,6 +51,12 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image:alt", content: "Digital Platform — premium digital marketplace" },
     ],
     links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(HOME_JSON_LD),
+      },
+    ],
   }),
   component: Home,
 });
