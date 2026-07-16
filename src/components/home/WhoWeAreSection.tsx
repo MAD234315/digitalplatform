@@ -7,17 +7,17 @@ export function WhoWeAreSection() {
     <section aria-labelledby="who-heading" className="border-t border-border">
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
-          <div className="lg:col-span-4">
+          <Reveal className="lg:col-span-4">
             <Eyebrow>Who we are</Eyebrow>
             <div
               aria-hidden
-              className="mt-8 inline-flex h-16 w-16 items-center justify-center rounded-md font-display text-3xl"
+              className="mt-8 inline-flex h-16 w-16 items-center justify-center rounded-md font-display text-3xl transition-transform duration-500 hover:rotate-6 hover:scale-105"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
               D
             </div>
-          </div>
-          <div className="lg:col-span-8">
+          </Reveal>
+          <Reveal className="lg:col-span-8" delay={120}>
             <h2 id="who-heading" className="font-display text-4xl sm:text-5xl">
               A trusted marketplace for <em className="italic text-headline">premium digital tools.</em>
             </h2>
