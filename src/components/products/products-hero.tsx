@@ -70,6 +70,23 @@ function LiveStatusCard({
 }) {
   const outCount = Math.max(0, productCount - inStockCount);
   const pulseCls = isRefreshing ? "animate-pulse" : "";
+
+  // Format the timestamp only on the client — the server renders in UTC and
+  // the client in the visitor's local zone, so doing this at render time
+  // hydration-mismatches. Empty string on the server keeps markup identical.
+  const [updatedLabel, setUpdatedLabel] = useState("");
+  useEffect(() => {
+    setUpdatedLabel(
+      new Date(updatedAt).toLocaleString(undefined, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
+  }, [updatedAt]);
+
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-soft" aria-busy={isRefreshing}>
       <div className="flex items-center justify-between">
@@ -87,8 +104,8 @@ function LiveStatusCard({
         </span>
         Synced with stock sheet
       </div>
-      <div className="mt-3 text-xs text-muted-foreground">
-        Last update: {new Date(updatedAt).toLocaleString(undefined, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+      <div className="mt-3 text-xs text-muted-foreground min-h-4" suppressHydrationWarning>
+        {updatedLabel ? `Last update: ${updatedLabel}` : "\u00a0"}
       </div>
       <div className="mt-4 flex items-baseline gap-2">
         <div className={`font-display text-4xl ${pulseCls}`}>{productCount}</div>
