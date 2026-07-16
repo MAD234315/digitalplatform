@@ -148,6 +148,15 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     });
   }, [products, active, stock, deferredQ, latestKeys]);
 
+  const latestProducts = useMemo(() => {
+    const cutoff = Date.now() - LATEST_WINDOW_MS;
+    return products
+      .map((p) => ({ p, t: seen[keyOf(p)]?.t ?? 0 }))
+      .filter((x) => x.t > cutoff)
+      .sort((a, b) => b.t - a.t)
+      .map((x) => x.p);
+  }, [products, seen]);
+
   return {
     active,
     setActive,
@@ -159,5 +168,6 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     filtered,
     categoryCounts,
     latestKeys,
+    latestProducts,
   };
 }
