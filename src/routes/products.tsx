@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
@@ -42,10 +42,10 @@ function Products() {
   return (
     <div className="theme-paper min-h-screen bg-background text-foreground">
       {/* HEADER — light theme */}
+      <SiteNav />
       <header className="relative border-b border-border">
         <div className="absolute inset-0 bg-hero" aria-hidden />
         <div className="relative">
-          <PaperNav />
           <div className="mx-auto max-w-7xl px-6 lg:px-10 pt-36 pb-14">
             <div className="grid lg:grid-cols-12 gap-8 items-end">
               <div className="lg:col-span-8">
@@ -90,7 +90,9 @@ function Products() {
                   return (
                     <button
                       key={name}
+                      type="button"
                       onClick={() => setActive(name)}
+                      aria-pressed={isActive}
                       className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] transition ${
                         isActive
                           ? "border-transparent shadow-soft"
@@ -104,7 +106,10 @@ function Products() {
                 })}
               </div>
               <div className="relative min-w-[240px]">
+                <label htmlFor="products-search" className="sr-only">Search products</label>
                 <input
+                  id="products-search"
+                  type="search"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search products…"
