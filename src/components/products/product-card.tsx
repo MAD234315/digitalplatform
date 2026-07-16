@@ -53,31 +53,46 @@ export const ProductCard = memo(function ProductCard({
   );
   const initials = initialsFor(p.name);
 
+  const glow = glowFor(p.name);
+
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "520px 380px" }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/25 bg-card/55 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-white/40 focus-within:-translate-y-0.5 scroll-mt-32"
+      style={{
+        contentVisibility: "auto",
+        containIntrinsicSize: "520px 380px",
+        boxShadow: `0 1px 0 rgba(255,255,255,0.35) inset, 0 20px 40px -20px color-mix(in oklab, ${glow} 45%, transparent), 0 0 0 1px color-mix(in oklab, ${glow} 12%, transparent)`,
+      }}
     >
-      <div className="flex flex-col gap-2 px-3 py-2.5 border-b border-border/60">
+      {/* Ambient glow bleeding from the top-left, tinted by the product's hue. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-16 -left-16 h-40 w-40 rounded-full opacity-60 blur-3xl transition duration-500 group-hover:opacity-90"
+        style={{ background: glow }}
+      />
+      <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-white/15">
         <div className="flex items-center gap-3 min-w-0">
           <div
             aria-hidden
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-soft"
-            style={{ background: gradientFor(p.name) }}
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/30"
+            style={{
+              background: gradientFor(p.name),
+              boxShadow: `0 8px 20px -8px ${glow}, 0 0 0 1px rgba(255,255,255,0.15) inset`,
+            }}
           >
             <img
               src={animeImageFor(p.name)}
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-8 w-8 object-contain drop-shadow-sm"
-              style={{ filter: "brightness(0) invert(1)" }}
+              className="h-9 w-9 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
               }}
             />
           </div>
+
 
 
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
