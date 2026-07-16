@@ -51,9 +51,10 @@ function Products() {
   }, [data.products, active, q]);
 
   return (
-    <div className="theme-paper min-h-screen bg-background text-foreground">
-      {/* HEADER — light theme */}
+    <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
+      {/* Paper (light) theme wraps only the catalogue surface. */}
+      <div className="theme-paper bg-background text-foreground">
       <header className="relative border-b border-border">
         <div className="absolute inset-0 bg-hero" aria-hidden />
         <div className="relative">
@@ -155,9 +156,9 @@ function Products() {
         </p>
       </main>
 
-      <div className="theme-paper--reset">
-        <SiteFooter />
       </div>
+      {/* Footer sits outside `.theme-paper` so it renders in the sitewide dark palette. */}
+      <SiteFooter />
     </div>
   );
 }
