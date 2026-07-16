@@ -310,27 +310,20 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
     <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
       {/* Ultra-compact media strip — brand logo thumbnail + inline category & badges */}
       <div className="relative flex items-center gap-3 px-3 py-2.5 border-b border-border/60">
-        {/* Small square product thumbnail — real brand logo when known, glyph fallback */}
+        {/* Anime-style thumbnail — deterministic per product name via DiceBear */}
         <div
           aria-hidden
-          className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white shadow-soft"
-          style={!logoForProduct(p.name) ? { background: gradientFor(p.name) } : undefined}
+          className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-soft"
+          style={{ background: gradientFor(p.name) }}
         >
-          {logoForProduct(p.name) ? (
-            <img
-              src={logoForProduct(p.name)!}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="h-7 w-7 object-contain"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-            />
-          ) : (
-            <>
-              <span className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
-              <span className="relative text-xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
-            </>
-          )}
+          <img
+            src={animeImageFor(p.name)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-11 w-11 object-cover"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
         </div>
 
         {/* Initials + category label */}
