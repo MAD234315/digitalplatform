@@ -4,27 +4,38 @@
  */
 
 /**
- * Minimal-logo image URL for a product. Uses a DiceBear "initials" style so
- * every card shows a clean monogram centered on a neutral background — the
- * gradient behind it (see `gradientFor`) provides the brand accent.
- * Deterministic per product name: same product → same mark, forever.
+ * Minimal random-logo image URL for a product. Uses DiceBear "shapes" so
+ * each product gets a distinct, deterministic geometric glyph on a
+ * transparent background — the parent gradient shows through and the
+ * shape reads as a floating minimal logo.
+ * Deterministic per product name: same product → same mark.
  */
 export function animeImageFor(name: string): string {
   const seed = encodeURIComponent(name);
-  // Transparent background so the parent `gradientFor()` shows through and
-  // every product image lives on the same branded gradient surface.
-  return `https://api.dicebear.com/9.x/initials/svg?seed=${seed}&backgroundType=solid&backgroundColor=transparent&fontFamily=Inter&fontWeight=700&chars=2`;
+  return `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}&backgroundType=solid&backgroundColor=transparent&shape1Color=ffffff,f8fafc&shape2Color=ffffffcc,f1f5f9cc&shape3Color=ffffff80,e2e8f080`;
 }
 
-
+/** Hue anchor per product name — shared by gradient and glow so they match. */
+export function hueFor(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  return h;
+}
 
 /** Deterministic accent gradient per product name for visual variety. */
 export function gradientFor(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  const h = hueFor(name);
   const h2 = (h + 40) % 360;
   return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${h2} 75% 40%))`;
 }
+
+/** Matching glow color per product — used for the glassmorphism halo. */
+export function glowFor(name: string): string {
+  const h = hueFor(name);
+  return `hsl(${h} 80% 60%)`;
+}
+
+
 
 /** Two-letter initials fallback for a product name. */
 export function initialsFor(name: string): string {
