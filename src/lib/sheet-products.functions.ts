@@ -3,6 +3,9 @@ import { createServerFn } from "@tanstack/react-start";
 const SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
 
+export type Availability = "available" | "limited" | "out";
+export type ProductBadge = "new" | "high-demand";
+
 export type SheetProduct = {
   id: string;
   category: string;
@@ -16,6 +19,8 @@ export type SheetProduct = {
   warranty: string;
   inStock: boolean;
   loot: boolean;
+  availability: Availability;
+  badges: ProductBadge[];
 };
 
 export type ProductsPayload = {
