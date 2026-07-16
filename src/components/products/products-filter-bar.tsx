@@ -181,7 +181,7 @@ export function ProductsFilterBar({
             );
           })}
         </div>
-        <div className="flex flex-row items-center gap-2 lg:shrink-0">
+        <div
           <div
             role="group"
             aria-label="Filter by stock"
