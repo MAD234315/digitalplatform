@@ -1,4 +1,6 @@
+import { useId, useState } from "react";
 import { PageHero } from "@/components/layout/PageHero";
+
 
 /**
  * Header block for the /products page. Reuses the shared PageHero for the
