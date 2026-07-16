@@ -81,10 +81,12 @@ export function ProductsFilterBar({
               const isActive = stock === opt.value;
               const count = stockCounts[opt.value] ?? 0;
               const dotColor =
+                opt.value === "latest" ? "var(--primary)" :
                 opt.value === "in-stock" ? "var(--whatsapp)" :
                 opt.value === "limited" ? "var(--amber)" :
                 opt.value === "out" ? "var(--danger)" :
                 undefined;
+
               return (
                 <button
                   key={opt.value}
