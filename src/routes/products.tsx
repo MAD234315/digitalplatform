@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/products/product-card";
 import { ProductsHero } from "@/components/products/products-hero";
 import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
+import { RecentlyAdded } from "@/components/products/recently-added";
 import { useProductsFilter } from "@/components/products/use-products-filter";
 import { PageShell } from "@/components/layout/PageShell";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -149,7 +150,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, stock, setStock, stockCounts, filtered, categoryCounts } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, stockCounts, filtered, categoryCounts, latestProducts } = useProductsFilter(
     data.products,
     data.categories,
   );
@@ -191,6 +192,19 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
+      <ErrorBoundary boundary="products:recently-added" fallback={null}>
+        <RecentlyAdded
+          products={latestProducts}
+          onSeeAll={() => {
+            setActive("All");
+            setQ("");
+            setStock("latest");
+            if (typeof window !== "undefined") {
+              window.scrollTo({ top: window.innerHeight * 0.6, behavior: "smooth" });
+            }
+          }}
+        />
+      </ErrorBoundary>
 
 
       <ProductsFilterBar
