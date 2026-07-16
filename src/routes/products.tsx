@@ -151,36 +151,6 @@ function Products() {
   );
 }
 
-function PaperNav() {
-  return (
-    <div className="absolute inset-x-0 top-0 z-30">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 text-foreground">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg font-display text-xl" style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}>D</span>
-          <span className="leading-tight">
-            <span className="block font-display text-lg">Digital Platform</span>
-            <span className="block text-[10px] uppercase tracking-[0.22em] opacity-60">Live catalogue</span>
-          </span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-9 text-sm">
-          <Link to="/" className="opacity-70 hover:opacity-100">Home</Link>
-          <Link to="/products" className="opacity-100">Products</Link>
-          <Link to="/about" className="opacity-70 hover:opacity-100">About</Link>
-          <Link to="/contact" className="opacity-70 hover:opacity-100">Contact</Link>
-        </nav>
-        <a
-          href={CONTACT.WA_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white transition"
-          style={{ backgroundColor: "var(--whatsapp)" }}
-        >
-          <WaGlyph /> Quick DM
-        </a>
-      </div>
-    </div>
-  );
-}
 
 function ProductCard({ p }: { p: SheetProduct }) {
   const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);
