@@ -111,6 +111,9 @@ function Products() {
   const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
+  // Defer the search text so keystrokes stay snappy while the (potentially
+  // large) filter pass runs at a lower priority.
+  const deferredQ = useDeferredValue(q);
   const { items: recent, track, clear } = useRecentlyViewed();
 
   // Precompute a category → count map so the filter bar doesn't re-scan
@@ -122,13 +125,13 @@ function Products() {
   }, [data.categories]);
 
   const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = deferredQ.trim().toLowerCase();
     return data.products.filter((p) => {
       if (active !== "All" && p.category !== active) return false;
       if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [data.products, active, q]);
+  }, [data.products, active, deferredQ]);
 
   // Only surface recents that still exist in the live catalogue, and skip
   // whatever is being filtered — jumping to a hidden card would confuse users.
