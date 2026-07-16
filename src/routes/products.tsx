@@ -247,18 +247,11 @@ function ProductCard({ p }: { p: SheetProduct }) {
         <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
           {initials}
         </div>
-        <div className="absolute right-4 top-4 flex gap-1.5">
-          {p.loot && (
-            <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white" style={{ backgroundColor: "var(--accent)" }}>
-              Loot
-            </span>
-          )}
-          <span
-            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${p.inStock ? "text-white" : "bg-black/70 text-white"}`}
-            style={p.inStock ? { backgroundColor: "var(--whatsapp)" } : undefined}
-          >
-            {p.inStock ? "In stock" : "Out"}
-          </span>
+        <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1.5 max-w-[70%]">
+          {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
+          {p.badges.includes("high-demand") && <Badge tone="hot">🔥 High Demand</Badge>}
+          {p.loot && <Badge tone="loot">Loot</Badge>}
+          <AvailabilityBadge availability={p.availability} />
         </div>
         <div className="absolute bottom-3 left-4 right-4 text-[10px] uppercase tracking-[0.18em] text-white/85">
           {p.category}
