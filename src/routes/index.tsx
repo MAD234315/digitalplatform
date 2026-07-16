@@ -91,16 +91,6 @@ function Home() {
         </div>
       </section>
 
-      {/* MARQUEE */}
-      <section className="border-y border-border py-6 overflow-hidden bg-card/40">
-        <div className="flex whitespace-nowrap animate-marquee">
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} className="mx-6 font-display text-2xl opacity-80">
-              {item} <span className="text-amber mx-4">✦</span>
-            </span>
-          ))}
-        </div>
-      </section>
 
       {/* WHO WE ARE */}
       <section className="mx-auto max-w-6xl px-6 lg:px-10 py-24 lg:py-32">
