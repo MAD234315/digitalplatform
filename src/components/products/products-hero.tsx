@@ -34,15 +34,25 @@ function LiveStatusCard({
   productCount,
   inStockCount,
   updatedAt,
+  isRefreshing = false,
 }: {
   productCount: number;
   inStockCount: number;
   updatedAt: number;
+  isRefreshing?: boolean;
 }) {
   const outCount = Math.max(0, productCount - inStockCount);
+  const pulseCls = isRefreshing ? "animate-pulse" : "";
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-      <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Live status</div>
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-soft" aria-busy={isRefreshing}>
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Live status</div>
+        {isRefreshing && (
+          <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground" aria-live="polite">
+            Refreshing…
+          </span>
+        )}
+      </div>
       <div className="mt-2 flex items-center gap-2 text-sm">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ backgroundColor: "var(--whatsapp)" }} />
@@ -54,17 +64,17 @@ function LiveStatusCard({
         Last update: {new Date(updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
       </div>
       <div className="mt-4 flex items-baseline gap-2">
-        <div className="font-display text-4xl">{productCount}</div>
+        <div className={`font-display text-4xl ${pulseCls}`}>{productCount}</div>
         <div className="text-xs text-muted-foreground">products listed</div>
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
         <div className="bg-card px-3 py-2">
           <dt className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Total</dt>
-          <dd className="mt-0.5 font-display text-xl">{productCount}</dd>
+          <dd className={`mt-0.5 font-display text-xl ${pulseCls}`}>{productCount}</dd>
         </div>
         <div className="bg-card px-3 py-2">
           <dt className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">In stock</dt>
-          <dd className="mt-0.5 font-display text-xl" style={{ color: "var(--whatsapp)" }}>
+          <dd className={`mt-0.5 font-display text-xl ${pulseCls}`} style={{ color: "var(--whatsapp)" }}>
             {inStockCount}
             {outCount > 0 && (
               <span className="ml-1 align-middle text-[10px] font-sans text-muted-foreground">
@@ -77,3 +87,4 @@ function LiveStatusCard({
     </div>
   );
 }
+
