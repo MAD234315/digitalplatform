@@ -102,7 +102,7 @@ function FAQPage() {
       <section className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 lg:py-28 text-center">
           <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Still have questions?</div>
-          <h2 className="mt-4 font-display text-4xl sm:text-5xl">
+          <h2 className="mt-4 font-display text-3xl sm:text-4xl">
             Can&apos;t find <em className="text-headline">the answer</em> you&apos;re looking for?
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-muted-foreground">

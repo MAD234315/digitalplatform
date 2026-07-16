@@ -17,7 +17,7 @@ export function CategoriesSection() {
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
           <Reveal className="lg:col-span-4">
             <Eyebrow>Our services</Eyebrow>
-            <h2 id="cat-heading" className="mt-4 font-display text-4xl sm:text-5xl">
+            <h2 id="cat-heading" className="mt-4 font-display text-3xl sm:text-4xl">
               Twelve worlds, one shelf.
             </h2>
             <p className="mt-4 text-muted-foreground max-w-sm">

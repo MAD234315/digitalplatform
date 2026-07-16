@@ -10,7 +10,7 @@ export function ContactPromptSection() {
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">
         <Reveal>
           <Eyebrow>Get in touch</Eyebrow>
-          <h2 id="contact-heading" className="mt-4 font-display text-4xl sm:text-5xl">
+          <h2 id="contact-heading" className="mt-4 font-display text-3xl sm:text-4xl">
             Suggestions, feedback <em className="italic text-headline">&amp; collabs.</em>
           </h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">

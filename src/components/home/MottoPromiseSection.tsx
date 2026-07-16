@@ -8,7 +8,7 @@ export function MottoPromiseSection() {
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32 grid lg:grid-cols-12 gap-10 lg:gap-12">
         <Reveal className="lg:col-span-7">
           <Eyebrow>Our motto</Eyebrow>
-          <h2 id="promise-heading" className="mt-4 font-display text-4xl sm:text-5xl leading-tight">
+          <h2 id="promise-heading" className="mt-4 font-display text-3xl sm:text-4xl leading-tight">
             Genuine sources.
             <br />
             Trusted service.
