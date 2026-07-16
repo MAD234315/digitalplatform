@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { ComponentProps, ReactNode } from "react";
+import { useCallback, type ComponentProps, type MouseEvent, type ReactNode } from "react";
 
 /** Small uppercase kicker used above section headings. */
 export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -55,14 +55,40 @@ function ctaStyle(variant: CtaVariant) {
     : undefined;
 }
 
+/** Emit a positioned ripple span inside the clicked target. */
+function useRipple() {
+  return useCallback((e: MouseEvent<HTMLElement>) => {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 1.4;
+    const span = document.createElement("span");
+    span.className = "dp-ripple";
+    span.style.width = span.style.height = `${size}px`;
+    span.style.left = `${e.clientX - rect.left - size / 2}px`;
+    span.style.top = `${e.clientY - rect.top - size / 2}px`;
+    target.appendChild(span);
+    span.addEventListener("animationend", () => span.remove(), { once: true });
+  }, []);
+}
+
 /** Anchor-styled CTA (external links, mailto, tel, wa.me). */
 export function CtaLink({
   variant = "primary",
   size = "lg",
   className = "",
+  onClick,
   ...props
 }: ComponentProps<"a"> & { variant?: CtaVariant; size?: CtaSize }) {
-  return <a {...props} className={ctaClasses(variant, size, className)} style={ctaStyle(variant)} />;
+  const ripple = useRipple();
+  return (
+    <a
+      {...props}
+      onClick={(e) => { ripple(e); onClick?.(e); }}
+      className={ctaClasses(variant, size, className)}
+      style={ctaStyle(variant)}
+    />
+  );
 }
 
 /** TanStack Router Link-styled CTA. */
@@ -70,11 +96,14 @@ export function CtaRouterLink({
   variant = "primary",
   size = "lg",
   className = "",
+  onClick,
   ...props
 }: ComponentProps<typeof Link> & { variant?: CtaVariant; size?: CtaSize }) {
+  const ripple = useRipple();
   return (
     <Link
       {...(props as ComponentProps<typeof Link>)}
+      onClick={(e) => { ripple(e as unknown as MouseEvent<HTMLElement>); onClick?.(e as never); }}
       className={ctaClasses(variant, size, className)}
       style={ctaStyle(variant)}
     />

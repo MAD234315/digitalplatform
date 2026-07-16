@@ -1,5 +1,6 @@
 import { AccentTile, Eyebrow } from "@/components/ui-primitives";
 import { Reveal } from "@/components/reveal";
+import { TiltCard } from "@/components/tilt-card";
 import { REASONS, type Reason } from "./data";
 
 export function ReasonsSection() {
@@ -15,7 +16,9 @@ export function ReasonsSection() {
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {REASONS.map((r, i) => (
             <Reveal key={r.n} delay={Math.min(i * 70, 350)}>
-              <ReasonCard reason={r} />
+              <TiltCard className="h-full">
+                <ReasonCard reason={r} />
+              </TiltCard>
             </Reveal>
           ))}
         </div>
@@ -26,10 +29,18 @@ export function ReasonsSection() {
 
 function ReasonCard({ reason }: { reason: Reason }) {
   return (
-    <article className="group h-full rounded-sm border border-border bg-card/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-amber/40 hover:bg-card/70 hover:shadow-gold">
-      <AccentTile className="transition-transform duration-300 group-hover:scale-110">{reason.n}</AccentTile>
-      <h3 className="mt-5 font-display text-2xl">{reason.title}</h3>
-      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{reason.body}</p>
+    <article className="group relative h-full overflow-hidden rounded-sm border border-border bg-card/40 p-6 hover-glow hover:border-amber/40 hover:bg-card/70">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(600px circle at var(--mx,50%) var(--my,0%), color-mix(in oklab, var(--amber) 18%, transparent), transparent 55%)",
+        }}
+      />
+      <AccentTile className="relative transition-transform duration-300 group-hover:scale-110">{reason.n}</AccentTile>
+      <h3 className="relative mt-5 font-display text-2xl">{reason.title}</h3>
+      <p className="relative mt-3 text-sm text-muted-foreground leading-relaxed">{reason.body}</p>
     </article>
   );
 }

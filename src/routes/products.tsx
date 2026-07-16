@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
 import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
 import type { ReactNode } from "react";
+import { TiltCard } from "@/components/tilt-card";
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
@@ -218,7 +219,11 @@ function Products() {
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((p) => <ProductCard key={p.id} p={p} updatedAt={dataUpdatedAt} />)}
+            {filtered.map((p) => (
+              <TiltCard key={p.id} max={4}>
+                <ProductCard p={p} updatedAt={dataUpdatedAt} />
+              </TiltCard>
+            ))}
           </div>
         )}
 

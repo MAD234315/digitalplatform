@@ -1,4 +1,5 @@
 import { CtaRouterLink, LiveBadge } from "@/components/ui-primitives";
+import { CountUp } from "@/components/count-up";
 import { STATS } from "./data";
 
 export function HeroSection() {
@@ -53,9 +54,11 @@ function StatsRail() {
   return (
     <dl className="mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-sm border border-border bg-border overflow-hidden max-w-4xl mx-auto">
       {STATS.map((s) => (
-        <div key={s.label} className="bg-background/60 p-5 sm:p-6 text-left">
+        <div key={s.label} className="group bg-background/60 p-5 sm:p-6 text-left transition-colors duration-300 hover:bg-background/90">
           <dt className="text-[10px] uppercase tracking-[0.20em] text-muted-foreground">{s.label}</dt>
-          <dd className="mt-2 font-display text-3xl sm:text-4xl text-foreground">{s.value}</dd>
+          <dd className="mt-2 font-display text-3xl sm:text-4xl text-foreground transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:text-amber">
+            <CountUp value={s.value} />
+          </dd>
         </div>
       ))}
     </dl>
