@@ -6,6 +6,7 @@ import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sh
 import type { ReactNode } from "react";
 import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
+import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
@@ -110,6 +111,7 @@ function Products() {
   const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
+  const { items: recent, track, clear } = useRecentlyViewed();
 
   // Precompute a category → count map so the filter bar doesn't re-scan
   // `data.categories` for each chip on every keystroke.
@@ -127,6 +129,15 @@ function Products() {
       return true;
     });
   }, [data.products, active, q]);
+
+  // Only surface recents that still exist in the live catalogue, and skip
+  // whatever is being filtered — jumping to a hidden card would confuse users.
+  const recentVisible = useMemo(() => {
+    const byId = new Map(data.products.map((p) => [p.id, p] as const));
+    return recent
+      .map((r) => ({ recent: r, product: byId.get(r.id) }))
+      .filter((x): x is { recent: RecentItem; product: SheetProduct } => Boolean(x.product));
+  }, [recent, data.products]);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -248,6 +259,21 @@ function Products() {
           </div>
         )}
 
+        {recentVisible.length > 0 && (
+          <RecentlyViewed
+            items={recentVisible}
+            onClear={clear}
+            onJump={(id) => {
+              const el = document.getElementById(`product-${id}`);
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.classList.add("ring-2", "ring-amber");
+                window.setTimeout(() => el.classList.remove("ring-2", "ring-amber"), 1500);
+              }
+            }}
+          />
+        )}
+
         {filtered.length === 0 ? (
           <div className="py-24 text-center text-muted-foreground">
             No products match this filter. Try another category.
@@ -256,7 +282,7 @@ function Products() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((p) => (
               <TiltCard key={p.id} max={4}>
-                <ProductCard p={p} updatedAt={dataUpdatedAt} />
+                <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
               </TiltCard>
             ))}
           </div>
@@ -275,13 +301,13 @@ function Products() {
 }
 
 
-function ProductCard({ p, updatedAt }: { p: SheetProduct; updatedAt: number }) {
+function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: number; onView?: (p: SheetProduct) => void }) {
   const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);
   const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
   const updatedLabel = formatRelative(updatedAt);
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft">
+    <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
       {/* image + logo tile */}
       <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
 
@@ -331,6 +357,7 @@ function ProductCard({ p, updatedAt }: { p: SheetProduct; updatedAt: number }) {
           href={`${CONTACT.WA_URL}?text=${waMsg}`}
           target="_blank"
           rel="noreferrer"
+          onClick={() => onView?.(p)}
           aria-label={`Quick DM on WhatsApp about ${p.name}`}
           className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
           style={{ backgroundColor: "var(--whatsapp)" }}
@@ -406,5 +433,64 @@ function AvailabilityBadge({ availability }: { availability: Availability }) {
   if (availability === "out") return <Badge tone="out">🔴 Out of Stock</Badge>;
   if (availability === "limited") return <Badge tone="limited">🟡 Limited Stock</Badge>;
   return <Badge tone="available">🟢 Available Now</Badge>;
+}
+
+function RecentlyViewed({
+  items,
+  onJump,
+  onClear,
+}: {
+  items: Array<{ recent: RecentItem; product: SheetProduct }>;
+  onJump: (id: string) => void;
+  onClear: () => void;
+}) {
+  return (
+    <section aria-labelledby="recently-viewed-heading" className="mb-10 rounded-2xl border border-border bg-card/60 p-5">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Continue where you left off</div>
+          <h2 id="recently-viewed-heading" className="mt-1 font-display text-xl">Recently viewed</h2>
+        </div>
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-xs uppercase tracking-[0.14em] text-muted-foreground transition hover:text-foreground"
+        >
+          Clear
+        </button>
+      </div>
+
+      <ul className="scroll-slim mt-4 flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+        {items.map(({ recent, product }) => {
+          const initials =
+            product.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() ||
+            product.name.slice(0, 2).toUpperCase();
+          return (
+            <li key={recent.id} className="shrink-0">
+              <button
+                type="button"
+                onClick={() => onJump(recent.id)}
+                className="group flex w-56 items-center gap-3 rounded-xl border border-border bg-background p-3 text-left transition hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20"
+              >
+                <span
+                  aria-hidden
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-display text-sm text-white shadow-soft"
+                  style={{ background: gradientFor(product.name) }}
+                >
+                  {initials}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium">{product.name}</span>
+                  <span className="mt-0.5 block truncate text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                    {product.plan || product.category}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
 }
 
