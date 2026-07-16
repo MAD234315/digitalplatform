@@ -47,7 +47,6 @@ export function WhoWeAreSection() {
             </div>
           </Reveal>
         </div>
-        </div>
       </div>
     </section>
   );
