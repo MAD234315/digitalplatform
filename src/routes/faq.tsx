@@ -111,7 +111,7 @@ function FAQPage() {
             Can&apos;t find <em className="text-headline">the answer</em> you&apos;re looking for?
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-muted-foreground">
-            Our support team is a message away — every day, 10 AM to 10 PM IST.
+            Our support team is a message away — every day, limited hours.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
