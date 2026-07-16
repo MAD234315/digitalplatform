@@ -26,7 +26,7 @@ export type SheetProduct = {
   name: string;
   validity: string;
   plan: string;
-  originalPrice: string;
+  
   type: string;
   supports: string;
   warranty: string;
