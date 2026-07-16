@@ -11,6 +11,7 @@ import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
 import { useProductsFilter } from "@/components/products/use-products-filter";
 import { PageShell } from "@/components/layout/PageShell";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 
 // Static options (not a factory) — keeps queryKey referentially stable so
