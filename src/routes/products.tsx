@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
-import { getSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
+import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
+import type { ReactNode } from "react";
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
