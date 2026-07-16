@@ -9,9 +9,7 @@ export function MottoPromiseSection() {
         <Reveal className="lg:col-span-7">
           <Eyebrow>Our motto</Eyebrow>
           <h2 id="promise-heading" className="mt-4 font-display text-4xl sm:text-5xl leading-tight">
-            Premium digital solutions.
-            <br />
-            <em className="italic text-headline">Genuine sources.</em>
+            Genuine sources.
             <br />
             Trusted service.
           </h2>
