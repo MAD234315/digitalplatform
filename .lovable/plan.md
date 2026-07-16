@@ -1,18 +1,36 @@
-## Separate the three filter controls into stacked rows
+## Make the products search feel premium and always appear
 
-Update `src/components/products/products-filter-bar.tsx` so category chips, stock chips, and the search input each occupy their own row on every screen size.
+The dropdown already renders matches (verified: typing "Can" returns Canva Pro, Canva AI Pro Brandkit), so the fix is UX polish that makes it obvious and premium, and hardening against the "it doesn't appear" case.
+
+### Scope
+
+All changes in `src/components/products/products-filter-bar.tsx`. No logic changes to `use-products-filter.ts` or product data.
 
 ### Changes
 
-- Replace the current two-column responsive layout with three stacked rows in a single `flex flex-col gap-2` container.
-  - **Row 1**: category chips (existing horizontal-scroll chip group, unchanged behavior).
-  - **Row 2**: stock chips (existing pill group), left-aligned, still horizontally scrollable on narrow screens.
-  - **Row 3**: search input + suggestions dropdown, full width.
-- Remove the `lg:flex-row lg:items-center lg:justify-between` desktop grouping and the inner `flex flex-row items-center gap-2 lg:shrink-0` wrapper that currently pairs stock + search.
-- Drop the `lg:w-72 lg:shrink-0` width constraint on the search wrapper so it spans the full row on all breakpoints; suggestions dropdown continues to anchor to it via `absolute left-0 right-0`.
-- Keep existing padding (`px-4 sm:px-6 lg:px-10 py-2 lg:py-3`), colors, chip styles, counts, keyboard/ARIA behavior, and the outer non-sticky `border-b border-border bg-background` wrapper untouched.
+1. **Show suggestions on focus, before typing.**
+   Currently `showList` requires ≥1 typed char. When the input is focused with an empty query, render a "Popular" section from the top 6 in-stock products (fallback: first 6 products). Header row inside the listbox: small uppercase label "Popular". Once the user types, switch to ranked matches (existing behavior).
+
+2. **Premium row layout.** Replace the current single-line row with a two-line row per suggestion:
+   - Left: 32×32 rounded product visual (reuse `getProductVisual` from `@/lib/product-visuals` — already used by `product-card.tsx`).
+   - Middle: product name (highlighted match) on top, small muted `category · plan` line below.
+   - Right: a tiny stock dot (green/amber/red matching `--whatsapp`/`--amber`/`--danger`) + one-word status ("In stock" / "Low" / "Out"), matching the stock chip color language already in the bar.
+
+3. **Bigger, more prominent dropdown.**
+   - Widen to full row (already full width after the previous change), increase `max-h` from `80` to `96`, add slight `mt` and stronger `shadow-xl`, `ring-1 ring-black/5` for lift.
+   - Raise `z-40` to `z-50` so it always sits above cards.
+   - Add subtle divider between rows; hover/active row uses `bg-muted`.
+
+4. **Empty state.** If user typed ≥2 chars and there are no matches, render a single row: "No products match '<query>'. Try a shorter term." (non-clickable). Fixes the "feels broken" perception when the input silently shows nothing.
+
+5. **Keyboard + a11y unchanged.** Keep existing `role="combobox"`, `aria-activedescendant`, arrow/Enter/Escape handling. Popular items and empty state get valid option ids so keyboard nav still works.
+
+6. **Small robustness fixes.**
+   - Open dropdown on focus even for empty query.
+   - Close on route change / when a category or stock chip is clicked (call `setOpen(false)` inside those handlers via a small effect that watches `active`/`stock`).
 
 ### Out of scope
 
-- No changes to filter logic, `use-products-filter.ts`, or the shared `FilterBar` used by the FAQ page.
-- No visual restyling of chips or search input beyond the layout regrouping.
+- No fuzzy/typo matching (current substring ranking stays).
+- No changes to the FAQ FilterBar or shared filter logic.
+- No new data fetching.
