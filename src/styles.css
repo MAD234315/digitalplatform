@@ -214,6 +214,11 @@
 
 /* Reserve space beneath the fixed header when scrolling to in-page anchors */
 :target, [id] { scroll-margin-top: 96px; }
+/* Skip layout + paint for offscreen sections; huge win on mobile main-thread */
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
+}
 
 /* Ripple emitted by CTA click via useRipple() */
 @keyframes dp-ripple {
