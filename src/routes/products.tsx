@@ -5,7 +5,7 @@ import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sh
 import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
-import { ProductCard } from "@/components/products/product-card";
+import { ProductCard, UpdatedAtContext } from "@/components/products/product-card";
 import { ProductsHero } from "@/components/products/products-hero";
 import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
