@@ -148,7 +148,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, filtered, categoryCounts } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, stockCounts, filtered, categoryCounts } = useProductsFilter(
     data.products,
     data.categories,
   );
@@ -174,8 +174,6 @@ function Products() {
         isRefreshing={isFetching}
       />
 
-
-
       <ProductsFilterBar
         categories={data.categories.map((c) => c.name)}
         totalCount={data.products.length}
@@ -184,7 +182,11 @@ function Products() {
         onActiveChange={setActive}
         query={q}
         onQueryChange={setQ}
+        stock={stock}
+        onStockChange={setStock}
+        stockCounts={stockCounts}
       />
+
 
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
         {data.rateLimited && data.products.length > 0 && (
