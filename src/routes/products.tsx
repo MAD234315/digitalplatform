@@ -92,8 +92,9 @@ function Products() {
   }, [data.products, active, q]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
       <SiteNav />
+
       {/* Paper (light) theme wraps only the catalogue surface. */}
       <div className="theme-paper bg-background text-foreground">
       <header className="relative border-b border-border">
