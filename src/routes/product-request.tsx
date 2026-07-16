@@ -58,7 +58,7 @@ function ProductRequest() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            Our team responds every day between 10 AM and 10 PM IST.
+            Our team responds every day as earliest as possible.
           </p>
         </div>
       </section>
