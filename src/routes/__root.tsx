@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { installClientErrorListeners } from "../lib/client-error-listeners";
 import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
 
 function NotFoundComponent() {
@@ -165,6 +166,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // One-shot: attach window.onerror + unhandledrejection listeners on the
+  // client so anything that escapes React boundaries still gets reported.
+  useEffect(() => { installClientErrorListeners(); }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />

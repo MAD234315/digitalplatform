@@ -68,7 +68,7 @@ function Home() {
   // errorComponent still catches anything that escapes here.
   return (
     <div className="min-h-dvh bg-background text-foreground">
-      <SiteNav />
+      <ErrorBoundary boundary="shell:nav" fallback={null}><SiteNav /></ErrorBoundary>
       <main id="main">
         <ErrorBoundary boundary="home:hero"><HeroSection /></ErrorBoundary>
         <ErrorBoundary boundary="home:who-we-are"><WhoWeAreSection /></ErrorBoundary>
@@ -77,7 +77,7 @@ function Home() {
         <ErrorBoundary boundary="home:motto"><MottoPromiseSection /></ErrorBoundary>
         <ErrorBoundary boundary="home:contact-prompt"><ContactPromptSection /></ErrorBoundary>
       </main>
-      <SiteFooter />
+      <ErrorBoundary boundary="shell:footer" fallback={null}><SiteFooter /></ErrorBoundary>
     </div>
   );
 }
