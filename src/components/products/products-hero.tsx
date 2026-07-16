@@ -4,7 +4,15 @@ import { PageHero } from "@/components/layout/PageHero";
  * Header block for the /products page. Reuses the shared PageHero for the
  * eyebrow / headline / lede, and passes a live-status card as the aside slot.
  */
-export function ProductsHero({ productCount, updatedAt }: { productCount: number; updatedAt: number }) {
+export function ProductsHero({
+  productCount,
+  inStockCount,
+  updatedAt,
+}: {
+  productCount: number;
+  inStockCount: number;
+  updatedAt: number;
+}) {
   return (
     <header className="relative border-b border-border">
       <PageHero
@@ -13,13 +21,22 @@ export function ProductsHero({ productCount, updatedAt }: { productCount: number
         title="Every product,"
         titleAccent="live from our shelf."
         lede={<>Updated in real-time from our internal stock sheet. Prices depend on stock availability and demand — DM us for today&apos;s rate.</>}
-        aside={<LiveStatusCard productCount={productCount} updatedAt={updatedAt} />}
+        aside={<LiveStatusCard productCount={productCount} inStockCount={inStockCount} updatedAt={updatedAt} />}
       />
     </header>
   );
 }
 
-function LiveStatusCard({ productCount, updatedAt }: { productCount: number; updatedAt: number }) {
+function LiveStatusCard({
+  productCount,
+  inStockCount,
+  updatedAt,
+}: {
+  productCount: number;
+  inStockCount: number;
+  updatedAt: number;
+}) {
+  const outCount = Math.max(0, productCount - inStockCount);
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
       <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Live status</div>
@@ -37,6 +54,23 @@ function LiveStatusCard({ productCount, updatedAt }: { productCount: number; upd
         <div className="font-display text-4xl">{productCount}</div>
         <div className="text-xs text-muted-foreground">products listed</div>
       </div>
+      <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
+        <div className="bg-card px-3 py-2">
+          <dt className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Total</dt>
+          <dd className="mt-0.5 font-display text-xl">{productCount}</dd>
+        </div>
+        <div className="bg-card px-3 py-2">
+          <dt className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">In stock</dt>
+          <dd className="mt-0.5 font-display text-xl" style={{ color: "var(--whatsapp)" }}>
+            {inStockCount}
+            {outCount > 0 && (
+              <span className="ml-1 align-middle text-[10px] font-sans text-muted-foreground">
+                · {outCount} out
+              </span>
+            )}
+          </dd>
+        </div>
+      </dl>
     </div>
   );
 }
