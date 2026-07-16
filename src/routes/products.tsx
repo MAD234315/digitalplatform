@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
-import { getSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
+import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
+import type { ReactNode } from "react";
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
@@ -247,18 +248,11 @@ function ProductCard({ p }: { p: SheetProduct }) {
         <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
           {initials}
         </div>
-        <div className="absolute right-4 top-4 flex gap-1.5">
-          {p.loot && (
-            <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white" style={{ backgroundColor: "var(--accent)" }}>
-              Loot
-            </span>
-          )}
-          <span
-            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${p.inStock ? "text-white" : "bg-black/70 text-white"}`}
-            style={p.inStock ? { backgroundColor: "var(--whatsapp)" } : undefined}
-          >
-            {p.inStock ? "In stock" : "Out"}
-          </span>
+        <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1.5 max-w-[70%]">
+          {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
+          {p.badges.includes("high-demand") && <Badge tone="hot">🔥 High Demand</Badge>}
+          {p.loot && <Badge tone="loot">Loot</Badge>}
+          <AvailabilityBadge availability={p.availability} />
         </div>
         <div className="absolute bottom-3 left-4 right-4 text-[10px] uppercase tracking-[0.18em] text-white/85">
           {p.category}
@@ -321,3 +315,33 @@ function gradientFor(name: string): string {
   const h2 = (h + 40) % 360;
   return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${h2} 75% 40%))`;
 }
+
+type BadgeTone = "available" | "limited" | "out" | "hot" | "new" | "loot";
+
+const badgeToneStyle: Record<BadgeTone, { bg: string; fg: string; ring?: string }> = {
+  available: { bg: "var(--whatsapp)", fg: "#fff" },
+  limited: { bg: "#f4b740", fg: "#3a2500" },
+  out: { bg: "#c8321f", fg: "#fff" },
+  hot: { bg: "#ff5a1f", fg: "#fff" },
+  new: { bg: "#1f6feb", fg: "#fff" },
+  loot: { bg: "var(--accent)", fg: "#fff" },
+};
+
+function Badge({ tone, children }: { tone: BadgeTone; children: ReactNode }) {
+  const s = badgeToneStyle[tone];
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-soft backdrop-blur-sm"
+      style={{ backgroundColor: s.bg, color: s.fg }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function AvailabilityBadge({ availability }: { availability: Availability }) {
+  if (availability === "out") return <Badge tone="out">🔴 Out of Stock</Badge>;
+  if (availability === "limited") return <Badge tone="limited">🟡 Limited Stock</Badge>;
+  return <Badge tone="available">🟢 Available Now</Badge>;
+}
+
