@@ -166,7 +166,11 @@ function Products() {
 
   return (
     <PageShell>
-      <ProductsHero productCount={data.products.length} updatedAt={dataUpdatedAt} />
+      <ProductsHero
+        productCount={data.products.length}
+        inStockCount={data.products.filter((p) => p.availability !== "out").length}
+        updatedAt={dataUpdatedAt}
+      />
 
       <ProductsFilterBar
         categories={data.categories.map((c) => c.name)}
