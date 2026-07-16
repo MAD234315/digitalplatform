@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
+import { OG_IMAGE, ORG_ID, SITE_URL } from "@/lib/site-config";
 
-const SITE = "https://digitalplatform13.lovable.app";
-const URL = SITE + "/contact";
+const URL = SITE_URL + "/contact";
 const TITLE = "Contact Digital Platform — Support & Sales";
 const DESC = "Reach us on WhatsApp for live pricing, stock checks and support. Typical reply within minutes, every day 10 AM – 10 PM IST.";
 
@@ -15,8 +15,11 @@ export const Route = createFileRoute("/contact")({
       { property: "og:description", content: DESC },
       { property: "og:url", content: URL },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:alt", content: "Digital Platform — contact us" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESC },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
