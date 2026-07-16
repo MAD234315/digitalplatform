@@ -45,7 +45,7 @@ export function TiltCard({ children, className = "", max = 6, style }: TiltCardP
   if (!enabled) {
     // No listeners, no willChange, no rAF — cheapest possible fallback.
     return (
-      <div ref={ref} className={`block w-full ${className}`} style={style}>
+      <div ref={ref} className={`block w-full min-w-0 ${className}`} style={style}>
         {children}
       </div>
     );
@@ -84,7 +84,7 @@ export function TiltCard({ children, className = "", max = 6, style }: TiltCardP
       onPointerMove={onMove}
       onPointerLeave={reset}
       onPointerCancel={reset}
-      className={`block w-full ${className}`}
+      className={`block w-full min-w-0 ${className}`}
       style={{
         transition: "transform 350ms cubic-bezier(0.2,0.7,0.2,1)",
         transformStyle: "preserve-3d",
