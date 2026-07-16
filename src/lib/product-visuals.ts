@@ -4,16 +4,18 @@
  */
 
 /**
- * Deterministic anime-style thumbnail per product name.
- * Rotates across a few DiceBear anime-leaning styles so the grid looks varied
- * while remaining stable across reloads (same product → same image).
+ * Minimal-logo image URL for a product. Uses a DiceBear "initials" style so
+ * every card shows a clean monogram centered on a neutral background — the
+ * gradient behind it (see `gradientFor`) provides the brand accent.
+ * Deterministic per product name: same product → same mark, forever.
  */
 export function animeImageFor(name: string): string {
-  // Single "big-smile" style — every product gets a smiling anime avatar,
-  // deterministic per name so the same product always renders the same face.
   const seed = encodeURIComponent(name);
-  return `https://api.dicebear.com/9.x/big-smile/svg?seed=${seed}&radius=20&backgroundType=gradientLinear`;
+  // Transparent background so the parent `gradientFor()` shows through and
+  // every product image lives on the same branded gradient surface.
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${seed}&backgroundType=solid&backgroundColor=transparent&fontFamily=Inter&fontWeight=700&chars=2`;
 }
+
 
 
 /** Deterministic accent gradient per product name for visual variety. */
