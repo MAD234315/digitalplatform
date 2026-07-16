@@ -52,6 +52,43 @@ export const FAQS: QA[] = [
   { cat: "Security", q: "Is my personal information safe?", a: "We respect your privacy and only use the information required to process your order and provide support." },
 
   { cat: "Contact", q: "How can I contact you?", a: "Reach us on WhatsApp, Instagram, or email. Our support team responds as soon as possible, every day between 10 AM and 10 PM IST." },
+
+  { cat: "Products", q: "Are all products genuine?", a: "We strive to provide genuine licenses, legitimate gift cards, and reliable digital products sourced through trusted and benefit programs." },
+  { cat: "Products", q: "Do you add new products regularly?", a: "Yes. We frequently add new products, AI tools, subscriptions, and software based on availability and customer demand." },
+  { cat: "Products", q: "Why do some products become unavailable?", a: "Some products are available in limited quantities or depend on demand stock, so availability may change." },
+  { cat: "Products", q: "Can I request a product that's not listed?", a: "Yes. If you can't find a product on our website, submit a product request or contact us directly. We'll check its availability." },
+  { cat: "Products", q: "How often are prices updated?", a: "Prices may change daily depending on stock availability and market conditions." },
+
+  { cat: "Orders & Delivery", q: "Can I order multiple products at once?", a: "Yes. You can purchase multiple products in a single order." },
+  { cat: "Orders & Delivery", q: "Will I receive order confirmation?", a: "Yes. Once your payment is verified, we'll confirm your order and begin processing it." },
+  { cat: "Orders & Delivery", q: "Can I cancel my order?", a: "If your order has not yet been processed, please contact us as soon as possible. Cancellation depends on the product and its processing stage." },
+  { cat: "Orders & Delivery", q: "What information do I need to place an order?", a: "Typically, we'll ask for the information required for the specific product, such as an email address or number when applicable." },
+  { cat: "Orders & Delivery", q: "Are products delivered instantly?", a: "Delivery time depends on the product. Some are delivered quickly after payment verification, while others may take longer." },
+  { cat: "Orders & Delivery", q: "Will I receive delivery updates?", a: "Yes. We'll keep you informed about your order status." },
+  { cat: "Orders & Delivery", q: "How do I know when my product has been delivered?", a: "We'll notify you once your order has been completed and provide the required access details." },
+
+  { cat: "Payment", q: "Why is payment verification required?", a: "Payment verification helps ensure secure transactions and accurate order processing." },
+  { cat: "Payment", q: "What if I accidentally pay the wrong amount?", a: "Contact our support team with your payment details. We'll help resolve the issue." },
+  { cat: "Payment", q: "Do you provide invoices?", a: "If available for the product or service, we can provide payment confirmation or an invoice upon request." },
+
+  { cat: "Warranty & Support", q: "What should I do if my product isn't working?", a: "Contact our support team with your order details. We'll review the issue and assist you according to the applicable warranty." },
+  { cat: "Warranty & Support", q: "How do I claim warranty support?", a: "Share your order details along with a description of the issue, and we'll guide you through the support process." },
+  { cat: "Warranty & Support", q: "Is customer support available after purchase?", a: "Yes. We provide post-purchase support for eligible products." },
+  { cat: "Warranty & Support", q: "How can I contact support quickly?", a: "The fastest way is through WhatsApp. You can also reach us through our other listed contact methods." },
+
+  { cat: "Account & Usage", q: "Can I change account details after delivery?", a: "Please review the product description or contact us before purchasing." },
+  { cat: "Account & Usage", q: "Are products tied to my personal account?", a: "Some products are linked to your own account, while others may require a different activation method. Product details will explain this." },
+  { cat: "Account & Usage", q: "Is my product compatible across multiple devices?", a: "Device compatibility depends on the specific product and plan. Refer to the product details." },
+
+  { cat: "Website", q: "How can I search for a product?", a: "Use the search bar or browse products by category to quickly find what you need." },
+  { cat: "Website", q: "How do I know if a product is in stock?", a: "Each product displays its current availability status, which is updated regularly." },
+
+  { cat: "Business", q: "Do you offer services for businesses or teams?", a: "Yes. If you need products for a team or business, contact us to discuss suitable options." },
+  { cat: "Business", q: "Can I purchase products in bulk?", a: "Bulk purchases may be available for certain products. Please contact us for more information." },
+  { cat: "Business", q: "Do you accept partnership or collaboration requests?", a: "Yes. Feel free to reach out if you're interested in working with us." },
+
+  { cat: "Security", q: "Is my personal information protected?", a: "Yes. We handle customer information responsibly and use it only for order processing and support." },
+  { cat: "Security", q: "Do you share my information with others?", a: "No. We do not share your personal information except where necessary to complete your order." },
 ];
 
 export const CATEGORIES: readonly ("All" | Category)[] = [
@@ -59,8 +96,11 @@ export const CATEGORIES: readonly ("All" | Category)[] = [
   "General",
   "Orders & Delivery",
   "Products",
+  "Payment",
   "Warranty & Support",
   "Account & Usage",
+  "Website",
+  "Business",
   "Security",
   "Contact",
 ] as const;
