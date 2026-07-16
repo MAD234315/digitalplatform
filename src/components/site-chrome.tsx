@@ -197,10 +197,7 @@ export function SiteFooter() {
       <div className="border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} Digital Platform. Trusted since 2020.</span>
-          <div className="flex items-center gap-4">
-            <ReducedMotionToggle />
-            <span>Premium digital solutions. Genuine sources.</span>
-          </div>
+          <span>Premium digital solutions. Genuine sources.</span>
         </div>
       </div>
     </footer>
@@ -208,33 +205,3 @@ export function SiteFooter() {
 }
 
 export const CONTACT = { WA_NUMBER, WA_URL, EMAIL };
-
-function ReducedMotionToggle() {
-  const { effective, setPreference } = useReducedMotion();
-  const label = effective ? "Reduce motion: On" : "Reduce motion: Off";
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={effective}
-      aria-label={label}
-      title={label}
-      onClick={() => setPreference(effective ? "off" : "on")}
-      className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] transition hover:border-foreground/40 hover:text-foreground"
-    >
-      <span
-        aria-hidden
-        className={`relative inline-flex h-3.5 w-6 items-center rounded-full transition-colors ${
-          effective ? "bg-amber" : "bg-muted"
-        }`}
-      >
-        <span
-          className={`inline-block h-2.5 w-2.5 transform rounded-full bg-background shadow transition-transform ${
-            effective ? "translate-x-3" : "translate-x-0.5"
-          }`}
-        />
-      </span>
-      <span>Reduce motion</span>
-    </button>
-  );
-}
