@@ -5,15 +5,34 @@ type CategoryInfo = { name: string; count: number };
 
 export type StockFilter = "all" | "latest" | "in-stock" | "limited" | "out";
 
-const SEEN_KEY = "products-first-seen-v2";
-const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const SEEN_KEY = "products-first-seen-v3";
+const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
 
 /** Stable product identity across sheet re-parses (sheet ids are positional). */
 function keyOf(p: SheetProduct): string {
   return `${p.category}||${p.name}||${p.plan}`;
 }
 
-type SeenMap = Record<string, number>;
+/**
+ * Content fingerprint of a product row. Any edit in the spreadsheet that
+ * changes one of these fields flips the signature and re-stamps the
+ * first-seen timestamp — so edited products re-enter "Latest" for 7 days.
+ */
+function signatureOf(p: SheetProduct): string {
+  return [
+    p.status,
+    p.validity,
+    p.plan,
+    p.type,
+    p.supports,
+    p.warranty,
+    p.availability,
+    p.badges.slice().sort().join(","),
+  ].join("|");
+}
+
+type SeenEntry = { t: number; sig: string };
+type SeenMap = Record<string, SeenEntry>;
 
 function readSeen(): SeenMap | null {
   if (typeof window === "undefined") return null;
@@ -40,11 +59,13 @@ function writeSeen(map: SeenMap) {
 /**
  * Encapsulates products page filter/search state.
  *
- * "Latest" filter: each product key gets a first-seen timestamp persisted in
- * localStorage. A product is considered "latest" for 7 days from the moment
- * it first appears in the catalogue on this device. On the very first mount
- * we backfill existing products with timestamp 0 so we don't flag the whole
- * catalogue as new.
+ * "Latest" filter: each product key gets a first-seen timestamp plus a
+ * content signature persisted in localStorage. A product is considered
+ * "latest" for 7 days from the moment it either (a) first appears in the
+ * catalogue, or (b) has any tracked field edited in the spreadsheet — the
+ * clock restarts on edit. No weekday reset: the window is per-product and
+ * rolling. On the very first mount we backfill existing products with
+ * timestamp 0 so we don't flag the whole catalogue as new.
  */
 export function useProductsFilter(products: SheetProduct[], categories: CategoryInfo[]) {
   const [active, setActive] = useState<string>("All");
@@ -54,7 +75,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
 
   const [seen, setSeen] = useState<SeenMap>({});
 
-  // Merge newly-appearing products into the first-seen map.
+  // Merge newly-appearing OR edited products into the first-seen map.
   useEffect(() => {
     if (products.length === 0) return;
     const existing = readSeen();
@@ -64,10 +85,16 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     let changed = false;
     for (const p of products) {
       const k = keyOf(p);
-      if (!(k in map)) {
+      const sig = signatureOf(p);
+      const prev = map[k];
+      if (!prev) {
         // First run: backfill with 0 so pre-existing items aren't "latest".
         // Later runs: stamp with now so new items stay "latest" for 7 days.
-        map[k] = firstRun ? 0 : now;
+        map[k] = { t: firstRun ? 0 : now, sig };
+        changed = true;
+      } else if (prev.sig !== sig) {
+        // Row edited in the spreadsheet → restart the 7-day window from today.
+        map[k] = { t: now, sig };
         changed = true;
       }
     }
@@ -79,11 +106,12 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     const cutoff = Date.now() - LATEST_WINDOW_MS;
     const fresh = new Set<string>();
     for (const p of products) {
-      const t = seen[keyOf(p)];
-      if (typeof t === "number" && t > cutoff) fresh.add(keyOf(p));
+      const entry = seen[keyOf(p)];
+      if (entry && entry.t > cutoff) fresh.add(keyOf(p));
     }
     return fresh;
   }, [products, seen]);
+
 
   const categoryCounts = useMemo(() => {
     const m = new Map<string, number>();
