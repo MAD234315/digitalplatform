@@ -11,6 +11,7 @@ import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
 import { useProductsFilter } from "@/components/products/use-products-filter";
 import { PageShell } from "@/components/layout/PageShell";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 
 // Static options (not a factory) — keeps queryKey referentially stable so
@@ -204,18 +205,20 @@ function Products() {
         )}
 
         {recentVisible.length > 0 && (
-          <RecentlyViewed
-            items={recentVisible}
-            onClear={clear}
-            onJump={(id) => {
-              const el = document.getElementById(`product-${id}`);
-              if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.classList.add("ring-2", "ring-amber");
-                window.setTimeout(() => el.classList.remove("ring-2", "ring-amber"), 1500);
-              }
-            }}
-          />
+          <ErrorBoundary boundary="products:recently-viewed" fallback={null}>
+            <RecentlyViewed
+              items={recentVisible}
+              onClear={clear}
+              onJump={(id) => {
+                const el = document.getElementById(`product-${id}`);
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                  el.classList.add("ring-2", "ring-amber");
+                  window.setTimeout(() => el.classList.remove("ring-2", "ring-amber"), 1500);
+                }
+              }}
+            />
+          </ErrorBoundary>
         )}
 
         <h2 className="sr-only">Live product catalogue</h2>
@@ -224,13 +227,17 @@ function Products() {
             No products match this filter. Try another category.
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((p) => (
-              <TiltCard key={p.id} max={4}>
-                <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
-              </TiltCard>
-            ))}
-          </div>
+          <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filtered.map((p) => (
+                <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
+                  <TiltCard max={4}>
+                    <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
+                  </TiltCard>
+                </ErrorBoundary>
+              ))}
+            </div>
+          </ErrorBoundary>
         )}
 
         <p className="mt-16 text-center text-xs text-muted-foreground">
