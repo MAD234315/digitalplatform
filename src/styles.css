@@ -113,9 +113,19 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.65;
+    letter-spacing: -0.005em;
+    font-feature-settings: "kern", "liga", "ss01", "cv02", "cv11";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
+  p { text-wrap: pretty; }
+  p + p { margin-top: 0.75em; }
+  small, .text-xs { letter-spacing: 0.01em; }
+  .uppercase { font-feature-settings: "kern", "case"; }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
     font-weight: 400;
