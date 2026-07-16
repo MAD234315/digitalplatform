@@ -154,7 +154,7 @@ export function ProductsFilterBar({
 
   return (
     <div className="border-b border-border bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
         <div
           role="group"
           aria-label="Filter by category"
@@ -181,8 +181,7 @@ export function ProductsFilterBar({
             );
           })}
         </div>
-        <div className="flex flex-row items-center gap-2 lg:shrink-0">
-          <div
+        <div
             role="group"
             aria-label="Filter by stock"
             className="scroll-slim inline-flex gap-1 overflow-x-auto rounded-full border border-border bg-card p-1"
@@ -219,7 +218,7 @@ export function ProductsFilterBar({
               );
             })}
           </div>
-          <div ref={wrapRef} className="relative w-full lg:w-72 lg:shrink-0">
+          <div ref={wrapRef} className="relative w-full">
             <label htmlFor="products-search" className="sr-only">Search products</label>
             <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -293,7 +292,6 @@ export function ProductsFilterBar({
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
