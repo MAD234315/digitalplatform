@@ -14,7 +14,7 @@ const LINKS = [
 
 export function SiteNav() {
   // Subscribe only to pathname so unrelated router state changes don't re-render the header.
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = useRouterState({ select: (s) => s.pathname });
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -25,7 +25,7 @@ export function SiteNav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
     <header
@@ -50,7 +50,7 @@ export function SiteNav() {
 
         <nav aria-label="Primary" className="hidden md:flex items-center gap-8 text-sm">
           {LINKS.map((l) => {
-            const active = location.pathname === l.to;
+            const active = pathname === l.to;
             return (
               <Link
                 key={l.to}
@@ -104,7 +104,7 @@ export function SiteNav() {
       >
         <nav aria-label="Mobile" className="mx-auto max-w-7xl px-5 py-3 flex flex-col">
           {LINKS.map((l) => {
-            const active = location.pathname === l.to;
+            const active = pathname === l.to;
             return (
               <Link
                 key={l.to}
