@@ -98,35 +98,120 @@ let cache: { at: number; payload: ProductsPayload } | null = null;
 let inflight: Promise<ProductsPayload> | null = null;
 
 const FETCH_TIMEOUT_MS = 8_000;
+const MAX_RETRIES = 1;              // one polite retry on 429 / 503
+const MAX_RETRY_WAIT_MS = 4_000;    // cap Retry-After to keep the Worker snappy
+const RESPONSE_MAX_BYTES = 2_000_000; // 2 MB hard cap on CSV size (OOM guard)
 
 /**
- * Fetch the sheet with a hard timeout so a slow/unresponsive upstream can't
- * pin a Worker request indefinitely. Classifies failures into a short set of
- * user-safe messages instead of leaking raw internals to the client.
+ * Custom error carrying a machine-readable status so callers can react to
+ * rate-limits (429) or upstream 5xx without regex-matching the message.
+ */
+class SheetFetchError extends Error {
+  constructor(message: string, readonly status: number, readonly retryAfterMs?: number) {
+    super(message);
+    this.name = "SheetFetchError";
+  }
+}
+
+/**
+ * Parse a `Retry-After` header. RFC 7231 allows either delta-seconds or
+ * an HTTP-date; we support both and clamp the result to `MAX_RETRY_WAIT_MS`.
+ * Returns `undefined` when the header is missing or unparseable.
+ */
+function parseRetryAfter(header: string | null): number | undefined {
+  if (!header) return undefined;
+  const trimmed = header.trim();
+  const asSeconds = Number(trimmed);
+  if (Number.isFinite(asSeconds) && asSeconds >= 0) {
+    return Math.min(asSeconds * 1000, MAX_RETRY_WAIT_MS);
+  }
+  const dateMs = Date.parse(trimmed);
+  if (!Number.isNaN(dateMs)) {
+    return Math.min(Math.max(dateMs - Date.now(), 0), MAX_RETRY_WAIT_MS);
+  }
+  return undefined;
+}
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/**
+ * Fetch the sheet with a hard timeout, size cap, and one polite retry on
+ * transient failures (429 rate-limit, 503 service-unavailable). Honours
+ * `Retry-After` when present, otherwise applies a short jittered backoff.
+ * Classifies failures into a short set of user-safe messages instead of
+ * leaking raw internals to the client.
  */
 async function fetchSheetCsv(): Promise<string> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-  try {
-    const res = await fetch(CSV_URL, { signal: controller.signal });
-    if (!res.ok) {
-      throw new Error(
-        res.status === 404
-          ? "Stock sheet not found (404)."
-          : res.status >= 500
-            ? `Upstream sheet error (${res.status}). Please retry shortly.`
-            : `Sheet fetch failed (${res.status}).`,
+  let attempt = 0;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(CSV_URL, { signal: controller.signal });
+
+      if (!res.ok) {
+        const retryable = res.status === 429 || res.status === 503;
+        const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"));
+
+        if (retryable && attempt < MAX_RETRIES) {
+          // Backoff: honour Retry-After when given, otherwise 500ms + jitter.
+          const waitMs = retryAfterMs ?? 500 + Math.floor(Math.random() * 400);
+          attempt++;
+          clearTimeout(timeout);
+          await sleep(waitMs);
+          continue;
+        }
+
+        const message =
+          res.status === 429
+            ? "Catalogue is being rate-limited. Please retry shortly."
+            : res.status === 404
+              ? "Stock sheet not found (404)."
+              : res.status >= 500
+                ? `Upstream sheet error (${res.status}). Please retry shortly.`
+                : `Sheet fetch failed (${res.status}).`;
+        throw new SheetFetchError(message, res.status, retryAfterMs);
+      }
+
+      // Size-guarded read: stream the body and abort if it exceeds the cap.
+      const reader = res.body?.getReader();
+      if (!reader) return await res.text();
+      const chunks: Uint8Array[] = [];
+      let total = 0;
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        total += value.byteLength;
+        if (total > RESPONSE_MAX_BYTES) {
+          controller.abort();
+          throw new SheetFetchError("Sheet response too large.", 413);
+        }
+        chunks.push(value);
+      }
+      return new TextDecoder("utf-8").decode(
+        chunks.length === 1 ? chunks[0] : concatChunks(chunks, total),
       );
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") {
+        throw new SheetFetchError(
+          `Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`,
+          408,
+        );
+      }
+      throw e;
+    } finally {
+      clearTimeout(timeout);
     }
-    return await res.text();
-  } catch (e) {
-    if (e instanceof Error && e.name === "AbortError") {
-      throw new Error(`Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`);
-    }
-    throw e;
-  } finally {
-    clearTimeout(timeout);
   }
+}
+
+function concatChunks(chunks: Uint8Array[], total: number): Uint8Array {
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) { out.set(c, offset); offset += c.byteLength; }
+  return out;
 }
 
 async function loadFromSheet(): Promise<ProductsPayload> {
