@@ -6,7 +6,7 @@ const INTENTS = ["Suggestion", "Feedback", "Collaboration"] as const;
 
 export function ContactPromptSection() {
   return (
-    <section aria-labelledby="contact-heading" className="border-t border-border">
+    <section aria-labelledby="contact-heading" className="cv-auto border-t border-border">
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">
         <Reveal>
           <Eyebrow>Get in touch</Eyebrow>

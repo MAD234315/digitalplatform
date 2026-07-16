@@ -5,7 +5,7 @@ import { REASONS, type Reason } from "./data";
 
 export function ReasonsSection() {
   return (
-    <section aria-labelledby="why-heading" className="border-t border-border">
+    <section aria-labelledby="why-heading" className="cv-auto border-t border-border">
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">
         <Reveal className="max-w-3xl">
           <Eyebrow>Why choose us</Eyebrow>
