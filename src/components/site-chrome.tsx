@@ -188,7 +188,17 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link to="/products" className="hover:text-amber">Products</Link></li>
             <li><Link to="/about" className="hover:text-amber">About</Link></li>
+            <li><Link to="/faq" className="hover:text-amber">FAQ</Link></li>
+            <li><Link to="/product-request" className="hover:text-amber">Product request</Link></li>
             <li><Link to="/contact" className="hover:text-amber">Contact</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Legal</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            <li><Link to="/privacy" className="hover:text-amber">Privacy Policy</Link></li>
+            <li><Link to="/terms" className="hover:text-amber">Terms &amp; Conditions</Link></li>
+            <li><Link to="/refund" className="hover:text-amber">Refund Policy</Link></li>
           </ul>
         </div>
         <div>
