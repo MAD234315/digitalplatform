@@ -9,6 +9,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { buildRouteHead } from "@/lib/seo";
+import { Reveal } from "@/components/reveal";
 
 const TITLE = "FAQ — Digital Platform | Orders, Delivery, Warranty & Support";
 const DESC =
@@ -89,9 +90,9 @@ function FAQPage() {
         ) : (
           <ul className="space-y-3">
             {filtered.map((f, i) => (
-              <li key={`${f.cat}-${i}`}>
+              <Reveal as="li" key={`${f.cat}-${i}`} delay={Math.min(i, 6) * 60} y={18}>
                 <FaqItem f={f} />
-              </li>
+              </Reveal>
             ))}
           </ul>
         )}
