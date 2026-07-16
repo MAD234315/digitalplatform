@@ -1,7 +1,29 @@
-# Default: allow all crawlers, hide internal paths
+# Default: allow all crawlers, hide internal & sensitive paths
 User-agent: *
 Allow: /
 Disallow: /lovable/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /login
+Disallow: /signup
+Disallow: /signin
+Disallow: /logout
+Disallow: /reset-password
+Disallow: /verify
+Disallow: /checkout/
+Disallow: /cart
+Disallow: /orders/
+Disallow: /settings/
+Disallow: /profile/
+Disallow: /_authenticated/
+Disallow: /*?*token=
+Disallow: /*?*key=
+Disallow: /*?*session=
+Disallow: /*.json$
+Disallow: /*.env
 
 # Search engines — explicitly welcomed
 User-agent: Googlebot
