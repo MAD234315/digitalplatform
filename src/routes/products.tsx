@@ -169,9 +169,11 @@ function Products() {
       <ProductsHero
         productCount={data.products.length}
         inStockCount={data.products.filter((p) => p.availability !== "out").length}
+        limitedCount={data.products.filter((p) => p.availability === "limited").length}
         updatedAt={dataUpdatedAt}
         isRefreshing={isFetching}
       />
+
 
 
       <ProductsFilterBar

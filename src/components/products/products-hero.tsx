@@ -7,11 +7,13 @@ import { PageHero } from "@/components/layout/PageHero";
 export function ProductsHero({
   productCount,
   inStockCount,
+  limitedCount = 0,
   updatedAt,
   isRefreshing = false,
 }: {
   productCount: number;
   inStockCount: number;
+  limitedCount?: number;
   updatedAt: number;
   isRefreshing?: boolean;
 }) {
@@ -23,21 +25,24 @@ export function ProductsHero({
         title="Every product,"
         titleAccent="live from our shelf."
         lede={<>Updated in real-time from our internal stock sheet. Prices depend on stock availability and demand — DM us for today&apos;s rate.</>}
-        aside={<LiveStatusCard productCount={productCount} inStockCount={inStockCount} updatedAt={updatedAt} isRefreshing={isRefreshing} />}
+        aside={<LiveStatusCard productCount={productCount} inStockCount={inStockCount} limitedCount={limitedCount} updatedAt={updatedAt} isRefreshing={isRefreshing} />}
       />
     </header>
   );
 }
 
 
+
 function LiveStatusCard({
   productCount,
   inStockCount,
+  limitedCount = 0,
   updatedAt,
   isRefreshing = false,
 }: {
   productCount: number;
   inStockCount: number;
+  limitedCount?: number;
   updatedAt: number;
   isRefreshing?: boolean;
 }) {
@@ -84,7 +89,22 @@ function LiveStatusCard({
           </dd>
         </div>
       </dl>
+      {limitedCount > 0 && (
+        <div
+          role="status"
+          className="mt-3 flex items-center gap-2 rounded-lg border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
+        >
+          <span aria-hidden className="flex h-2 w-2">
+            <span className="inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--amber)" }} />
+          </span>
+          <span>
+            <span className="font-medium">Low stock warning:</span>{" "}
+            <span className={pulseCls}>{limitedCount}</span> item{limitedCount === 1 ? "" : "s"} running low — grab before they&apos;re gone.
+          </span>
+        </div>
+      )}
     </div>
+
   );
 }
 
