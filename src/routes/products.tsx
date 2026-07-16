@@ -308,29 +308,34 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
 
   return (
     <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
-      {/* Compact media strip — per-category glyph on a name-derived gradient */}
-      <div className="relative aspect-[16/6] overflow-hidden" style={{ background: gradientFor(p.name) }}>
-        <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
-
-        {/* Centered category glyph acts as the product image */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span aria-hidden className="text-4xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
+      {/* Ultra-compact media strip — glyph thumbnail + inline category & badges */}
+      <div className="relative flex items-center gap-3 px-3 py-2.5 border-b border-border/60">
+        {/* Small square product thumbnail — every product gets a fitting icon */}
+        <div
+          aria-hidden
+          className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-soft"
+          style={{ background: gradientFor(p.name) }}
+        >
+          <span className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
+          <span className="relative text-xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
         </div>
 
-        {/* Initials chip — small brand mark, top-left */}
-        <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white font-display text-[13px] shadow-soft" style={{ color: "var(--primary)" }}>
-          {initials}
+        {/* Initials + category label */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex h-4 min-w-4 items-center justify-center rounded px-1 font-display text-[10px]" style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}>
+              {initials}
+            </span>
+            <span className="truncate text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              {p.category}
+            </span>
+          </div>
         </div>
 
-        {/* Category tag, bottom-left */}
-        <div className="absolute bottom-2 left-3 text-[10px] uppercase tracking-[0.18em] text-white/90">
-          {p.category}
-        </div>
-
-        {/* Badges, top-right */}
-        <div className="absolute right-2 top-2 flex flex-wrap justify-end gap-1 max-w-[70%]">
+        {/* Badges, inline right */}
+        <div className="flex shrink-0 flex-wrap justify-end gap-1 max-w-[55%]">
           {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
-          {p.badges.includes("high-demand") && <Badge tone="hot">🔥 High Demand</Badge>}
+          {p.badges.includes("high-demand") && <Badge tone="hot">🔥 Hot</Badge>}
           {p.loot && <Badge tone="loot">Loot</Badge>}
           <AvailabilityBadge availability={p.availability} />
         </div>
