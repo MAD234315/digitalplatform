@@ -92,6 +92,8 @@ export function SiteNav() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           <a
             href={WA_URL}
             target="_blank"
