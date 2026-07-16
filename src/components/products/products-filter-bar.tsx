@@ -1,5 +1,5 @@
 /**
- * Sticky filter bar for the /products page.
+ * Filter bar for the /products page.
  *
  * Renders category chips (with counts) plus a debounced search input with
  * an instant-suggestions dropdown. The bar is a pure controlled component
@@ -153,7 +153,7 @@ export function ProductsFilterBar({
   };
 
   return (
-    <div className="sticky top-16 sm:top-20 z-30 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+    <div className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
         <div
           role="group"
