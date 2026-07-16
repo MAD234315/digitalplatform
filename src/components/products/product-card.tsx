@@ -116,11 +116,11 @@ export const ProductCard = memo(function ProductCard({
           target="_blank"
           rel="noreferrer"
           onClick={() => onView?.(p)}
-          aria-label={`Quick DM for price on WhatsApp about ${p.name}`}
+          aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
           className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
           style={{ backgroundColor: "var(--whatsapp)" }}
         >
-          <WaGlyph /> Quick DM for Price
+          <WaGlyph /> Quick DM for Offer Price
         </a>
       </div>
     </article>
