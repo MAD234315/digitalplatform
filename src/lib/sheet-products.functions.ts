@@ -302,10 +302,20 @@ export const getSheetProducts = createServerFn({ method: "GET" }).handler(async 
   const now = Date.now();
   if (cache && now - cache.at < CACHE_TTL_MS) return cache.payload;
 
-  // Coalesce concurrent misses into a single upstream fetch
+  // Coalesce concurrent misses into a single upstream fetch. On failure —
+  // especially 429 rate-limits — fall back to the last successful cache
+  // (even if stale) so the UI stays populated instead of going blank.
   if (!inflight) {
     inflight = loadFromSheet().then((payload) => {
-      if (!payload.error) cache = { at: Date.now(), payload };
+      if (!payload.error) {
+        cache = { at: Date.now(), payload };
+        return payload;
+      }
+      if (payload.rateLimited && cache) {
+        // Serve stale cache during a rate-limit window; flag it so the UI
+        // can show a subtle "using cached data" hint.
+        return { ...cache.payload, rateLimited: true, error: payload.error };
+      }
       return payload;
     }).finally(() => { inflight = null; });
   }
