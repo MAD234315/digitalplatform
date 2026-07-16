@@ -2,16 +2,25 @@ import { useEffect, useState } from "react";
 
 export type Theme = "dark" | "light";
 
-const STORAGE_KEY = "dp-theme";
+export const THEME_COOKIE = "dp-theme";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+
+/** Parse a `dp-theme` cookie value out of a raw Cookie header / document.cookie string. */
+export function readThemeCookie(cookieHeader: string | null | undefined): Theme | undefined {
+  if (!cookieHeader) return undefined;
+  const match = cookieHeader.match(/(?:^|;\s*)dp-theme=(light|dark)/);
+  return (match?.[1] as Theme | undefined) ?? undefined;
+}
+
+function writeCookie(theme: Theme) {
+  // path=/, 1 year, SameSite=Lax so it travels with same-origin nav.
+  document.cookie = `${THEME_COOKIE}=${theme};path=/;max-age=${COOKIE_MAX_AGE};SameSite=Lax`;
+}
 
 function readInitial(): Theme {
-  if (typeof window === "undefined") return "dark";
-  try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-  } catch {
-    /* localStorage blocked — fall through */
-  }
+  if (typeof document === "undefined") return "dark";
+  const fromCookie = readThemeCookie(document.cookie);
+  if (fromCookie) return fromCookie;
   return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
 }
 
@@ -22,29 +31,27 @@ function apply(theme: Theme) {
 }
 
 /**
- * Client-side theme toggle. Reads once on mount (SSR-safe) then mirrors
- * changes to <html class="light"> plus localStorage so the choice persists.
+ * Client-side theme toggle. State is persisted in a cookie so SSR can render
+ * the correct `<html class="light">` on first paint (see __root.tsx).
  */
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [hydrated, setHydrated] = useState(false);
 
-  // Read stored preference AFTER hydration to avoid SSR mismatch.
   useEffect(() => {
     const initial = readInitial();
     setTheme(initial);
     apply(initial);
+    // Ensure a cookie exists so the next SSR pass matches the client choice
+    // even when it originated from the OS `prefers-color-scheme` fallback.
+    writeCookie(initial);
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
     apply(theme);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, theme);
-    } catch {
-      /* ignore */
-    }
+    writeCookie(theme);
   }, [theme, hydrated]);
 
   return {
