@@ -66,7 +66,8 @@ function RecentCard({ p }: { p: SheetProduct }) {
     `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
   );
   const gradient = gradientFor(p.name);
-  const initials = initialsFor(p.name);
+  const glow = glowFor(p.name);
+  const logo = animeImageFor(p.name);
 
   return (
     <a
@@ -74,26 +75,44 @@ function RecentCard({ p }: { p: SheetProduct }) {
       href={`${CONTACT.WA_URL}?text=${waMsg}`}
       target="_blank"
       rel="noreferrer"
-      className="group relative flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-foreground/25 hover:shadow-soft"
+      className="group relative flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/25 bg-card/55 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/45"
+      style={{
+        boxShadow: `0 1px 0 rgba(255,255,255,0.35) inset, 0 20px 40px -20px color-mix(in oklab, ${glow} 45%, transparent)`,
+      }}
     >
       <div
         className="relative aspect-[16/10] overflow-hidden"
         style={{ background: gradient }}
       >
+        {/* Soft glow halo behind the logo */}
         <div
           aria-hidden
-          className="flex h-full w-full items-center justify-center font-display text-4xl font-bold tracking-tight text-white/95 transition duration-500 group-hover:scale-[1.04]"
-          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)" }}
-        >
-          {initials}
+          className="pointer-events-none absolute inset-0 opacity-70 blur-2xl transition duration-500 group-hover:opacity-100"
+          style={{ background: `radial-gradient(circle at 50% 55%, ${glow} 0%, transparent 60%)` }}
+        />
+        <img
+          src={logo}
+          alt=""
+          loading="lazy"
+          className="relative z-10 mx-auto my-auto h-16 w-16 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition duration-500 group-hover:scale-[1.06]"
+          style={{ display: "block", marginTop: "auto", marginBottom: "auto" }}
+        />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <img
+            src={logo}
+            alt=""
+            aria-hidden
+            className="h-16 w-16 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition duration-500 group-hover:scale-[1.06]"
+          />
         </div>
-        <span className="absolute left-2 top-2 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
+        <span className="absolute left-2 top-2 z-20 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
           New
         </span>
-        <div className="absolute right-2 top-2">
+        <div className="absolute right-2 top-2 z-20">
           <AvailabilityBadge availability={p.availability} />
         </div>
       </div>
+
 
       <div className="flex flex-1 flex-col p-3">
         <div className="min-w-0">
