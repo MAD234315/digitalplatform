@@ -31,7 +31,7 @@ export function WhoWeAreSection() {
               reliable customer support and a smooth buying experience.
             </p>
 
-            <div className="mt-10 rounded-sm border border-border bg-card/60 p-6 sm:p-8">
+            <div className="mt-10 rounded-sm border border-border bg-card/60 p-6 sm:p-8 transition-colors duration-300 hover:border-amber/30">
               <Eyebrow>Our mission</Eyebrow>
               <p className="mt-3 font-display text-2xl sm:text-3xl leading-snug">
                 Help creators, students, professionals, developers and businesses access the digital tools
@@ -39,12 +39,14 @@ export function WhoWeAreSection() {
               </p>
               <Link
                 to="/products"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-amber hover:brightness-110"
+                className="group mt-6 inline-flex items-center gap-2 text-sm font-medium text-amber hover:brightness-110"
               >
-                Browse the catalogue <span aria-hidden>→</span>
+                Browse the catalogue{" "}
+                <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
+            </div>
           </Reveal>
-          </div>
+        </div>
         </div>
       </div>
     </section>
