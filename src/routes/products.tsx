@@ -459,6 +459,23 @@ function glyphForCategory(category: string, name: string): string {
   if (/(grammarly|quillbot|deepl|linguee)/.test(n)) return "✍️";
   if (/(telegram|whatsapp|signal|discord)/.test(n)) return "💬";
 
+  // Category-level defaults
+  const c = category.toLowerCase();
+  if (/ai/.test(c)) return "🤖";
+  if (/stream|entertain|ott|video/.test(c)) return "🎬";
+  if (/music|audio/.test(c)) return "🎧";
+  if (/design|creative|graphic/.test(c)) return "🎨";
+  if (/dev|code|program/.test(c)) return "⚙️";
+  if (/microsoft|office/.test(c)) return "🪟";
+  if (/productivity|business/.test(c)) return "📊";
+  if (/education|learning|course/.test(c)) return "🎓";
+  if (/gift|card|voucher/.test(c)) return "🎁";
+  if (/cloud|storage/.test(c)) return "☁️";
+  if (/vpn|security|privacy/.test(c)) return "🛡️";
+  if (/game|gaming/.test(c)) return "🎮";
+  return "✨";
+}
+
 /**
  * Real brand-logo URL for a product when we can confidently map its name to
  * a known brand. Uses simpleicons.org CDN (SVG, cached at the edge).
