@@ -31,7 +31,7 @@ export function FilterBar<T extends string>({
     <div className="sticky top-16 sm:top-20 z-30 border-y border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto max-w-5xl px-6 lg:px-10 py-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div
-          role="tablist"
+          role="group"
           aria-label="Filter by category"
           className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
         >
@@ -41,10 +41,9 @@ export function FilterBar<T extends string>({
               <button
                 key={name}
                 type="button"
-                role="tab"
-                aria-selected={isActive}
+                aria-pressed={isActive}
                 onClick={() => onActiveChange(name)}
-                className={`whitespace-nowrap rounded-full border px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition ${
+                className={`whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   isActive
                     ? "border-transparent shadow-soft"
                     : "border-border bg-card hover:bg-muted hover:border-foreground/20"
@@ -70,7 +69,7 @@ export function FilterBar<T extends string>({
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full rounded-full border border-border bg-card pl-11 pr-4 min-h-10 text-sm outline-none transition focus:border-foreground/40"
+            className="w-full rounded-full border border-border bg-card pl-11 pr-4 min-h-11 md:min-h-10 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           />
         </div>
       </div>

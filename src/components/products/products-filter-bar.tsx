@@ -44,7 +44,7 @@ export function ProductsFilterBar({
     <div className="sticky top-16 sm:top-20 z-30 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-3 flex flex-col-reverse gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div
-          role="tablist"
+          role="group"
           aria-label="Filter by category"
           className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
         >
@@ -55,11 +55,9 @@ export function ProductsFilterBar({
               <button
                 key={name}
                 type="button"
-                role="tab"
-                aria-selected={isActive}
                 aria-pressed={isActive}
                 onClick={() => onActiveChange(name)}
-                className={`whitespace-nowrap rounded-full border px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition ${
+                className={`whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   isActive
                     ? "border-transparent shadow-soft"
                     : "border-border bg-card hover:bg-muted hover:border-foreground/20"
@@ -73,7 +71,7 @@ export function ProductsFilterBar({
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:shrink-0">
           <div
-            role="tablist"
+            role="group"
             aria-label="Filter by stock"
             className="scroll-slim inline-flex gap-1 overflow-x-auto rounded-full border border-border bg-card p-1"
           >
@@ -91,11 +89,9 @@ export function ProductsFilterBar({
                 <button
                   key={opt.value}
                   type="button"
-                  role="tab"
-                  aria-selected={isActive}
                   aria-pressed={isActive}
                   onClick={() => onStockChange(opt.value)}
-                  className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-8 text-[11px] font-medium uppercase tracking-[0.14em] transition ${
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-10 md:min-h-8 text-[11px] font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
                     isActive
                       ? "shadow-soft"
                       : "text-muted-foreground hover:text-foreground"
@@ -125,14 +121,14 @@ export function ProductsFilterBar({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search products…"
-              className="w-full rounded-full border border-border bg-card pl-11 pr-10 min-h-10 text-sm outline-none transition focus:border-foreground/40"
+              className="w-full rounded-full border border-border bg-card pl-11 pr-12 min-h-11 md:min-h-10 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => onQueryChange("")}
                 aria-label="Clear search"
-                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
