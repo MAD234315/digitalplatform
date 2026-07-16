@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { memo, useCallback, useDeferredValue, useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
 import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
 import type { ReactNode } from "react";
@@ -111,6 +111,9 @@ function Products() {
   const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
+  // Defer the search text so keystrokes stay snappy while the (potentially
+  // large) filter pass runs at a lower priority.
+  const deferredQ = useDeferredValue(q);
   const { items: recent, track, clear } = useRecentlyViewed();
 
   // Precompute a category → count map so the filter bar doesn't re-scan
@@ -122,13 +125,13 @@ function Products() {
   }, [data.categories]);
 
   const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = deferredQ.trim().toLowerCase();
     return data.products.filter((p) => {
       if (active !== "All" && p.category !== active) return false;
       if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [data.products, active, q]);
+  }, [data.products, active, deferredQ]);
 
   // Only surface recents that still exist in the live catalogue, and skip
   // whatever is being filtered — jumping to a hidden card would confuse users.
@@ -301,7 +304,7 @@ function Products() {
 }
 
 
-function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: number; onView?: (p: SheetProduct) => void }) {
+const ProductCard = memo(function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: number; onView?: (p: SheetProduct) => void }) {
   const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);
   const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
   const updatedLabel = formatRelative(updatedAt);
@@ -389,7 +392,7 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
       </div>
     </article>
   );
-}
+});
 
 function formatRelative(ts: number): string {
   const diffMs = Date.now() - ts;
