@@ -26,7 +26,7 @@ export function HeroSection() {
 
         <h1
           id="hero-heading"
-          className="animate-rise delay-1 mt-8 font-display text-balance text-[44px] leading-[1.02] sm:text-6xl md:text-7xl lg:text-8xl"
+          className="animate-rise delay-1 mt-8 font-display text-balance text-[38px] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl"
         >
           Premium digital products
           <br className="hidden sm:block" />
