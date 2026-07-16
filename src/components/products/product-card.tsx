@@ -71,12 +71,14 @@ export const ProductCard = memo(function ProductCard({
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-11 w-11 object-cover"
+              className="h-8 w-8 object-contain drop-shadow-sm"
+              style={{ filter: "brightness(0) invert(1)" }}
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
               }}
             />
           </div>
+
 
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
             <span
