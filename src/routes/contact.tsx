@@ -36,7 +36,7 @@ function Contact() {
       <PageHero
         eyebrow="Contact"
         title={<>Let&apos;s <em className="text-headline">talk.</em></>}
-        lede="The fastest way to reach us is WhatsApp — we typically reply within minutes with live pricing and stock updates."
+        lede="The fastest way to reach us is WhatsApp — we typically reply at earliest with live pricing and stock updates."
       />
 
       <section className="border-t border-border">
