@@ -239,9 +239,10 @@ function ProductCard({ p }: { p: SheetProduct }) {
   const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:shadow-soft">
+    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft">
       {/* image + logo tile */}
       <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+
         <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.5), transparent 70%)" }} />
         <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
           {initials}
