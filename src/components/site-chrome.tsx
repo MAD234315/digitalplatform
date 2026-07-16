@@ -207,3 +207,33 @@ export function SiteFooter() {
 }
 
 export const CONTACT = { WA_NUMBER, WA_URL, EMAIL };
+
+function ReducedMotionToggle() {
+  const { effective, setPreference } = useReducedMotion();
+  const label = effective ? "Reduce motion: On" : "Reduce motion: Off";
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={effective}
+      aria-label={label}
+      title={label}
+      onClick={() => setPreference(effective ? "off" : "on")}
+      className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] transition hover:border-foreground/40 hover:text-foreground"
+    >
+      <span
+        aria-hidden
+        className={`relative inline-flex h-3.5 w-6 items-center rounded-full transition-colors ${
+          effective ? "bg-amber" : "bg-muted"
+        }`}
+      >
+        <span
+          className={`inline-block h-2.5 w-2.5 transform rounded-full bg-background shadow transition-transform ${
+            effective ? "translate-x-3" : "translate-x-0.5"
+          }`}
+        />
+      </span>
+      <span>Reduce motion</span>
+    </button>
+  );
+}
