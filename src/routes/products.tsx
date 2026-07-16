@@ -294,8 +294,8 @@ function Products() {
       </main>
 
       </div>
-      {/* Footer sits outside `.theme-paper` so it renders in the sitewide dark palette. */}
       <SiteFooter />
+
     </div>
   );
 }
