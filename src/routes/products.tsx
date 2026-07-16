@@ -301,7 +301,7 @@ function Products() {
 }
 
 
-function ProductCard({ p, updatedAt }: { p: SheetProduct; updatedAt: number }) {
+function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: number; onView?: (p: SheetProduct) => void }) {
   const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);
   const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
   const updatedLabel = formatRelative(updatedAt);
