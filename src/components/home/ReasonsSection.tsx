@@ -9,7 +9,7 @@ export function ReasonsSection() {
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">
         <Reveal className="max-w-3xl">
           <Eyebrow>Why choose us</Eyebrow>
-          <h2 id="why-heading" className="mt-4 font-display text-4xl sm:text-5xl">
+          <h2 id="why-heading" className="mt-4 font-display text-3xl sm:text-4xl">
             Six reasons the return <em className="italic text-headline">customers come back.</em>
           </h2>
         </Reveal>

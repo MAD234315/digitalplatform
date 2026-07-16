@@ -18,7 +18,7 @@ export function WhoWeAreSection() {
             </div>
           </Reveal>
           <Reveal className="lg:col-span-8" delay={120}>
-            <h2 id="who-heading" className="font-display text-4xl sm:text-5xl">
+            <h2 id="who-heading" className="font-display text-3xl sm:text-4xl">
               A trusted marketplace for <em className="italic text-headline">premium digital tools.</em>
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">

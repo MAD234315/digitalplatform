@@ -46,7 +46,7 @@ function About() {
             <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Mission</div>
           </div>
           <div className="lg:col-span-8">
-            <h2 className="font-display text-4xl sm:text-5xl">
+            <h2 className="font-display text-3xl sm:text-4xl">
               Make premium <em className="text-headline">accessible.</em>
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">
@@ -65,7 +65,7 @@ function About() {
       <section className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-24 lg:py-32 text-center">
           <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Ready when you are.</div>
-          <h2 className="mt-4 font-display text-4xl sm:text-5xl">
+          <h2 className="mt-4 font-display text-3xl sm:text-4xl">
             Browse the live catalogue <em className="text-headline">or say hello</em>
             <br />— we usually reply within minutes.
           </h2>
