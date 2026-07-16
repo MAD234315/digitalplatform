@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
+import { OG_IMAGE, ORG_ID, SITE_URL } from "@/lib/site-config";
 
-const SITE = "https://digitalplatform13.lovable.app";
-const URL = SITE + "/about";
+const URL = SITE_URL + "/about";
 const TITLE = "About Digital Platform — Our Story & Promise";
 const DESC = "A small team, a big shelf. Digital Platform is a trusted marketplace for premium digital subscriptions, AI tools and software licenses — serving customers since 2020.";
 
@@ -15,8 +15,11 @@ export const Route = createFileRoute("/about")({
       { property: "og:description", content: DESC },
       { property: "og:url", content: URL },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:alt", content: "Digital Platform — about us" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESC },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
