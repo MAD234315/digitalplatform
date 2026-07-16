@@ -70,9 +70,15 @@ function cleanPrice(v: string): string {
   return `₹${t.replace(/,/g, ",")}`;
 }
 
-export const getSheetProducts = createServerFn({ method: "GET" }).handler(async (): Promise<ProductsPayload> => {
+// Cross-request in-memory cache. On serverless workers this shares within an
+// isolate, which still absorbs the burst of clients polling every 60s.
+const CACHE_TTL_MS = 60_000;
+let cache: { at: number; payload: ProductsPayload } | null = null;
+let inflight: Promise<ProductsPayload> | null = null;
+
+async function loadFromSheet(): Promise<ProductsPayload> {
   try {
-    const res = await fetch(CSV_URL, { headers: { "cache-control": "no-cache" } });
+    const res = await fetch(CSV_URL);
     if (!res.ok) throw new Error(`Sheet fetch failed: ${res.status}`);
     const text = await res.text();
     const rows = parseCsv(text);
@@ -84,17 +90,14 @@ export const getSheetProducts = createServerFn({ method: "GET" }).handler(async 
     for (const row of rows) {
       if (!row || row.every((c) => !(c || "").trim())) continue;
 
-      // Category heading?
       if (isCategoryHeader(row)) {
         currentCategory = (row[0] || "").trim();
         continue;
       }
-      // Table header?
       if (isTableHeader(row)) continue;
 
       const status = (row[0] || "").trim();
       const name = (row[2] || "").trim();
-      // Skip note / promo rows
       if (!name) continue;
       if (name.length > 60) continue;
       if (/YOU ARE IN|NOTE|LAST UPDATED|WhatsApp Me|PLANS & PRICES|FOR OUR PRICES/i.test(name)) continue;
@@ -107,9 +110,6 @@ export const getSheetProducts = createServerFn({ method: "GET" }).handler(async 
       const supports = (row[10] || "").trim();
       const warranty = (row[11] || "").trim();
 
-      const inStock = /in.?stock|in stock/i.test(status);
-      const loot = /loot/i.test(status);
-
       products.push({
         id: `p-${idx++}`,
         category: currentCategory,
@@ -121,8 +121,8 @@ export const getSheetProducts = createServerFn({ method: "GET" }).handler(async 
         type,
         supports,
         warranty,
-        inStock,
-        loot,
+        inStock: /in.?stock|in stock/i.test(status),
+        loot: /loot/i.test(status),
       });
     }
 
@@ -139,4 +139,19 @@ export const getSheetProducts = createServerFn({ method: "GET" }).handler(async 
       error: e instanceof Error ? e.message : "Failed to load catalogue",
     };
   }
+}
+
+export const getSheetProducts = createServerFn({ method: "GET" }).handler(async (): Promise<ProductsPayload> => {
+  const now = Date.now();
+  if (cache && now - cache.at < CACHE_TTL_MS) return cache.payload;
+
+  // Coalesce concurrent misses into a single upstream fetch
+  if (!inflight) {
+    inflight = loadFromSheet().then((payload) => {
+      if (!payload.error) cache = { at: Date.now(), payload };
+      return payload;
+    }).finally(() => { inflight = null; });
+  }
+  return inflight;
 });
+
