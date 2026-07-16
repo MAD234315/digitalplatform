@@ -292,7 +292,6 @@ export function ProductsFilterBar({
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
