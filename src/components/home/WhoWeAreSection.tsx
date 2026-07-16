@@ -43,7 +43,7 @@ export function WhoWeAreSection() {
               >
                 Browse the catalogue <span aria-hidden>→</span>
               </Link>
-            </div>
+          </Reveal>
           </div>
         </div>
       </div>
