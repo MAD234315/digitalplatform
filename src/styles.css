@@ -40,8 +40,8 @@
 /* ============= DARK SITE THEME (home, about, contact) ============= */
 :root {
   --radius: 0.5rem;
-  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
-  --font-body: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Serif Display", ui-serif, Georgia, serif;
+  --font-body: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
 
   /* Noir & Gold */
   --background: oklch(0.14 0 0);        /* #0d0d0d */
