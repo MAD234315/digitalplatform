@@ -165,64 +165,59 @@ function Products() {
 
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <SiteNav />
+    <PageShell>
+      <ProductsHero productCount={data.products.length} updatedAt={dataUpdatedAt} />
 
-      <div>
-        <ProductsHero productCount={data.products.length} updatedAt={dataUpdatedAt} />
+      <ProductsFilterBar
+        categories={data.categories.map((c) => c.name)}
+        totalCount={data.products.length}
+        categoryCounts={categoryCounts}
+        active={active}
+        onActiveChange={setActive}
+        query={q}
+        onQueryChange={setQ}
+      />
 
-        <ProductsFilterBar
-          categories={data.categories.map((c) => c.name)}
-          totalCount={data.products.length}
-          categoryCounts={categoryCounts}
-          active={active}
-          onActiveChange={setActive}
-          query={q}
-          onQueryChange={setQ}
-        />
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
+        {data.error && (
+          <div className="mb-6 rounded-xl border border-danger/40 p-4 text-sm" style={{ color: "var(--danger)" }}>
+            Couldn&apos;t load the live sheet ({data.error}). Please retry shortly.
+          </div>
+        )}
 
-        <main className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
-          {data.error && (
-            <div className="mb-6 rounded-xl border border-danger/40 p-4 text-sm" style={{ color: "var(--danger)" }}>
-              Couldn&apos;t load the live sheet ({data.error}). Please retry shortly.
-            </div>
-          )}
+        {recentVisible.length > 0 && (
+          <RecentlyViewed
+            items={recentVisible}
+            onClear={clear}
+            onJump={(id) => {
+              const el = document.getElementById(`product-${id}`);
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.classList.add("ring-2", "ring-amber");
+                window.setTimeout(() => el.classList.remove("ring-2", "ring-amber"), 1500);
+              }
+            }}
+          />
+        )}
 
-          {recentVisible.length > 0 && (
-            <RecentlyViewed
-              items={recentVisible}
-              onClear={clear}
-              onJump={(id) => {
-                const el = document.getElementById(`product-${id}`);
-                if (el) {
-                  el.scrollIntoView({ behavior: "smooth", block: "center" });
-                  el.classList.add("ring-2", "ring-amber");
-                  window.setTimeout(() => el.classList.remove("ring-2", "ring-amber"), 1500);
-                }
-              }}
-            />
-          )}
+        {filtered.length === 0 ? (
+          <div className="py-24 text-center text-muted-foreground">
+            No products match this filter. Try another category.
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.map((p) => (
+              <TiltCard key={p.id} max={4}>
+                <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
+              </TiltCard>
+            ))}
+          </div>
+        )}
 
-          {filtered.length === 0 ? (
-            <div className="py-24 text-center text-muted-foreground">
-              No products match this filter. Try another category.
-            </div>
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filtered.map((p) => (
-                <TiltCard key={p.id} max={4}>
-                  <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
-                </TiltCard>
-              ))}
-            </div>
-          )}
-
-          <p className="mt-16 text-center text-xs text-muted-foreground">
-            Prices depend on stock &amp; demand — <span className="font-medium text-foreground">contact admin for detailed info.</span>
-          </p>
-        </main>
+        <p className="mt-16 text-center text-xs text-muted-foreground">
+          Prices depend on stock &amp; demand — <span className="font-medium text-foreground">contact admin for detailed info.</span>
+        </p>
       </div>
-      <SiteFooter />
-    </div>
+    </PageShell>
   );
 }
