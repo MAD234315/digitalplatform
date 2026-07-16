@@ -67,7 +67,6 @@ function RecentCard({ p }: { p: SheetProduct }) {
   );
   const gradient = gradientFor(p.name);
   const initials = initialsFor(p.name);
-  const image = animeImageFor(p.name);
 
   return (
     <a
@@ -77,23 +76,17 @@ function RecentCard({ p }: { p: SheetProduct }) {
       rel="noreferrer"
       className="group relative flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-foreground/25 hover:shadow-soft"
     >
-      <div className="relative aspect-[16/10] overflow-hidden">
-        {image ? (
-          <img
-            src={image}
-            alt=""
-            loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div
-            aria-hidden
-            className="flex h-full w-full items-center justify-center font-display text-3xl text-white/90"
-            style={{ background: gradient }}
-          >
-            {initials}
-          </div>
-        )}
+      <div
+        className="relative aspect-[16/10] overflow-hidden"
+        style={{ background: gradient }}
+      >
+        <div
+          aria-hidden
+          className="flex h-full w-full items-center justify-center font-display text-4xl font-bold tracking-tight text-white/95 transition duration-500 group-hover:scale-[1.04]"
+          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)" }}
+        >
+          {initials}
+        </div>
         <span className="absolute left-2 top-2 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
           New
         </span>
@@ -101,6 +94,7 @@ function RecentCard({ p }: { p: SheetProduct }) {
           <AvailabilityBadge availability={p.availability} />
         </div>
       </div>
+
       <div className="flex flex-1 flex-col p-3">
         <div className="min-w-0">
           <div className="truncate text-sm font-medium">{p.name}</div>
