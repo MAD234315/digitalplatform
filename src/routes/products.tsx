@@ -4,14 +4,16 @@ import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
 import { getSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 
-const productsQueryOptions = () =>
-  queryOptions({
-    queryKey: ["sheet-products"],
-    queryFn: () => getSheetProducts(),
-    staleTime: 60_000,          // consider fresh for 1 min
-    refetchInterval: 60_000,    // live update every minute
-    refetchOnWindowFocus: true,
-  });
+// Static options (not a factory) — keeps queryKey referentially stable so
+// useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
+// same cache entry across renders.
+const productsQueryOptions = queryOptions({
+  queryKey: ["sheet-products"],
+  queryFn: () => getSheetProducts(),
+  staleTime: 60_000,          // consider fresh for 1 min
+  refetchInterval: 60_000,    // live update every minute
+  refetchOnWindowFocus: true,
+});
 
 export const Route = createFileRoute("/products")({
   head: () => ({
@@ -22,27 +24,37 @@ export const Route = createFileRoute("/products")({
       { property: "og:description", content: "Live catalogue. Updated daily. DM for prices." },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   component: Products,
 });
 
 function Products() {
-  const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions());
+  const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
 
+  // Precompute a category → count map so the filter bar doesn't re-scan
+  // `data.categories` for each chip on every keystroke.
+  const categoryCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const c of data.categories) m.set(c.name, c.count);
+    return m;
+  }, [data.categories]);
+
   const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
     return data.products.filter((p) => {
       if (active !== "All" && p.category !== active) return false;
-      if (q && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(q.toLowerCase())) return false;
+      if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
       return true;
     });
   }, [data.products, active, q]);
 
   return (
-    <div className="theme-paper min-h-screen bg-background text-foreground">
-      {/* HEADER — light theme */}
+    <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
+      {/* Paper (light) theme wraps only the catalogue surface. */}
+      <div className="theme-paper bg-background text-foreground">
       <header className="relative border-b border-border">
         <div className="absolute inset-0 bg-hero" aria-hidden />
         <div className="relative">
@@ -86,7 +98,7 @@ function Products() {
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {["All", ...data.categories.map((c) => c.name)].map((name) => {
                   const isActive = active === name;
-                  const count = name === "All" ? data.products.length : (data.categories.find((c) => c.name === name)?.count ?? 0);
+                  const count = name === "All" ? data.products.length : (categoryCounts.get(name) ?? 0);
                   return (
                     <button
                       key={name}
@@ -144,9 +156,9 @@ function Products() {
         </p>
       </main>
 
-      <div className="theme-paper--reset">
-        <SiteFooter />
       </div>
+      {/* Footer sits outside `.theme-paper` so it renders in the sitewide dark palette. */}
+      <SiteFooter />
     </div>
   );
 }
