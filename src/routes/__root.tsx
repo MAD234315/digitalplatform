@@ -57,11 +57,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Digital Platform — Premium apps & AI tools at prices that make sense" },
       { name: "description", content: "Trusted digital marketplace since 2020. premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans." },
       { name: "author", content: "Digital Platform" },
+      { name: "color-scheme", content: "dark light" },
+      { name: "theme-color", content: "#f8f2e4", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#0d0d0d", media: "(prefers-color-scheme: dark)" },
       { property: "og:site_name", content: "Digital Platform" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@digitalplatform" },
     ],
+
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
