@@ -392,7 +392,7 @@ const ProductCard = memo(function ProductCard({ p, updatedAt, onView }: { p: She
       </div>
     </article>
   );
-}
+});
 
 function formatRelative(ts: number): string {
   const diffMs = Date.now() - ts;
