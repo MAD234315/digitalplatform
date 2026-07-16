@@ -92,8 +92,9 @@ function Products() {
   }, [data.products, active, q]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
       <SiteNav />
+
       {/* Paper (light) theme wraps only the catalogue surface. */}
       <div className="theme-paper bg-background text-foreground">
       <header className="relative border-b border-border">
@@ -134,45 +135,73 @@ function Products() {
               </div>
             </div>
 
-            {/* Filter bar */}
-            <div className="mt-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {["All", ...data.categories.map((c) => c.name)].map((name) => {
-                  const isActive = active === name;
-                  const count = name === "All" ? data.products.length : (categoryCounts.get(name) ?? 0);
-                  return (
-                    <button
-                      key={name}
-                      type="button"
-                      onClick={() => setActive(name)}
-                      aria-pressed={isActive}
-                      className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] transition ${
-                        isActive
-                          ? "border-transparent shadow-soft"
-                          : "border-border bg-card hover:bg-muted"
-                      }`}
-                      style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
-                    >
-                      {name.toLowerCase()} <span className="opacity-60">· {count}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="relative min-w-[240px]">
-                <label htmlFor="products-search" className="sr-only">Search products</label>
-                <input
-                  id="products-search"
-                  type="search"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Search products…"
-                  className="w-full rounded-full border border-border bg-card px-5 py-2.5 text-sm outline-none focus:border-foreground/40"
-                />
-              </div>
-            </div>
           </div>
         </div>
       </header>
+
+      {/* Sticky filter bar — remains visible while scrolling long lists */}
+      <div className="sticky top-16 sm:top-20 z-30 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-3 flex flex-col-reverse gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div
+            role="tablist"
+            aria-label="Filter by category"
+            className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+          >
+            {["All", ...data.categories.map((c) => c.name)].map((name) => {
+              const isActive = active === name;
+              const count = name === "All" ? data.products.length : (categoryCounts.get(name) ?? 0);
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-pressed={isActive}
+                  onClick={() => setActive(name)}
+                  className={`whitespace-nowrap rounded-full border px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition ${
+                    isActive
+                      ? "border-transparent shadow-soft"
+                      : "border-border bg-card hover:bg-muted hover:border-foreground/20"
+                  }`}
+                  style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+                >
+                  {name.toLowerCase()} <span className="opacity-60">· {count}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="relative w-full lg:w-72 lg:shrink-0">
+            <label htmlFor="products-search" className="sr-only">Search products</label>
+            <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+              </svg>
+            </span>
+            <input
+              id="products-search"
+              type="search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search products…"
+              className="w-full rounded-full border border-border bg-card pl-11 pr-10 min-h-10 text-sm outline-none transition focus:border-foreground/40"
+            />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
 
       {/* GRID */}
       <main className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
@@ -210,9 +239,10 @@ function ProductCard({ p }: { p: SheetProduct }) {
   const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:shadow-soft">
+    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft">
       {/* image + logo tile */}
       <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+
         <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.5), transparent 70%)" }} />
         <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
           {initials}

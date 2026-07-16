@@ -151,8 +151,30 @@
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
 @utility shadow-gold { box-shadow: var(--shadow-gold); }
 
-/* subtle rise-in on scroll */
+/* subtle rise-in used on hero / section entry */
 @keyframes dp-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @utility animate-rise { animation: dp-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* Stagger helpers — chain with `animate-rise` */
+@utility delay-1 { animation-delay: 0.08s; }
+@utility delay-2 { animation-delay: 0.16s; }
+@utility delay-3 { animation-delay: 0.24s; }
+@utility delay-4 { animation-delay: 0.32s; }
+@utility delay-5 { animation-delay: 0.40s; }
+
+/* Slim, unobtrusive scrollbar for horizontal chip rows */
+@utility scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 25%, transparent) transparent;
+  &::-webkit-scrollbar { height: 6px; }
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--foreground) 25%, transparent);
+    border-radius: 999px;
+  }
+}
+
+/* Reserve space beneath the fixed header when scrolling to in-page anchors */
+:target, [id] { scroll-margin-top: 96px; }
+
 
 

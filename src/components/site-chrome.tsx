@@ -27,6 +27,15 @@ export function SiteNav() {
 
   useEffect(() => { setOpen(false); }, [pathname]);
 
+  // Close mobile menu on Escape for keyboard users.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+
   return (
     <header
       className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
@@ -117,11 +126,19 @@ export function SiteNav() {
                 key={l.to}
                 to={l.to}
                 aria-current={active ? "page" : undefined}
-                className={`min-h-12 flex items-center border-b border-border/60 text-base ${
+                className={`min-h-12 flex items-center justify-between border-b border-border/60 text-base ${
                   active ? "text-foreground" : "text-muted-foreground"
                 }`}
               >
-                {l.label}
+                <span className="flex items-center gap-3">
+                  <span
+                    aria-hidden
+                    className={`h-1.5 w-1.5 rounded-full transition ${active ? "opacity-100" : "opacity-0"}`}
+                    style={{ backgroundColor: "var(--amber)" }}
+                  />
+                  {l.label}
+                </span>
+                <span aria-hidden className="text-muted-foreground/60">→</span>
               </Link>
             );
           })}
