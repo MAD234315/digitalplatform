@@ -95,8 +95,7 @@ function RecentCard({ p }: { p: SheetProduct }) {
           <LogoMark name={p.name} size={56} />
         </div>
 
-          />
-        </div>
+
 
         <span className="absolute left-2 top-2 z-20 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
           New
