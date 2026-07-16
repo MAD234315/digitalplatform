@@ -5,6 +5,7 @@ import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
 import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
 import type { ReactNode } from "react";
 import { TiltCard } from "@/components/tilt-card";
+import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
@@ -12,15 +13,20 @@ import { TiltCard } from "@/components/tilt-card";
 const productsQueryOptions = queryOptions({
   queryKey: ["sheet-products"],
   queryFn: () => getSheetProducts(),
-  staleTime: 60_000,          // consider fresh for 1 min
-  refetchInterval: 60_000,    // live update every minute
+  staleTime: 60_000,
+  refetchInterval: 60_000,
   refetchOnWindowFocus: true,
 });
 
-const SITE = "https://digitalplatform13.lovable.app";
-const PRODUCTS_URL = SITE + "/products";
+const PRODUCTS_URL = SITE_URL + "/products";
 const PRODUCTS_TITLE = "Digital Subscriptions & Software — Digital Platform";
 const PRODUCTS_DESC = "Live catalogue of premium subscriptions, AI tools, software licenses and gift cards. Updated daily from our stock sheet. DM for live pricing.";
+
+function availabilityToSchema(a: Availability): string {
+  if (a === "out") return "https://schema.org/OutOfStock";
+  if (a === "limited") return "https://schema.org/LimitedAvailability";
+  return "https://schema.org/InStock";
+}
 
 export const Route = createFileRoute("/products")({
   head: ({ loaderData }: { loaderData?: { products?: SheetProduct[] } }) => {
@@ -30,10 +36,24 @@ export const Route = createFileRoute("/products")({
       "@type": "ItemList",
       url: PRODUCTS_URL,
       name: PRODUCTS_TITLE,
+      numberOfItems: items.length,
       itemListElement: items.map((p: SheetProduct, i: number) => ({
         "@type": "ListItem",
         position: i + 1,
-        name: p.name + (p.plan ? ` — ${p.plan}` : ""),
+        item: {
+          "@type": "Product",
+          name: p.name + (p.plan ? ` — ${p.plan}` : ""),
+          category: p.category,
+          brand: { "@type": "Brand", name: "Digital Platform" },
+          offers: {
+            "@type": "Offer",
+            availability: availabilityToSchema(p.availability),
+            priceCurrency: "INR",
+            price: "0",
+            url: PRODUCTS_URL,
+            seller: { "@id": ORG_ID },
+          },
+        },
       })),
     };
     return {
@@ -44,11 +64,26 @@ export const Route = createFileRoute("/products")({
         { property: "og:description", content: PRODUCTS_DESC },
         { property: "og:url", content: PRODUCTS_URL },
         { property: "og:type", content: "website" },
+        { property: "og:image", content: OG_IMAGE },
+        { property: "og:image:alt", content: "Digital Platform — live product catalogue" },
         { name: "twitter:title", content: PRODUCTS_TITLE },
         { name: "twitter:description", content: PRODUCTS_DESC },
+        { name: "twitter:image", content: OG_IMAGE },
       ],
       links: [{ rel: "canonical", href: PRODUCTS_URL }],
       scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            url: PRODUCTS_URL,
+            name: PRODUCTS_TITLE,
+            description: PRODUCTS_DESC,
+            isPartOf: { "@id": WEBSITE_ID },
+            publisher: { "@id": ORG_ID },
+          }),
+        },
         {
           type: "application/ld+json",
           children: JSON.stringify(itemList),
@@ -59,7 +94,7 @@ export const Route = createFileRoute("/products")({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
               { "@type": "ListItem", position: 2, name: "Products", item: PRODUCTS_URL },
             ],
           }),

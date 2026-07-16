@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
 
 function NotFoundComponent() {
   return (
@@ -56,20 +57,43 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Digital Platform — Premium apps & AI tools at prices that make sense" },
       { name: "description", content: "Trusted digital marketplace since 2020. premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans." },
       { name: "author", content: "Digital Platform" },
-      { property: "og:title", content: "Digital Platform — Premium apps & AI tools at prices that make sense" },
-      { property: "og:description", content: "Trusted digital marketplace since 2020. premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans." },
+      { property: "og:site_name", content: "Digital Platform" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Digital Platform — Premium apps & AI tools at prices that make sense" },
-      { name: "twitter:description", content: "Trusted digital marketplace since 2020. premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9020bb4c-4fbb-4a1f-952c-73595881f781/id-preview-e6e1751c--d4bb26a2-c52c-4106-b5f5-124547e11859.lovable.app-1784176439112.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9020bb4c-4fbb-4a1f-952c-73595881f781/id-preview-e6e1751c--d4bb26a2-c52c-4106-b5f5-124547e11859.lovable.app-1784176439112.png" },
+      { name: "twitter:site", content: "@digitalplatform" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600&display=swap" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": ORG_ID,
+              name: "Digital Platform",
+              url: SITE_URL,
+              foundingDate: "2020",
+              description:
+                "Trusted marketplace for premium digital subscriptions, AI tools, software licenses and gift cards.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": WEBSITE_ID,
+              url: SITE_URL,
+              name: "Digital Platform",
+              publisher: { "@id": ORG_ID },
+              inLanguage: "en",
+            },
+          ],
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,

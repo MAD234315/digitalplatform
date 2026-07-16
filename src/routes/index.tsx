@@ -6,8 +6,9 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
+import { OG_IMAGE, SITE_URL } from "@/lib/site-config";
 
-const SITE = "https://digitalplatform13.lovable.app";
+const URL = SITE_URL + "/";
 const TITLE = "Digital Platform — Premium Digital Subscriptions & AI Tools";
 const DESC = "Trusted digital marketplace since 2020. 200+ premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans.";
 
@@ -18,12 +19,18 @@ export const Route = createFileRoute("/")({
       { name: "description", content: DESC },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESC },
-      { property: "og:url", content: SITE + "/" },
+      { property: "og:url", content: URL },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Digital Platform — premium digital marketplace" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESC },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:image:alt", content: "Digital Platform — premium digital marketplace" },
     ],
-    links: [{ rel: "canonical", href: SITE + "/" }],
+    links: [{ rel: "canonical", href: URL }],
   }),
   component: Home,
 });
