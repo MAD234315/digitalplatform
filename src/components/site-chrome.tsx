@@ -1,41 +1,132 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 const WA_NUMBER = "919652191369";
 const WA_URL = `https://wa.me/${WA_NUMBER}`;
 const EMAIL = "Productcreator11@zohomail.in";
 
-export function SiteNav({ invert = false }: { invert?: boolean }) {
+const LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/products", label: "Products" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
+] as const;
+
+export function SiteNav() {
   const { location } = useRouterState();
-  const links = [
-    { to: "/", label: "Home" },
-    { to: "/products", label: "Products" },
-    { to: "/about", label: "About" },
-    { to: "/contact", label: "Contact" },
-  ] as const;
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => { setOpen(false); }, [location.pathname]);
 
   return (
-    <header className={`absolute top-0 inset-x-0 z-30 ${invert ? "text-ink" : "text-foreground"}`}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-amber font-display text-xl text-amber-foreground">D</span>
-          <span className="leading-tight">
-            <span className="block font-display text-lg">Digital Platform</span>
-            <span className="block text-[10px] uppercase tracking-[0.22em] opacity-60">Since 2020</span>
+    <header
+      className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
+        scrolled ? "backdrop-blur-md bg-background/70 border-b border-border" : "bg-transparent"
+      }`}
+    >
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 h-16 sm:h-20 flex items-center justify-between gap-4">
+        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="Digital Platform home">
+          <span
+            aria-hidden
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md font-display text-xl"
+            style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
+          >
+            D
+          </span>
+          <span className="leading-tight min-w-0">
+            <span className="block truncate font-display text-lg">Digital Platform</span>
+            <span className="block text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Since 2020</span>
           </span>
         </Link>
-        <nav className="hidden md:flex items-center gap-9 text-sm">
-          {links.map((l) => {
+
+        <nav aria-label="Primary" className="hidden md:flex items-center gap-8 text-sm">
+          {LINKS.map((l) => {
             const active = location.pathname === l.to;
             return (
-              <Link key={l.to} to={l.to} className={`transition ${active ? "opacity-100" : "opacity-70 hover:opacity-100"}`}>
+              <Link
+                key={l.to}
+                to={l.to}
+                aria-current={active ? "page" : undefined}
+                className={`relative py-2 transition ${active ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
                 {l.label}
+                <span
+                  aria-hidden
+                  className={`absolute left-0 right-0 -bottom-0.5 h-px transition-transform origin-left ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
+                  style={{ backgroundColor: "var(--amber)" }}
+                />
               </Link>
             );
           })}
         </nav>
-        <a href={WA_URL} target="_blank" rel="noreferrer" className="inline-flex items-center rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground hover:brightness-105 transition">
-          Get in touch
-        </a>
+
+        <div className="flex items-center gap-2">
+          <a
+            href={WA_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:inline-flex items-center min-h-11 rounded-full px-5 text-sm font-medium transition hover:brightness-110 shadow-gold"
+            style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
+          >
+            Get in touch
+          </a>
+          <button
+            type="button"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              {open ? <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /> : <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        id="mobile-nav"
+        hidden={!open}
+        className="md:hidden border-t border-border bg-background/95 backdrop-blur"
+      >
+        <nav aria-label="Mobile" className="mx-auto max-w-7xl px-5 py-3 flex flex-col">
+          {LINKS.map((l) => {
+            const active = location.pathname === l.to;
+            return (
+              <Link
+                key={l.to}
+                to={l.to}
+                aria-current={active ? "page" : undefined}
+                className={`min-h-12 flex items-center border-b border-border/60 text-base ${
+                  active ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
+          <a
+            href={WA_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex items-center justify-center min-h-12 rounded-full px-5 text-sm font-medium"
+            style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
+          >
+            Get in touch
+          </a>
+        </nav>
       </div>
     </header>
   );
@@ -44,10 +135,16 @@ export function SiteNav({ invert = false }: { invert?: boolean }) {
 export function SiteFooter() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-10 md:grid-cols-4">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-14 grid gap-10 sm:grid-cols-2 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-amber font-display text-lg text-amber-foreground">D</span>
+            <span
+              aria-hidden
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md font-display text-lg"
+              style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
+            >
+              D
+            </span>
             <span className="font-display text-xl">Digital Platform</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
@@ -55,23 +152,23 @@ export function SiteFooter() {
           </p>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-[0.22em] opacity-60">Explore</div>
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Explore</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><Link to="/products">Products</Link></li>
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/products" className="hover:text-amber">Products</Link></li>
+            <li><Link to="/about" className="hover:text-amber">About</Link></li>
+            <li><Link to="/contact" className="hover:text-amber">Contact</Link></li>
           </ul>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-[0.22em] opacity-60">Reach us</div>
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Reach us</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={WA_URL} target="_blank" rel="noreferrer">WhatsApp →</a></li>
-            <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+            <li><a href={WA_URL} target="_blank" rel="noreferrer" className="hover:text-amber">WhatsApp →</a></li>
+            <li><a href={`mailto:${EMAIL}`} className="hover:text-amber break-all">{EMAIL}</a></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} Digital Platform. Trusted since 2020.</span>
           <span>Premium digital solutions. Genuine sources.</span>
         </div>

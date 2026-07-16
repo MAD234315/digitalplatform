@@ -39,45 +39,48 @@
 
 /* ============= DARK SITE THEME (home, about, contact) ============= */
 :root {
-  --radius: 0.75rem;
-  --font-display: "Fraunces", "Instrument Serif", ui-serif, Georgia, serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --radius: 0.5rem;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-body: "Work Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --background: oklch(0.13 0.02 260);
-  --foreground: oklch(0.96 0.01 90);
+  /* Noir & Gold */
+  --background: oklch(0.14 0 0);        /* #0d0d0d */
+  --foreground: oklch(0.97 0.005 90);
 
-  --card: oklch(0.17 0.02 260);
-  --card-foreground: oklch(0.96 0.01 90);
+  --card: oklch(0.18 0 0);              /* #1a1a1a */
+  --card-foreground: oklch(0.97 0.005 90);
 
-  --muted: oklch(0.22 0.02 260);
-  --muted-foreground: oklch(0.72 0.02 90);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.74 0.01 90);
 
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.78 0.15 70);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.80 0.14 82);          /* gold ring for focus */
 
-  --primary: oklch(0.96 0.01 90);
-  --primary-foreground: oklch(0.13 0.02 260);
+  --primary: oklch(0.80 0.14 82);       /* #c9a84c gold */
+  --primary-foreground: oklch(0.14 0 0);
 
-  --accent: oklch(0.78 0.15 70);
-  --accent-foreground: oklch(0.15 0.02 260);
+  --accent: oklch(0.90 0.11 88);        /* #f0d78c highlight */
+  --accent-foreground: oklch(0.14 0 0);
 
-  --amber: oklch(0.82 0.16 70);
-  --amber-foreground: oklch(0.15 0.02 260);
+  --amber: oklch(0.80 0.14 82);
+  --amber-foreground: oklch(0.14 0 0);
 
   --whatsapp: oklch(0.72 0.17 148);
   --whatsapp-foreground: oklch(0.99 0 0);
 
-  --ink: oklch(0.13 0.02 260);
+  --ink: oklch(0.14 0 0);
   --cream: oklch(0.97 0.02 90);
   --danger: oklch(0.68 0.19 25);
 
-  --gradient-hero: radial-gradient(1100px 500px at 15% 0%, oklch(0.35 0.13 30 / 0.35), transparent 60%),
-                   radial-gradient(900px 500px at 90% 15%, oklch(0.30 0.14 280 / 0.30), transparent 60%),
-                   linear-gradient(180deg, oklch(0.13 0.02 260), oklch(0.11 0.02 260));
-  --gradient-headline: linear-gradient(180deg, oklch(0.90 0.16 75), oklch(0.72 0.19 45));
-  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.4), 0 20px 40px -20px oklch(0 0 0 / 0.5);
+  --gradient-hero: radial-gradient(900px 500px at 50% -10%, oklch(0.80 0.14 82 / 0.14), transparent 60%),
+                   radial-gradient(700px 400px at 85% 20%, oklch(0.80 0.14 82 / 0.08), transparent 65%),
+                   linear-gradient(180deg, oklch(0.14 0 0), oklch(0.12 0 0));
+  --gradient-headline: linear-gradient(180deg, oklch(0.92 0.12 86), oklch(0.78 0.15 78));
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.5), 0 20px 40px -20px oklch(0 0 0 / 0.6);
+  --shadow-gold: 0 0 0 1px oklch(0.80 0.14 82 / 0.25), 0 10px 40px -10px oklch(0.80 0.14 82 / 0.35);
 }
+
 
 /* ============= LIGHT PAPER THEME (products page only) ============= */
 .theme-paper {
@@ -101,22 +104,41 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { color-scheme: dark; }
+  html { color-scheme: dark; scroll-behavior: smooth; }
   .theme-paper { color-scheme: light; }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
-    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
     font-weight: 400;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.015em;
     line-height: 1.02;
   }
   em { font-style: italic; }
+
+  /* Accessible focus for keyboard users only */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection { background: oklch(0.80 0.14 82 / 0.30); color: var(--color-foreground); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @utility bg-hero { background: var(--gradient-hero); }
@@ -127,7 +149,13 @@
   color: transparent;
 }
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
+@utility shadow-gold { box-shadow: var(--shadow-gold); }
+
+/* subtle rise-in on scroll */
+@keyframes dp-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@utility animate-rise { animation: dp-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
 /* infinite marquee */
 @keyframes dp-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @utility animate-marquee { animation: dp-marquee 40s linear infinite; }
+
