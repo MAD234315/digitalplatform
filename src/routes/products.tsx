@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-chrome";
 import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
 import { TiltCard } from "@/components/tilt-card";
@@ -10,6 +10,8 @@ import { ProductCard } from "@/components/products/product-card";
 import { ProductsHero } from "@/components/products/products-hero";
 import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
+import { useProductsFilter } from "@/components/products/use-products-filter";
+
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
@@ -150,29 +152,11 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
-  const [active, setActive] = useState<string>("All");
-  const [q, setQ] = useState("");
-  // Defer the search text so keystrokes stay snappy while the (potentially
-  // large) filter pass runs at a lower priority.
-  const deferredQ = useDeferredValue(q);
+  const { active, setActive, q, setQ, filtered, categoryCounts } = useProductsFilter(
+    data.products,
+    data.categories,
+  );
   const { items: recent, track, clear } = useRecentlyViewed();
-
-  // Precompute a category → count map so the filter bar doesn't re-scan
-  // `data.categories` for each chip on every keystroke.
-  const categoryCounts = useMemo(() => {
-    const m = new Map<string, number>();
-    for (const c of data.categories) m.set(c.name, c.count);
-    return m;
-  }, [data.categories]);
-
-  const filtered = useMemo(() => {
-    const needle = deferredQ.trim().toLowerCase();
-    return data.products.filter((p) => {
-      if (active !== "All" && p.category !== active) return false;
-      if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
-      return true;
-    });
-  }, [data.products, active, deferredQ]);
 
   // Only surface recents that still exist in the live catalogue, and skip
   // whatever is being filtered — jumping to a hidden card would confuse users.
@@ -182,6 +166,7 @@ function Products() {
       .map((r) => ({ recent: r, product: byId.get(r.id) }))
       .filter((x): x is { recent: RecentItem; product: SheetProduct } => Boolean(x.product));
   }, [recent, data.products]);
+
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
