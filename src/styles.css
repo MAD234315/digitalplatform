@@ -105,7 +105,14 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { color-scheme: dark; scroll-behavior: smooth; }
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: clip;
+  }
   html.light { color-scheme: light; }
 
 
@@ -121,7 +128,16 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: clip;
+    overscroll-behavior-y: none;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
+
+  a, button, [role="button"], input, select, textarea, label {
+    -webkit-tap-highlight-color: transparent;
+  }
+  img, svg, video, canvas { max-width: 100%; height: auto; }
   p { text-wrap: pretty; }
   p + p { margin-top: 0.75em; }
   small, .text-xs { letter-spacing: 0.01em; }
