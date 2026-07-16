@@ -75,6 +75,7 @@ function LiveStatusCard({
   // the client in the visitor's local zone, so doing this at render time
   // hydration-mismatches. Empty string on the server keeps markup identical.
   const [updatedLabel, setUpdatedLabel] = useState("");
+  const [agoLabel, setAgoLabel] = useState("");
   useEffect(() => {
     setUpdatedLabel(
       new Date(updatedAt).toLocaleString(undefined, {
@@ -86,6 +87,18 @@ function LiveStatusCard({
         second: "2-digit",
       }),
     );
+    const format = () => {
+      const diff = Math.max(0, Math.floor((Date.now() - updatedAt) / 1000));
+      if (diff < 60) return `${diff}s ago`;
+      const m = Math.floor(diff / 60);
+      const s = diff % 60;
+      if (m < 60) return `${m}m ${s}s ago`;
+      const h = Math.floor(m / 60);
+      return `${h}h ${m % 60}m ago`;
+    };
+    setAgoLabel(format());
+    const id = window.setInterval(() => setAgoLabel(format()), 1000);
+    return () => window.clearInterval(id);
   }, [updatedAt]);
 
   return (
@@ -106,7 +119,7 @@ function LiveStatusCard({
         Synced with stock sheet
       </div>
       <div className="mt-3 text-xs text-muted-foreground min-h-4" suppressHydrationWarning>
-        {updatedLabel ? `Last update: ${updatedLabel}` : "\u00a0"}
+        {updatedLabel ? `Last update: ${updatedLabel} · ${agoLabel}` : "\u00a0"}
       </div>
       <div className="mt-4 flex items-baseline gap-2">
         <div className={`font-display text-4xl ${pulseCls}`}>{productCount}</div>
