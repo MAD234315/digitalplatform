@@ -84,7 +84,7 @@ export function TiltCard({ children, className = "", max = 6, style }: TiltCardP
       onPointerMove={onMove}
       onPointerLeave={reset}
       onPointerCancel={reset}
-      className={className}
+      className={`block w-full ${className}`}
       style={{
         transition: "transform 350ms cubic-bezier(0.2,0.7,0.2,1)",
         transformStyle: "preserve-3d",
