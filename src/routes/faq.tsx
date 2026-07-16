@@ -7,6 +7,7 @@ import { FaqItem } from "@/components/faq/FaqItem";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { FilterBar } from "@/components/layout/FilterBar";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 import { buildRouteHead } from "@/lib/seo";
 import { Reveal } from "@/components/reveal";
