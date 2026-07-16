@@ -43,8 +43,8 @@ export function HeroSection() {
         </p>
 
         <div className="animate-rise delay-3 mt-10 flex flex-col sm:flex-row justify-center gap-3">
-          <CtaRouterLink to="/products">Enter the Marketplace</CtaRouterLink>
-          <CtaRouterLink to="/contact" variant="outline">Institutional Access</CtaRouterLink>
+          <CtaRouterLink to="/products">ENTER CATALOGUE</CtaRouterLink>
+          <CtaRouterLink to="/contact" variant="outline">CONTACT US</CtaRouterLink>
         </div>
 
         <div className="animate-rise delay-4">
