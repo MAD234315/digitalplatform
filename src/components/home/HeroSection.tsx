@@ -19,7 +19,7 @@ export function HeroSection() {
 
         <h1
           id="hero-heading"
-          className="animate-rise mt-8 font-display text-balance text-[44px] leading-[1.02] sm:text-6xl md:text-7xl lg:text-8xl"
+          className="animate-rise delay-1 mt-8 font-display text-balance text-[44px] leading-[1.02] sm:text-6xl md:text-7xl lg:text-8xl"
         >
           Premium digital products
           <br className="hidden sm:block" />
@@ -29,18 +29,21 @@ export function HeroSection() {
           <em className="italic text-headline">at prices that make sense.</em>
         </h1>
 
-        <p className="animate-rise mx-auto mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+        <p className="animate-rise delay-2 mx-auto mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
           Access 200+ premium subscriptions, AI tools, software licenses, gift cards and productivity
           solutions — all in one place. Catalogue refreshed daily, prices kept honest, support that
           actually replies.
         </p>
 
-        <div className="animate-rise mt-10 flex flex-col sm:flex-row justify-center gap-3">
+        <div className="animate-rise delay-3 mt-10 flex flex-col sm:flex-row justify-center gap-3">
           <CtaRouterLink to="/products">Enter the Marketplace</CtaRouterLink>
           <CtaRouterLink to="/contact" variant="outline">Institutional Access</CtaRouterLink>
         </div>
 
-        <StatsRail />
+        <div className="animate-rise delay-4">
+          <StatsRail />
+        </div>
+
       </div>
     </section>
   );
