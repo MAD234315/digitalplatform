@@ -1,4 +1,4 @@
-import { useRef, type ReactNode, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 type TiltCardProps = {
   children: ReactNode;
@@ -14,24 +14,53 @@ type TiltCardProps = {
  * transforms, and full reset on leave. Skipped when the user prefers reduced
  * motion or the device is coarse-pointer (touch), where hover-tilt makes no
  * sense and would fight scroll gestures.
+ *
+ * Perf notes:
+ *  - `isEnabled` is evaluated once on mount (media queries don't change often)
+ *    instead of on every pointermove.
+ *  - When disabled, no pointer listeners are attached — the card renders as a
+ *    plain div, so touch scrolling and reduced-motion users pay nothing.
+ *  - `will-change: transform` is only set while the pointer is actually over
+ *    the card, so we don't promote N cards to compositor layers at rest.
  */
 export function TiltCard({ children, className = "", max = 6, style }: TiltCardProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const raf = useRef<number | null>(null);
+  const [enabled, setEnabled] = useState(false);
 
-  const isEnabled = () => {
-    if (typeof window === "undefined") return false;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-    if (window.matchMedia("(hover: none)").matches) return false;
-    return true;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarse = window.matchMedia("(hover: none)");
+    const compute = () => setEnabled(!reduce.matches && !coarse.matches);
+    compute();
+    reduce.addEventListener("change", compute);
+    coarse.addEventListener("change", compute);
+    return () => {
+      reduce.removeEventListener("change", compute);
+      coarse.removeEventListener("change", compute);
+    };
+  }, []);
+
+  if (!enabled) {
+    // No listeners, no willChange, no rAF — cheapest possible fallback.
+    return (
+      <div ref={ref} className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
+
+  const onEnter = () => {
+    const el = ref.current;
+    if (el) el.style.willChange = "transform";
   };
 
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isEnabled()) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 .. 0.5
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
     if (raf.current) cancelAnimationFrame(raf.current);
     raf.current = requestAnimationFrame(() => {
@@ -44,18 +73,19 @@ export function TiltCard({ children, className = "", max = 6, style }: TiltCardP
     if (!el) return;
     if (raf.current) cancelAnimationFrame(raf.current);
     el.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translate3d(0,0,0)";
+    el.style.willChange = "";
   };
 
   return (
     <div
       ref={ref}
+      onPointerEnter={onEnter}
       onPointerMove={onMove}
       onPointerLeave={reset}
       onPointerCancel={reset}
       className={className}
       style={{
         transition: "transform 350ms cubic-bezier(0.2,0.7,0.2,1)",
-        willChange: "transform",
         transformStyle: "preserve-3d",
         ...style,
       }}
