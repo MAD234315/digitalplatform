@@ -421,6 +421,20 @@ function WaGlyph() {
 }
 
 // Deterministic accent gradient per product name for visual variety
+/**
+ * Deterministic anime-style thumbnail per product name.
+ * Rotates across a few DiceBear anime-leaning styles so the grid looks varied
+ * while remaining stable across reloads (same product → same image).
+ */
+function animeImageFor(name: string): string {
+  const styles = ["lorelei", "adventurer", "big-smile", "personas", "notionists", "micah"];
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  const style = styles[h % styles.length];
+  const seed = encodeURIComponent(name);
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&radius=20&backgroundType=gradientLinear`;
+}
+
 function gradientFor(name: string): string {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
