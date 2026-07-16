@@ -1,13 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
 
+const SITE = "https://digitalplatform13.lovable.app";
+const URL = SITE + "/contact";
+const TITLE = "Contact Digital Platform — Support & Sales";
+const DESC = "Reach us on WhatsApp for live pricing, stock checks and support. Typical reply within minutes, every day 10 AM – 10 PM IST.";
+
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Digital Platform" },
-      { name: "description", content: "Reach us on WhatsApp for live pricing and stock updates. Typical reply within minutes." },
-      { property: "og:title", content: "Contact — Digital Platform" },
-      { property: "og:description", content: "WhatsApp us for live pricing and stock updates." },
+      { title: TITLE },
+      { name: "description", content: DESC },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESC },
+      { property: "og:url", content: URL },
+      { property: "og:type", content: "website" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESC },
+    ],
+    links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          url: URL,
+          name: TITLE,
+          description: DESC,
+          publisher: { "@id": SITE + "/#organization" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+            { "@type": "ListItem", position: 2, name: "Contact", item: URL },
+          ],
+        }),
+      },
     ],
   }),
   component: Contact,
