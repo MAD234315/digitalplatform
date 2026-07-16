@@ -112,7 +112,7 @@ export const ProductCard = memo(function ProductCard({
             className="inline-block h-1.5 w-1.5 rounded-full"
             style={{ backgroundColor: "var(--whatsapp)" }}
           />
-          <span>Last updated {updatedLabel}</span>
+          <span suppressHydrationWarning>Last updated {updatedLabel}</span>
         </div>
 
         <a
