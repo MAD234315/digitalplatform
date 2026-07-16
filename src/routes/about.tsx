@@ -50,9 +50,9 @@ function About() {
               Make premium <em className="text-headline">accessible.</em>
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">
-              Help creators, students, professionals, developers and businesses access the digital tools
-              they need — without paying unnecessary prices. We believe premium software should be accessible,
-              affordable, and supported by excellent customer service.
+              Help normal peoples, creators, students, professionals, developers and businesses access
+              the digital tools they need — without paying unnecessary prices. We believe premium software
+              should be accessible, affordable, and supported by excellent customer service.
             </p>
             <blockquote className="mt-10 border-l-2 border-amber pl-6 font-display text-2xl leading-snug">
               &ldquo;Premium digital solutions. Genuine sources. Trusted service.&rdquo;
