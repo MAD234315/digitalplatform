@@ -93,8 +93,10 @@ export const ProductCard = memo(function ProductCard({
         <dl className="mt-4 space-y-1.5 text-sm">
           {p.plan && <Row label="Plan" value={p.plan} />}
           {p.validity && <Row label="Validity" value={p.validity} />}
+          <Row label="Supports" value={p.supports || "—"} />
           {p.warranty && <Row label="Warranty" value={p.warranty} />}
         </dl>
+
 
 
         <p className="mt-3 text-[11px] text-muted-foreground">
