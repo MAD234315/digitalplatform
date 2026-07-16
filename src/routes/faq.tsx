@@ -128,7 +128,7 @@ function FAQPage() {
         </div>
       </section>
 
-      <WhatsAppFab prefill={waPrefill} />
+      
     </PageShell>
   );
 }
