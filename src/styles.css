@@ -82,7 +82,8 @@
 }
 
 
-/* ============= LIGHT PAPER THEME (products page only) ============= */
+/* ============= LIGHT THEME (user toggle: <html class="light">) ============= */
+:root.light,
 .theme-paper {
   --background: oklch(0.975 0.015 85);
   --foreground: oklch(0.20 0.03 40);
@@ -101,6 +102,7 @@
   --amber-foreground: oklch(0.20 0.03 40);
   --gradient-hero: linear-gradient(180deg, oklch(0.97 0.02 85), oklch(0.94 0.03 80));
 }
+
 
 @layer base {
   * { border-color: var(--color-border); }
