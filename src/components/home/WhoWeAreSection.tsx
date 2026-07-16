@@ -34,7 +34,7 @@ export function WhoWeAreSection() {
             <div className="mt-10 rounded-sm border border-border bg-card/60 p-6 sm:p-8 transition-colors duration-300 hover:border-amber/30">
               <Eyebrow>Our mission</Eyebrow>
               <p className="mt-3 font-display text-2xl sm:text-3xl leading-snug">
-                Help normal peoples, creators, students, professionals, developers and businesses access
+                Help normal people, creators, students, professionals, developers and businesses access
                 the digital tools they need — without paying unnecessary prices.
               </p>
               <Link
