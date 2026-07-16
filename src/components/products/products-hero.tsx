@@ -1,4 +1,6 @@
+import { useId, useState } from "react";
 import { PageHero } from "@/components/layout/PageHero";
+
 
 /**
  * Header block for the /products page. Reuses the shared PageHero for the
@@ -122,30 +124,53 @@ function StatTile({
   valueStyle?: React.CSSProperties;
   children: React.ReactNode;
 }) {
+  const tooltipId = useId();
+  const [open, setOpen] = useState(false);
+
+  // Dismiss on Escape per WAI-ARIA APG tooltip pattern.
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape" && open) {
+      e.stopPropagation();
+      setOpen(false);
+    }
+  };
+
   return (
-    <div className="group relative bg-card px-3 py-2">
+    <div className="relative bg-card px-3 py-2" onKeyDown={onKeyDown}>
       <dt className="flex items-center gap-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
         {label}
-        <span
-          tabIndex={0}
-          aria-label={`${label}: ${tooltip}`}
-          className="inline-flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-border text-[8px] font-semibold leading-none text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-amber"
+        <button
+          type="button"
+          aria-label={`About ${label}`}
+          aria-describedby={tooltipId}
+          aria-expanded={open}
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex h-5 w-5 min-h-5 min-w-5 cursor-help items-center justify-center rounded-full border border-border text-[9px] font-semibold leading-none text-muted-foreground outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-1 focus-visible:ring-offset-card"
         >
-          i
-        </span>
+          <span aria-hidden>i</span>
+        </button>
       </dt>
       <dd className="mt-0.5 font-display text-xl" style={valueStyle}>
         {children}
       </dd>
       <div
+        id={tooltipId}
         role="tooltip"
-        className="pointer-events-none absolute left-1/2 top-full z-20 mt-1 w-52 -translate-x-1/2 rounded-md border border-border bg-card px-2.5 py-1.5 text-[11px] font-normal normal-case tracking-normal text-foreground opacity-0 shadow-soft transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+        aria-hidden={!open}
+        className={`pointer-events-none absolute left-1/2 top-full z-20 mt-1 w-52 -translate-x-1/2 rounded-md border border-border bg-card px-2.5 py-1.5 text-[11px] font-normal normal-case tracking-normal text-foreground shadow-soft transition-opacity duration-150 ${
+          open ? "opacity-100" : "opacity-0"
+        }`}
       >
         {tooltip}
       </div>
     </div>
   );
 }
+
 
 
 
