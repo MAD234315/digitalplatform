@@ -2,7 +2,13 @@ import { CtaRouterLink, LiveBadge } from "@/components/ui-primitives";
 import { CountUp } from "@/components/count-up";
 import { STATS } from "./data";
 
+/**
+ * Home page hero: kicker badge, headline, subhead, CTA pair, and the stats
+ * rail at the bottom. Entry animations use `animate-rise` + staggered
+ * `delay-N` utilities defined in `styles.css`.
+ */
 export function HeroSection() {
+
   return (
     <section aria-labelledby="hero-heading" className="relative overflow-hidden bg-hero">
       <div
@@ -50,7 +56,13 @@ export function HeroSection() {
   );
 }
 
+/**
+ * Four-tile stats rail. Each `CountUp` animates from 0 → target when its
+ * tile scrolls into view; string-only values ("Daily", "24/7") pass
+ * through verbatim.
+ */
 function StatsRail() {
+
   return (
     <dl className="mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-sm border border-border bg-border overflow-hidden max-w-4xl mx-auto">
       {STATS.map((s) => (

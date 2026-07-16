@@ -1,4 +1,13 @@
+/**
+ * FAQ content and taxonomy for the /faq route.
+ *
+ * `FAQS` is the flat list rendered on the page; `CATEGORIES` drives the
+ * filter tab bar (with "All" pinned first). Both are also consumed by the
+ * FAQPage JSON-LD block in `src/routes/faq.tsx` so structured data stays in
+ * sync with the rendered content.
+ */
 export type Category =
+
   | "General"
   | "Orders & Delivery"
   | "Products"

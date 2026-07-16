@@ -1,6 +1,14 @@
 import type { QA } from "./data";
 
+/**
+ * Single collapsible FAQ entry.
+ *
+ * Uses a native `<details>` element for zero-JS open/close and native
+ * keyboard support (Enter/Space toggle on the summary). The `+` glyph
+ * rotates 45° on open via a CSS `group-open:` variant.
+ */
 export function FaqItem({ f }: { f: QA }) {
+
   return (
     <details className="group rounded-2xl border border-border bg-card/60 transition hover:border-foreground/20">
       <summary className="flex cursor-pointer list-none items-start justify-between gap-4 p-5">

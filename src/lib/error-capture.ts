@@ -1,5 +1,14 @@
-// Captures the original Error out-of-band so server.ts can recover the stack
-// when h3 has already swallowed the throw into a generic 500 Response.
+/**
+ * Out-of-band error capture for the SSR entry.
+ *
+ * When TanStack Start / h3 catches an unhandled throw during SSR, it turns
+ * the error into a plain 500 Response and the original stack is lost. This
+ * module attaches global `error` and `unhandledrejection` listeners on the
+ * worker's `globalThis`, records the most recent error with a short TTL,
+ * and hands it back to `server.ts` via {@link consumeLastCapturedError}
+ * so we can log and report the real cause.
+ */
+
 
 let lastCapturedError: { error: unknown; at: number } | undefined;
 const TTL_MS = 5_000;

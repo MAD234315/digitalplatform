@@ -1,4 +1,9 @@
+/**
+ * Header block for the /products page. Shows the section headline plus a
+ * live-status card with the last sync timestamp and total product count.
+ */
 export function ProductsHero({ productCount, updatedAt }: { productCount: number; updatedAt: number }) {
+
   return (
     <header className="relative border-b border-border">
       <div className="absolute inset-0 bg-hero" aria-hidden />

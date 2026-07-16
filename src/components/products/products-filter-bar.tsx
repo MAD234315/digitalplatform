@@ -1,4 +1,13 @@
+/**
+ * Sticky filter bar for the /products page.
+ *
+ * Renders category chips (with counts) plus a debounced search input. The
+ * bar is a pure controlled component — state lives in the parent via
+ * `useProductsFilter` so URL sync or persistence can be added there
+ * without touching this file.
+ */
 export function ProductsFilterBar({
+
   categories,
   totalCount,
   categoryCounts,
