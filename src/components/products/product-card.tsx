@@ -11,7 +11,7 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge, Badge } from "./badge";
 import { WaGlyph } from "./wa-glyph";
-import { animeImageFor, formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
+import { animeImageFor, formatRelative, glowFor, gradientFor, initialsFor } from "@/lib/product-visuals";
 
 /** Injects the current dataUpdatedAt into cards without breaking memoisation. */
 export const UpdatedAtContext = createContext<number>(0);
