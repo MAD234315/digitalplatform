@@ -8,10 +8,12 @@ export function ProductsHero({
   productCount,
   inStockCount,
   updatedAt,
+  isRefreshing = false,
 }: {
   productCount: number;
   inStockCount: number;
   updatedAt: number;
+  isRefreshing?: boolean;
 }) {
   return (
     <header className="relative border-b border-border">
@@ -21,11 +23,12 @@ export function ProductsHero({
         title="Every product,"
         titleAccent="live from our shelf."
         lede={<>Updated in real-time from our internal stock sheet. Prices depend on stock availability and demand — DM us for today&apos;s rate.</>}
-        aside={<LiveStatusCard productCount={productCount} inStockCount={inStockCount} updatedAt={updatedAt} />}
+        aside={<LiveStatusCard productCount={productCount} inStockCount={inStockCount} updatedAt={updatedAt} isRefreshing={isRefreshing} />}
       />
     </header>
   );
 }
+
 
 function LiveStatusCard({
   productCount,
