@@ -1,0 +1,17 @@
+# Digital Platform
+
+> Trusted marketplace for premium digital subscriptions, AI tools, software licenses and gift cards — serving customers since 2020.
+
+Digital Platform is a small-team digital reseller based in India. We source premium subscriptions and software licenses from genuine channels and pass the savings to creators, students, professionals, and businesses. Live stock and pricing are updated daily; support is on WhatsApp 10 AM – 10 PM IST.
+
+## Pages
+
+- [Home](/): Overview of the marketplace, featured categories, and social proof.
+- [Products](/products): Live catalogue of every subscription, software license, AI tool, and gift card we currently stock. Prices depend on live stock and demand — DM us for today's rate.
+- [About](/about): Our story, mission, and the motto — premium digital solutions, genuine sources, trusted service.
+- [FAQ](/faq): Answers to the most common questions about orders, delivery, warranty, refunds, and support.
+- [Contact](/contact): WhatsApp, email, support hours, and what to include in your message for the fastest reply.
+
+## Optional
+
+- [Sitemap](/sitemap.xml): Machine-readable URL list for crawlers.

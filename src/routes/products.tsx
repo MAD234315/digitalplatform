@@ -200,6 +200,7 @@ function Products() {
           />
         )}
 
+        <h2 className="sr-only">Live product catalogue</h2>
         {filtered.length === 0 ? (
           <div className="py-24 text-center text-muted-foreground">
             No products match this filter. Try another category.

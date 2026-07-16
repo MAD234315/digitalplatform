@@ -7,7 +7,7 @@ import { buildRouteHead } from "@/lib/seo";
 
 const TITLE = "About Digital Platform — Our Story & Promise";
 const DESC =
-  "A small team, a big shelf. Digital Platform is a trusted marketplace for premium digital subscriptions, AI tools and software licenses — serving customers since 2020.";
+  "Digital Platform is a trusted marketplace for premium digital subscriptions, AI tools and software licenses — serving customers since 2020.";
 
 export const Route = createFileRoute("/about")({
   head: () =>

@@ -11,7 +11,7 @@ import { OG_IMAGE, SITE_URL } from "@/lib/site-config";
 
 const URL = SITE_URL + "/";
 const TITLE = "Digital Platform — Premium Digital Subscriptions & AI Tools";
-const DESC = "Trusted digital marketplace since 2020. 200+ premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans.";
+const DESC = "Trusted digital marketplace since 2020. 200+ premium subscriptions, AI tools, software licenses & gift cards — updated daily, priced honestly.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
