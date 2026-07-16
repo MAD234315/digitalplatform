@@ -218,7 +218,7 @@ export function ProductsFilterBar({
               );
             })}
           </div>
-          <div ref={wrapRef} className="relative w-full lg:w-72 lg:shrink-0">
+          <div ref={wrapRef} className="relative w-full">
             <label htmlFor="products-search" className="sr-only">Search products</label>
             <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
