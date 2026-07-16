@@ -1,124 +1,238 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SiteNav, SiteFooter, WhatsAppIcon } from "@/components/site-chrome";
-import chatgpt from "@/assets/p-chatgpt.jpg";
-import netflix from "@/assets/p-netflix.jpg";
-import canva from "@/assets/p-canva.jpg";
-import adobe from "@/assets/p-adobe.jpg";
-import spotify from "@/assets/p-spotify.jpg";
-import youtube from "@/assets/p-youtube.jpg";
-import grammarly from "@/assets/p-grammarly.jpg";
-import perplexity from "@/assets/p-perplexity.jpg";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
+import { getSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
+
+const productsQueryOptions = () =>
+  queryOptions({
+    queryKey: ["sheet-products"],
+    queryFn: () => getSheetProducts(),
+    staleTime: 60_000,          // consider fresh for 1 min
+    refetchInterval: 60_000,    // live update every minute
+    refetchOnWindowFocus: true,
+  });
 
 export const Route = createFileRoute("/products")({
   head: () => ({
     meta: [
-      { title: "Products — PixelVault" },
-      { name: "description", content: "Genuine premium subscriptions: ChatGPT, Netflix, Canva Pro, Adobe, Spotify and more. Instant delivery, best price." },
+      { title: "Products — Digital Platform" },
+      { name: "description", content: "Live catalogue of premium subscriptions, AI tools, software licenses and gift cards. Updated daily from our stock sheet." },
+      { property: "og:title", content: "Products — Digital Platform" },
+      { property: "og:description", content: "Live catalogue. Updated daily. DM for prices." },
     ],
   }),
-  component: ProductsPage,
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
+  component: Products,
 });
 
-type Product = {
-  name: string;
-  logo: string;
-  logoBg: string;
-  logoColor: string;
-  image: string;
-  originalPrice: string;
-  offerPrice: string;
-  validity: string;
-  delivery: string;
-};
+function Products() {
+  const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions());
+  const [active, setActive] = useState<string>("All");
+  const [q, setQ] = useState("");
 
-const products: Product[] = [
-  { name: "ChatGPT Plus",     logo: "G", logoBg: "#10a37f", logoColor: "#fff", image: chatgpt,    originalPrice: "₹1,999", offerPrice: "₹499",   validity: "1 Month",  delivery: "Instant (5 min)" },
-  { name: "Netflix Premium",  logo: "N", logoBg: "#e50914", logoColor: "#fff", image: netflix,    originalPrice: "₹649",   offerPrice: "₹199",   validity: "1 Month",  delivery: "Instant (5 min)" },
-  { name: "Canva Pro",        logo: "C", logoBg: "#00c4cc", logoColor: "#fff", image: canva,      originalPrice: "₹4,000", offerPrice: "₹299",   validity: "1 Year",   delivery: "Within 1 hour" },
-  { name: "Adobe Creative",   logo: "A", logoBg: "#fa0f00", logoColor: "#fff", image: adobe,      originalPrice: "₹4,731", offerPrice: "₹899",   validity: "1 Month",  delivery: "Within 2 hours" },
-  { name: "Spotify Premium",  logo: "S", logoBg: "#1db954", logoColor: "#fff", image: spotify,    originalPrice: "₹119",   offerPrice: "₹59",    validity: "1 Month",  delivery: "Instant (5 min)" },
-  { name: "YouTube Premium",  logo: "Y", logoBg: "#ff0000", logoColor: "#fff", image: youtube,    originalPrice: "₹149",   offerPrice: "₹69",    validity: "1 Month",  delivery: "Instant (5 min)" },
-  { name: "Grammarly Premium",logo: "g", logoBg: "#15c39a", logoColor: "#fff", image: grammarly,  originalPrice: "₹1,200", offerPrice: "₹349",   validity: "1 Month",  delivery: "Within 1 hour" },
-  { name: "Perplexity Pro",   logo: "P", logoBg: "#20808d", logoColor: "#fff", image: perplexity, originalPrice: "₹1,700", offerPrice: "₹599",   validity: "1 Year",   delivery: "Instant (5 min)" },
-];
+  const filtered = useMemo(() => {
+    return data.products.filter((p) => {
+      if (active !== "All" && p.category !== active) return false;
+      if (q && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(q.toLowerCase())) return false;
+      return true;
+    });
+  }, [data.products, active, q]);
 
-function ProductsPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="relative bg-hero text-primary-foreground">
-        <SiteNav />
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 pt-36 pb-16 lg:pt-40">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-1 text-xs uppercase tracking-[0.18em] text-primary-foreground/80">
-            All plans
-          </span>
-          <h1 className="mt-6 font-display text-5xl sm:text-6xl leading-tight">
-            Explore <em className="text-gold not-italic italic">premium plans</em>.
-          </h1>
-          <p className="mt-4 max-w-2xl text-primary-foreground/75">
-            Genuine subscriptions with instant delivery and personal support. DM us on WhatsApp for the fastest price.
-          </p>
-        </div>
-      </div>
+    <div className="theme-paper min-h-screen bg-background text-foreground">
+      {/* HEADER — light theme */}
+      <header className="relative border-b border-border">
+        <div className="absolute inset-0 bg-hero" aria-hidden />
+        <div className="relative">
+          <PaperNav />
+          <div className="mx-auto max-w-7xl px-6 lg:px-10 pt-36 pb-14">
+            <div className="grid lg:grid-cols-12 gap-8 items-end">
+              <div className="lg:col-span-8">
+                <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">The catalogue</div>
+                <h1 className="mt-4 font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98]">
+                  Every product,
+                  <br />
+                  <em className="italic" style={{ color: "var(--accent)" }}>live from our shelf.</em>
+                </h1>
+                <p className="mt-6 max-w-xl text-muted-foreground">
+                  Updated in real-time from our internal stock sheet. Prices depend on stock availability
+                  and demand — DM us for today&apos;s rate.
+                </p>
+              </div>
+              <div className="lg:col-span-4">
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Live status</div>
+                  <div className="mt-2 flex items-center gap-2 text-sm">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ backgroundColor: "var(--whatsapp)" }} />
+                      <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--whatsapp)" }} />
+                    </span>
+                    Synced with stock sheet
+                  </div>
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    Last update: {new Date(dataUpdatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                  <div className="mt-4 flex items-baseline gap-2">
+                    <div className="font-display text-4xl">{data.products.length}</div>
+                    <div className="text-xs text-muted-foreground">products listed</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((p) => (
-            <ProductCard key={p.name} product={p} />
-          ))}
+            {/* Filter bar */}
+            <div className="mt-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {["All", ...data.categories.map((c) => c.name)].map((name) => {
+                  const isActive = active === name;
+                  const count = name === "All" ? data.products.length : (data.categories.find((c) => c.name === name)?.count ?? 0);
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => setActive(name)}
+                      className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] transition ${
+                        isActive
+                          ? "border-transparent shadow-soft"
+                          : "border-border bg-card hover:bg-muted"
+                      }`}
+                      style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+                    >
+                      {name.toLowerCase()} <span className="opacity-60">· {count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="relative min-w-[240px]">
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search products…"
+                  className="w-full rounded-full border border-border bg-card px-5 py-2.5 text-sm outline-none focus:border-foreground/40"
+                />
+              </div>
+            </div>
+          </div>
         </div>
+      </header>
 
-        <p className="mt-12 text-center text-sm text-muted-foreground">
-          Prices vary by duration and stock — <span className="font-medium text-foreground">contact admin for detailed info.</span>
+      {/* GRID */}
+      <main className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
+        {data.error && (
+          <div className="mb-6 rounded-xl border border-danger/40 p-4 text-sm" style={{ color: "var(--danger)" }}>
+            Couldn&apos;t load the live sheet ({data.error}). Please retry shortly.
+          </div>
+        )}
+
+        {filtered.length === 0 ? (
+          <div className="py-24 text-center text-muted-foreground">
+            No products match this filter. Try another category.
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.map((p) => <ProductCard key={p.id} p={p} />)}
+          </div>
+        )}
+
+        <p className="mt-16 text-center text-xs text-muted-foreground">
+          Prices depend on stock &amp; demand — <span className="font-medium text-foreground">contact admin for detailed info.</span>
         </p>
-      </section>
+      </main>
 
-      <SiteFooter />
+      <div className="theme-paper--reset">
+        <SiteFooter />
+      </div>
     </div>
   );
 }
 
-function ProductCard({ product: p }: { product: Product }) {
-  const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}. Please share details.`);
+function PaperNav() {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-border transition hover:shadow-lift hover:-translate-y-0.5">
-      <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
-        <img
-          src={p.image}
-          alt={p.name}
-          width={800}
-          height={600}
-          loading="lazy"
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-        />
-        <div
-          aria-hidden
-          className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl font-display text-xl shadow-lift ring-1 ring-black/5"
-          style={{ backgroundColor: p.logoBg, color: p.logoColor }}
+    <div className="absolute inset-x-0 top-0 z-30">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-6 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 text-foreground">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg font-display text-xl" style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}>D</span>
+          <span className="leading-tight">
+            <span className="block font-display text-lg">Digital Platform</span>
+            <span className="block text-[10px] uppercase tracking-[0.22em] opacity-60">Live catalogue</span>
+          </span>
+        </Link>
+        <nav className="hidden md:flex items-center gap-9 text-sm">
+          <Link to="/" className="opacity-70 hover:opacity-100">Home</Link>
+          <Link to="/products" className="opacity-100">Products</Link>
+          <Link to="/about" className="opacity-70 hover:opacity-100">About</Link>
+          <Link to="/contact" className="opacity-70 hover:opacity-100">Contact</Link>
+        </nav>
+        <a
+          href={CONTACT.WA_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white transition"
+          style={{ backgroundColor: "var(--whatsapp)" }}
         >
-          {p.logo}
+          <WaGlyph /> Quick DM
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function ProductCard({ p }: { p: SheetProduct }) {
+  const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);
+  const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
+
+  return (
+    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:shadow-soft">
+      {/* image + logo tile */}
+      <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+        <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.5), transparent 70%)" }} />
+        <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
+          {initials}
+        </div>
+        <div className="absolute right-4 top-4 flex gap-1.5">
+          {p.loot && (
+            <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white" style={{ backgroundColor: "var(--accent)" }}>
+              Loot
+            </span>
+          )}
+          <span
+            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${p.inStock ? "text-white" : "bg-black/70 text-white"}`}
+            style={p.inStock ? { backgroundColor: "var(--whatsapp)" } : undefined}
+          >
+            {p.inStock ? "In stock" : "Out"}
+          </span>
+        </div>
+        <div className="absolute bottom-3 left-4 right-4 text-[10px] uppercase tracking-[0.18em] text-white/85">
+          {p.category}
         </div>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="font-display text-2xl text-foreground">{p.name}</h3>
+        <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
+        {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
 
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-sm text-muted-foreground line-through">{p.originalPrice}</span>
-        </div>
+        {p.originalPrice && (
+          <div className="mt-3 text-sm">
+            <span className="text-muted-foreground line-through">{p.originalPrice}</span>
+          </div>
+        )}
 
         <dl className="mt-4 space-y-1.5 text-sm">
-          <Row label="Validity" value={p.validity} />
-          <Row label="Delivery" value={p.delivery} />
+          {p.validity && <Row label="Validity" value={p.validity} />}
+          {p.type && <Row label="Delivery" value={p.type} />}
+          {p.warranty && <Row label="Warranty" value={p.warranty} />}
         </dl>
 
-        <p className="mt-4 text-xs text-muted-foreground">Contact admin for detailed info.</p>
+        <p className="mt-4 text-[11px] text-muted-foreground">Contact admin for detailed info.</p>
 
         <a
-          href={`https://wa.me/919999999999?text=${waMsg}`}
-          className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 py-3 text-sm font-semibold text-whatsapp-foreground shadow-card hover:brightness-105 transition"
+          href={`${CONTACT.WA_URL}?text=${waMsg}`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105"
+          style={{ backgroundColor: "var(--whatsapp)" }}
         >
-          <WhatsAppIcon className="h-4 w-4" />
-          Offer: Quick DM
+          <WaGlyph /> Offer: Quick DM
         </a>
       </div>
     </article>
@@ -127,9 +241,25 @@ function ProductCard({ product: p }: { product: Product }) {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-start justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium text-foreground">{value}</dd>
+      <dd className="text-right font-medium">{value}</dd>
     </div>
   );
+}
+
+function WaGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+      <path d="M20.5 3.5A11 11 0 0 0 3 17l-1 5 5.2-1.3A11 11 0 1 0 20.5 3.5Zm-8.5 18a9 9 0 0 1-4.6-1.3l-.3-.2-3.1.8.8-3-.2-.3A9 9 0 1 1 12 21.5Zm5.2-6.7c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.2-.2.3-.7.9-.9 1-.2.2-.3.2-.6 0-.3-.1-1.2-.4-2.2-1.3-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.3s.9 2.7 1 2.9c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.7.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.1.2-1.3-.1-.1-.2-.2-.5-.3Z" />
+    </svg>
+  );
+}
+
+// Deterministic accent gradient per product name for visual variety
+function gradientFor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  const h2 = (h + 40) % 360;
+  return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${h2} 75% 40%))`;
 }
