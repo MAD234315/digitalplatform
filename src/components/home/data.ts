@@ -2,7 +2,7 @@ export type Stat = { value: string; label: string };
 export type Reason = { n: string; title: string; body: string };
 
 export const STATS: Stat[] = [
-  { value: "200+", label: "Curated Assets" },
+  { value: "9+", label: "Curated Assets" },
   { value: "Daily", label: "Catalogue Refresh" },
   { value: "05yrs+", label: "Trusted Service" },
   { value: "Yes", label: "Human Support" },
