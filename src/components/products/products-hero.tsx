@@ -50,23 +50,6 @@ export function ProductsHero({
 
 
 
-function nextThursday(now = new Date()): Date {
-  const d = new Date(now);
-  d.setHours(0, 0, 0, 0);
-  // 4 = Thursday; advance to the next occurrence, or a week ahead if today is Thu.
-  const daysUntilThu = (4 - d.getDay() + 7) % 7 || 7;
-  d.setDate(d.getDate() + daysUntilThu);
-  return d;
-}
-
-function formatResetIn(target: Date, now = new Date()): string {
-  const ms = target.getTime() - now.getTime();
-  if (ms <= 0) return "today";
-  const days = Math.floor(ms / 86_400_000);
-  if (days >= 1) return `in ${days} day${days === 1 ? "" : "s"}`;
-  const hours = Math.max(1, Math.round(ms / 3_600_000));
-  return `in ${hours} hour${hours === 1 ? "" : "s"}`;
-}
 
 function LiveStatusCard({
   productCount,
