@@ -1,76 +1,44 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
-import { OG_IMAGE, ORG_ID, SITE_URL } from "@/lib/site-config";
+import { CONTACT } from "@/components/site-chrome";
+import { ORG_ID } from "@/lib/site-config";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHero } from "@/components/layout/PageHero";
+import { buildRouteHead } from "@/lib/seo";
 
-const URL = SITE_URL + "/about";
 const TITLE = "About Digital Platform — Our Story & Promise";
-const DESC = "A small team, a big shelf. Digital Platform is a trusted marketplace for premium digital subscriptions, AI tools and software licenses — serving customers since 2020.";
+const DESC =
+  "A small team, a big shelf. Digital Platform is a trusted marketplace for premium digital subscriptions, AI tools and software licenses — serving customers since 2020.";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: TITLE },
-      { name: "description", content: DESC },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESC },
-      { property: "og:url", content: URL },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: OG_IMAGE },
-      { property: "og:image:alt", content: "Digital Platform — about us" },
-      { name: "twitter:title", content: TITLE },
-      { name: "twitter:description", content: DESC },
-      { name: "twitter:image", content: OG_IMAGE },
-    ],
-    links: [{ rel: "canonical", href: URL }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
+  head: () =>
+    buildRouteHead({
+      path: "/about",
+      title: TITLE,
+      description: DESC,
+      imageAlt: "Digital Platform — about us",
+      extraJsonLd: [
+        {
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          url: URL,
+          url: "https://www.digitalplatform.example/about",
           name: TITLE,
           description: DESC,
           publisher: { "@id": ORG_ID },
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
-            { "@type": "ListItem", position: 2, name: "About", item: URL },
-          ],
-        }),
-      },
-    ],
-  }),
+        },
+      ],
+    }),
   component: About,
 });
 
 function About() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <SiteNav />
-      <main id="main">
-      <section className="relative bg-hero">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-40 pb-20 lg:pt-48 lg:pb-28">
-
-          <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground">About us</div>
-          <h1 className="mt-6 font-display text-6xl lg:text-8xl leading-[0.98]">
-            A small team,
-            <br />
-            <em className="text-headline">a big shelf.</em>
-          </h1>
-          <p className="mt-8 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-            Digital Platform is a trusted marketplace for premium digital products and AI tools.
-            Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
-            productivity software, creative tools and digital services at affordable prices.
-          </p>
-        </div>
-      </section>
+    <PageShell>
+      <PageHero
+        eyebrow="About us"
+        title="A small team,"
+        titleAccent="a big shelf."
+        lede="Digital Platform is a trusted marketplace for premium digital products and AI tools. Since 2020, we've helped thousands of customers access high-quality subscriptions, productivity software, creative tools and digital services at affordable prices."
+      />
 
       <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-24 lg:py-32 grid lg:grid-cols-12 gap-12">
@@ -111,9 +79,6 @@ function About() {
           </div>
         </div>
       </section>
-      </main>
-      <SiteFooter />
-
-    </div>
+    </PageShell>
   );
 }

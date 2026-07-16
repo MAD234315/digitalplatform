@@ -1,73 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
-import { OG_IMAGE, ORG_ID, SITE_URL } from "@/lib/site-config";
+import { CONTACT } from "@/components/site-chrome";
+import { ORG_ID, SITE_URL } from "@/lib/site-config";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHero } from "@/components/layout/PageHero";
+import { buildRouteHead } from "@/lib/seo";
 
-const URL = SITE_URL + "/contact";
 const TITLE = "Contact Digital Platform — Support & Sales";
-const DESC = "Reach us on WhatsApp for live pricing, stock checks and support. Typical reply within minutes, every day 10 AM – 10 PM IST.";
+const DESC =
+  "Reach us on WhatsApp for live pricing, stock checks and support. Typical reply within minutes, every day 10 AM – 10 PM IST.";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: TITLE },
-      { name: "description", content: DESC },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESC },
-      { property: "og:url", content: URL },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: OG_IMAGE },
-      { property: "og:image:alt", content: "Digital Platform — contact us" },
-      { name: "twitter:title", content: TITLE },
-      { name: "twitter:description", content: DESC },
-      { name: "twitter:image", content: OG_IMAGE },
-    ],
-    links: [{ rel: "canonical", href: URL }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
+  head: () =>
+    buildRouteHead({
+      path: "/contact",
+      title: TITLE,
+      description: DESC,
+      imageAlt: "Digital Platform — contact us",
+      extraJsonLd: [
+        {
           "@context": "https://schema.org",
           "@type": "ContactPage",
-          url: URL,
+          url: SITE_URL + "/contact",
           name: TITLE,
           description: DESC,
           publisher: { "@id": ORG_ID },
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
-            { "@type": "ListItem", position: 2, name: "Contact", item: URL },
-          ],
-        }),
-      },
-    ],
-  }),
+        },
+      ],
+    }),
   component: Contact,
 });
 
 function Contact() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <SiteNav />
-      <main id="main">
-      <section className="relative bg-hero">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-40 pb-20 lg:pt-48 lg:pb-28">
-
-          <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground">Contact</div>
-          <h1 className="mt-6 font-display text-6xl lg:text-8xl leading-[0.98]">
-            Let&apos;s <em className="text-headline">talk.</em>
-          </h1>
-          <p className="mt-8 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-            The fastest way to reach us is WhatsApp — we typically reply within minutes with live pricing
-            and stock updates.
-          </p>
-        </div>
-      </section>
+    <PageShell>
+      <PageHero
+        eyebrow="Contact"
+        title={<>Let&apos;s <em className="text-headline">talk.</em></>}
+        lede="The fastest way to reach us is WhatsApp — we typically reply within minutes with live pricing and stock updates."
+      />
 
       <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 grid gap-6 md:grid-cols-2">
@@ -139,9 +109,6 @@ function Contact() {
           </div>
         </div>
       </section>
-      </main>
-      <SiteFooter />
-
-    </div>
+    </PageShell>
   );
 }
