@@ -84,19 +84,23 @@ function FAQPage() {
 
       {/* Accordion list */}
       <section className="mx-auto max-w-5xl px-6 lg:px-10 py-14">
-        {filtered.length === 0 ? (
-          <div className="py-24 text-center text-muted-foreground">
-            No questions match your search. Try a different keyword or category.
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {filtered.map((f, i) => (
-              <Reveal as="li" key={`${f.cat}-${i}`} delay={Math.min(i, 6) * 60} y={18}>
-                <FaqItem f={f} />
-              </Reveal>
-            ))}
-          </ul>
-        )}
+        <ErrorBoundary boundary="faq:list" resetKeys={[active, q]}>
+          {filtered.length === 0 ? (
+            <div className="py-24 text-center text-muted-foreground">
+              No questions match your search. Try a different keyword or category.
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {filtered.map((f, i) => (
+                <ErrorBoundary key={`${f.cat}-${i}`} boundary="faq:item" fallback={null}>
+                  <Reveal as="li" delay={Math.min(i, 6) * 60} y={18}>
+                    <FaqItem f={f} />
+                  </Reveal>
+                </ErrorBoundary>
+              ))}
+            </ul>
+          )}
+        </ErrorBoundary>
       </section>
 
       {/* CTA */}
