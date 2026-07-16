@@ -9,6 +9,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { buildRouteHead } from "@/lib/seo";
+import { Reveal } from "@/components/reveal";
 
 const TITLE = "FAQ — Digital Platform | Orders, Delivery, Warranty & Support";
 const DESC =
