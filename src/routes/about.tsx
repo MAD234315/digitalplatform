@@ -49,8 +49,11 @@ export const Route = createFileRoute("/about")({
 
 function About() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
+      <SiteNav />
+      <main id="main">
       <section className="relative bg-hero">
+
         <SiteNav />
         <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-40 pb-20 lg:pt-48 lg:pb-28">
           <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground">About us</div>
