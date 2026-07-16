@@ -167,7 +167,7 @@ export function SiteNav() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-14 grid gap-10 sm:grid-cols-2 md:grid-cols-4">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-14 grid gap-10 sm:grid-cols-2 md:grid-cols-5">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
             <span
@@ -188,7 +188,17 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link to="/products" className="hover:text-amber">Products</Link></li>
             <li><Link to="/about" className="hover:text-amber">About</Link></li>
+            <li><Link to="/faq" className="hover:text-amber">FAQ</Link></li>
+            <li><Link to="/product-request" className="hover:text-amber">Product request</Link></li>
             <li><Link to="/contact" className="hover:text-amber">Contact</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Legal</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            <li><Link to="/privacy" className="hover:text-amber">Privacy Policy</Link></li>
+            <li><Link to="/terms" className="hover:text-amber">Terms &amp; Conditions</Link></li>
+            <li><Link to="/refund" className="hover:text-amber">Refund Policy</Link></li>
           </ul>
         </div>
         <div>
