@@ -164,18 +164,33 @@ function Products() {
       .filter((x): x is { recent: RecentItem; product: SheetProduct } => Boolean(x.product));
   }, [recent, data.products]);
 
+  // Single pass over products to compute availability tallies — avoids two
+  // full filter() sweeps on every render of the products page.
+  const { inStockCount, limitedCount } = useMemo(() => {
+    let inStock = 0;
+    let limited = 0;
+    for (const p of data.products) {
+      if (p.availability !== "out") inStock++;
+      if (p.availability === "limited") limited++;
+    }
+    return { inStockCount: inStock, limitedCount: limited };
+  }, [data.products]);
+
+
+
 
   return (
     <PageShell>
       <ProductsHero
         productCount={data.products.length}
-        inStockCount={data.products.filter((p) => p.availability !== "out").length}
-        limitedCount={data.products.filter((p) => p.availability === "limited").length}
+        inStockCount={inStockCount}
+        limitedCount={limitedCount}
         latestCount={stockCounts.latest}
         updatedAt={dataUpdatedAt}
         isRefreshing={isFetching}
         onShowLatest={() => setStock("latest")}
       />
+
 
 
       <ProductsFilterBar
