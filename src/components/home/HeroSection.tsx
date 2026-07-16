@@ -1,4 +1,5 @@
 import { CtaRouterLink, LiveBadge } from "@/components/ui-primitives";
+import { CountUp } from "@/components/count-up";
 import { STATS } from "./data";
 
 export function HeroSection() {
