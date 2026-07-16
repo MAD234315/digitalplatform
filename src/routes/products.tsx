@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
@@ -42,10 +42,10 @@ function Products() {
   return (
     <div className="theme-paper min-h-screen bg-background text-foreground">
       {/* HEADER — light theme */}
+      <SiteNav />
       <header className="relative border-b border-border">
         <div className="absolute inset-0 bg-hero" aria-hidden />
         <div className="relative">
-          <PaperNav />
           <div className="mx-auto max-w-7xl px-6 lg:px-10 pt-36 pb-14">
             <div className="grid lg:grid-cols-12 gap-8 items-end">
               <div className="lg:col-span-8">
@@ -90,7 +90,9 @@ function Products() {
                   return (
                     <button
                       key={name}
+                      type="button"
                       onClick={() => setActive(name)}
+                      aria-pressed={isActive}
                       className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] transition ${
                         isActive
                           ? "border-transparent shadow-soft"
@@ -104,7 +106,10 @@ function Products() {
                 })}
               </div>
               <div className="relative min-w-[240px]">
+                <label htmlFor="products-search" className="sr-only">Search products</label>
                 <input
+                  id="products-search"
+                  type="search"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search products…"
@@ -146,36 +151,6 @@ function Products() {
   );
 }
 
-function PaperNav() {
-  return (
-    <div className="absolute inset-x-0 top-0 z-30">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 text-foreground">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg font-display text-xl" style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}>D</span>
-          <span className="leading-tight">
-            <span className="block font-display text-lg">Digital Platform</span>
-            <span className="block text-[10px] uppercase tracking-[0.22em] opacity-60">Live catalogue</span>
-          </span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-9 text-sm">
-          <Link to="/" className="opacity-70 hover:opacity-100">Home</Link>
-          <Link to="/products" className="opacity-100">Products</Link>
-          <Link to="/about" className="opacity-70 hover:opacity-100">About</Link>
-          <Link to="/contact" className="opacity-70 hover:opacity-100">Contact</Link>
-        </nav>
-        <a
-          href={CONTACT.WA_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white transition"
-          style={{ backgroundColor: "var(--whatsapp)" }}
-        >
-          <WaGlyph /> Quick DM
-        </a>
-      </div>
-    </div>
-  );
-}
 
 function ProductCard({ p }: { p: SheetProduct }) {
   const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);

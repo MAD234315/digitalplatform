@@ -50,10 +50,12 @@ function parseCsv(text: string): string[][] {
 }
 
 function isCategoryHeader(row: string[]): boolean {
-  // Category header rows: first cell has text in caps, rest are empty
+  // Category header rows: first cell is an uppercase heading with at least
+  // one letter, and the rest of the cells are empty.
   const first = (row[0] || "").trim();
   if (!first) return false;
-  if (first.toUpperCase() !== first) return false; // must be uppercase heading
+  if (!/[A-Z]/.test(first)) return false; // must contain a letter
+  if (first.toUpperCase() !== first) return false; // and be fully uppercase
   const restEmpty = row.slice(1).every((c) => !(c || "").trim());
   return restEmpty && first.length > 3 && !first.includes(",");
 }
@@ -64,10 +66,11 @@ function isTableHeader(row: string[]): boolean {
 }
 
 function cleanPrice(v: string): string {
-  const t = (v || "").trim().replace(/\/-$/, "").trim();
+  // Strip an existing ₹ prefix, trailing "/-", and whitespace, then re-prefix ₹
+  // so callers can safely pass raw sheet values without doubling the symbol.
+  const t = (v || "").trim().replace(/^₹\s*/, "").replace(/\/-\s*$/, "").trim();
   if (!t) return "";
-  // Strip trailing /- and ensure ₹ symbol
-  return `₹${t.replace(/,/g, ",")}`;
+  return `₹${t}`;
 }
 
 // Cross-request in-memory cache. On serverless workers this shares within an
@@ -121,8 +124,8 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         type,
         supports,
         warranty,
-        inStock: /in.?stock|in stock/i.test(status),
-        loot: /loot/i.test(status),
+        inStock: /\bin[\s-]?stock\b/i.test(status) && !/\bnot\s+in\b/i.test(status),
+        loot: /\bloot\b/i.test(status),
       });
     }
 
