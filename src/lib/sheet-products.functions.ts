@@ -118,10 +118,23 @@ async function loadFromSheet(): Promise<ProductsPayload> {
       const supports = (row[10] || "").trim();
       const warranty = (row[11] || "").trim();
 
+      const statusVal = status || "IN-STOCK";
+      const isOut = /\b(out\s*of\s*stock|not\s*in\s*stock|sold\s*out|unavailable)\b/i.test(statusVal);
+      const isLimited = /\b(limited|low\s*stock|few\s*left|almost\s*(out|gone))\b/i.test(statusVal);
+      const inStock = !isOut && /\bin[\s-]?stock\b/i.test(statusVal);
+      const loot = /\bloot\b/i.test(statusVal);
+      const isHighDemand = /\b(high\s*demand|hot|trending|popular|🔥)\b/i.test(statusVal) || loot;
+      const isNew = /\b(new|just\s*added|fresh|🆕)\b/i.test(statusVal);
+
+      const availability: Availability = isOut ? "out" : isLimited ? "limited" : "available";
+      const badges: ProductBadge[] = [];
+      if (isNew) badges.push("new");
+      if (isHighDemand) badges.push("high-demand");
+
       products.push({
         id: `p-${idx++}`,
         category: currentCategory,
-        status: status || "IN-STOCK",
+        status: statusVal,
         name,
         validity,
         plan,
@@ -129,8 +142,10 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         type,
         supports,
         warranty,
-        inStock: /\bin[\s-]?stock\b/i.test(status) && !/\bnot\s+in\b/i.test(status),
-        loot: /\bloot\b/i.test(status),
+        inStock: inStock || (!isOut && !isLimited),
+        loot,
+        availability,
+        badges,
       });
     }
 
