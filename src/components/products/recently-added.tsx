@@ -9,7 +9,7 @@
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge } from "./badge";
-import { gradientFor, initialsFor } from "@/lib/product-visuals";
+import { animeImageFor, glowFor, gradientFor } from "@/lib/product-visuals";
 
 export function RecentlyAdded({
   products,
