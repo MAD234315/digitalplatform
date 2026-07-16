@@ -143,8 +143,8 @@ function Products() {
     <div className="min-h-dvh bg-background text-foreground">
       <SiteNav />
 
-      {/* Paper (light) theme wraps only the catalogue surface. */}
-      <div className="theme-paper bg-background text-foreground">
+      <div>
+
       <header className="relative border-b border-border">
         <div className="absolute inset-0 bg-hero" aria-hidden />
         <div className="relative">
