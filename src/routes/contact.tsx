@@ -49,10 +49,12 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
+      <SiteNav />
+      <main id="main">
       <section className="relative bg-hero">
-        <SiteNav />
         <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-40 pb-20 lg:pt-48 lg:pb-28">
+
           <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground">Contact</div>
           <h1 className="mt-6 font-display text-6xl lg:text-8xl leading-[0.98]">
             Let&apos;s <em className="text-headline">talk.</em>
