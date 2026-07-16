@@ -87,7 +87,6 @@ function LiveStatusCard({
 }) {
   const outCount = Math.max(0, productCount - inStockCount);
   const pulseCls = isRefreshing ? "animate-pulse" : "";
-  const resetLabel = formatResetIn(nextThursday());
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-soft" aria-busy={isRefreshing}>
       <div className="flex items-center justify-between">
