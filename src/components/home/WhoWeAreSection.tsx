@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Eyebrow } from "@/components/ui-primitives";
+import { Reveal } from "@/components/reveal";
 
 export function WhoWeAreSection() {
   return (
