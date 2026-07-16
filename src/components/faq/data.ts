@@ -11,8 +11,11 @@ export type Category =
   | "General"
   | "Orders & Delivery"
   | "Products"
+  | "Payment"
   | "Warranty & Support"
   | "Account & Usage"
+  | "Website"
+  | "Business"
   | "Security"
   | "Contact";
 
