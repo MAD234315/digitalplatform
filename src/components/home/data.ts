@@ -4,7 +4,7 @@ export type Reason = { n: string; title: string; body: string };
 export const STATS: Stat[] = [
   { value: "200+", label: "Curated Assets" },
   { value: "Daily", label: "Catalogue Refresh" },
-  { value: "5 yrs", label: "Trusted Service" },
+  { value: "5\u00a0+yrs", label: "Trusted Service" },
   { value: "24/7", label: "Human Support" },
 ];
 
