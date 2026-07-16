@@ -268,7 +268,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         name,
         validity,
         plan,
-        originalPrice: cleanPrice(originalPrice),
+        
         type,
         supports,
         warranty,
