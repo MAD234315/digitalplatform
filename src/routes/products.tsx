@@ -204,6 +204,7 @@ function Products() {
         stock={stock}
         onStockChange={setStock}
         stockCounts={stockCounts}
+        products={data.products}
       />
 
 
