@@ -109,8 +109,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem('dp-theme');var t=(s==='light'||s==='dark')?s:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');var r=document.documentElement;if(t==='light')r.classList.add('light');r.style.colorScheme=t;}catch(e){}})();`;
 
 function RootShell({ children }: { children: ReactNode }) {
+  // suppressHydrationWarning on <html>: the pre-hydration script above
+  // mutates documentElement.className and .style before React attaches,
+  // so the SSR markup ("<html lang=en>") will differ from the live DOM
+  // ("<html lang=en class=light style=color-scheme:light>"). That's the
+  // one node we intentionally desync — silence the warning here only.
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
@@ -119,6 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
     </html>
   );
 }
+
 
 
 function RootComponent() {
