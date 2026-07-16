@@ -135,15 +135,15 @@
   ::selection { background: oklch(0.80 0.14 82 / 0.30); color: var(--color-foreground); }
 
   @media (prefers-reduced-motion: reduce) {
-    :root:not([data-reduce-motion="false"]) *,
-    :root:not([data-reduce-motion="false"]) *::before,
-    :root:not([data-reduce-motion="false"]) *::after {
+    *, *::before, *::after {
       animation-duration: 0.001ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
       scroll-behavior: auto !important;
     }
+  }
 }
+
 
 
 @utility bg-hero { background: var(--gradient-hero); }
