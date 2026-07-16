@@ -48,9 +48,14 @@ export function Reveal({
   }, [once]);
 
   const hidden = ready && !inView;
+  // Always include transitionDelay in both branches. React warns when a
+  // longhand (transitionDelay) is added/removed while the `transition`
+  // shorthand stays set — keeping the key present in every render avoids
+  // the "Removing transitionDelay" style mutation warning.
   const style = hidden
-    ? { opacity: 0, transform: `translate3d(0, ${y}px, 0)` }
+    ? { opacity: 0, transform: `translate3d(0, ${y}px, 0)`, transitionDelay: "0ms" }
     : { opacity: 1, transform: "translate3d(0, 0, 0)", transitionDelay: `${delay}ms` };
+
 
   return (
     <Tag
