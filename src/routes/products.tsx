@@ -235,9 +235,10 @@ function Products() {
 }
 
 
-function ProductCard({ p }: { p: SheetProduct }) {
+function ProductCard({ p, updatedAt }: { p: SheetProduct; updatedAt: number }) {
   const waMsg = encodeURIComponent(`Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`);
   const initials = p.name.replace(/[^A-Za-z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || p.name.slice(0, 2).toUpperCase();
+  const updatedLabel = formatRelative(updatedAt);
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft">
@@ -270,25 +271,47 @@ function ProductCard({ p }: { p: SheetProduct }) {
         )}
 
         <dl className="mt-4 space-y-1.5 text-sm">
+          {p.plan && <Row label="Plan" value={p.plan} />}
           {p.validity && <Row label="Validity" value={p.validity} />}
+          {p.supports && <Row label="Supported devices" value={p.supports} />}
           {p.type && <Row label="Delivery" value={p.type} />}
           {p.warranty && <Row label="Warranty" value={p.warranty} />}
         </dl>
 
-        <p className="mt-4 text-[11px] text-muted-foreground">Contact admin for detailed info.</p>
+        <div className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <span
+            aria-hidden
+            className="inline-block h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: "var(--whatsapp)" }}
+          />
+          <span>Last updated {updatedLabel}</span>
+        </div>
 
         <a
           href={`${CONTACT.WA_URL}?text=${waMsg}`}
           target="_blank"
           rel="noreferrer"
-          className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105"
+          aria-label={`Quick DM on WhatsApp about ${p.name}`}
+          className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
           style={{ backgroundColor: "var(--whatsapp)" }}
         >
-          <WaGlyph /> Offer: Quick DM
+          <WaGlyph /> Quick DM on WhatsApp
         </a>
       </div>
     </article>
   );
+}
+
+function formatRelative(ts: number): string {
+  const diffMs = Date.now() - ts;
+  const sec = Math.max(0, Math.round(diffMs / 1000));
+  if (sec < 45) return "just now";
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr} hr ago`;
+  const day = Math.round(hr / 24);
+  return `${day} day${day === 1 ? "" : "s"} ago`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
