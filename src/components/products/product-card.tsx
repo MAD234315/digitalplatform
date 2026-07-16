@@ -13,16 +13,16 @@ import { AvailabilityBadge, Badge } from "./badge";
 import { WaGlyph } from "./wa-glyph";
 import { animeImageFor, formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 
-/** Definition-list row inside the card's spec block. */
+/** Inline "Label - value" spec line inside the card. */
 function Row({ label, value }: { label: string; value: string }) {
-
   return (
-    <div className="flex items-start justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="text-right font-medium">{value}</dd>
+    <div className="flex flex-wrap items-baseline gap-x-1.5">
+      <dt className="text-muted-foreground">{label} -</dt>
+      <dd className="font-medium">{value}</dd>
     </div>
   );
 }
+
 
 export const ProductCard = memo(function ProductCard({
   p,
