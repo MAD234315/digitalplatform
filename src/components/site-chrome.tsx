@@ -33,7 +33,14 @@ export function SiteNav() {
         scrolled ? "backdrop-blur-md bg-background/70 border-b border-border" : "bg-transparent"
       }`}
     >
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-amber focus:px-4 focus:py-2 focus:text-sm focus:text-amber-foreground"
+      >
+        Skip to main content
+      </a>
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 h-16 sm:h-20 flex items-center justify-between gap-4">
+
         <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="Digital Platform home">
           <span
             aria-hidden
