@@ -9,13 +9,12 @@
  * while remaining stable across reloads (same product → same image).
  */
 export function animeImageFor(name: string): string {
-  const styles = ["lorelei", "adventurer", "big-smile", "personas", "notionists", "micah"];
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  const style = styles[h % styles.length];
+  // Single "big-smile" style — every product gets a smiling anime avatar,
+  // deterministic per name so the same product always renders the same face.
   const seed = encodeURIComponent(name);
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&radius=20&backgroundType=gradientLinear`;
+  return `https://api.dicebear.com/9.x/big-smile/svg?seed=${seed}&radius=20&backgroundType=gradientLinear`;
 }
+
 
 /** Deterministic accent gradient per product name for visual variety. */
 export function gradientFor(name: string): string {
