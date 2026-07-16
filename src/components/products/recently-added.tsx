@@ -90,13 +90,6 @@ function RecentCard({ p }: { p: SheetProduct }) {
           className="pointer-events-none absolute inset-0 opacity-70 blur-2xl transition duration-500 group-hover:opacity-100"
           style={{ background: `radial-gradient(circle at 50% 55%, ${glow} 0%, transparent 60%)` }}
         />
-        <img
-          src={logo}
-          alt=""
-          loading="lazy"
-          className="relative z-10 mx-auto my-auto h-16 w-16 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition duration-500 group-hover:scale-[1.06]"
-          style={{ display: "block", marginTop: "auto", marginBottom: "auto" }}
-        />
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <img
             src={logo}
@@ -105,6 +98,7 @@ function RecentCard({ p }: { p: SheetProduct }) {
             className="h-16 w-16 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition duration-500 group-hover:scale-[1.06]"
           />
         </div>
+
         <span className="absolute left-2 top-2 z-20 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
           New
         </span>
