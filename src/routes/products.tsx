@@ -5,7 +5,7 @@ import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sh
 import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
-import { ProductCard } from "@/components/products/product-card";
+import { ProductCard, UpdatedAtContext } from "@/components/products/product-card";
 import { ProductsHero } from "@/components/products/products-hero";
 import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
@@ -257,15 +257,17 @@ function Products() {
           </div>
         ) : (
           <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filtered.map((p) => (
-                <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
-                  <TiltCard max={4}>
-                    <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
-                  </TiltCard>
-                </ErrorBoundary>
-              ))}
-            </div>
+            <UpdatedAtContext.Provider value={dataUpdatedAt}>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filtered.map((p) => (
+                  <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
+                    <TiltCard max={4}>
+                      <ProductCard p={p} onView={track} />
+                    </TiltCard>
+                  </ErrorBoundary>
+                ))}
+              </div>
+            </UpdatedAtContext.Provider>
           </ErrorBoundary>
         )}
 

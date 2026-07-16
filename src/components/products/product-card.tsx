@@ -1,17 +1,34 @@
 /**
  * Product card rendered inside the /products grid.
  *
- * Memoised because the grid can render 200+ cards; a keystroke in the filter
- * bar re-renders the parent, but individual cards only re-render when their
- * `p` or `updatedAt` reference changes. The primary CTA is a pre-composed
- * WhatsApp deep link that includes the product's name, plan, and validity.
+ * Memoised because the grid can render 200+ cards. The `updatedAt` value
+ * (which changes on every 60s refetch) is intentionally NOT a prop — it's
+ * consumed via context by a small subcomponent, so a fresh timestamp only
+ * re-renders the one line that shows it, not the whole card.
  */
-import { memo } from "react";
+import { createContext, memo, useContext } from "react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge, Badge } from "./badge";
 import { WaGlyph } from "./wa-glyph";
 import { animeImageFor, formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
+
+/** Injects the current dataUpdatedAt into cards without breaking memoisation. */
+export const UpdatedAtContext = createContext<number>(0);
+
+function LastUpdatedLine() {
+  const updatedAt = useContext(UpdatedAtContext);
+  return (
+    <div className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+      <span
+        aria-hidden
+        className="inline-block h-1.5 w-1.5 rounded-full"
+        style={{ backgroundColor: "var(--whatsapp)" }}
+      />
+      <span suppressHydrationWarning>Last updated {formatRelative(updatedAt)}</span>
+    </div>
+  );
+}
 
 /** Inline "Label - value" spec line inside the card. */
 function Row({ label, value }: { label: string; value: string }) {
@@ -26,23 +43,21 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export const ProductCard = memo(function ProductCard({
   p,
-  updatedAt,
   onView,
 }: {
   p: SheetProduct;
-  updatedAt: number;
   onView?: (p: SheetProduct) => void;
 }) {
   const waMsg = encodeURIComponent(
     `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
   );
   const initials = initialsFor(p.name);
-  const updatedLabel = formatRelative(updatedAt);
 
   return (
     <article
       id={`product-${p.id}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "520px 380px" }}
     >
       <div className="relative flex items-center gap-3 px-3 py-2.5 border-b border-border/60">
         <div
@@ -106,14 +121,7 @@ export const ProductCard = memo(function ProductCard({
         </p>
 
 
-        <div className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <span
-            aria-hidden
-            className="inline-block h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: "var(--whatsapp)" }}
-          />
-          <span suppressHydrationWarning>Last updated {updatedLabel}</span>
-        </div>
+        <LastUpdatedLine />
 
         <a
           href={`${CONTACT.WA_URL}?text=${waMsg}`}
