@@ -259,6 +259,21 @@ function Products() {
           </div>
         )}
 
+        {recentVisible.length > 0 && (
+          <RecentlyViewed
+            items={recentVisible}
+            onClear={clear}
+            onJump={(id) => {
+              const el = document.getElementById(`product-${id}`);
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.classList.add("ring-2", "ring-amber");
+                window.setTimeout(() => el.classList.remove("ring-2", "ring-amber"), 1500);
+              }
+            }}
+          />
+        )}
+
         {filtered.length === 0 ? (
           <div className="py-24 text-center text-muted-foreground">
             No products match this filter. Try another category.
@@ -267,7 +282,7 @@ function Products() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((p) => (
               <TiltCard key={p.id} max={4}>
-                <ProductCard p={p} updatedAt={dataUpdatedAt} />
+                <ProductCard p={p} updatedAt={dataUpdatedAt} onView={track} />
               </TiltCard>
             ))}
           </div>
