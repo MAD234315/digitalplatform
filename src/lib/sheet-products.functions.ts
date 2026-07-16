@@ -289,11 +289,13 @@ async function loadFromSheet(): Promise<ProductsPayload> {
     // The `error` field in the payload is what surfaces in the UI banner —
     // keep it terse and safe for end-user display.
     console.error("[getSheetProducts] load failed:", e);
+    const rateLimited = e instanceof SheetFetchError && e.status === 429;
     return {
       categories: [],
       products: [],
       fetchedAt: new Date().toISOString(),
       error: e instanceof Error ? e.message : "Failed to load catalogue",
+      rateLimited,
     };
   }
 }
