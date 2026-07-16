@@ -50,7 +50,7 @@ function About() {
               Make premium <em className="text-headline">accessible.</em>
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">
-              Help normal peoples, creators, students, professionals, developers and businesses access
+              Help normal people, creators, students, professionals, developers and businesses access
               the digital tools they need — without paying unnecessary prices. We believe premium software
               should be accessible, affordable, and supported by excellent customer service.
             </p>
