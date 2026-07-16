@@ -1,65 +1,132 @@
-# Refactor & Optimization Plan
+# SEO plan — Digital Platform
 
-A phased pass across code structure, performance, accessibility, and SEO. Each phase is independently shippable — stop at any phase once you're satisfied.
+A concrete, ordered plan to take the site from "technically indexable" to "ranking for buyer-intent queries." The site is a live catalogue of digital subscriptions on `https://digitalplatform13.lovable.app`. Semrush has no organic data on the domain yet (brand new in Google's index), so the priority is fixing on-page technicals **and** publishing enough long-tail content to earn first impressions.
 
-## Phase 1 — Code hygiene (low risk, quick wins)
+## Phase 1 — Fix what the SEO scanner already flagged
 
-1. **Delete dead code**
-   - Remove unused `.theme-paper { … }` rule from `src/styles.css` (no consumer since light theme moved to `:root.light`).
-   - Remove the `:root[data-reduce-motion="true"]` block from `src/styles.css` — the manual toggle was removed; `prefers-reduced-motion` still handles this via the media query.
-2. **Consolidate motion utilities**
-   - `src/lib/motion-preference.ts` and the `useReducedMotion` logic inside `src/components/reveal.tsx` and `src/components/tilt-card.tsx` overlap. Export one `useReducedMotion()` hook from `motion-preference.ts` and consume it in both components.
-3. **Split `src/routes/faq.tsx` (278 lines)**
-   - Extract the FAQ item array to `src/components/faq/data.ts`, and the accordion item component to `src/components/faq/FaqItem.tsx`. Keeps the route file to routing + `<head>` + composition.
-4. **Split `src/routes/products.tsx` (247 lines)**
-   - Move the filter/sort state machinery into `src/components/products/use-products-filter.ts` (hook). The route file should orchestrate: loader → hook → `<ProductsHero />` + `<ProductsFilterBar />` + grid.
+Immediate, mechanical fixes from the latest scan.
 
-## Phase 2 — Performance
+1. **Trim meta descriptions to ≤160 chars** on `src/routes/index.tsx`, `src/routes/about.tsx`, and `src/routes/__root.tsx` (currently 169 / 165 / 163).
+2. **Fix heading hierarchy on `/products`.** Product cards render `<h3>` under an `<h1>` with no `<h2>` in between. Add an `<h2>` above the grid (e.g. "Live catalogue") in `src/routes/products.tsx`.
+3. **Add `public/llms.txt`** so AI assistants (ChatGPT, Perplexity, Claude) can index the site without parsing the JS shell. Include Home, Products, About, FAQ, Contact.
 
-1. **Image pipeline**
-   - Add `vite-imagetools` and switch `product-visuals.ts` + hero art to `?format=avif&format=webp&as=picture` variants. Serve via `<picture>` with `<source type="image/avif">` fallbacks. Set explicit `width`/`height` and `loading="lazy"` on non-LCP images, `fetchpriority="high"` on the hero.
-2. **Preload the LCP image**
-   - In `src/routes/index.tsx`, add `head().links` entry: `{ rel: 'preload', as: 'image', href: heroWebp, fetchpriority: 'high' }`.
-3. **Data caching for products**
-   - `sheet-products.functions.ts` is called per navigation. Cache via TanStack Query `queryOptions({ queryKey: ['sheet-products'], queryFn, staleTime: 5 * 60_000 })` and use `context.queryClient.ensureQueryData` in the products loader + `useSuspenseQuery` in the component.
-4. **Route-level code splitting audit**
-   - Verify `products.tsx`, `faq.tsx`, and `contact.tsx` aren't imported statically from the root. TanStack file-based routing splits per file automatically — confirm no cross-imports pull them into the root bundle.
-5. **Reveal / tilt performance**
-   - Coalesce all `Reveal` observers into one shared `IntersectionObserver` instance (module-level singleton with a Map of element → callback). Currently each `Reveal` creates its own observer; on the home page there are 20+.
-6. **Font loading**
-   - In `__root.tsx`, ensure the Google Fonts `<link>` uses `rel="preconnect"` for `fonts.gstatic.com` (crossorigin) plus `rel="preload" as="style"` for the CSS, and `font-display: swap` on the request URL.
+Verification: rerun the SEO scan; findings above should flip to *fixed*.
 
-## Phase 3 — Accessibility
+## Phase 2 — Search Console + baseline measurement
 
-1. **Landmarks & headings**
-   - Verify exactly one `<main>` per route (in `__root.tsx` or each leaf). Ensure H1 → H2 → H3 order per page; no skipped levels.
-2. **Icon-only buttons**
-   - Audit `theme-toggle.tsx`, `site-chrome.tsx` mobile menu button, product-card share/wa buttons — every icon-only `<Button size="icon">` must have `aria-label`.
-3. **Focus states**
-   - Confirm `:focus-visible` outline on every interactive element (button, link, input, accordion trigger). Add a global `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` fallback in `styles.css` for anything missed.
-4. **Color contrast**
-   - Replace any `text-muted-foreground/50` or `/60` usage with plain `text-muted-foreground` where it acts as body copy (still often below AA at 50 %).
-5. **Reduced motion**
-   - `Reveal` and `TiltCard` already respect `prefers-reduced-motion`. Add the same short-circuit to `CountUp` (`src/components/count-up.tsx`) so it snaps to the final value instead of animating.
-6. **Form a11y (contact page)**
-   - Ensure every input has an associated `<Label htmlFor>`, `aria-invalid` toggles on error, and error text is linked via `aria-describedby`.
+Without this, all later work is invisible.
 
-## Phase 4 — SEO & metadata
+1. Verify the domain in Google Search Console via a `META` verification token (add to `__root.tsx` head, deploy, call verify, then `PUT` the site into the property list).
+2. Submit `sitemap.xml` from within the property.
+3. Wait 3–7 days, then read the Search Console coverage & performance reports monthly.
+4. (Optional) Bing Webmaster Tools — same sitemap, five-minute onboarding, non-trivial share of Indian traffic.
 
-1. Per-route `head()` audit — confirm unique `title` (< 60 chars), `description` (< 160), matching `og:title`/`og:description`, `twitter:card="summary_large_image"`.
-2. Add `og:image` at leaf routes that have a real hero (home, products) — absolute HTTPS URL. Omit elsewhere.
-3. Add JSON-LD `Organization` on `/` and `Product` on product detail cards (if applicable) via the route's `head().scripts`.
-4. Confirm `sitemap[.]xml.ts` includes every current route and a `lastmod`.
+## Phase 3 — On-page depth for existing pages
 
-## Phase 5 — Verification
+The current pages are metadata-correct but content-thin for ranking. Expand where it matters.
 
-1. `bunx tsgo --noEmit` — clean typecheck.
-2. Playwright pass: home + products + faq at 375 × 812 and 1280 × 800; screenshot every route in light + dark; assert no console errors.
-3. Lighthouse (or manual PSI) target: Performance ≥ 90 mobile, Accessibility ≥ 95, SEO = 100. Record before/after in the PR description.
-4. Axe pass via `@axe-core/playwright`: zero critical, zero serious findings.
+1. **Products page (`/products`)** — the money page.
+   - Add a top-of-page intro paragraph (~80–120 words) with anchor keywords: *premium digital subscriptions India*, *buy Netflix / Spotify / ChatGPT subscription*, *AI tool licenses*.
+   - Group products under `<h2>` category headings that match the sheet (Streaming, AI Tools, Software, Gift Cards). Each `<h2>` gets a one-sentence description — real text, not a placeholder.
+   - Product cards keep `<h3>` (fixes the current a11y issue and gives Google topical clusters).
+   - Extend the existing `ItemList` JSON-LD to also emit one `Product` per item at the top of the list (top 20 is fine), with `offers.priceCurrency`, `offers.availability`, and `brand`.
 
-## Technical notes
+2. **FAQ page (`/faq`)** — already has `FAQPage` JSON-LD; keep and expand.
+   - Add 6–10 more Q&As targeting long-tail queries surfaced by `keyword_research` (Phase 5): "how do I get a Netflix subscription cheap in India", "is it legal to buy Spotify subscription from third party", "warranty on digital gift cards", etc.
 
-- Order matters only across phases 1 → 2 → 3; within a phase, items are independent and can land in separate commits.
-- No schema, no auth, no backend changes are required — this is a frontend-only refactor.
-- Phase 2.5 (shared IntersectionObserver) and 2.3 (query caching) give the biggest measurable wins; do those first if time-boxed.
+3. **About (`/about`)** — add trust signals for E-E-A-T:
+   - Founding year (2020), customer count, response-time SLA.
+   - Real testimonials (even a 3-quote strip) with `Review` schema in the JSON-LD.
+
+4. **Contact (`/contact`)** — add `LocalBusiness` or `Organization` JSON-LD with `contactPoint` (WhatsApp number, email, hours 10 AM–10 PM IST) so Google can render a knowledge-panel-style contact card.
+
+## Phase 4 — New content routes (biggest ranking lever)
+
+The site currently has 5 shareable URLs. That is a very small target surface. Add topical landing pages that map to real search queries. Each new file follows the existing `PageShell` + `PageHero` + `buildRouteHead` pattern.
+
+Proposed new routes:
+
+- `/products/streaming` — Netflix, Prime, Disney+, Hotstar, YouTube Premium
+- `/products/ai-tools` — ChatGPT Plus, Midjourney, Claude Pro, Perplexity
+- `/products/software` — Windows, Office, Adobe, JetBrains, antivirus
+- `/products/gift-cards` — Amazon, Steam, Play Store, App Store
+- `/how-it-works` — order → payment → delivery → warranty flow
+- `/warranty` — the warranty policy in full (currently only mentioned in FAQ)
+- `/blog/` index + 4–6 launch articles (comparison, buying-guide, how-to)
+
+Each category page reuses the sheet data, filtered by category — no extra backend. Each carries its own `<h1>`, `<title>`, `<meta description>`, `og:*`, breadcrumb JSON-LD, and canonical.
+
+## Phase 5 — Keyword & competitor research
+
+Before writing new copy, ground it in real search behavior.
+
+1. `keyword_research` for the anchor terms per new category page (streaming subscription India, buy ChatGPT plus India, cheap adobe subscription, etc.). Pick 3–5 primary + 5–10 long-tail per page based on volume + KDI < 40.
+2. `competitive_analysis` on 2–3 domains in the same category (e.g. accsmarket, seogaz, gamivo) to surface keyword gaps.
+3. `serp_analysis` on the top 5 primary keywords to confirm intent (transactional vs informational) before deciding whether a landing page or a blog post ranks better.
+4. Fold the chosen keywords back into `head()` titles/descriptions, `<h1>`, `<h2>`, and the first 100 words of body copy — never as a bag of keywords.
+
+## Phase 6 — Technical polish
+
+Small but compounding wins.
+
+1. **Sitemap:** extend `src/routes/sitemap[.]xml.ts` with the new routes added in Phase 4. If the blog goes live, generate `<url>` entries from post metadata.
+2. **`og:image` per route:** at minimum, generate a branded 1200×630 for `/`, `/products`, `/about`, `/faq`, `/contact` and wire them into each leaf `head()` (never on `__root`).
+3. **Real domain:** ranking on a `*.lovable.app` subdomain is possible but a proper apex domain compounds trust. When the user is ready, purchase `digitalplatform.in` (or similar), point via custom domain, then re-verify in Search Console — treat the `.lovable.app` URL as canonical only until the switch, then update `SITE_URL` and re-submit the sitemap.
+4. **Core Web Vitals monitoring:** wire PageSpeed Insights CI or accept Search Console's monthly report. The site is already fast (static + one API call), keep it that way — avoid heavy third-party scripts.
+5. **Internal linking:** ensure every new page links back to `/products` with descriptive anchor text, and that `/` links out to every category page (helps distribute PageRank).
+
+## Phase 7 — Off-page & authority
+
+Only meaningful after Phases 1–4 ship.
+
+1. Set up a **Google Business Profile** (if applicable) and get the WhatsApp number listed.
+2. Post 1–2 short **guides on Medium/Reddit/Quora** monthly answering the same long-tail questions the FAQ covers, linking back to the relevant `/products/*` page. Not spam — genuine, formatted answers.
+3. **Partnerships / directory listings** — request listing on curated "digital subscription reseller" directories.
+4. Ask happy customers for a **Trustpilot review** with the site URL — a public review profile is a ranking signal and a conversion booster.
+
+## Technical details
+
+### Files this plan touches
+
+Phase 1
+- `src/routes/index.tsx`, `src/routes/about.tsx`, `src/routes/__root.tsx` — trim descriptions
+- `src/routes/products.tsx` — add `<h2>`
+- `public/llms.txt` — new
+
+Phase 3
+- `src/routes/products.tsx` — intro copy + section h2s + Product JSON-LD block
+- `src/routes/faq.tsx` (via `src/components/faq/data.ts`) — more Q&As
+- `src/routes/about.tsx` — testimonials + Review schema
+- `src/routes/contact.tsx` — ContactPoint schema
+
+Phase 4
+- `src/routes/products.streaming.tsx`, `products.ai-tools.tsx`, `products.software.tsx`, `products.gift-cards.tsx`
+- `src/routes/how-it-works.tsx`, `src/routes/warranty.tsx`
+- `src/routes/blog.index.tsx` + `blog.$slug.tsx` (deferred until content is written)
+
+Phase 6
+- `src/routes/sitemap[.]xml.ts` — new entries
+- `src/assets/og-*.jpg` — generated
+- Each route's `head()` — `og:image` per leaf
+
+### Sequencing
+
+```text
+Phase 1  →  30 min   (scanner fixes)
+Phase 2  →   1 h     (Search Console verify + submit)
+Phase 3  →   1 day   (deepen existing pages)
+Phase 5  →   2 h     (keyword research — informs Phase 4)
+Phase 4  →   1 week  (new landing pages)
+Phase 6  →   1 day   (og:images, sitemap, custom domain when ready)
+Phase 7  →  ongoing
+```
+
+### Success metrics (check monthly in Search Console + Semrush)
+
+- **Indexed pages:** target 10+ by month 2, 20+ by month 4.
+- **Impressions:** first non-zero by week 4, 1K+/month by month 3.
+- **Keywords ranked (top 100):** 5+ by month 2, 25+ by month 4.
+- **Average position for brand query "digital platform subscriptions":** top 3 within 60 days.
+- **CTR** on top 10 impressions: > 3%.
+
+Phase 1 is safe to execute now with no further input. Phases 2 and 7 need the user (Search Console access, off-page outreach). Phases 3–6 I can execute end-to-end once you approve.
