@@ -1,13 +1,47 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav, SiteFooter, CONTACT } from "@/components/site-chrome";
 
+const SITE = "https://digitalplatform13.lovable.app";
+const URL = SITE + "/about";
+const TITLE = "About Digital Platform — Our Story & Promise";
+const DESC = "A small team, a big shelf. Digital Platform is a trusted marketplace for premium digital subscriptions, AI tools and software licenses — serving customers since 2020.";
+
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Digital Platform" },
-      { name: "description", content: "A small team, a big shelf. Digital Platform is a trusted marketplace for premium digital products and AI tools since 2020." },
-      { property: "og:title", content: "About — Digital Platform" },
-      { property: "og:description", content: "A trusted marketplace for premium digital products and AI tools." },
+      { title: TITLE },
+      { name: "description", content: DESC },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESC },
+      { property: "og:url", content: URL },
+      { property: "og:type", content: "website" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESC },
+    ],
+    links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          url: URL,
+          name: TITLE,
+          description: DESC,
+          publisher: { "@id": SITE + "/#organization" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+            { "@type": "ListItem", position: 2, name: "About", item: URL },
+          ],
+        }),
+      },
     ],
   }),
   component: About,

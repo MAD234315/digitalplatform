@@ -53,11 +53,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Digital Platform — Premium apps & AI tools at prices that make sense" },
-      { name: "description", content: "Trusted digital marketplace since 2020. 200+ premium subscriptions, AI tools, software licenses and gift cards — updated daily, priced honestly, supported by humans." },
+      { name: "theme-color", content: "#c8871f" },
       { name: "author", content: "Digital Platform" },
-      { property: "og:title", content: "Digital Platform — Premium apps & AI tools" },
-      { property: "og:description", content: "Trusted digital marketplace since 2020. Updated daily. Human support." },
+      { property: "og:site_name", content: "Digital Platform" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -67,6 +65,38 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://digitalplatform13.lovable.app/#organization",
+              name: "Digital Platform",
+              url: "https://digitalplatform13.lovable.app",
+              slogan: "Premium digital solutions. Genuine sources. Trusted service.",
+              foundingDate: "2020",
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer support",
+                telephone: "+91-96521-91369",
+                email: "Productcreator11@zohomail.in",
+                availableLanguage: ["en"],
+              },
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://digitalplatform13.lovable.app/#website",
+              url: "https://digitalplatform13.lovable.app",
+              name: "Digital Platform",
+              publisher: { "@id": "https://digitalplatform13.lovable.app/#organization" },
+            },
+          ],
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
