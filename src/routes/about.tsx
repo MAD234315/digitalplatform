@@ -31,7 +31,7 @@ export const Route = createFileRoute("/about")({
           url: URL,
           name: TITLE,
           description: DESC,
-          publisher: { "@id": SITE + "/#organization" },
+          publisher: { "@id": ORG_ID },
         }),
       },
       {
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/about")({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
             { "@type": "ListItem", position: 2, name: "About", item: URL },
           ],
         }),
