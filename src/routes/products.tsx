@@ -192,6 +192,19 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
+      <ErrorBoundary boundary="products:recently-added" fallback={null}>
+        <RecentlyAdded
+          products={latestProducts}
+          onSeeAll={() => {
+            setActive("All");
+            setQ("");
+            setStock("latest");
+            if (typeof window !== "undefined") {
+              window.scrollTo({ top: window.innerHeight * 0.6, behavior: "smooth" });
+            }
+          }}
+        />
+      </ErrorBoundary>
 
 
       <ProductsFilterBar
