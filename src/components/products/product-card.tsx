@@ -11,7 +11,7 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge, Badge } from "./badge";
 import { WaGlyph } from "./wa-glyph";
-import { formatRelative, glowFor, gradientFor, initialsFor } from "@/lib/product-visuals";
+import { formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 import { LogoMark } from "./logo-mark";
 
 
@@ -55,48 +55,27 @@ export const ProductCard = memo(function ProductCard({
   );
   const initials = initialsFor(p.name);
 
-  const glow = glowFor(p.name);
-
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
+      className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
       style={{
         contentVisibility: "auto",
         containIntrinsicSize: "520px 380px",
-        background:
-          "linear-gradient(135deg, color-mix(in oklab, white 55%, transparent) 0%, color-mix(in oklab, white 20%, transparent) 55%, color-mix(in oklab, white 8%, transparent) 100%)",
-        backdropFilter: "blur(24px) saturate(160%)",
-        boxShadow: `
-          0 1px 0 rgba(255,255,255,0.6) inset,
-          0 0 0 1px rgba(255,255,255,0.35) inset,
-          0 30px 60px -25px color-mix(in oklab, ${glow} 55%, transparent),
-          0 10px 30px -15px color-mix(in oklab, ${glow} 35%, transparent),
-          0 0 0 1px color-mix(in oklab, ${glow} 18%, transparent)
-        `,
       }}
     >
-      {/* Top sheen — sells the "glass" edge highlight */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)" }}
-      />
-
-      <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-white/25">
+      <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-border">
 
         <div className="flex items-center gap-3 min-w-0">
           <div
             aria-hidden
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/30"
-            style={{
-              background: gradientFor(p.name),
-              boxShadow: `0 8px 20px -8px ${glow}, 0 0 0 1px rgba(255,255,255,0.15) inset`,
-            }}
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border"
+            style={{ background: gradientFor(p.name) }}
           >
             <LogoMark name={p.name} size={26} />
 
           </div>
+
 
 
 

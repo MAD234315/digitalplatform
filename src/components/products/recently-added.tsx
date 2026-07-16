@@ -9,7 +9,7 @@
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge } from "./badge";
-import { glowFor, gradientFor } from "@/lib/product-visuals";
+import { gradientFor } from "@/lib/product-visuals";
 import { LogoMark } from "./logo-mark";
 
 
@@ -68,7 +68,6 @@ function RecentCard({ p }: { p: SheetProduct }) {
     `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
   );
   const gradient = gradientFor(p.name);
-  const glow = glowFor(p.name);
 
   return (
     <a
@@ -76,11 +75,9 @@ function RecentCard({ p }: { p: SheetProduct }) {
       href={`${CONTACT.WA_URL}?text=${waMsg}`}
       target="_blank"
       rel="noreferrer"
-      className="group relative flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/25 bg-card/55 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/45"
-      style={{
-        boxShadow: `0 1px 0 rgba(255,255,255,0.35) inset, 0 20px 40px -20px color-mix(in oklab, ${glow} 45%, transparent)`,
-      }}
+      className="group relative flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5"
     >
+
       <div
         className="relative aspect-[16/10] overflow-hidden"
         style={{ background: gradient }}
