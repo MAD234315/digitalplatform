@@ -104,16 +104,8 @@ export const ProductCard = memo(function ProductCard({
               boxShadow: `0 8px 20px -8px ${glow}, 0 0 0 1px rgba(255,255,255,0.15) inset`,
             }}
           >
-            <img
-              src={animeImageFor(p.name)}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="h-9 w-9 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = "none";
-              }}
-            />
+            <LogoMark name={p.name} size={26} />
+
           </div>
 
 
