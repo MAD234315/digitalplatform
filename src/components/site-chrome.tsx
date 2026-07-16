@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useReducedMotion } from "@/lib/motion-preference";
+
 
 const WA_NUMBER = "919652191369";
 const WA_URL = `https://wa.me/${WA_NUMBER}`;
