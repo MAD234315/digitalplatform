@@ -307,7 +307,7 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
   const updatedLabel = formatRelative(updatedAt);
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft">
+    <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
       {/* image + logo tile */}
       <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
 
