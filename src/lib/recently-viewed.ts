@@ -1,4 +1,13 @@
+/**
+ * Recently-viewed products tracker.
+ *
+ * Persists the last {@link MAX} products a user has looked at in
+ * `localStorage`, keyed by product id. Deduplicates on track so re-viewing
+ * an item bumps it to the front instead of adding a duplicate. Purely
+ * client-side — falls back to an empty list on SSR and in private mode.
+ */
 import { useCallback, useEffect, useState } from "react";
+
 import type { SheetProduct } from "./sheet-products.functions";
 
 export interface RecentItem {

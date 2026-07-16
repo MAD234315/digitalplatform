@@ -2,7 +2,15 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 import type { RecentItem } from "@/lib/recently-viewed";
 import { gradientFor, initialsFor } from "@/lib/product-visuals";
 
+/**
+ * "Continue where you left off" strip shown above the products grid.
+ *
+ * Only rendered when the user has previously viewed products that still
+ * exist in the live catalogue (the parent filters stale entries). Clicking
+ * a chip scrolls the corresponding card into view via `onJump`.
+ */
 export function RecentlyViewed({
+
   items,
   onJump,
   onClear,

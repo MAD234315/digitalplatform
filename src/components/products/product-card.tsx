@@ -1,3 +1,11 @@
+/**
+ * Product card rendered inside the /products grid.
+ *
+ * Memoised because the grid can render 200+ cards; a keystroke in the filter
+ * bar re-renders the parent, but individual cards only re-render when their
+ * `p` or `updatedAt` reference changes. The primary CTA is a pre-composed
+ * WhatsApp deep link that includes the product's name, plan, and validity.
+ */
 import { memo } from "react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
@@ -5,7 +13,9 @@ import { AvailabilityBadge, Badge } from "./badge";
 import { WaGlyph } from "./wa-glyph";
 import { animeImageFor, formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 
+/** Definition-list row inside the card's spec block. */
 function Row({ label, value }: { label: string; value: string }) {
+
   return (
     <div className="flex items-start justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>

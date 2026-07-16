@@ -1,4 +1,17 @@
+/**
+ * Server function: load the live product catalogue from a public Google Sheet.
+ *
+ * The sheet is exported as CSV, parsed row-by-row into typed
+ * {@link SheetProduct} entries, and grouped into categories using uppercase
+ * heading rows as delimiters. Availability and badges are inferred from the
+ * status column using regex heuristics.
+ *
+ * A module-level LRU-of-one cache (60s TTL) plus an in-flight promise
+ * collapse concurrent requests into a single upstream fetch — protecting the
+ * upstream sheet when many browser tabs poll on the same 60s cadence.
+ */
 import { createServerFn } from "@tanstack/react-start";
+
 
 const SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;

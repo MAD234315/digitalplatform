@@ -3,7 +3,14 @@ import { Eyebrow } from "@/components/ui-primitives";
 import { Reveal } from "@/components/reveal";
 import { CATEGORIES } from "./data";
 
+/**
+ * Home-page section listing the site's product categories.
+ *
+ * Each row is a link to `/products` and reveals with a staggered delay as
+ * the list scrolls into view (capped so late items don't lag noticeably).
+ */
 export function CategoriesSection() {
+
   return (
     <section aria-labelledby="cat-heading" className="border-t border-border bg-card/30">
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">

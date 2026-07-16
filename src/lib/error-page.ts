@@ -1,4 +1,13 @@
+/**
+ * Server-rendered HTML fallback for unhandled SSR failures.
+ *
+ * Used by `server.ts` when React's SSR pipeline throws before the app shell
+ * can render — for example, a crash in a loader or route module. Kept fully
+ * self-contained (inline styles, no imports) so it can render without any
+ * client bundle.
+ */
 export function renderErrorPage(): string {
+
   return `<!doctype html>
 <html lang="en">
   <head>

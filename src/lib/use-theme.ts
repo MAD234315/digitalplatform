@@ -1,4 +1,16 @@
+/**
+ * Dark/light theme with cookie-backed persistence.
+ *
+ * The theme is stored in the `dp-theme` cookie so the SSR shell and the
+ * pre-hydration inline script in `__root.tsx` can pick it up and set
+ * `<html class="light">` before first paint — no theme flash.
+ *
+ * If no cookie is set, initial value falls back to the OS
+ * `prefers-color-scheme` and is then written to the cookie so subsequent
+ * SSR renders stay in sync.
+ */
 import { useEffect, useState } from "react";
+
 
 export type Theme = "dark" | "light";
 
