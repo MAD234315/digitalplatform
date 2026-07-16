@@ -97,16 +97,16 @@ function RecentCard({ p }: { p: SheetProduct }) {
         <span className="absolute left-2 top-2 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
           New
         </span>
+        <div className="absolute right-2 top-2">
+          <AvailabilityBadge availability={p.availability} />
+        </div>
       </div>
       <div className="flex flex-1 flex-col p-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="truncate text-sm font-medium">{p.name}</div>
-            {p.plan && (
-              <div className="truncate text-xs text-muted-foreground">{p.plan}</div>
-            )}
-          </div>
-          <AvailabilityBadge availability={p.availability} />
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium">{p.name}</div>
+          {p.plan && (
+            <div className="truncate text-xs text-muted-foreground">{p.plan}</div>
+          )}
         </div>
         <div className="mt-3 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
           {p.category}

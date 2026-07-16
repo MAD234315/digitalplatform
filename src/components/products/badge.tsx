@@ -25,7 +25,7 @@ export function Badge({ tone, children }: { tone: BadgeTone; children: ReactNode
   const s = badgeToneStyle[tone];
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-soft backdrop-blur-sm"
+      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-soft backdrop-blur-sm"
       style={{ backgroundColor: s.bg, color: s.fg }}
     >
       {children}

@@ -59,28 +59,28 @@ export const ProductCard = memo(function ProductCard({
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32"
       style={{ contentVisibility: "auto", containIntrinsicSize: "520px 380px" }}
     >
-      <div className="relative flex items-center gap-3 px-3 py-2.5 border-b border-border/60">
-        <div
-          aria-hidden
-          className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-soft"
-          style={{ background: gradientFor(p.name) }}
-        >
-          <img
-            src={animeImageFor(p.name)}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-11 w-11 object-cover"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </div>
+      <div className="flex flex-col gap-2 px-3 py-2.5 border-b border-border/60">
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            aria-hidden
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-soft"
+            style={{ background: gradientFor(p.name) }}
+          >
+            <img
+              src={animeImageFor(p.name)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-11 w-11 object-cover"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+              }}
+            />
+          </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
             <span
-              className="inline-flex h-4 min-w-4 items-center justify-center rounded px-1 font-display text-[10px]"
+              className="inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded px-1 font-display text-[10px]"
               style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
             >
               {initials}
@@ -91,7 +91,7 @@ export const ProductCard = memo(function ProductCard({
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-wrap justify-end gap-1 max-w-[55%]">
+        <div className="flex flex-wrap items-center gap-1">
           {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
           {p.badges.includes("high-demand") && <Badge tone="hot">🔥 Hot</Badge>}
           {p.loot && <Badge tone="loot">Loot</Badge>}
