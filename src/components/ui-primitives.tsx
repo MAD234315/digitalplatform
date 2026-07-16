@@ -35,14 +35,14 @@ type CtaSize = "md" | "lg";
 type CtaVariant = "primary" | "outline";
 
 const baseCta =
-  "inline-flex items-center justify-center rounded-sm font-semibold uppercase tracking-[0.14em] transition";
+  "relative overflow-hidden inline-flex items-center justify-center rounded-sm font-semibold uppercase tracking-[0.14em] transition-all duration-300 will-change-transform active:translate-y-0 active:scale-[0.98]";
 const sizeMap: Record<CtaSize, string> = {
   md: "min-h-11 px-6 text-sm",
   lg: "min-h-12 px-7 text-sm",
 };
 const variantMap: Record<CtaVariant, string> = {
-  primary: "shadow-gold hover:-translate-y-0.5 hover:brightness-110 duration-300",
-  outline: "border border-border bg-transparent text-foreground hover:bg-card",
+  primary: "shadow-gold hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_0_0_1px_oklch(0.80_0.14_82/0.4),0_18px_50px_-12px_oklch(0.80_0.14_82/0.55)]",
+  outline: "border border-border bg-transparent text-foreground hover:bg-card hover:border-amber/40 hover:-translate-y-0.5",
 };
 
 function ctaClasses(variant: CtaVariant, size: CtaSize, extra = "") {
