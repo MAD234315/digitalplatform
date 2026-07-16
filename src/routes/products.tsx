@@ -308,16 +308,29 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
 
   return (
     <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
-      {/* Ultra-compact media strip — glyph thumbnail + inline category & badges */}
+      {/* Ultra-compact media strip — brand logo thumbnail + inline category & badges */}
       <div className="relative flex items-center gap-3 px-3 py-2.5 border-b border-border/60">
-        {/* Small square product thumbnail — every product gets a fitting icon */}
+        {/* Small square product thumbnail — real brand logo when known, glyph fallback */}
         <div
           aria-hidden
-          className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-soft"
-          style={{ background: gradientFor(p.name) }}
+          className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white shadow-soft"
+          style={!logoForProduct(p.name) ? { background: gradientFor(p.name) } : undefined}
         >
-          <span className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
-          <span className="relative text-xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
+          {logoForProduct(p.name) ? (
+            <img
+              src={logoForProduct(p.name)!}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-7 w-7 object-contain"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
+          ) : (
+            <>
+              <span className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
+              <span className="relative text-xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
+            </>
+          )}
         </div>
 
         {/* Initials + category label */}
@@ -445,6 +458,121 @@ function glyphForCategory(category: string, name: string): string {
   if (/(zoom|meet|webex|teams)/.test(n)) return "📹";
   if (/(grammarly|quillbot|deepl|linguee)/.test(n)) return "✍️";
   if (/(telegram|whatsapp|signal|discord)/.test(n)) return "💬";
+
+/**
+ * Real brand-logo URL for a product when we can confidently map its name to
+ * a known brand. Uses simpleicons.org CDN (SVG, cached at the edge).
+ * Returns null when no confident match — caller falls back to the glyph.
+ */
+function logoForProduct(name: string): string | null {
+  const n = name.toLowerCase();
+  const brands: Array<[RegExp, string]> = [
+    [/netflix/, "netflix"],
+    [/prime ?video|amazon ?prime/, "primevideo"],
+    [/hotstar|disney/, "disneyplus"],
+    [/sony ?liv/, "sonyliv"],
+    [/zee/, "zee5"],
+    [/jio ?cinema/, "jiocinema"],
+    [/apple ?tv/, "appletv"],
+    [/hulu/, "hulu"],
+    [/youtube ?music/, "youtubemusic"],
+    [/apple ?music/, "applemusic"],
+    [/spotify/, "spotify"],
+    [/gaana/, "gaana"],
+    [/wynk/, "wynkmusic"],
+    [/tidal/, "tidal"],
+    [/deezer/, "deezer"],
+    [/youtube|yt ?premium/, "youtube"],
+    [/chatgpt|openai/, "openai"],
+    [/claude|anthropic/, "anthropic"],
+    [/gemini|bard/, "googlegemini"],
+    [/perplexity/, "perplexity"],
+    [/copilot/, "githubcopilot"],
+    [/midjourney/, "midjourney"],
+    [/leonardo/, "leonardoai"],
+    [/stable ?diffusion/, "stablediffusion"],
+    [/runway/, "runway"],
+    [/elevenlabs/, "elevenlabs"],
+    [/grok/, "x"],
+    [/canva/, "canva"],
+    [/figma/, "figma"],
+    [/photoshop/, "adobephotoshop"],
+    [/illustrator/, "adobeillustrator"],
+    [/lightroom/, "adobelightroom"],
+    [/premiere/, "adobepremierepro"],
+    [/after ?effects/, "adobeaftereffects"],
+    [/adobe/, "adobe"],
+    [/coreldraw/, "coreldraw"],
+    [/office ?365|microsoft ?365|ms ?office/, "microsoftoffice"],
+    [/excel/, "microsoftexcel"],
+    [/word/, "microsoftword"],
+    [/powerpoint/, "microsoftpowerpoint"],
+    [/outlook/, "microsoftoutlook"],
+    [/onedrive/, "microsoftonedrive"],
+    [/windows/, "windows"],
+    [/microsoft/, "microsoft"],
+    [/google ?one|google ?drive/, "googledrive"],
+    [/dropbox/, "dropbox"],
+    [/icloud/, "icloud"],
+    [/mega/, "mega"],
+    [/pcloud/, "pcloud"],
+    [/github/, "github"],
+    [/gitlab/, "gitlab"],
+    [/jetbrains/, "jetbrains"],
+    [/intellij/, "intellijidea"],
+    [/pycharm/, "pycharm"],
+    [/vscode|visual ?studio ?code/, "vscodium"],
+    [/cursor/, "cursor"],
+    [/replit/, "replit"],
+    [/vercel/, "vercel"],
+    [/netlify/, "netlify"],
+    [/aws|amazon ?web/, "amazonaws"],
+    [/azure/, "microsoftazure"],
+    [/render/, "render"],
+    [/fly\.io/, "fly"],
+    [/coursera/, "coursera"],
+    [/udemy/, "udemy"],
+    [/skillshare/, "skillshare"],
+    [/masterclass/, "masterclass"],
+    [/linkedin ?learning|linkedin/, "linkedin"],
+    [/duolingo/, "duolingo"],
+    [/quizlet/, "quizlet"],
+    [/chegg/, "chegg"],
+    [/notion/, "notion"],
+    [/evernote/, "evernote"],
+    [/todoist/, "todoist"],
+    [/asana/, "asana"],
+    [/trello/, "trello"],
+    [/clickup/, "clickup"],
+    [/obsidian/, "obsidian"],
+    [/slack/, "slack"],
+    [/nord ?vpn/, "nordvpn"],
+    [/express ?vpn/, "expressvpn"],
+    [/surfshark/, "surfshark"],
+    [/proton ?vpn|proton/, "protonvpn"],
+    [/windscribe/, "windscribe"],
+    [/amazon/, "amazon"],
+    [/flipkart/, "flipkart"],
+    [/steam/, "steam"],
+    [/playstation/, "playstation"],
+    [/xbox/, "xbox"],
+    [/nintendo/, "nintendo"],
+    [/google ?play/, "googleplay"],
+    [/zoom/, "zoom"],
+    [/google ?meet/, "googlemeet"],
+    [/webex/, "webex"],
+    [/teams/, "microsoftteams"],
+    [/grammarly/, "grammarly"],
+    [/quillbot/, "quillbot"],
+    [/deepl/, "deepl"],
+    [/telegram/, "telegram"],
+    [/whatsapp/, "whatsapp"],
+    [/signal/, "signal"],
+    [/discord/, "discord"],
+  ];
+  for (const [re, slug] of brands) if (re.test(n)) return `https://cdn.simpleicons.org/${slug}`;
+  return null;
+}
 
   // Category-level defaults
   const c = category.toLowerCase();
