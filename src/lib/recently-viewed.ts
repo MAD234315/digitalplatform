@@ -1,0 +1,70 @@
+import { useCallback, useEffect, useState } from "react";
+import type { SheetProduct } from "./sheet-products.functions";
+
+export interface RecentItem {
+  id: string;
+  name: string;
+  plan?: string;
+  category: string;
+  viewedAt: number;
+}
+
+const KEY = "dp:recently-viewed";
+const MAX = 8;
+
+function read(): RecentItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as RecentItem[]).slice(0, MAX) : [];
+  } catch {
+    return [];
+  }
+}
+
+function write(items: RecentItem[]) {
+  try {
+    window.localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX)));
+  } catch {
+    /* quota / private mode — safe to ignore */
+  }
+}
+
+/** SSR-safe hook: returns [] on first render, hydrates from storage in effect. */
+export function useRecentlyViewed() {
+  const [items, setItems] = useState<RecentItem[]>([]);
+
+  useEffect(() => {
+    setItems(read());
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === KEY) setItems(read());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  const track = useCallback((p: SheetProduct) => {
+    const next: RecentItem = {
+      id: p.id,
+      name: p.name,
+      plan: p.plan,
+      category: p.category,
+      viewedAt: Date.now(),
+    };
+    setItems((prev) => {
+      const dedup = prev.filter((x) => x.id !== next.id);
+      const merged = [next, ...dedup].slice(0, MAX);
+      write(merged);
+      return merged;
+    });
+  }, []);
+
+  const clear = useCallback(() => {
+    write([]);
+    setItems([]);
+  }, []);
+
+  return { items, track, clear };
+}
