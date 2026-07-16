@@ -119,7 +119,7 @@ function LiveStatusCard({
         Synced with stock sheet
       </div>
       <div className="mt-3 text-xs text-muted-foreground min-h-4" suppressHydrationWarning>
-        {updatedLabel ? `Last update: ${updatedLabel}` : "\u00a0"}
+        {updatedLabel ? `Last update: ${updatedLabel} · ${agoLabel}` : "\u00a0"}
       </div>
       <div className="mt-4 flex items-baseline gap-2">
         <div className={`font-display text-4xl ${pulseCls}`}>{productCount}</div>
