@@ -10,10 +10,12 @@ import type { StockFilter } from "./use-products-filter";
 
 const STOCK_OPTIONS: { value: StockFilter; label: string }[] = [
   { value: "all", label: "All" },
+  { value: "latest", label: "Latest" },
   { value: "in-stock", label: "In stock" },
   { value: "limited", label: "Low stock" },
   { value: "out", label: "Out" },
 ];
+
 
 export function ProductsFilterBar({
   categories,
