@@ -6,6 +6,7 @@ import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sh
 import type { ReactNode } from "react";
 import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
+import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
 
 // Static options (not a factory) — keeps queryKey referentially stable so
 // useSuspenseQuery, ensureQueryData, and any getQueryData reads share the
