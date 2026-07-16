@@ -85,12 +85,8 @@ function RecentCard({ p }: { p: SheetProduct }) {
         className="relative aspect-[16/10] overflow-hidden"
         style={{ background: gradient }}
       >
-        {/* Soft glow halo behind the logo */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-70 blur-2xl transition duration-500 group-hover:opacity-100"
-          style={{ background: `radial-gradient(circle at 50% 55%, ${glow} 0%, transparent 60%)` }}
-        />
+
+
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition duration-500 group-hover:scale-[1.06]">
           <LogoMark name={p.name} size={56} />
         </div>
