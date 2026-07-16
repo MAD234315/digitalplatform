@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { observeReveal } from "@/lib/reveal-observer";
 
 type RevealProps = {
   children: ReactNode;
@@ -13,6 +14,9 @@ type RevealProps = {
  * Scroll-triggered reveal. SSR-safe: renders visible on the server,
  * hides briefly on mount, then fades/rises in when it enters the viewport.
  * Respects prefers-reduced-motion via the global @media rule.
+ *
+ * All Reveals share a single IntersectionObserver via `reveal-observer.ts`,
+ * so mounting 20+ of them on the home page costs one observer, not 20+.
  */
 export function Reveal({
   children,
@@ -30,22 +34,22 @@ export function Reveal({
     setReady(true);
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            setInView(true);
-            if (once) io.unobserve(e.target);
-          } else if (!once) {
-            setInView(false);
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    let cancelled = false;
+    const unobserve = observeReveal(el, (isIntersecting) => {
+      if (cancelled) return;
+      if (isIntersecting) {
+        setInView(true);
+        if (once) unobserve();
+      } else if (!once) {
+        setInView(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+      unobserve();
+    };
   }, [once]);
+
 
   const hidden = ready && !inView;
   const settled = ready && inView && once; // reached final state, won't animate again
