@@ -154,7 +154,7 @@ export function ProductsFilterBar({
 
   return (
     <div className="border-b border-border bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
         <div
           role="group"
           aria-label="Filter by category"
