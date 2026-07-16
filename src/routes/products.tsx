@@ -170,9 +170,12 @@ function Products() {
         productCount={data.products.length}
         inStockCount={data.products.filter((p) => p.availability !== "out").length}
         limitedCount={data.products.filter((p) => p.availability === "limited").length}
+        latestCount={stockCounts.latest}
         updatedAt={dataUpdatedAt}
         isRefreshing={isFetching}
+        onShowLatest={() => setStock("latest")}
       />
+
 
       <ProductsFilterBar
         categories={data.categories.map((c) => c.name)}

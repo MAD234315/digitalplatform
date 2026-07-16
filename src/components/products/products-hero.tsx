@@ -10,14 +10,18 @@ export function ProductsHero({
   productCount,
   inStockCount,
   limitedCount = 0,
+  latestCount = 0,
   updatedAt,
   isRefreshing = false,
+  onShowLatest,
 }: {
   productCount: number;
   inStockCount: number;
   limitedCount?: number;
+  latestCount?: number;
   updatedAt: number;
   isRefreshing?: boolean;
+  onShowLatest?: () => void;
 }) {
   return (
     <header className="relative border-b border-border">
@@ -27,7 +31,17 @@ export function ProductsHero({
         title="Every product,"
         titleAccent="live from our shelf."
         lede={<>Updated in real-time from our internal stock sheet. Prices depend on stock availability and demand — DM us for today&apos;s rate.</>}
-        aside={<LiveStatusCard productCount={productCount} inStockCount={inStockCount} limitedCount={limitedCount} updatedAt={updatedAt} isRefreshing={isRefreshing} />}
+        aside={
+          <LiveStatusCard
+            productCount={productCount}
+            inStockCount={inStockCount}
+            limitedCount={limitedCount}
+            latestCount={latestCount}
+            updatedAt={updatedAt}
+            isRefreshing={isRefreshing}
+            onShowLatest={onShowLatest}
+          />
+        }
       />
     </header>
   );
@@ -35,21 +49,45 @@ export function ProductsHero({
 
 
 
+
+function nextThursday(now = new Date()): Date {
+  const d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+  // 4 = Thursday; advance to the next occurrence, or a week ahead if today is Thu.
+  const daysUntilThu = (4 - d.getDay() + 7) % 7 || 7;
+  d.setDate(d.getDate() + daysUntilThu);
+  return d;
+}
+
+function formatResetIn(target: Date, now = new Date()): string {
+  const ms = target.getTime() - now.getTime();
+  if (ms <= 0) return "today";
+  const days = Math.floor(ms / 86_400_000);
+  if (days >= 1) return `in ${days} day${days === 1 ? "" : "s"}`;
+  const hours = Math.max(1, Math.round(ms / 3_600_000));
+  return `in ${hours} hour${hours === 1 ? "" : "s"}`;
+}
+
 function LiveStatusCard({
   productCount,
   inStockCount,
   limitedCount = 0,
+  latestCount = 0,
   updatedAt,
   isRefreshing = false,
+  onShowLatest,
 }: {
   productCount: number;
   inStockCount: number;
   limitedCount?: number;
+  latestCount?: number;
   updatedAt: number;
   isRefreshing?: boolean;
+  onShowLatest?: () => void;
 }) {
   const outCount = Math.max(0, productCount - inStockCount);
   const pulseCls = isRefreshing ? "animate-pulse" : "";
+  const resetLabel = formatResetIn(nextThursday());
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-soft" aria-busy={isRefreshing}>
       <div className="flex items-center justify-between">
@@ -94,6 +132,22 @@ function LiveStatusCard({
           )}
         </StatTile>
       </dl>
+      <button
+        type="button"
+        onClick={onShowLatest}
+        disabled={!onShowLatest}
+        aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added this week. Resets ${resetLabel} on Thursday.`}
+        className="mt-3 flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-left text-xs transition hover:border-foreground/30 hover:bg-muted disabled:cursor-default disabled:hover:border-border disabled:hover:bg-card"
+      >
+        <span className="flex items-center gap-2">
+          <span aria-hidden className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "var(--primary)" }} />
+          <span className="font-medium uppercase tracking-[0.14em] text-[10px]">Latest this week</span>
+        </span>
+        <span className="flex items-baseline gap-1.5">
+          <span className={`font-display text-base ${pulseCls}`}>{latestCount}</span>
+          <span className="text-[10px] text-muted-foreground">· resets {resetLabel}</span>
+        </span>
+      </button>
       {limitedCount > 0 && (
         <div
           role="status"
@@ -112,6 +166,7 @@ function LiveStatusCard({
     </div>
   );
 }
+
 
 function StatTile({
   label,
