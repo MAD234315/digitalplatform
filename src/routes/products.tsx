@@ -308,23 +308,34 @@ function ProductCard({ p, updatedAt, onView }: { p: SheetProduct; updatedAt: num
 
   return (
     <article id={`product-${p.id}`} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20 focus-within:-translate-y-0.5 focus-within:shadow-soft scroll-mt-32">
-      {/* image + logo tile */}
-      <div className="relative aspect-[5/3] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+      {/* Compact media strip — per-category glyph on a name-derived gradient */}
+      <div className="relative aspect-[16/6] overflow-hidden" style={{ background: gradientFor(p.name) }}>
+        <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.55), transparent 70%)" }} />
 
-        <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.5), transparent 70%)" }} />
-        <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white font-display text-lg shadow-soft" style={{ color: "var(--primary)" }}>
+        {/* Centered category glyph acts as the product image */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span aria-hidden className="text-4xl drop-shadow-sm">{glyphForCategory(p.category, p.name)}</span>
+        </div>
+
+        {/* Initials chip — small brand mark, top-left */}
+        <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white font-display text-[13px] shadow-soft" style={{ color: "var(--primary)" }}>
           {initials}
         </div>
-        <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1.5 max-w-[70%]">
+
+        {/* Category tag, bottom-left */}
+        <div className="absolute bottom-2 left-3 text-[10px] uppercase tracking-[0.18em] text-white/90">
+          {p.category}
+        </div>
+
+        {/* Badges, top-right */}
+        <div className="absolute right-2 top-2 flex flex-wrap justify-end gap-1 max-w-[70%]">
           {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
           {p.badges.includes("high-demand") && <Badge tone="hot">🔥 High Demand</Badge>}
           {p.loot && <Badge tone="loot">Loot</Badge>}
           <AvailabilityBadge availability={p.availability} />
         </div>
-        <div className="absolute bottom-3 left-4 right-4 text-[10px] uppercase tracking-[0.18em] text-white/85">
-          {p.category}
-        </div>
       </div>
+
 
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
