@@ -111,6 +111,7 @@ function Products() {
   const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
+  const { items: recent, track, clear } = useRecentlyViewed();
 
   // Precompute a category → count map so the filter bar doesn't re-scan
   // `data.categories` for each chip on every keystroke.
@@ -128,6 +129,15 @@ function Products() {
       return true;
     });
   }, [data.products, active, q]);
+
+  // Only surface recents that still exist in the live catalogue, and skip
+  // whatever is being filtered — jumping to a hidden card would confuse users.
+  const recentVisible = useMemo(() => {
+    const byId = new Map(data.products.map((p) => [p.id, p] as const));
+    return recent
+      .map((r) => ({ recent: r, product: byId.get(r.id) }))
+      .filter((x): x is { recent: RecentItem; product: SheetProduct } => Boolean(x.product));
+  }, [recent, data.products]);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
