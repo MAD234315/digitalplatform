@@ -88,11 +88,7 @@ export const ProductCard = memo(function ProductCard({
         <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
         {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
 
-        {p.originalPrice && (
-          <div className="mt-3 text-sm">
-            <span className="text-muted-foreground line-through">{p.originalPrice}</span>
-          </div>
-        )}
+
 
         <dl className="mt-4 space-y-1.5 text-sm">
           {p.plan && <Row label="Plan" value={p.plan} />}
