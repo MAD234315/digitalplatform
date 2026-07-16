@@ -108,8 +108,9 @@ function About() {
           </div>
         </div>
       </section>
-
+      </main>
       <SiteFooter />
+
     </div>
   );
 }
