@@ -67,7 +67,7 @@ function About() {
           <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Ready when you are.</div>
           <h2 className="mt-4 font-display text-3xl sm:text-4xl">
             Browse the live catalogue <em className="text-headline">or say hello</em>
-            <br />— we usually reply within minutes.
+            <br />— we usually reply at earliest.
           </h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link to="/products" className="rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground">
