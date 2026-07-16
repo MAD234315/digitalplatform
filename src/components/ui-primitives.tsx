@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { ComponentProps, ReactNode } from "react";
+import { useCallback, type ComponentProps, type MouseEvent, type ReactNode } from "react";
 
 /** Small uppercase kicker used above section headings. */
 export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
