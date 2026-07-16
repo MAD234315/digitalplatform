@@ -104,6 +104,11 @@
 
 
 @layer base {
+  
+  #lovable-badge {  
+   display: none !important;  
+  }
+  
   * { border-color: var(--color-border); }
   html {
     color-scheme: dark;
