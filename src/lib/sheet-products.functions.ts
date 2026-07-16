@@ -26,7 +26,7 @@ export type SheetProduct = {
   name: string;
   validity: string;
   plan: string;
-  originalPrice: string;
+  
   type: string;
   supports: string;
   warranty: string;
@@ -85,13 +85,8 @@ function isTableHeader(row: string[]): boolean {
   return first === "STATUS" || first === "PRODUCT STATUS";
 }
 
-function cleanPrice(v: string): string {
-  // Strip an existing ₹ prefix, trailing "/-", and whitespace, then re-prefix ₹
-  // so callers can safely pass raw sheet values without doubling the symbol.
-  const t = (v || "").trim().replace(/^₹\s*/, "").replace(/\/-\s*$/, "").trim();
-  if (!t) return "";
-  return `₹${t}`;
-}
+
+
 
 // Cross-request in-memory cache. On serverless workers this shares within an
 // isolate, which still absorbs the burst of clients polling every 60s.
@@ -243,7 +238,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
 
       const validity = (row[3] || "").trim();
       const plan = (row[4] || "").trim();
-      const originalPrice = (row[6] || "").trim();
+      
       const type = (row[7] || "").trim();
       const supports = (row[10] || "").trim();
       const warranty = (row[11] || "").trim();
@@ -268,7 +263,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         name,
         validity,
         plan,
-        originalPrice: cleanPrice(originalPrice),
+        
         type,
         supports,
         warranty,
