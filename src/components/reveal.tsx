@@ -48,6 +48,7 @@ export function Reveal({
   }, [once]);
 
   const hidden = ready && !inView;
+  const settled = ready && inView && once; // reached final state, won't animate again
   // Always include transitionDelay in both branches. React warns when a
   // longhand (transitionDelay) is added/removed while the `transition`
   // shorthand stays set — keeping the key present in every render avoids
@@ -63,7 +64,10 @@ export function Reveal({
       style={{
         transition:
           "opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1)",
-        willChange: "opacity, transform",
+        // Drop willChange once the element has finished revealing so we
+        // don't hold a compositor layer per Reveal for the rest of the
+        // page's lifetime (long FAQ / product grids can host dozens).
+        willChange: settled ? undefined : "opacity, transform",
         ...style,
       }}
       className={className}
@@ -72,3 +76,4 @@ export function Reveal({
     </Tag>
   );
 }
+
