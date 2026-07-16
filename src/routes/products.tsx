@@ -117,9 +117,8 @@ export const Route = createFileRoute("/products")({
 function ProductsError({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <SiteNav />
-      <main className="mx-auto max-w-3xl px-6 py-24 text-center">
+    <PageShell>
+      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
         <h1 className="font-display text-4xl">The catalogue is offline.</h1>
         <p className="mt-3 text-muted-foreground">
           {error?.message || "We couldn't reach the live stock sheet just now."}
@@ -131,22 +130,19 @@ function ProductsError({ error, reset }: { error: Error; reset: () => void }) {
         >
           Retry
         </button>
-      </main>
-      <SiteFooter />
-    </div>
+      </div>
+    </PageShell>
   );
 }
 
 function ProductsNotFound() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <SiteNav />
-      <main className="mx-auto max-w-3xl px-6 py-24 text-center">
+    <PageShell>
+      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
         <h1 className="font-display text-4xl">Nothing here.</h1>
         <p className="mt-3 text-muted-foreground">This part of the catalogue doesn&apos;t exist.</p>
-      </main>
-      <SiteFooter />
-    </div>
+      </div>
+    </PageShell>
   );
 }
 
