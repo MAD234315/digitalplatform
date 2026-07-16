@@ -15,15 +15,56 @@ const productsQueryOptions = queryOptions({
   refetchOnWindowFocus: true,
 });
 
+const SITE = "https://digitalplatform13.lovable.app";
+const PRODUCTS_URL = SITE + "/products";
+const PRODUCTS_TITLE = "Digital Subscriptions & Software — Digital Platform";
+const PRODUCTS_DESC = "Live catalogue of premium subscriptions, AI tools, software licenses and gift cards. Updated daily from our stock sheet. DM for live pricing.";
+
 export const Route = createFileRoute("/products")({
-  head: () => ({
-    meta: [
-      { title: "Products — Digital Platform" },
-      { name: "description", content: "Live catalogue of premium subscriptions, AI tools, software licenses and gift cards. Updated daily from our stock sheet." },
-      { property: "og:title", content: "Products — Digital Platform" },
-      { property: "og:description", content: "Live catalogue. Updated daily. DM for prices." },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const items = loaderData?.products?.slice(0, 20) ?? [];
+    const itemList = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      url: PRODUCTS_URL,
+      name: PRODUCTS_TITLE,
+      itemListElement: items.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: p.name + (p.plan ? ` — ${p.plan}` : ""),
+      })),
+    };
+    return {
+      meta: [
+        { title: PRODUCTS_TITLE },
+        { name: "description", content: PRODUCTS_DESC },
+        { property: "og:title", content: PRODUCTS_TITLE },
+        { property: "og:description", content: PRODUCTS_DESC },
+        { property: "og:url", content: PRODUCTS_URL },
+        { property: "og:type", content: "website" },
+        { name: "twitter:title", content: PRODUCTS_TITLE },
+        { name: "twitter:description", content: PRODUCTS_DESC },
+      ],
+      links: [{ rel: "canonical", href: PRODUCTS_URL }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(itemList),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+              { "@type": "ListItem", position: 2, name: "Products", item: PRODUCTS_URL },
+            ],
+          }),
+        },
+      ],
+    };
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   component: Products,
 });
