@@ -11,7 +11,7 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge, Badge } from "./badge";
 import { WaGlyph } from "./wa-glyph";
-import { formatRelative, glowFor, gradientFor, initialsFor } from "@/lib/product-visuals";
+import { formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 import { LogoMark } from "./logo-mark";
 
 
