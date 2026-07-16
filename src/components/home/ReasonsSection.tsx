@@ -1,5 +1,6 @@
 import { AccentTile, Eyebrow } from "@/components/ui-primitives";
 import { Reveal } from "@/components/reveal";
+import { TiltCard } from "@/components/tilt-card";
 import { REASONS, type Reason } from "./data";
 
 export function ReasonsSection() {
