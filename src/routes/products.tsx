@@ -147,7 +147,7 @@ function ProductsNotFound() {
 }
 
 function Products() {
-  const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
+  const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
   const { active, setActive, q, setQ, filtered, categoryCounts } = useProductsFilter(
     data.products,
     data.categories,
@@ -170,7 +170,9 @@ function Products() {
         productCount={data.products.length}
         inStockCount={data.products.filter((p) => p.availability !== "out").length}
         updatedAt={dataUpdatedAt}
+        isRefreshing={isFetching}
       />
+
 
       <ProductsFilterBar
         categories={data.categories.map((c) => c.name)}
