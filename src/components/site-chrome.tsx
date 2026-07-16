@@ -1,5 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
+
 
 
 const WA_NUMBER = "919652191369";
@@ -90,6 +92,8 @@ export function SiteNav() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           <a
             href={WA_URL}
             target="_blank"
