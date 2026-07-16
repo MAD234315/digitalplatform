@@ -136,8 +136,9 @@ function Contact() {
           </div>
         </div>
       </section>
-
+      </main>
       <SiteFooter />
+
     </div>
   );
 }
