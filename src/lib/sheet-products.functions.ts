@@ -41,6 +41,8 @@ export type ProductsPayload = {
   products: SheetProduct[];
   fetchedAt: string;
   error?: string;
+  /** True when the current payload is being served from cache because upstream is rate-limited (HTTP 429). */
+  rateLimited?: boolean;
 };
 
 // Minimal RFC 4180 CSV row parser (handles quoted commas & escaped quotes)
