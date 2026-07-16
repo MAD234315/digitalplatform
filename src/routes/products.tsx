@@ -179,7 +179,12 @@ function Products() {
       />
 
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
-        {data.error && (
+        {data.rateLimited && data.products.length > 0 && (
+          <div className="mb-6 rounded-xl border border-amber/40 bg-amber/10 p-4 text-sm">
+            Showing cached catalogue — the live sheet is temporarily rate-limited. Fresh data will resume automatically.
+          </div>
+        )}
+        {data.error && data.products.length === 0 && (
           <div className="mb-6 rounded-xl border border-danger/40 p-4 text-sm" style={{ color: "var(--danger)" }}>
             Couldn&apos;t load the live sheet ({data.error}). Please retry shortly.
           </div>
