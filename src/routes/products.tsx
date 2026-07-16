@@ -219,7 +219,11 @@ function Products() {
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((p) => <ProductCard key={p.id} p={p} updatedAt={dataUpdatedAt} />)}
+            {filtered.map((p) => (
+              <TiltCard key={p.id} max={4}>
+                <ProductCard p={p} updatedAt={dataUpdatedAt} />
+              </TiltCard>
+            ))}
           </div>
         )}
 
