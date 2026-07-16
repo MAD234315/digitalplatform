@@ -76,23 +76,13 @@ export const ProductCard = memo(function ProductCard({
         `,
       }}
     >
-      {/* Colored ambient blobs the frosted surface blurs — this is what makes glass read. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full opacity-70 blur-3xl transition duration-500 group-hover:opacity-100"
-        style={{ background: glow }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-24 -right-16 h-56 w-56 rounded-full opacity-40 blur-3xl transition duration-500 group-hover:opacity-70"
-        style={{ background: gradientFor(p.name) }}
-      />
       {/* Top sheen — sells the "glass" edge highlight */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)" }}
       />
+
       <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-white/25">
 
         <div className="flex items-center gap-3 min-w-0">
