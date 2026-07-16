@@ -72,16 +72,16 @@ function Contact() {
               For the fastest reply, include these details in your message:
             </p>
             <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-              <li>• Your full name and email address</li>
-              <li>• Product or service you&apos;re asking about</li>
-              <li>• Budget or expected quantity, if any</li>
-              <li>• Preferred delivery timeline</li>
+              <li>• Your Full Name</li>
+              <li>•&nbsp;Product or Service You&apos;re Interested In</li>
+              <li>• Referral Details (if applicable)</li>
+              <li>• Preferred Delivery Timeline</li>
             </ul>
           </div>
           <div className="lg:col-span-7">
             <div className="rounded-2xl border border-border bg-card p-8">
               <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Support hours</div>
-              <p className="mt-3 font-display text-2xl">Every day, 10 AM – 10 PM IST.</p>
+              <p className="mt-3 font-display text-2xl">Every day, Limited Hours.</p>
               <p className="mt-3 text-sm text-muted-foreground">
                 Messages sent outside these hours get a reply first thing next morning.
               </p>
