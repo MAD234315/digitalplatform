@@ -55,8 +55,8 @@ function About() {
               should be accessible, affordable, and supported by excellent customer service.
             </p>
             <blockquote className="mt-10 border-l-2 border-amber pl-6 font-display text-2xl leading-snug">
-              &ldquo;Premium digital solutions. Genuine sources. Trusted service.&rdquo;
-              <div className="mt-3 text-xs uppercase tracking-[0.22em] text-muted-foreground not-italic">— Our motto</div>
+              &ldquo; Genuine sources. Reliable service.&rdquo;
+              <div className="mt-3 text-xs uppercase tracking-[0.22em] text-muted-foreground not-italic">— OUR MOTTO</div>
             </blockquote>
           </div>
         </div>
