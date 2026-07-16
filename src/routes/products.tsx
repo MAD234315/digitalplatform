@@ -105,7 +105,45 @@ export const Route = createFileRoute("/products")({
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   component: Products,
+  errorComponent: ProductsError,
+  notFoundComponent: ProductsNotFound,
 });
+
+function ProductsError({ error, reset }: { error: Error; reset: () => void }) {
+  console.error(error);
+  return (
+    <div className="min-h-dvh bg-background text-foreground">
+      <SiteNav />
+      <main className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <h1 className="font-display text-4xl">The catalogue is offline.</h1>
+        <p className="mt-3 text-muted-foreground">
+          {error?.message || "We couldn't reach the live stock sheet just now."}
+        </p>
+        <button
+          type="button"
+          onClick={() => reset()}
+          className="mt-6 rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground"
+        >
+          Retry
+        </button>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
+
+function ProductsNotFound() {
+  return (
+    <div className="min-h-dvh bg-background text-foreground">
+      <SiteNav />
+      <main className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <h1 className="font-display text-4xl">Nothing here.</h1>
+        <p className="mt-3 text-muted-foreground">This part of the catalogue doesn&apos;t exist.</p>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
 
 function Products() {
   const { data, dataUpdatedAt } = useSuspenseQuery(productsQueryOptions);
