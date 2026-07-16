@@ -236,12 +236,15 @@ async function loadFromSheet(): Promise<ProductsPayload> {
       if (/YOU ARE IN|NOTE|LAST UPDATED|WhatsApp Me|PLANS & PRICES|FOR OUR PRICES/i.test(name)) continue;
       if (!/^[A-Za-z0-9]/.test(name)) continue;
 
+      // Sheet columns:
+      // 0 STATUS · 1 S.NO · 2 PRODUCT · 3 VALIDITY · 4 PLAN · 5 OUR PRICE
+      // 6 ACTIVATION TYPE · 7 DEVICES LIMIT · 8 USE AT ONCE · 9 SUPPORTS · 10 WARRANTY
       const validity = (row[3] || "").trim();
       const plan = (row[4] || "").trim();
-      
-      const type = (row[7] || "").trim();
-      const supports = (row[10] || "").trim();
-      const warranty = (row[11] || "").trim();
+      const type = (row[6] || "").trim();
+      const supports = (row[9] || "").trim();
+      const warranty = (row[10] || "").trim();
+
 
       const statusVal = status || "IN-STOCK";
       const isOut = /\b(out\s*of\s*stock|not\s*in\s*stock|sold\s*out|unavailable)\b/i.test(statusVal);
