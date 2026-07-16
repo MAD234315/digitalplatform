@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { SiteNav, SiteFooter } from "@/components/site-chrome";
 import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
 import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
@@ -11,6 +10,7 @@ import { ProductsHero } from "@/components/products/products-hero";
 import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
 import { useProductsFilter } from "@/components/products/use-products-filter";
+import { PageShell } from "@/components/layout/PageShell";
 
 
 // Static options (not a factory) — keeps queryKey referentially stable so
