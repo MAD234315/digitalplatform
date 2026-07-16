@@ -1,6 +1,5 @@
 import { useEffect, useId, useState } from "react";
 import { PageHero } from "@/components/layout/PageHero";
-import heroIllustration from "@/assets/hero-robotics-education.jpg";
 
 
 /**
@@ -33,33 +32,21 @@ export function ProductsHero({
         titleAccent="live from our shelf."
         lede={<>Updated in real-time from our internal stock sheet. Prices depend on stock availability and demand — DM us for today&apos;s rate.</>}
         aside={
-          <div className="flex flex-col gap-5">
-            <figure className="relative overflow-hidden rounded-2xl border border-border bg-hero">
-              <img
-                src={heroIllustration}
-                alt="Illustration of a friendly robot reading a book surrounded by lightbulbs, atoms, gears and planets — ideas, robotics and education."
-                width={1536}
-                height={1152}
-                loading="eager"
-                decoding="async"
-                className="block h-auto w-full object-cover"
-              />
-            </figure>
-            <LiveStatusCard
-              productCount={productCount}
-              inStockCount={inStockCount}
-              limitedCount={limitedCount}
-              latestCount={latestCount}
-              updatedAt={updatedAt}
-              isRefreshing={isRefreshing}
-              onShowLatest={onShowLatest}
-            />
-          </div>
+          <LiveStatusCard
+            productCount={productCount}
+            inStockCount={inStockCount}
+            limitedCount={limitedCount}
+            latestCount={latestCount}
+            updatedAt={updatedAt}
+            isRefreshing={isRefreshing}
+            onShowLatest={onShowLatest}
+          />
         }
       />
     </header>
   );
 }
+
 
 
 
