@@ -183,9 +183,16 @@
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
 @utility shadow-gold { box-shadow: var(--shadow-gold); }
 
-/* subtle rise-in used on hero / section entry */
-@keyframes dp-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-@utility animate-rise { animation: dp-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+/* subtle rise-in used on hero / section entry — GPU-composited for smoothness */
+@keyframes dp-rise {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@utility animate-rise {
+  animation: dp-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
 
 /* Stagger helpers — chain with `animate-rise` */
 @utility delay-1 { animation-delay: 0.08s; }
