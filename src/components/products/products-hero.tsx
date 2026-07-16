@@ -73,25 +73,29 @@ function LiveStatusCard({
         <div className="text-xs text-muted-foreground">products listed</div>
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
-        <div className="bg-card px-3 py-2">
-          <dt className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Total</dt>
-          <dd className={`mt-0.5 font-display text-xl ${pulseCls}`}>{productCount}</dd>
-        </div>
-        <div className="bg-card px-3 py-2">
-          <dt className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">In stock</dt>
-          <dd className={`mt-0.5 font-display text-xl ${pulseCls}`} style={{ color: "var(--whatsapp)" }}>
-            {inStockCount}
-            {outCount > 0 && (
-              <span className="ml-1 align-middle text-[10px] font-sans text-muted-foreground">
-                · {outCount} out
-              </span>
-            )}
-          </dd>
-        </div>
+        <StatTile
+          label="Total"
+          tooltip="Every product currently listed in the catalogue, across all categories."
+        >
+          <span className={pulseCls}>{productCount}</span>
+        </StatTile>
+        <StatTile
+          label="In stock"
+          tooltip={`Available to order right now${outCount > 0 ? ` — ${outCount} item${outCount === 1 ? "" : "s"} temporarily out.` : "."}`}
+          valueStyle={{ color: "var(--whatsapp)" }}
+        >
+          <span className={pulseCls}>{inStockCount}</span>
+          {outCount > 0 && (
+            <span className="ml-1 align-middle text-[10px] font-sans text-muted-foreground">
+              · {outCount} out
+            </span>
+          )}
+        </StatTile>
       </dl>
       {limitedCount > 0 && (
         <div
           role="status"
+          title="These products have limited stock left. Order soon to avoid disappointment."
           className="mt-3 flex items-center gap-2 rounded-lg border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
         >
           <span aria-hidden className="flex h-2 w-2">
@@ -104,6 +108,45 @@ function LiveStatusCard({
         </div>
       )}
     </div>
+  );
+}
+
+function StatTile({
+  label,
+  tooltip,
+  valueStyle,
+  children,
+}: {
+  label: string;
+  tooltip: string;
+  valueStyle?: React.CSSProperties;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="group relative bg-card px-3 py-2">
+      <dt className="flex items-center gap-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        {label}
+        <span
+          tabIndex={0}
+          aria-label={`${label}: ${tooltip}`}
+          className="inline-flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-border text-[8px] font-semibold leading-none text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-amber"
+        >
+          i
+        </span>
+      </dt>
+      <dd className="mt-0.5 font-display text-xl" style={valueStyle}>
+        {children}
+      </dd>
+      <div
+        role="tooltip"
+        className="pointer-events-none absolute left-1/2 top-full z-20 mt-1 w-52 -translate-x-1/2 rounded-md border border-border bg-card px-2.5 py-1.5 text-[11px] font-normal normal-case tracking-normal text-foreground opacity-0 shadow-soft transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+      >
+        {tooltip}
+      </div>
+    </div>
+  );
+}
+
 
   );
 }
