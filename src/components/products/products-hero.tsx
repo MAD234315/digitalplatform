@@ -148,6 +148,4 @@ function StatTile({
 }
 
 
-  );
-}
 
