@@ -21,14 +21,14 @@ const PRODUCTS_TITLE = "Digital Subscriptions & Software — Digital Platform";
 const PRODUCTS_DESC = "Live catalogue of premium subscriptions, AI tools, software licenses and gift cards. Updated daily from our stock sheet. DM for live pricing.";
 
 export const Route = createFileRoute("/products")({
-  head: ({ loaderData }) => {
+  head: ({ loaderData }: { loaderData?: { products?: SheetProduct[] } }) => {
     const items = loaderData?.products?.slice(0, 20) ?? [];
     const itemList = {
       "@context": "https://schema.org",
       "@type": "ItemList",
       url: PRODUCTS_URL,
       name: PRODUCTS_TITLE,
-      itemListElement: items.map((p, i) => ({
+      itemListElement: items.map((p: SheetProduct, i: number) => ({
         "@type": "ListItem",
         position: i + 1,
         name: p.name + (p.plan ? ` — ${p.plan}` : ""),
