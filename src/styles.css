@@ -107,7 +107,9 @@
 @layer base {
   * { border-color: var(--color-border); }
   html { color-scheme: dark; scroll-behavior: smooth; }
+  html.light { color-scheme: light; }
   .theme-paper { color-scheme: light; }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
