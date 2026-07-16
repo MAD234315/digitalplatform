@@ -243,7 +243,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
 
       const validity = (row[3] || "").trim();
       const plan = (row[4] || "").trim();
-      const originalPrice = (row[6] || "").trim();
+      
       const type = (row[7] || "").trim();
       const supports = (row[10] || "").trim();
       const warranty = (row[11] || "").trim();
