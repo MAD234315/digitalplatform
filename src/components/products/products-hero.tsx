@@ -88,7 +88,7 @@ function LiveStatusCard({
         Synced with stock sheet
       </div>
       <div className="mt-3 text-xs text-muted-foreground">
-        Last update: {new Date(updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+        Last update: {new Date(updatedAt).toLocaleString(undefined, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
       </div>
       <div className="mt-4 flex items-baseline gap-2">
         <div className={`font-display text-4xl ${pulseCls}`}>{productCount}</div>
