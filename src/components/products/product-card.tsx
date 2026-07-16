@@ -58,20 +58,41 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/25 bg-card/55 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-white/40 focus-within:-translate-y-0.5 scroll-mt-32"
+      className="group relative flex flex-col overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
       style={{
         contentVisibility: "auto",
         containIntrinsicSize: "520px 380px",
-        boxShadow: `0 1px 0 rgba(255,255,255,0.35) inset, 0 20px 40px -20px color-mix(in oklab, ${glow} 45%, transparent), 0 0 0 1px color-mix(in oklab, ${glow} 12%, transparent)`,
+        background:
+          "linear-gradient(135deg, color-mix(in oklab, white 55%, transparent) 0%, color-mix(in oklab, white 20%, transparent) 55%, color-mix(in oklab, white 8%, transparent) 100%)",
+        backdropFilter: "blur(24px) saturate(160%)",
+        boxShadow: `
+          0 1px 0 rgba(255,255,255,0.6) inset,
+          0 0 0 1px rgba(255,255,255,0.35) inset,
+          0 30px 60px -25px color-mix(in oklab, ${glow} 55%, transparent),
+          0 10px 30px -15px color-mix(in oklab, ${glow} 35%, transparent),
+          0 0 0 1px color-mix(in oklab, ${glow} 18%, transparent)
+        `,
       }}
     >
-      {/* Ambient glow bleeding from the top-left, tinted by the product's hue. */}
+      {/* Colored ambient blobs the frosted surface blurs — this is what makes glass read. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-16 -left-16 h-40 w-40 rounded-full opacity-60 blur-3xl transition duration-500 group-hover:opacity-90"
+        className="pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full opacity-70 blur-3xl transition duration-500 group-hover:opacity-100"
         style={{ background: glow }}
       />
-      <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-white/15">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-24 -right-16 h-56 w-56 rounded-full opacity-40 blur-3xl transition duration-500 group-hover:opacity-70"
+        style={{ background: gradientFor(p.name) }}
+      />
+      {/* Top sheen — sells the "glass" edge highlight */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)" }}
+      />
+      <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-white/25">
+
         <div className="flex items-center gap-3 min-w-0">
           <div
             aria-hidden
