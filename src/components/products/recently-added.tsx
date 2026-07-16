@@ -9,7 +9,9 @@
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { AvailabilityBadge } from "./badge";
-import { animeImageFor, glowFor, gradientFor } from "@/lib/product-visuals";
+import { glowFor, gradientFor } from "@/lib/product-visuals";
+import { LogoMark } from "./logo-mark";
+
 
 export function RecentlyAdded({
   products,
@@ -67,7 +69,6 @@ function RecentCard({ p }: { p: SheetProduct }) {
   );
   const gradient = gradientFor(p.name);
   const glow = glowFor(p.name);
-  const logo = animeImageFor(p.name);
 
   return (
     <a
@@ -90,14 +91,11 @@ function RecentCard({ p }: { p: SheetProduct }) {
           className="pointer-events-none absolute inset-0 opacity-70 blur-2xl transition duration-500 group-hover:opacity-100"
           style={{ background: `radial-gradient(circle at 50% 55%, ${glow} 0%, transparent 60%)` }}
         />
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <img
-            src={logo}
-            alt=""
-            aria-hidden
-            className="h-16 w-16 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition duration-500 group-hover:scale-[1.06]"
-          />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition duration-500 group-hover:scale-[1.06]">
+          <LogoMark name={p.name} size={56} />
         </div>
+
+
 
         <span className="absolute left-2 top-2 z-20 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
           New
