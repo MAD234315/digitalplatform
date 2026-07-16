@@ -135,16 +135,16 @@ function LiveStatusCard({
         type="button"
         onClick={onShowLatest}
         disabled={!onShowLatest}
-        aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added this week. Resets ${resetLabel} on Thursday.`}
+        aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
         className="mt-3 flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-left text-xs transition hover:border-foreground/30 hover:bg-muted disabled:cursor-default disabled:hover:border-border disabled:hover:bg-card"
       >
         <span className="flex items-center gap-2">
           <span aria-hidden className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "var(--primary)" }} />
-          <span className="font-medium uppercase tracking-[0.14em] text-[10px]">Latest this week</span>
+          <span className="font-medium uppercase tracking-[0.14em] text-[10px]">Latest · last 7 days</span>
         </span>
         <span className="flex items-baseline gap-1.5">
           <span className={`font-display text-base ${pulseCls}`}>{latestCount}</span>
-          <span className="text-[10px] text-muted-foreground">· resets {resetLabel}</span>
+          <span className="text-[10px] text-muted-foreground">· new arrivals</span>
         </span>
       </button>
       {limitedCount > 0 && (
