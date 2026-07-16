@@ -97,11 +97,41 @@ const CACHE_TTL_MS = 60_000;
 let cache: { at: number; payload: ProductsPayload } | null = null;
 let inflight: Promise<ProductsPayload> | null = null;
 
+const FETCH_TIMEOUT_MS = 8_000;
+
+/**
+ * Fetch the sheet with a hard timeout so a slow/unresponsive upstream can't
+ * pin a Worker request indefinitely. Classifies failures into a short set of
+ * user-safe messages instead of leaking raw internals to the client.
+ */
+async function fetchSheetCsv(): Promise<string> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(CSV_URL, { signal: controller.signal });
+    if (!res.ok) {
+      throw new Error(
+        res.status === 404
+          ? "Stock sheet not found (404)."
+          : res.status >= 500
+            ? `Upstream sheet error (${res.status}). Please retry shortly.`
+            : `Sheet fetch failed (${res.status}).`,
+      );
+    }
+    return await res.text();
+  } catch (e) {
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new Error(`Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`);
+    }
+    throw e;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function loadFromSheet(): Promise<ProductsPayload> {
   try {
-    const res = await fetch(CSV_URL);
-    if (!res.ok) throw new Error(`Sheet fetch failed: ${res.status}`);
-    const text = await res.text();
+    const text = await fetchSheetCsv();
     const rows = parseCsv(text);
 
     const products: SheetProduct[] = [];
@@ -168,6 +198,10 @@ async function loadFromSheet(): Promise<ProductsPayload> {
 
     return { categories, products, fetchedAt: new Date().toISOString() };
   } catch (e) {
+    // Log the raw error server-side so it appears in Server Logs with a stack.
+    // The `error` field in the payload is what surfaces in the UI banner —
+    // keep it terse and safe for end-user display.
+    console.error("[getSheetProducts] load failed:", e);
     return {
       categories: [],
       products: [],

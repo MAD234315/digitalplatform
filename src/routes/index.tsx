@@ -6,6 +6,7 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { OG_IMAGE, SITE_URL } from "@/lib/site-config";
 
 const URL = SITE_URL + "/";
@@ -36,16 +37,20 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  // Each section is wrapped in its own boundary so a runtime failure in one
+  // (bad data, DOM/intersection API misuse, etc.) degrades that panel only —
+  // the rest of the landing page keeps rendering. TanStack's route-level
+  // errorComponent still catches anything that escapes here.
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <SiteNav />
       <main id="main">
-        <HeroSection />
-        <WhoWeAreSection />
-        <CategoriesSection />
-        <ReasonsSection />
-        <MottoPromiseSection />
-        <ContactPromptSection />
+        <ErrorBoundary boundary="home:hero"><HeroSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:who-we-are"><WhoWeAreSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:categories"><CategoriesSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:reasons"><ReasonsSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:motto"><MottoPromiseSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:contact-prompt"><ContactPromptSection /></ErrorBoundary>
       </main>
       <SiteFooter />
     </div>
