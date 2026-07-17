@@ -13,6 +13,7 @@ import { RecentlyAdded } from "@/components/products/recently-added";
 import { useProductsFilter } from "@/components/products/use-products-filter";
 import { PageShell } from "@/components/layout/PageShell";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { ProductsSkeleton, Spinner } from "@/components/products/products-skeleton";
 
 
 // Static options (not a factory) — keeps queryKey referentially stable so
