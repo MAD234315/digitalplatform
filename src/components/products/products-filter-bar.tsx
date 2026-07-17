@@ -226,7 +226,15 @@ export function ProductsFilterBar({
         const s = items[highlight];
         if (s) { commit(s); return; }
       }
-      if (trimmed.length > 0) pushRecent(trimmed);
+      if (trimmed.length > 0) {
+        // Only persist the term if it actually matches at least one product.
+        const needle = trimmed.toLowerCase();
+        const hasMatch = products.some((p) => {
+          const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
+          return hay.includes(needle);
+        });
+        if (hasMatch) pushRecent(trimmed);
+      }
       closeOverlay();
       return;
     }
