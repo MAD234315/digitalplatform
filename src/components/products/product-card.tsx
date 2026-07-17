@@ -81,7 +81,7 @@ export const ProductCard = memo(function ProductCard({
 }) {
   const waMsg = encodeURIComponent(
     [
-      `👋 Hello Creator,`,
+      `Hello Creator,`,
       ``,
       `I'm interested in this product.`,
       ``,
