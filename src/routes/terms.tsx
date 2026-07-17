@@ -38,7 +38,7 @@ function Terms() {
             Warranty details, when applicable, are displayed on each product card. Our support team is available to help with eligible issues — please share your order details when you reach out.
           </Block>
           <Block title="Acceptable use">
-            Products must be used in accordance with the terms and conditions of the underlying service or provider. You are responsible for keeping your account credentials safe and using products only for lawful purposes.
+            Products must be used in accordance with the terms and conditions of the provider. You are responsible for keeping your account credentials safe and using products only for lawful purposes.
           </Block>
           <Block title="Limitation of liability">
             Digital Platform is not responsible for changes made by third-party service providers to their plans, pricing, or availability after your order has been delivered.
