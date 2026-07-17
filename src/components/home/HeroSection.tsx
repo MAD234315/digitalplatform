@@ -36,7 +36,7 @@ export function HeroSection() {
           <em className="italic text-headline">at prices that make sense.</em>
         </h1>
 
-        <p className="animate-rise delay-2 mx-auto mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+        <p className="animate-rise delay-2 mx-auto mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">
           Access 200+ premium subscriptions, AI tools, software licenses, gift cards and productivity
           solutions — all in one place. Catalogue refreshed daily, prices kept honest, support that
           actually replies.
