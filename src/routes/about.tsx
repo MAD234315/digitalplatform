@@ -73,7 +73,7 @@ function About() {
             <Link to="/products" className="rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground">
               Browse products →
             </Link>
-            <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em]">
+            <a href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I found you via your website and I'd like to say hello.")}`} target="_blank" rel="noreferrer" className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em]">
               Contact us →
             </a>
           </div>

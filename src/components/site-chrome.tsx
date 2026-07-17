@@ -6,6 +6,10 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const WA_NUMBER = "919652191369";
 const WA_URL = `https://wa.me/${WA_NUMBER}`;
+const WA_GENERAL_PREFILL = "Hi Digital Platform! I'd like to get in touch about your products and pricing.";
+const WA_URL_GENERAL = `${WA_URL}?text=${encodeURIComponent(WA_GENERAL_PREFILL)}`;
+const WA_FOOTER_PREFILL = "Hi Digital Platform! I found you via your website and I'd like to know more.";
+const WA_URL_FOOTER = `${WA_URL}?text=${encodeURIComponent(WA_FOOTER_PREFILL)}`;
 const EMAIL = "Productcreator11@zohomail.in";
 
 const LINKS = [
@@ -111,7 +115,7 @@ export function SiteNav() {
           <ThemeToggle />
 
           <a
-            href={WA_URL}
+            href={WA_URL_GENERAL}
             target="_blank"
             rel="noreferrer"
             className="hidden sm:inline-flex items-center min-h-11 rounded-full px-5 text-sm font-medium transition hover:brightness-110 shadow-gold"
@@ -165,7 +169,7 @@ export function SiteNav() {
             );
           })}
           <a
-            href={WA_URL}
+            href={WA_URL_GENERAL}
             target="_blank"
             rel="noreferrer"
             className="mt-3 inline-flex items-center justify-center min-h-12 rounded-full px-5 text-sm font-medium"
@@ -221,7 +225,7 @@ export function SiteFooter() {
         <nav aria-label="Reach us">
           <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Reach us</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={WA_URL} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp →</a></li>
+            <li><a href={WA_URL_FOOTER} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp →</a></li>
             <li><a href={`mailto:${EMAIL}`} className={`${linkCls} break-all`}>{EMAIL}</a></li>
           </ul>
         </nav>

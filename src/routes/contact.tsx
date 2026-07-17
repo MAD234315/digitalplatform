@@ -41,7 +41,7 @@ function Contact() {
 
       <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 grid gap-6 md:grid-cols-2">
-          <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
+          <a href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I'd like to know more about your products and pricing.")}`} target="_blank" rel="noreferrer" className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
             <div className="text-xs uppercase tracking-[0.22em] text-amber">Preferred</div>
             <h2 className="mt-3 font-display text-3xl">WhatsApp</h2>
             <p className="mt-2 text-sm text-muted-foreground">
