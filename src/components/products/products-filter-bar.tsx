@@ -123,6 +123,7 @@ export function ProductsFilterBar({
   sort,
   onSortChange,
   products,
+  slot = "all",
 }: {
   categories: string[];
   totalCount: number;
@@ -137,6 +138,8 @@ export function ProductsFilterBar({
   sort: SortKey;
   onSortChange: (value: SortKey) => void;
   products: SheetProduct[];
+  /** Which row to render: search only, controls only, or both (default). */
+  slot?: "all" | "search" | "controls";
 }) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
@@ -260,6 +263,7 @@ export function ProductsFilterBar({
     <div className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
         {/* Row 1: search */}
+        {slot !== "controls" && (
         <div ref={wrapRef} className="relative w-full">
           <label htmlFor="products-search" className="sr-only">Search products</label>
           <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -408,8 +412,10 @@ export function ProductsFilterBar({
             </div>
           )}
         </div>
+        )}
 
         {/* Row 2: categories | sort | filters */}
+        {slot !== "search" && (
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative min-w-0 flex-1 sm:flex-none sm:w-56">
             <label htmlFor="products-category" className="sr-only">Category</label>
@@ -465,6 +471,7 @@ export function ProductsFilterBar({
             <span className="sr-only">{activeStockCount > 0 ? `${activeStockCount} filter active` : "No filter active"}</span>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

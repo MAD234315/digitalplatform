@@ -197,6 +197,23 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
+      <ProductsFilterBar
+        slot="search"
+        categories={data.categories.map((c) => c.name)}
+        totalCount={data.products.length}
+        categoryCounts={categoryCounts}
+        active={active}
+        onActiveChange={setActive}
+        query={q}
+        onQueryChange={setQ}
+        stock={stock}
+        onStockChange={setStock}
+        stockCounts={stockCounts}
+        sort={sort}
+        onSortChange={setSort}
+        products={data.products}
+      />
+
       {stock !== "latest" && (
         <ErrorBoundary boundary="products:recently-added" fallback={null}>
           <RecentlyAdded
@@ -212,6 +229,7 @@ function Products() {
 
 
       <ProductsFilterBar
+        slot="controls"
         categories={data.categories.map((c) => c.name)}
         totalCount={data.products.length}
         categoryCounts={categoryCounts}
@@ -226,6 +244,7 @@ function Products() {
         onSortChange={setSort}
         products={data.products}
       />
+
 
 
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
