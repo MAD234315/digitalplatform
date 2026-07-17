@@ -225,7 +225,7 @@ export function SiteFooter() {
         <nav aria-label="Reach us">
           <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Reach us</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={WA_URL} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp →</a></li>
+            <li><a href={WA_URL_FOOTER} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp →</a></li>
             <li><a href={`mailto:${EMAIL}`} className={`${linkCls} break-all`}>{EMAIL}</a></li>
           </ul>
         </nav>
