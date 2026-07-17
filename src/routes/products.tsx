@@ -278,8 +278,21 @@ function Products() {
 
         <h2 className="sr-only">Live product catalogue</h2>
         {filtered.length === 0 ? (
-          <div className="py-24 text-center text-muted-foreground">
-            No products match this filter. Try another category.
+          <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+            <p className="text-base text-foreground">
+              {q.trim()
+                ? <>No products found for &ldquo;<span className="font-medium">{q.trim()}</span>&rdquo;</>
+                : "No products match this filter. Try another category."}
+            </p>
+            {q.trim() && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                className="rounded-full border border-border bg-card px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition hover:bg-muted"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         ) : (
           <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
