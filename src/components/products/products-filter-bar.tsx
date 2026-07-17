@@ -412,8 +412,10 @@ export function ProductsFilterBar({
             </div>
           )}
         </div>
+        )}
 
         {/* Row 2: categories | sort | filters */}
+        {slot !== "search" && (
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative min-w-0 flex-1 sm:flex-none sm:w-56">
             <label htmlFor="products-category" className="sr-only">Category</label>
