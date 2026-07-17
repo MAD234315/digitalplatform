@@ -227,27 +227,9 @@ export function SiteFooter() {
         </nav>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-muted-foreground">
-          <span>© 2026 Digital Platform. Trusted since 2020.</span>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span className="inline-flex items-center gap-1.5">
-              <span
-                aria-hidden
-                className="inline-block h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: "var(--whatsapp)" }}
-              />
-              <span className="font-medium text-foreground">v1.0</span>
-            </span>
-            <span suppressHydrationWarning>
-              Last updated{" "}
-              <time
-                dateTime={new Date().toISOString().slice(0, 10)}
-                className="font-medium text-foreground"
-              >
-                {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-              </time>
-            </span>
-          </div>
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+          <span>© {new Date().getFullYear()} Digital Platform. Trusted since 2020.</span>
+          <span>Premium digital solutions. Genuine sources.</span>
         </div>
       </div>
     </footer>
