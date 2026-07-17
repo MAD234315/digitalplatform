@@ -85,15 +85,17 @@ export const ProductCard = memo(function ProductCard({
       ``,
       `I'm interested in this product.`,
       ``,
-      `📦 Product: ${p.name || "—"}`,
-      `💎 Plan: ${p.plan || "—"}`,
-      `📅 Validity: ${p.validity || "—"}`,
-      `🏷️ Sub Type: ${p.type || "—"}`,
-      `🛡️ Warranty: ${p.warranty || "—"}`,
+      p.name && `📦 Product: ${p.name}`,
+      p.plan && `💎 Plan: ${p.plan}`,
+      p.validity && `📅 Validity: ${p.validity}`,
+      p.type && `🏷️ Type: ${p.type}`,
+      p.warranty && `🛡️ Warranty: ${p.warranty}`,
       ``,
-      `Please let me know the product price.`,
+      `Please let me know the purchase price.`,
       `Thank you!`,
-    ].join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n"),
   );
   const initials = initialsFor(p.name);
   const deliveryTime = p.availability === "out" ? "On restock" : "Instant";
