@@ -118,6 +118,7 @@ export const Route = createFileRoute("/products")({
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   component: Products,
+  pendingComponent: ProductsSkeleton,
   errorComponent: ProductsError,
   notFoundComponent: ProductsNotFound,
 });
