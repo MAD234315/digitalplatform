@@ -117,7 +117,7 @@ export const ProductCard = memo(function ProductCard({
 
 
 
-        <p className="mt-3 text-[11px] text-muted-foreground">
+        <p className="mt-auto pt-3 text-[11px] text-muted-foreground">
           Contact admin for detailed info.
         </p>
 
