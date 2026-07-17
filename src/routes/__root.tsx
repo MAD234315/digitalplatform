@@ -10,6 +10,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import dmSerif400Woff2 from "@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2?url";
+import firaSans400Woff2 from "@fontsource/fira-sans/files/fira-sans-latin-400-normal.woff2?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorListeners } from "../lib/client-error-listeners";
 import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
@@ -69,10 +71,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      // Google Fonts stylesheet is injected non-blocking inside RootShell
-      // (see FONTS_LOAD_SCRIPT) to avoid ~1.5s of render-blocking on mobile.
+      { rel: "preload", as: "font", type: "font/woff2", href: dmSerif400Woff2, crossOrigin: "anonymous" },
+      { rel: "preload", as: "font", type: "font/woff2", href: firaSans400Woff2, crossOrigin: "anonymous" },
     ],
 
 
@@ -145,13 +145,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 const THEME_INIT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)dp-theme=(light|dark)/);var s=m&&m[1];var t=(s==='light'||s==='dark')?s:'dark';var r=document.documentElement;if(t==='light')r.classList.add('light');r.style.colorScheme=t;}catch(e){}})();`;
 
-// Non-blocking Google Fonts loader: injects a print-media stylesheet link,
-// then swaps to media=all once it finishes downloading. This keeps Google
-// Fonts CSS off the critical render path (saves ~1.5s LCP on mobile) while
-// font-display:swap in the stylesheet handles the fallback swap.
-const FONTS_HREF = "https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fira+Sans:wght@400;500;600&display=swap";
-const FONTS_LOAD_SCRIPT = `(function(){try{var l=document.createElement('link');l.rel='stylesheet';l.href=${JSON.stringify(FONTS_HREF)};l.media='print';l.onload=function(){l.media='all'};document.head.appendChild(l);}catch(e){}})();`;
-
 function RootShell({ children }: { children: ReactNode }) {
   // suppressHydrationWarning on <html>: the pre-hydration script above
   // mutates documentElement.className and .style before React attaches,
@@ -163,11 +156,6 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
-        {/* Fallback for no-JS: still request the fonts stylesheet. */}
-        <noscript>
-          <link rel="stylesheet" href={FONTS_HREF} />
-        </noscript>
-        <script dangerouslySetInnerHTML={{ __html: FONTS_LOAD_SCRIPT }} />
       </head>
       <body>{children}<Scripts /></body>
     </html>
