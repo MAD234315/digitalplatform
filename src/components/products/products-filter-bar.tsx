@@ -15,7 +15,7 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { gradientFor, initialsFor } from "@/lib/product-visuals";
 
 const STOCK_OPTIONS: { value: StockFilter; label: string }[] = [
-  { value: "all", label: "All" },
+  { value: "all", label: "All Products" },
   { value: "latest", label: "Latest" },
   { value: "in-stock", label: "In stock" },
   { value: "limited", label: "Low stock" },
