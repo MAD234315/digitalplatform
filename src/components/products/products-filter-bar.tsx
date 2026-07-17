@@ -140,11 +140,9 @@ export function ProductsFilterBar({
 }) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const filtersRef = useRef<HTMLDivElement | null>(null);
   const listboxId = useId();
 
   // Hydrate recent searches after mount (localStorage is client-only).
@@ -178,20 +176,6 @@ export function ProductsFilterBar({
     return () => window.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  useEffect(() => {
-    if (!filtersOpen) return;
-    const onDown = (e: MouseEvent) => {
-      if (!filtersRef.current) return;
-      if (!filtersRef.current.contains(e.target as Node)) setFiltersOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFiltersOpen(false); };
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [filtersOpen]);
 
   const pushRecent = (term: string) => {
     const t = term.trim();
@@ -463,87 +447,22 @@ export function ProductsFilterBar({
             {chevron}
           </div>
 
-          <div ref={filtersRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setFiltersOpen((v) => !v)}
-              aria-haspopup="menu"
-              aria-expanded={filtersOpen}
-              className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-10 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                activeStockCount > 0
-                  ? "border-transparent shadow-soft"
-                  : "border-border bg-card hover:bg-muted"
-              }`}
-              style={activeStockCount > 0 ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+          <div className="relative min-w-0 flex-1 sm:flex-none sm:w-48">
+            <label htmlFor="products-stock" className="sr-only">Filter by availability</label>
+            <select
+              id="products-stock"
+              value={stock}
+              onChange={(e) => onStockChange(e.target.value as StockFilter)}
+              className={`w-full ${selectClass}`}
             >
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-                <path d="M4 6h16M7 12h10M10 18h4" strokeLinecap="round" />
-              </svg>
-              Filters
-              {activeStockCount > 0 && (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-background/25 px-1.5 text-[10px] font-semibold">
-                  {activeStockCount}
-                </span>
-              )}
-            </button>
-
-            {filtersOpen && (
-              <div
-                role="menu"
-                className="absolute right-0 top-[calc(100%+8px)] z-50 w-64 rounded-2xl border border-border bg-popover text-popover-foreground p-3 shadow-xl ring-1 ring-black/5"
-              >
-                <div className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Availability
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {STOCK_OPTIONS.map((opt) => {
-                    const isActive = stock === opt.value;
-                    const count = stockCounts[opt.value] ?? 0;
-                    const dotColor =
-                      opt.value === "latest" ? "var(--primary)" :
-                      opt.value === "in-stock" ? "var(--whatsapp)" :
-                      opt.value === "limited" ? "var(--amber)" :
-                      opt.value === "out" ? "var(--danger)" :
-                      undefined;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        role="menuitemradio"
-                        aria-checked={isActive}
-                        onClick={() => { onStockChange(opt.value); setFiltersOpen(false); }}
-                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 min-h-9 text-[11px] font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                          isActive
-                            ? "border-transparent shadow-soft"
-                            : "border-border bg-card text-muted-foreground hover:text-foreground"
-                        }`}
-                        style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
-                      >
-                        {dotColor && (
-                          <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
-                        )}
-                        {opt.label}
-                        <span className="opacity-60">· {count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {(stock !== "all" || active !== "All" || sort !== "default") && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onStockChange("all");
-                      onActiveChange("All");
-                      onSortChange("default");
-                      setFiltersOpen(false);
-                    }}
-                    className="mt-3 w-full rounded-full border border-border bg-card min-h-9 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground transition hover:text-foreground"
-                  >
-                    Reset all filters
-                  </button>
-                )}
-              </div>
-            )}
+              {STOCK_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  Filter: {opt.label} · {stockCounts[opt.value] ?? 0}
+                </option>
+              ))}
+            </select>
+            {chevron}
+            <span className="sr-only">{activeStockCount > 0 ? `${activeStockCount} filter active` : "No filter active"}</span>
           </div>
         </div>
       </div>
