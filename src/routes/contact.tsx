@@ -81,7 +81,7 @@ function Contact() {
           <div className="lg:col-span-7">
             <div className="rounded-2xl border border-border bg-card p-8">
               <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Support hours</div>
-              <p className="mt-3 font-display text-2xl">Every day, Limited Hours.</p>
+              <p className="mt-3 font-display text-2xl">Every day, limited hours.</p>
               <p className="mt-3 text-sm text-muted-foreground">
                 Messages sent outside these hours get a reply first thing next morning.
               </p>
