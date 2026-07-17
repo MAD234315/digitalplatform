@@ -320,7 +320,7 @@ function Products() {
                 {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
                     <TiltCard max={4}>
-                      <ProductCard p={p} onView={track} />
+                      <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
                     </TiltCard>
                   </ErrorBoundary>
                 ))}
