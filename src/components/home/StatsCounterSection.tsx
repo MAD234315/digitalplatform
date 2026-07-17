@@ -52,9 +52,9 @@ function Stat({
   const n = useCountUp(target, 1800, inView);
   const display = format ? format(n) : n.toLocaleString();
   return (
-    <div className="text-center sm:text-left">
+    <div className="text-center">
       <div
-        className="font-display text-5xl sm:text-6xl lg:text-7xl leading-none tracking-tight"
+        className="font-display text-4xl sm:text-6xl lg:text-7xl leading-none tracking-tight"
         style={{ color: "var(--amber)" }}
       >
         {display}
@@ -103,7 +103,7 @@ export function StatsCounterSection() {
           Our numbers
         </h2>
         <Reveal>
-          <div className="grid gap-10 sm:gap-8 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4 sm:gap-8 items-start">
             <Stat
               target={15}
               suffix="K+"
