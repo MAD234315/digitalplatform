@@ -11,6 +11,7 @@ import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
 import { RecentlyAdded } from "@/components/products/recently-added";
 import { useProductsFilter } from "@/components/products/use-products-filter";
+import { ActiveFilters } from "@/components/products/active-filters";
 import { PageShell } from "@/components/layout/PageShell";
 import { ErrorBoundary } from "@/components/error-boundary";
 
