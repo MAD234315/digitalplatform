@@ -18,7 +18,7 @@ function Terms() {
   return (
     <PageShell>
       <PageHero
-        eyebrow="Legal"
+        eyebrow={"POLICIES\n\n"}
         title="Terms &amp;"
         titleAccent="Conditions."
         lede="By using Digital Platform or placing an order, you agree to the terms below. This page is maintained by the Digital Platform team and may be updated from time to time."
