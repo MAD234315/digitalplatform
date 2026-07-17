@@ -50,7 +50,24 @@ function Contact() {
             <p className="mt-2 text-sm text-muted-foreground">
               Send a message with the product you&apos;re interested in.
             </p>
-            <div className="mt-6 font-display text-xl">+91 96521 91369</div>
+            <div className="mt-6 flex items-center gap-3 flex-wrap">
+              <a
+                href="tel:+919652191369"
+                onClick={(e) => e.stopPropagation()}
+                className="font-display text-xl hover:text-amber transition-colors"
+              >
+                +91 96521 91369
+              </a>
+              <CopyButton
+                value="+91 96521 91369"
+                successMessage="Phone number copied to clipboard!"
+                errorMessage="Unable to copy phone number. Please copy it manually."
+                labelIdle="Copy phone number"
+                labelDone="Copied!"
+                ariaIdle="Copy phone number"
+                ariaDone="Phone number copied"
+              />
+            </div>
             <div className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Open WhatsApp →</div>
           </a>
           <a href={`mailto:${CONTACT.EMAIL}`} className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
