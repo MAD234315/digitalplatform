@@ -80,7 +80,20 @@ export const ProductCard = memo(function ProductCard({
   isLatest?: boolean;
 }) {
   const waMsg = encodeURIComponent(
-    `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
+    [
+      `👋 Hello Creator,`,
+      ``,
+      `I'm interested in this product.`,
+      ``,
+      `📦 Product: ${p.name || "—"}`,
+      `💎 Plan: ${p.plan || "—"}`,
+      `📅 Validity: ${p.validity || "—"}`,
+      `🏷️ Sub Type: ${p.type || "—"}`,
+      `🛡️ Warranty: ${p.warranty || "—"}`,
+      ``,
+      `Please let me know the product price.`,
+      `Thank you!`,
+    ].join("\n"),
   );
   const initials = initialsFor(p.name);
   const deliveryTime = p.availability === "out" ? "On restock" : "Instant";
