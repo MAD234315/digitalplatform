@@ -263,6 +263,7 @@ export function ProductsFilterBar({
     <div className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
         {/* Row 1: search */}
+        {slot !== "controls" && (
         <div ref={wrapRef} className="relative w-full">
           <label htmlFor="products-search" className="sr-only">Search products</label>
           <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
