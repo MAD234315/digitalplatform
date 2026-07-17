@@ -445,7 +445,7 @@ export function ProductsFilterBar({
               id="products-category"
               value={active}
               onChange={(e) => onActiveChange(e.target.value)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${categoryActive ? activeSelectClass : ""}`}
             >
               <option value="All">All categories · {totalCount}</option>
               {categories.map((name) => (
