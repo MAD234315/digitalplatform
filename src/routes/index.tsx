@@ -82,7 +82,7 @@ function Home() {
 
       </main>
       <ErrorBoundary boundary="shell:footer" fallback={null}><SiteFooter /></ErrorBoundary>
-      <ErrorBoundary boundary="shell:wa-fab" fallback={null}><WhatsAppFab /></ErrorBoundary>
+      <ErrorBoundary boundary="shell:wa-fab" fallback={null}><WhatsAppFab prefill="Hi Digital Platform! I found you via your website and I'd like to know more about your products and pricing." /></ErrorBoundary>
     </div>
   );
 }
