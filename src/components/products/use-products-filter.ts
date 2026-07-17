@@ -145,7 +145,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
-    return products.filter((p) => {
+    const list = products.filter((p) => {
       if (active !== "All" && p.category !== active) return false;
       if (stock === "in-stock" && p.availability !== "available") return false;
       if (stock === "limited" && p.availability !== "limited") return false;
@@ -154,7 +154,14 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [products, active, stock, deferredQ, latestKeys]);
+    if (sort === "name-asc") {
+      return list.slice().sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (sort === "availability") {
+      return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
+    }
+    return list;
+  }, [products, active, stock, sort, deferredQ, latestKeys]);
 
   const latestProducts = useMemo(() => {
     const cutoff = Date.now() - LATEST_WINDOW_MS;
