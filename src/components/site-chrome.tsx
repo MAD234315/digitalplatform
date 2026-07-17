@@ -6,6 +6,10 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const WA_NUMBER = "919652191369";
 const WA_URL = `https://wa.me/${WA_NUMBER}`;
+const WA_GENERAL_PREFILL = "Hi Digital Platform! I'd like to get in touch about your products and pricing.";
+const WA_URL_GENERAL = `${WA_URL}?text=${encodeURIComponent(WA_GENERAL_PREFILL)}`;
+const WA_FOOTER_PREFILL = "Hi Digital Platform! I found you via your website and I'd like to know more.";
+const WA_URL_FOOTER = `${WA_URL}?text=${encodeURIComponent(WA_FOOTER_PREFILL)}`;
 const EMAIL = "Productcreator11@zohomail.in";
 
 const LINKS = [
