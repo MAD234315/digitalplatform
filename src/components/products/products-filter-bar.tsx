@@ -164,7 +164,8 @@ export function ProductsFilterBar({
   const showingRecent = trimmed.length === 0;
   const showEmpty = trimmed.length >= 1 && suggestions.length === 0;
   const items: Suggestion[] = showingRecent ? [] : suggestions;
-  const showList = open;
+  // Hide overlay entirely when we'd only be showing an empty recent list.
+  const showList = open && !(showingRecent && recent.length === 0);
   const navigableCount = items.length;
 
   // Reset highlight to -1 (no selection) whenever the visible list changes.
