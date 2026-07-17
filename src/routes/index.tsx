@@ -8,6 +8,7 @@ import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 
 const URL = SITE_URL + "/";
@@ -81,6 +82,7 @@ function Home() {
 
       </main>
       <ErrorBoundary boundary="shell:footer" fallback={null}><SiteFooter /></ErrorBoundary>
+      <ErrorBoundary boundary="shell:wa-fab" fallback={null}><WhatsAppFab /></ErrorBoundary>
     </div>
   );
 }
