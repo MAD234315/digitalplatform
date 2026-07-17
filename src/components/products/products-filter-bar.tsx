@@ -447,9 +447,9 @@ export function ProductsFilterBar({
               id="products-category"
               value={active}
               onChange={(e) => onActiveChange(e.target.value)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${isCategoryActive ? activeSelectClass : ""}`}
             >
-              <option value="All">All categories · {totalCount}</option>
+              <option value="All">All Products · {totalCount}</option>
               {categories.map((name) => (
                 <option key={name} value={name}>
                   {name} · {categoryCounts.get(name) ?? 0}
@@ -466,7 +466,7 @@ export function ProductsFilterBar({
               id="products-sort"
               value={sort}
               onChange={(e) => onSortChange(e.target.value as SortKey)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${isSortActive ? activeSelectClass : ""}`}
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -483,7 +483,7 @@ export function ProductsFilterBar({
               id="products-stock"
               value={stock}
               onChange={(e) => onStockChange(e.target.value as StockFilter)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${isStockActive ? activeSelectClass : ""}`}
             >
               {STOCK_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
