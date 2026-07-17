@@ -28,8 +28,8 @@ export function PageHero({
 }) {
   const wrap =
     size === "wide"
-      ? "mx-auto max-w-7xl px-6 lg:px-10 pt-36 pb-14"
-      : "mx-auto max-w-5xl px-6 lg:px-10 pt-40 pb-16 lg:pt-48 lg:pb-24";
+      ? "mx-auto max-w-7xl px-6 lg:px-10 pt-32 sm:pt-36 pb-12 sm:pb-14"
+      : "mx-auto max-w-5xl px-6 lg:px-10 pt-32 pb-14 sm:pt-40 sm:pb-16 lg:pt-48 lg:pb-24";
 
   return (
     <section className="relative bg-hero">
