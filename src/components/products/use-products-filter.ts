@@ -145,12 +145,18 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
+    // When the user is actively searching, ignore the category and stock
+    // filters — the query should hit the whole catalogue so results aren't
+    // silently hidden by an active "In stock" / "Latest" / category pill.
+    const searching = needle.length > 0;
     const list = products.filter((p) => {
-      if (active !== "All" && p.category !== active) return false;
-      if (stock === "in-stock" && p.availability !== "available") return false;
-      if (stock === "limited" && p.availability !== "limited") return false;
-      if (stock === "out" && p.availability !== "out") return false;
-      if (stock === "latest" && !latestKeys.has(keyOf(p))) return false;
+      if (!searching) {
+        if (active !== "All" && p.category !== active) return false;
+        if (stock === "in-stock" && p.availability !== "available") return false;
+        if (stock === "limited" && p.availability !== "limited") return false;
+        if (stock === "out" && p.availability !== "out") return false;
+        if (stock === "latest" && !latestKeys.has(keyOf(p))) return false;
+      }
       if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
       return true;
     });
