@@ -44,7 +44,7 @@ function Contact() {
 
       <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 grid gap-6 md:grid-cols-2">
-          <a href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I'd like to know more about your products and pricing.")}`} target="_blank" rel="noreferrer" className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
+          <div className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
             <div className="text-xs uppercase tracking-[0.22em] text-amber">Preferred</div>
             <h2 className="mt-3 font-display text-3xl">WhatsApp</h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -53,7 +53,6 @@ function Contact() {
             <div className="mt-6 flex items-center gap-3 flex-wrap">
               <a
                 href="tel:+919652191369"
-                onClick={(e) => e.stopPropagation()}
                 className="font-display text-xl hover:text-amber transition-colors"
               >
                 +91 96521 91369
@@ -68,8 +67,15 @@ function Contact() {
                 ariaDone="Phone number copied"
               />
             </div>
-            <div className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Open WhatsApp →</div>
-          </a>
+            <a
+              href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I'd like to know more about your products and pricing.")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex"
+            >
+              Open WhatsApp →
+            </a>
+          </div>
           <a href={`mailto:${CONTACT.EMAIL}`} className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
             <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Email</div>
             <h2 className="mt-3 font-display text-3xl">Mail</h2>
