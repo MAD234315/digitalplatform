@@ -199,6 +199,8 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
+      <TopSearchBar query={q} onQueryChange={setQ} />
+
       <ProductsFilterBar
         slot="search"
         categories={data.categories.map((c) => c.name)}
