@@ -306,19 +306,35 @@ function Products() {
         )}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
-            <p className="text-base text-foreground">
-              {q.trim()
-                ? <>No products found for &ldquo;<span className="font-medium">{q.trim()}</span>&rdquo;</>
-                : "No products match this filter. Try another category."}
-            </p>
-            {q.trim() && (
-              <button
-                type="button"
-                onClick={() => setQ("")}
-                className="rounded-full border border-border bg-card px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition hover:bg-muted"
-              >
-                Clear search
-              </button>
+            <div aria-hidden className="grid h-14 w-14 place-items-center rounded-full border border-border bg-card text-muted-foreground">
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <p className="text-lg font-semibold text-foreground">No products found.</p>
+            <p className="text-sm text-muted-foreground">Try another keyword or category.</p>
+            {(q.trim() || active !== "All" || stock !== "all") && (
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+                {q.trim() && (
+                  <button
+                    type="button"
+                    onClick={() => setQ("")}
+                    className="rounded-full border border-border bg-card px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition hover:bg-muted"
+                  >
+                    Clear search
+                  </button>
+                )}
+                {(active !== "All" || stock !== "all") && (
+                  <button
+                    type="button"
+                    onClick={() => { setActive("All"); setStock("all"); }}
+                    className="rounded-full border border-border bg-card px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition hover:bg-muted"
+                  >
+                    Reset filters
+                  </button>
+                )}
+              </div>
             )}
           </div>
         ) : (
