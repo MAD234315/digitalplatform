@@ -157,7 +157,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts, latestIds } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts, latestIds, isFiltering } = useProductsFilter(
     data.products,
     data.categories,
   );
