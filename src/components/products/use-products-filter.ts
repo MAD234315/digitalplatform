@@ -162,7 +162,10 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
         if (stock === "out" && p.availability !== "out") return false;
         if (stock === "latest" && !latestKeys.has(keyOf(p))) return false;
       }
-      if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
+      if (needle) {
+        const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
+        if (!hay.includes(needle)) return false;
+      }
       return true;
     });
     if (sort === "name-asc") {
