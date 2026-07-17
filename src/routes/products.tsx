@@ -13,7 +13,6 @@ import { RecentlyAdded } from "@/components/products/recently-added";
 import { useProductsFilter } from "@/components/products/use-products-filter";
 import { PageShell } from "@/components/layout/PageShell";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { ProductsSkeleton, Spinner } from "@/components/products/products-skeleton";
 
 
 // Static options (not a factory) — keeps queryKey referentially stable so
@@ -118,7 +117,6 @@ export const Route = createFileRoute("/products")({
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   component: Products,
-  pendingComponent: ProductsSkeleton,
   errorComponent: ProductsError,
   notFoundComponent: ProductsNotFound,
 });
@@ -157,7 +155,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts, latestIds, isFiltering } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts, latestIds } = useProductsFilter(
     data.products,
     data.categories,
   );
@@ -282,25 +280,19 @@ function Products() {
         {filtered.length > 0 && (
           <div
             aria-live="polite"
-            className="mb-5 flex items-center gap-2 text-sm text-muted-foreground"
+            className="mb-5 text-sm text-muted-foreground"
           >
             {q.trim() ? (
-              <span>
+              <>
                 <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
                 {filtered.length === 1 ? "Result" : "Results"} for &ldquo;
                 <span className="font-medium text-foreground">{q.trim()}</span>&rdquo;
-              </span>
+              </>
             ) : (
-              <span>
+              <>
                 <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
                 {filtered.length === 1 ? "Product" : "Products"}
-              </span>
-            )}
-            {isFiltering && (
-              <span className="inline-flex items-center gap-1.5 text-xs">
-                <Spinner label="Filtering products" />
-                <span>Filtering…</span>
-              </span>
+              </>
             )}
           </div>
         )}
@@ -324,7 +316,7 @@ function Products() {
         ) : (
           <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
             <UpdatedAtContext.Provider value={dataUpdatedAt}>
-              <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
                     <TiltCard max={4}>
