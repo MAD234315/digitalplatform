@@ -45,11 +45,12 @@ export function TiltCard({ children, className = "", max = 6, style }: TiltCardP
   if (!enabled) {
     // No listeners, no willChange, no rAF — cheapest possible fallback.
     return (
-      <div ref={ref} className={`block w-full min-w-0 ${className}`} style={style}>
+      <div ref={ref} className={`block h-full w-full min-w-0 ${className}`} style={style}>
         {children}
       </div>
     );
   }
+
 
 
   const onEnter = () => {
