@@ -11,7 +11,7 @@ export function MottoPromiseSection() {
           <h2 id="promise-heading" className="mt-4 font-display text-3xl sm:text-4xl leading-tight">
             Genuine sources.
             <br />
-            Trusted service.
+            Reliable service.
           </h2>
           <p className="mt-6 text-muted-foreground max-w-md">
             Making premium digital tools affordable for everyone — one honest transaction at a time.
