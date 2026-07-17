@@ -165,6 +165,8 @@ export function SiteNav() {
 }
 
 export function SiteFooter() {
+  const linkCls =
+    "rounded-sm outline-none transition-colors hover:text-amber focus-visible:text-amber";
   return (
     <footer className="border-t border-border">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-14 grid gap-10 sm:grid-cols-2 md:grid-cols-5">
@@ -179,35 +181,35 @@ export function SiteFooter() {
             </span>
             <span className="font-display text-xl">Digital Platform</span>
           </div>
-          <p className="mt-4 max-w-sm text-sm text-muted-foreground">
+          <p className="mt-4 max-w-sm text-pretty text-sm text-muted-foreground">
             A trusted marketplace for premium digital products and AI tools. Genuine sources, honest prices, human support.
           </p>
         </div>
-        <div>
+        <nav aria-label="Explore">
           <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Explore</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><Link to="/products" className="hover:text-amber">Products</Link></li>
-            <li><Link to="/about" className="hover:text-amber">About</Link></li>
-            <li><Link to="/faq" className="hover:text-amber">FAQ</Link></li>
-            <li><Link to="/product-request" className="hover:text-amber">Product request</Link></li>
-            <li><Link to="/contact" className="hover:text-amber">Contact</Link></li>
+            <li><Link to="/products" className={linkCls}>Products</Link></li>
+            <li><Link to="/about" className={linkCls}>About</Link></li>
+            <li><Link to="/faq" className={linkCls}>FAQ</Link></li>
+            <li><Link to="/product-request" className={linkCls}>Product request</Link></li>
+            <li><Link to="/contact" className={linkCls}>Contact</Link></li>
           </ul>
-        </div>
-        <div>
+        </nav>
+        <nav aria-label="Legal">
           <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Legal</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><Link to="/privacy" className="hover:text-amber">Privacy Policy</Link></li>
-            <li><Link to="/terms" className="hover:text-amber">Terms &amp; Conditions</Link></li>
-            <li><Link to="/refund" className="hover:text-amber">Refund Policy</Link></li>
+            <li><Link to="/privacy" className={linkCls}>Privacy Policy</Link></li>
+            <li><Link to="/terms" className={linkCls}>Terms &amp; Conditions</Link></li>
+            <li><Link to="/refund" className={linkCls}>Refund Policy</Link></li>
           </ul>
-        </div>
-        <div>
+        </nav>
+        <nav aria-label="Reach us">
           <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Reach us</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={WA_URL} target="_blank" rel="noreferrer" className="hover:text-amber">WhatsApp →</a></li>
-            <li><a href={`mailto:${EMAIL}`} className="hover:text-amber break-all">{EMAIL}</a></li>
+            <li><a href={WA_URL} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp →</a></li>
+            <li><a href={`mailto:${EMAIL}`} className={`${linkCls} break-all`}>{EMAIL}</a></li>
           </ul>
-        </div>
+        </nav>
       </div>
       <div className="border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
