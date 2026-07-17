@@ -123,6 +123,7 @@ export function ProductsFilterBar({
   sort,
   onSortChange,
   products,
+  slot = "all",
 }: {
   categories: string[];
   totalCount: number;
@@ -137,6 +138,8 @@ export function ProductsFilterBar({
   sort: SortKey;
   onSortChange: (value: SortKey) => void;
   products: SheetProduct[];
+  /** Which row to render: search only, controls only, or both (default). */
+  slot?: "all" | "search" | "controls";
 }) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
