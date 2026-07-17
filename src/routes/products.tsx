@@ -199,7 +199,7 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
-      <TopSearchBar query={q} onQueryChange={setQ} />
+
 
       <ProductsFilterBar
         slot="search"
