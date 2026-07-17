@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 export function WhoWeAreSection() {
   return (
     <section aria-labelledby="who-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
           <Reveal className="lg:col-span-4">
             <Eyebrow>Who we are</Eyebrow>
