@@ -471,6 +471,7 @@ export function ProductsFilterBar({
             <span className="sr-only">{activeStockCount > 0 ? `${activeStockCount} filter active` : "No filter active"}</span>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
