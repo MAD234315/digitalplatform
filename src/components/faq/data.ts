@@ -33,7 +33,7 @@ export const FAQS: QA[] = [
 
   { cat: "Orders & Delivery", q: "How do I place an order?", a: "Pick your product and message us on WhatsApp (or any other contact method). We'll guide you through the ordering process end to end." },
   { cat: "Orders & Delivery", q: "How long does delivery take?", a: "Delivery time depends on the product. Most digital products are delivered as quickly as possible after payment confirmation — usually within minutes." },
-  { cat: "Orders & Delivery", q: "How will I receive my product?", a: "Depending on the product, you'll receive login credentials, an activation key, a license, or a gift card code — delivered directly on WhatsApp or email." },
+  { cat: "Orders & Delivery", q: "How will I receive my product?", a: "Depending on the product, you'll receive login credentials, an activation, a license, or a gift card code — delivered directly on WhatsApp or email." },
   { cat: "Orders & Delivery", q: "Which payment methods do you accept?", a: "We accept secure online payments — UPI and cards through trusted payment providers." },
   { cat: "Orders & Delivery", q: "When should I contact support after payment?", a: "Message us right after completing payment. Share your payment screenshot or transaction reference so we can verify and process your order promptly." },
 
