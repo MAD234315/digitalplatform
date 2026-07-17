@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { SITE_URL } from "@/lib/site-config";
 
-const BASE_URL = "https://digitalplatform13.lovable.app";
+const BASE_URL = SITE_URL;
 
 interface SitemapEntry {
   path: string;
@@ -21,6 +22,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/about", lastmod: today, changefreq: "monthly", priority: "0.6" },
           { path: "/contact", lastmod: today, changefreq: "monthly", priority: "0.6" },
           { path: "/faq", lastmod: today, changefreq: "monthly", priority: "0.6" },
+          { path: "/product-request", lastmod: today, changefreq: "monthly", priority: "0.5" },
+          { path: "/privacy", lastmod: today, changefreq: "yearly", priority: "0.3" },
+          { path: "/terms", lastmod: today, changefreq: "yearly", priority: "0.3" },
+          { path: "/refund", lastmod: today, changefreq: "yearly", priority: "0.3" },
         ];
 
         const urls = entries.map((e) =>
