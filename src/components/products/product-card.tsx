@@ -42,6 +42,33 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Compact info chip used in the card header strip. */
+function Chip({
+  children,
+  tone,
+}: {
+  children: React.ReactNode;
+  tone: "category" | "fresh" | "delivery" | "warranty";
+}) {
+  const style: React.CSSProperties =
+    tone === "fresh"
+      ? { backgroundColor: "color-mix(in oklab, var(--whatsapp) 14%, transparent)", color: "var(--whatsapp)", borderColor: "color-mix(in oklab, var(--whatsapp) 32%, transparent)" }
+      : tone === "delivery"
+      ? { backgroundColor: "color-mix(in oklab, var(--amber) 14%, transparent)", color: "var(--amber)", borderColor: "color-mix(in oklab, var(--amber) 32%, transparent)" }
+      : tone === "warranty"
+      ? { backgroundColor: "color-mix(in oklab, var(--primary) 12%, transparent)", color: "var(--foreground)", borderColor: "color-mix(in oklab, var(--primary) 28%, transparent)" }
+      : { backgroundColor: "var(--muted)", color: "var(--muted-foreground)", borderColor: "var(--border)" };
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em]"
+      style={style}
+    >
+      {children}
+    </span>
+  );
+}
+
+
 
 export const ProductCard = memo(function ProductCard({
   p,
