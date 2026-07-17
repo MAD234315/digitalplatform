@@ -279,7 +279,7 @@ export function ProductsFilterBar({
   );
 
   return (
-    <div className="border-b border-border bg-background">
+    <div className={`border-b border-border bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur ${slot === "controls" ? "sticky top-0 z-30" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
         {/* Row 1: search */}
         {slot !== "controls" && (
