@@ -316,24 +316,15 @@ function Products() {
         ) : (
           <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
             <UpdatedAtContext.Provider value={dataUpdatedAt}>
-              <div
-                key={`${active}|${stock}|${q}|${sort}`}
-                className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-              >
-                {filtered.map((p, i) => (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
-                    <div
-                      className="animate-fade-in opacity-0 [animation-fill-mode:forwards] motion-reduce:animate-none motion-reduce:opacity-100"
-                      style={{ animationDelay: `${Math.min(i, 12) * 40}ms` }}
-                    >
-                      <TiltCard max={4}>
-                        <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
-                      </TiltCard>
-                    </div>
+                    <TiltCard max={4}>
+                      <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
+                    </TiltCard>
                   </ErrorBoundary>
                 ))}
               </div>
-
             </UpdatedAtContext.Provider>
           </ErrorBoundary>
         )}

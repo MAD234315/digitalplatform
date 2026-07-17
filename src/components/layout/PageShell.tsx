@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-chrome";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { BackToTop } from "@/components/layout/BackToTop";
 
 /**
  * Standard page frame: fixed header + main landmark + footer.
@@ -27,10 +26,6 @@ export function PageShell({ children }: { children: ReactNode }) {
       <ErrorBoundary boundary="shell:footer" fallback={null}>
         <SiteFooter />
       </ErrorBoundary>
-      <ErrorBoundary boundary="shell:back-to-top" fallback={null}>
-        <BackToTop />
-      </ErrorBoundary>
     </div>
   );
 }
-
