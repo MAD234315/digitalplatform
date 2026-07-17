@@ -119,6 +119,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     const cutoff = Date.now() - LATEST_WINDOW_MS;
     const fresh = new Set<string>();
     for (const p of products) {
+      // Only available, in-stock products qualify as "Latest".
+      if (p.availability !== "available" || !p.inStock) continue;
       const entry = seen[keyOf(p)];
       if (entry && entry.t > cutoff) fresh.add(keyOf(p));
     }
