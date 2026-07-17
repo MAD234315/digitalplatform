@@ -287,8 +287,12 @@ export function ProductsFilterBar({
         {slot !== "controls" && (
         <div ref={wrapRef} className="relative w-full">
           <label htmlFor="products-search" className="sr-only">Search products</label>
-          <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-colors"
+            style={{ color: "var(--amber)" }}
+          >
+            <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.5-3.5" strokeLinecap="round" />
             </svg>
@@ -315,20 +319,24 @@ export function ProductsFilterBar({
             data-1p-ignore
             data-lpignore="true"
             data-form-type="other"
-            className="w-full rounded-full border border-border bg-card pl-11 pr-12 min-h-11 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="w-full rounded-full border-[1.5px] bg-card/80 pl-12 pr-12 min-h-[52px] text-[15px] outline-none shadow-[0_6px_20px_-10px_rgba(0,0,0,0.5)] placeholder:text-muted-foreground/90 transition-all duration-200 focus:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.55)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            style={{
+              borderColor: "color-mix(in oklab, var(--amber) 55%, transparent)",
+            }}
           />
           {query && (
             <button
               type="button"
               onClick={() => { onQueryChange(""); setOpen(false); inputRef.current?.focus(); }}
               aria-label="Clear search"
-              className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                 <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
               </svg>
             </button>
           )}
+
 
           {showList && (
             <div
