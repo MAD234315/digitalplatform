@@ -127,12 +127,6 @@ export const ProductCard = memo(function ProductCard({
           <AvailabilityBadge availability={p.availability} />
         </div>
 
-        <div className="flex flex-wrap items-center gap-1 pt-0.5">
-          <Chip tone="category">{p.category}</Chip>
-          {isLatest && <Chip tone="fresh">✨ Updated Today</Chip>}
-          <Chip tone="delivery">⚡ {deliveryTime}</Chip>
-          {p.warranty && <Chip tone="warranty">🛡 {p.warranty}</Chip>}
-        </div>
       </div>
 
 
