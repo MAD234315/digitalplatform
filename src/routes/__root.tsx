@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import appCss from "../styles.css?url";
+import appCss from "../styles.css?inline";
 import dmSerif400Woff2 from "@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2?url";
 import firaSans400Woff2 from "@fontsource/fira-sans/files/fira-sans-latin-400-normal.woff2?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -70,7 +70,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
 
     links: [
-      { rel: "stylesheet", href: appCss },
       { rel: "preload", as: "font", type: "font/woff2", href: dmSerif400Woff2, crossOrigin: "anonymous" },
       { rel: "preload", as: "font", type: "font/woff2", href: firaSans400Woff2, crossOrigin: "anonymous" },
     ],
@@ -155,6 +154,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <style dangerouslySetInnerHTML={{ __html: appCss }} />
         <HeadContent />
       </head>
       <body>{children}<Scripts /></body>
