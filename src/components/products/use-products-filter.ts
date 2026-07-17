@@ -210,5 +210,6 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     latestKeys,
     latestIds,
     latestProducts,
+    isFiltering: q.trim() !== deferredQ.trim(),
   };
 }
