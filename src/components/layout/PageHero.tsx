@@ -63,7 +63,7 @@ function HeroCopy({
   return (
     <>
       <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground">{eyebrow}</div>
-      <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98]">
+      <h1 className="mt-6 font-display text-balance text-4xl sm:text-6xl lg:text-7xl leading-[1.02] sm:leading-[0.98]">
         {title}
         {titleAccent && (
           <>
@@ -73,7 +73,7 @@ function HeroCopy({
         )}
       </h1>
       {lede && (
-        <p className="mt-8 max-w-2xl text-lg text-muted-foreground leading-relaxed">{lede}</p>
+        <p className="mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">{lede}</p>
       )}
     </>
   );
