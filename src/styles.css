@@ -251,6 +251,15 @@
   }
 }
 
+/* Skip rendering + layout work for off-screen sections. Boosts LCP/TBT
+   on long landing pages. `contain-intrinsic-size` reserves space so
+   scrollbar and anchor jumps stay accurate. */
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
+}
+
+
 
 
 
