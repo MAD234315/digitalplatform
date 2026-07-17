@@ -92,7 +92,7 @@ export const ProductCard = memo(function ProductCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="flex min-h-[1.75rem] flex-wrap items-center gap-1">
           {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
           {p.badges.includes("high-demand") && <Badge tone="hot">🔥 Hot</Badge>}
           {p.loot && <Badge tone="loot">Loot</Badge>}
@@ -101,7 +101,7 @@ export const ProductCard = memo(function ProductCard({
       </div>
 
       <div className="relative flex flex-1 flex-col p-5">
-        <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
+        <h3 className="min-h-[3.75rem] font-display text-2xl leading-tight">{p.name}</h3>
         {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
 
 
@@ -114,27 +114,26 @@ export const ProductCard = memo(function ProductCard({
           {p.warranty && <Row label="Warranty" value={p.warranty} />}
         </dl>
 
+        <div className="mt-auto pt-3">
+          <p className="text-[11px] text-muted-foreground">
+            Contact admin for detailed info.
+          </p>
 
+          <LastUpdatedLine />
 
+          <a
+            href={`${CONTACT.WA_URL}?text=${waMsg}`}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => onView?.(p)}
+            aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
+            style={{ backgroundColor: "var(--whatsapp)" }}
+          >
+            <WaGlyph /> Quick DM for Offer Price
+          </a>
+        </div>
 
-        <p className="mt-auto pt-3 text-[11px] text-muted-foreground">
-          Contact admin for detailed info.
-        </p>
-
-
-        <LastUpdatedLine />
-
-        <a
-          href={`${CONTACT.WA_URL}?text=${waMsg}`}
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => onView?.(p)}
-          aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-          className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
-          style={{ backgroundColor: "var(--whatsapp)" }}
-        >
-          <WaGlyph /> Quick DM for Offer Price
-        </a>
       </div>
     </article>
   );
