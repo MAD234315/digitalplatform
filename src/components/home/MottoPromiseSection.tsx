@@ -5,7 +5,7 @@ import { PROMISES } from "./data";
 export function MottoPromiseSection() {
   return (
     <section aria-labelledby="promise-heading" className="cv-auto border-t border-border bg-card/30">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-20 lg:py-32 grid lg:grid-cols-12 gap-10 lg:gap-12">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28 grid lg:grid-cols-12 gap-10 lg:gap-12">
         <Reveal className="lg:col-span-7">
           <Eyebrow>Our motto</Eyebrow>
           <h2 id="promise-heading" className="mt-4 font-display text-3xl sm:text-4xl leading-tight">
