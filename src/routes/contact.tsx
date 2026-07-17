@@ -137,18 +137,48 @@ function Contact() {
 }
 
 function CopyEmailButton({ email }: { email: string }) {
+  return (
+    <CopyButton
+      value={email}
+      successMessage="Email copied to clipboard!"
+      errorMessage="Unable to copy email. Please copy it manually."
+      labelIdle="Copy email"
+      labelDone="Copied!"
+      ariaIdle="Copy email address"
+      ariaDone="Email copied"
+    />
+  );
+}
+
+function CopyButton({
+  value,
+  successMessage,
+  errorMessage,
+  labelIdle,
+  labelDone,
+  ariaIdle,
+  ariaDone,
+}: {
+  value: string;
+  successMessage: string;
+  errorMessage: string;
+  labelIdle: string;
+  labelDone: string;
+  ariaIdle: string;
+  ariaDone: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     try {
-      await navigator.clipboard.writeText(email);
+      await navigator.clipboard.writeText(value);
       setCopied(true);
-      toast.success("Email copied to clipboard!");
+      toast.success(successMessage);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Unable to copy email. Please copy it manually.");
+      toast.error(errorMessage);
     }
   };
 
@@ -156,8 +186,8 @@ function CopyEmailButton({ email }: { email: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      aria-label={copied ? "Email copied" : "Copy email address"}
-      title={copied ? "Copied!" : "Copy email"}
+      aria-label={copied ? ariaDone : ariaIdle}
+      title={copied ? labelDone : labelIdle}
       className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/60 text-muted-foreground transition-all duration-200 hover:border-amber hover:text-amber hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(212,175,55,0.12)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber/60"
     >
       {copied ? (
