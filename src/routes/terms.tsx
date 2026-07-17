@@ -26,7 +26,7 @@ function Terms() {
       <section className="border-t border-border">
         <div className="mx-auto max-w-3xl px-6 lg:px-10 py-16 space-y-10 text-muted-foreground leading-relaxed">
           <Block title="Our products">
-            Digital Platform is a marketplace for premium digital products, subscriptions, licenses, and gift cards. Products, plans, availability, and pricing may change based on stock and market conditions.
+            Digital Platform is a marketplace for premium digital products, subscriptions, licenses, and gift cards. Products, plans, availability, and pricing may change based on stock and various conditions.
           </Block>
           <Block title="Orders and payment">
             Orders are confirmed only after payment is verified. Please share your payment reference with our support team so we can process your order promptly.
