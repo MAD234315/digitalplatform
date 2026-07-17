@@ -76,19 +76,18 @@ function Contact() {
               Open WhatsApp →
             </a>
           </div>
-          <a href={`mailto:${CONTACT.EMAIL}`} className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
+          <div className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
             <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Email</div>
             <h2 className="mt-3 font-display text-3xl">Mail</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Suggestions, feedback, or collabs? Drop us a line.
             </p>
             <div className="mt-6 flex items-center gap-3 flex-wrap">
-              <span className="font-display text-lg break-all">{CONTACT.EMAIL}</span>
+              <a href={`mailto:${CONTACT.EMAIL}`} className="font-display text-lg break-all hover:text-amber transition-colors">{CONTACT.EMAIL}</a>
               <CopyEmailButton email={CONTACT.EMAIL} />
             </div>
-            <div className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Send email →</div>
-          </a>
-        </div>
+            <a href={`mailto:${CONTACT.EMAIL}`} className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Send email →</a>
+          </div>
       </section>
 
       <section className="border-t border-border">
