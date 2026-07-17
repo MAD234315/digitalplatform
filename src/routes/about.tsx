@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CONTACT } from "@/components/site-chrome";
-import { ORG_ID } from "@/lib/site-config";
+import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/about")({
         {
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          url: "https://www.digitalplatform.example/about",
+          url: `${SITE_URL}/about`,
           name: TITLE,
           description: DESC,
           publisher: { "@id": ORG_ID },

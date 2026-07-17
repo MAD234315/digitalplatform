@@ -75,4 +75,4 @@ Disallow: /
 User-agent: Amazonbot
 Disallow: /
 
-Sitemap: https://digitalplatform13.lovable.app/sitemap.xml
+Sitemap: https://digitalplatform.lovable.app/sitemap.xml

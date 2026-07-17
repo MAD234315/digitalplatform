@@ -2,7 +2,7 @@
  * Canonical site URLs and shared SEO assets.
  * Keeping one source prevents drift across route files, JSON-LD, and the sitemap.
  */
-export const SITE_URL = "https://digitalplatform13.lovable.app";
+export const SITE_URL = "https://digitalplatform.lovable.app";
 
 /**
  * Sitewide social preview image. Currently a hosted screenshot preview — swap to
