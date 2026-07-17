@@ -169,7 +169,7 @@ export function SiteNav() {
             );
           })}
           <a
-            href={WA_URL}
+            href={WA_URL_GENERAL}
             target="_blank"
             rel="noreferrer"
             className="mt-3 inline-flex items-center justify-center min-h-12 rounded-full px-5 text-sm font-medium"
