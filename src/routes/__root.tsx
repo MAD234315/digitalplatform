@@ -10,6 +10,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import dmSerif400Woff2 from "@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2?url";
+import firaSans400Woff2 from "@fontsource/fira-sans/files/fira-sans-latin-400-normal.woff2?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorListeners } from "../lib/client-error-listeners";
 import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
