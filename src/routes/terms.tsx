@@ -29,7 +29,7 @@ function Terms() {
             Digital Platform is a marketplace for premium digital products, subscriptions, licenses, and gift cards. Products, plans, availability, and pricing may change based on stock and various conditions.
           </Block>
           <Block title="Orders and payment">
-            Orders are confirmed only after payment is verified. Please share your payment reference with our support team so we can process your order promptly.
+            Orders are confirmed only after payment is verified. Please share your payment screenswith our support team so we can process your order promptly.
           </Block>
           <Block title="Delivery">
             Delivery times vary by product. Most digital products are delivered shortly after payment verification, though some may take longer. You will be notified once your product has been delivered.
