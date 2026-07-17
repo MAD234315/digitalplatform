@@ -57,7 +57,7 @@ export function SiteNav() {
 
         <Link
           to="/"
-          className="flex min-w-0 items-center gap-3"
+          className="-mx-2 -my-1 flex min-h-11 min-w-0 items-center gap-3 rounded-lg px-2 py-1 transition active:scale-[0.98] touch-manipulation motion-reduce:active:scale-100"
           aria-label="Digital Platform — back to top"
           onClick={(e) => {
             if (pathname === "/") {
@@ -69,6 +69,7 @@ export function SiteNav() {
             }
           }}
         >
+
           <span
             aria-hidden
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md font-display text-xl"
