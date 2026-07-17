@@ -8,6 +8,7 @@ import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
 import { ProductCard, UpdatedAtContext } from "@/components/products/product-card";
 import { ProductsHero } from "@/components/products/products-hero";
 import { ProductsFilterBar } from "@/components/products/products-filter-bar";
+import { TopSearchBar } from "@/components/products/top-search-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
 import { RecentlyAdded } from "@/components/products/recently-added";
 import { useProductsFilter } from "@/components/products/use-products-filter";
