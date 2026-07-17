@@ -21,10 +21,15 @@ import { ErrorBoundary } from "@/components/error-boundary";
 const productsQueryOptions = queryOptions({
   queryKey: ["sheet-products"],
   queryFn: () => getSheetProducts(),
-  staleTime: 60_000,
-  refetchInterval: 60_000,
+  // 5 min fresh, 5 min poll, no polling while tab hidden — cuts worker load
+  // and mobile battery/data ~5x vs 60s while still feeling "live".
+  staleTime: 5 * 60_000,
+  refetchInterval: 5 * 60_000,
+  refetchIntervalInBackground: false,
   refetchOnWindowFocus: true,
+  gcTime: 30 * 60_000,
 });
+
 
 const PRODUCTS_URL = SITE_URL + "/products";
 const PRODUCTS_TITLE = "Digital Subscriptions & Software — Digital Platform";
