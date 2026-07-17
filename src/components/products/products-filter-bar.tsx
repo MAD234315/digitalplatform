@@ -268,6 +268,11 @@ export function ProductsFilterBar({
 
   const selectClass =
     "min-w-0 min-h-11 appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+  const activeSelectClass =
+    "border-amber/60 bg-amber/10 text-foreground shadow-[0_0_0_1px_var(--amber)]/10";
+  const isCategoryActive = active !== "All";
+  const isSortActive = sort !== "default";
+  const isStockActive = stock !== "all";
 
   const chevron = (
     <svg viewBox="0 0 24 24" aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="1.8">
