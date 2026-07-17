@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { HeroSection } from "@/components/home/HeroSection";
 import { WhoWeAreSection } from "@/components/home/WhoWeAreSection";
+import { StatsCounterSection } from "@/components/home/StatsCounterSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
@@ -72,6 +73,7 @@ function Home() {
       <main id="main">
         <ErrorBoundary boundary="home:hero"><HeroSection /></ErrorBoundary>
         <ErrorBoundary boundary="home:who-we-are"><WhoWeAreSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:stats"><StatsCounterSection /></ErrorBoundary>
         <ErrorBoundary boundary="home:categories"><CategoriesSection /></ErrorBoundary>
         <ErrorBoundary boundary="home:reasons"><ReasonsSection /></ErrorBoundary>
         <ErrorBoundary boundary="home:motto"><MottoPromiseSection /></ErrorBoundary>
