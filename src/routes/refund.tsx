@@ -42,7 +42,7 @@ function Refund() {
           </Block>
           <Block title="Contact">
             Reach us on{" "}
-            <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="text-foreground underline">WhatsApp</a>{" "}
+            <a href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi, I'd like to request a refund/replacement. My order details: ")}`} target="_blank" rel="noreferrer" className="text-foreground underline">WhatsApp</a>{" "}
             or email{" "}
             <a href={`mailto:${CONTACT.EMAIL}`} className="text-foreground underline">{CONTACT.EMAIL}</a>.
           </Block>
