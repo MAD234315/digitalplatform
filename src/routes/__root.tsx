@@ -143,7 +143,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
-const THEME_INIT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)dp-theme=(light|dark)/);var s=m&&m[1];var t=(s==='light'||s==='dark')?s:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');var r=document.documentElement;if(t==='light')r.classList.add('light');r.style.colorScheme=t;}catch(e){}})();`;
+const THEME_INIT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)dp-theme=(light|dark)/);var s=m&&m[1];var t=(s==='light'||s==='dark')?s:'dark';var r=document.documentElement;if(t==='light')r.classList.add('light');r.style.colorScheme=t;}catch(e){}})();`;
 
 function RootShell({ children }: { children: ReactNode }) {
   // suppressHydrationWarning on <html>: the pre-hydration script above

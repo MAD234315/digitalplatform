@@ -33,7 +33,7 @@ function readInitial(): Theme {
   if (typeof document === "undefined") return "dark";
   const fromCookie = readThemeCookie(document.cookie);
   if (fromCookie) return fromCookie;
-  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return "dark";
 }
 
 function apply(theme: Theme) {
