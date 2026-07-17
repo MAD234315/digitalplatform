@@ -190,69 +190,6 @@ export function ProductsFilterBar({
   return (
     <div className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
-        <div
-          role="group"
-          aria-label="Filter by category"
-          className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
-        >
-          {["All", ...categories].map((name) => {
-            const isActive = active === name;
-            const count = name === "All" ? totalCount : (categoryCounts.get(name) ?? 0);
-            return (
-              <button
-                key={name}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => handleCategoryClick(name)}
-                className={`whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                  isActive
-                    ? "border-transparent shadow-soft"
-                    : "border-border bg-card hover:bg-muted hover:border-foreground/20"
-                }`}
-                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
-              >
-                {name.toLowerCase()} <span className="opacity-60">· {count}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div
-          role="group"
-          aria-label="Filter by stock"
-          className="scroll-slim inline-flex gap-1 self-start overflow-x-auto rounded-full border border-border bg-card p-1"
-        >
-          {STOCK_OPTIONS.map((opt) => {
-            const isActive = stock === opt.value;
-            const count = stockCounts[opt.value] ?? 0;
-            const dotColor =
-              opt.value === "latest" ? "var(--primary)" :
-              opt.value === "in-stock" ? "var(--whatsapp)" :
-              opt.value === "limited" ? "var(--amber)" :
-              opt.value === "out" ? "var(--danger)" :
-              undefined;
-
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => handleStockClick(opt.value)}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-10 md:min-h-8 text-[11px] font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
-                  isActive
-                    ? "shadow-soft"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
-              >
-                {dotColor && (
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
-                )}
-                {opt.label}
-                <span className="opacity-60">· {count}</span>
-              </button>
-            );
-          })}
-        </div>
         <div ref={wrapRef} className="relative w-full">
           <label htmlFor="products-search" className="sr-only">Search products</label>
           <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -346,6 +283,70 @@ export function ProductsFilterBar({
             </div>
           )}
         </div>
+        <div
+          role="group"
+          aria-label="Filter by category"
+          className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+        >
+          {["All", ...categories].map((name) => {
+            const isActive = active === name;
+            const count = name === "All" ? totalCount : (categoryCounts.get(name) ?? 0);
+            return (
+              <button
+                key={name}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => handleCategoryClick(name)}
+                className={`whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                  isActive
+                    ? "border-transparent shadow-soft"
+                    : "border-border bg-card hover:bg-muted hover:border-foreground/20"
+                }`}
+                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+              >
+                {name.toLowerCase()} <span className="opacity-60">· {count}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div
+          role="group"
+          aria-label="Filter by stock"
+          className="scroll-slim inline-flex gap-1 self-start overflow-x-auto rounded-full border border-border bg-card p-1"
+        >
+          {STOCK_OPTIONS.map((opt) => {
+            const isActive = stock === opt.value;
+            const count = stockCounts[opt.value] ?? 0;
+            const dotColor =
+              opt.value === "latest" ? "var(--primary)" :
+              opt.value === "in-stock" ? "var(--whatsapp)" :
+              opt.value === "limited" ? "var(--amber)" :
+              opt.value === "out" ? "var(--danger)" :
+              undefined;
+
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => handleStockClick(opt.value)}
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-10 md:min-h-8 text-[11px] font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
+                  isActive
+                    ? "shadow-soft"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+              >
+                {dotColor && (
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+                )}
+                {opt.label}
+                <span className="opacity-60">· {count}</span>
+              </button>
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );
