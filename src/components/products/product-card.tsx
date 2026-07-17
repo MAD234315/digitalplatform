@@ -88,7 +88,7 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card transition-all duration-300 ease-out will-change-transform hover:-translate-y-[3px] hover:shadow-[0_12px_32px_-16px_color-mix(in_oklab,var(--primary)_28%,transparent)] hover:border-foreground/20 focus-within:-translate-y-[3px] active:translate-y-0 active:scale-[0.995] motion-reduce:transform-none motion-reduce:transition-none scroll-mt-32"
     >
 
 
