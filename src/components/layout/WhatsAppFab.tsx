@@ -18,7 +18,7 @@ export function WhatsAppFab({ prefill }: { prefill?: string }) {
       target="_blank"
       rel="noreferrer"
       aria-label="Chat on WhatsApp"
-      className="fixed right-5 z-40 inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-soft transition-transform duration-200 hover:brightness-110 hover:-translate-y-0.5 active:scale-[0.98] motion-reduce:transform-none"
+      className="fixed right-5 z-40 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-soft transition-transform duration-200 hover:brightness-110 hover:-translate-y-0.5 active:scale-[0.98] motion-reduce:transform-none"
       style={{
         backgroundColor: "var(--whatsapp)",
         bottom: "calc(1.25rem + env(safe-area-inset-bottom))",
