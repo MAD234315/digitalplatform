@@ -1,13 +1,16 @@
 /**
  * Filter bar for the /products page.
  *
- * Renders category chips (with counts) plus a debounced search input with
- * an instant-suggestions dropdown. The bar is a pure controlled component
- * — state lives in the parent via `useProductsFilter` so URL sync or
- * persistence can be added there without touching this file.
+ * Compact layout:
+ *   Row 1 — full-width search with instant suggestions
+ *   Row 2 — [Categories dropdown]  [Sort dropdown]  [Filters button]
+ *
+ * The Filters button opens a popover containing the stock-availability
+ * pills (all / latest / in-stock / limited / out). State lives in the
+ * parent via `useProductsFilter`.
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import type { StockFilter } from "./use-products-filter";
+import type { SortKey, StockFilter } from "./use-products-filter";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { gradientFor, initialsFor } from "@/lib/product-visuals";
 
@@ -19,16 +22,22 @@ const STOCK_OPTIONS: { value: StockFilter; label: string }[] = [
   { value: "out", label: "Out" },
 ];
 
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "default", label: "Newest first" },
+  { value: "name-asc", label: "Name A–Z" },
+  { value: "availability", label: "In stock first" },
+];
+
 const MAX_SUGGESTIONS = 8;
 const POPULAR_COUNT = 6;
 
 type Suggestion = {
   key: string;
-  label: string;      // e.g. "Canva Pro"
+  label: string;
   category: string;
   plan: string;
   availability: SheetProduct["availability"];
-  matchText: string;  // lowercase composite used for matching
+  matchText: string;
 };
 
 function toSuggestion(p: SheetProduct): Suggestion {
@@ -61,7 +70,6 @@ function rankMatches(pool: Suggestion[], needle: string): Suggestion[] {
     const nameIdx = s.label.toLowerCase().indexOf(n);
     const anyIdx = s.matchText.indexOf(n);
     if (anyIdx === -1) continue;
-    // Prefer name prefix > name contains > any contains
     const score =
       s.label.toLowerCase().startsWith(n) ? 0 :
       nameIdx >= 0 ? 1 + nameIdx / 100 :
@@ -89,6 +97,8 @@ export function ProductsFilterBar({
   stock,
   onStockChange,
   stockCounts,
+  sort,
+  onSortChange,
   products,
 }: {
   categories: string[];
@@ -101,12 +111,16 @@ export function ProductsFilterBar({
   stock: StockFilter;
   onStockChange: (value: StockFilter) => void;
   stockCounts: Record<StockFilter, number>;
+  sort: SortKey;
+  onSortChange: (value: SortKey) => void;
   products: SheetProduct[];
 }) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const filtersRef = useRef<HTMLDivElement | null>(null);
   const listboxId = useId();
 
   const pool = useMemo(() => buildSuggestions(products), [products]);
@@ -123,17 +137,14 @@ export function ProductsFilterBar({
     return rankMatches(pool, trimmed);
   }, [pool, trimmed]);
 
-  // What the dropdown actually shows.
   const showingPopular = trimmed.length === 0;
   const showEmpty = trimmed.length >= 2 && suggestions.length === 0;
   const items: Suggestion[] = showingPopular ? popular : suggestions;
   const showList = open && (items.length > 0 || showEmpty);
-  const navigableCount = items.length; // empty-state row is not navigable
+  const navigableCount = items.length;
 
-  // Reset highlight when the visible list changes.
   useEffect(() => { setHighlight(0); }, [showingPopular, suggestions, popular]);
 
-  // Close on outside click.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
@@ -143,6 +154,21 @@ export function ProductsFilterBar({
     window.addEventListener("mousedown", onDown);
     return () => window.removeEventListener("mousedown", onDown);
   }, [open]);
+
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!filtersRef.current) return;
+      if (!filtersRef.current.contains(e.target as Node)) setFiltersOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFiltersOpen(false); };
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [filtersOpen]);
 
   const commit = (s: Suggestion) => {
     onQueryChange(s.label);
@@ -178,18 +204,22 @@ export function ProductsFilterBar({
     );
   };
 
-  const handleCategoryClick = (name: string) => {
-    onActiveChange(name);
-    setOpen(false);
-  };
-  const handleStockClick = (value: StockFilter) => {
-    onStockChange(value);
-    setOpen(false);
-  };
+  const activeStockCount = stock === "all" ? 0 : 1;
+  const activeCategoryCount = categoryCounts.get(active) ?? totalCount;
+
+  const selectClass =
+    "min-w-0 min-h-11 md:min-h-10 appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+  const chevron = (
+    <svg viewBox="0 0 24 24" aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 
   return (
     <div className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
+        {/* Row 1: search */}
         <div ref={wrapRef} className="relative w-full">
           <label htmlFor="products-search" className="sr-only">Search products</label>
           <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -229,9 +259,7 @@ export function ProductsFilterBar({
           )}
 
           {showList && (
-            <div
-              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-96 overflow-y-auto rounded-2xl border border-border bg-popover text-popover-foreground shadow-xl ring-1 ring-black/5 backdrop-blur"
-            >
+            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-96 overflow-y-auto rounded-2xl border border-border bg-popover text-popover-foreground shadow-xl ring-1 ring-black/5 backdrop-blur">
               <div className="px-4 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 {showingPopular ? "Popular" : showEmpty ? "No results" : "Suggestions"}
               </div>
@@ -283,70 +311,128 @@ export function ProductsFilterBar({
             </div>
           )}
         </div>
-        <div
-          role="group"
-          aria-label="Filter by category"
-          className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
-        >
-          {["All", ...categories].map((name) => {
-            const isActive = active === name;
-            const count = name === "All" ? totalCount : (categoryCounts.get(name) ?? 0);
-            return (
-              <button
-                key={name}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => handleCategoryClick(name)}
-                className={`whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                  isActive
-                    ? "border-transparent shadow-soft"
-                    : "border-border bg-card hover:bg-muted hover:border-foreground/20"
-                }`}
-                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
-              >
-                {name.toLowerCase()} <span className="opacity-60">· {count}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div
-          role="group"
-          aria-label="Filter by stock"
-          className="scroll-slim inline-flex gap-1 self-start overflow-x-auto rounded-full border border-border bg-card p-1"
-        >
-          {STOCK_OPTIONS.map((opt) => {
-            const isActive = stock === opt.value;
-            const count = stockCounts[opt.value] ?? 0;
-            const dotColor =
-              opt.value === "latest" ? "var(--primary)" :
-              opt.value === "in-stock" ? "var(--whatsapp)" :
-              opt.value === "limited" ? "var(--amber)" :
-              opt.value === "out" ? "var(--danger)" :
-              undefined;
 
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => handleStockClick(opt.value)}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-10 md:min-h-8 text-[11px] font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
-                  isActive
-                    ? "shadow-soft"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+        {/* Row 2: categories | sort | filters */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative min-w-0 flex-1 sm:flex-none sm:w-56">
+            <label htmlFor="products-category" className="sr-only">Category</label>
+            <select
+              id="products-category"
+              value={active}
+              onChange={(e) => onActiveChange(e.target.value)}
+              className={`w-full ${selectClass}`}
+            >
+              <option value="All">All categories · {totalCount}</option>
+              {categories.map((name) => (
+                <option key={name} value={name}>
+                  {name} · {categoryCounts.get(name) ?? 0}
+                </option>
+              ))}
+            </select>
+            {chevron}
+            <span className="sr-only">Currently showing {activeCategoryCount} products</span>
+          </div>
+
+          <div className="relative min-w-0 flex-1 sm:flex-none sm:w-44">
+            <label htmlFor="products-sort" className="sr-only">Sort</label>
+            <select
+              id="products-sort"
+              value={sort}
+              onChange={(e) => onSortChange(e.target.value as SortKey)}
+              className={`w-full ${selectClass}`}
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  Sort: {opt.label}
+                </option>
+              ))}
+            </select>
+            {chevron}
+          </div>
+
+          <div ref={filtersRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setFiltersOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={filtersOpen}
+              className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-10 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                activeStockCount > 0
+                  ? "border-transparent shadow-soft"
+                  : "border-border bg-card hover:bg-muted"
+              }`}
+              style={activeStockCount > 0 ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                <path d="M4 6h16M7 12h10M10 18h4" strokeLinecap="round" />
+              </svg>
+              Filters
+              {activeStockCount > 0 && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-background/25 px-1.5 text-[10px] font-semibold">
+                  {activeStockCount}
+                </span>
+              )}
+            </button>
+
+            {filtersOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-[calc(100%+8px)] z-50 w-64 rounded-2xl border border-border bg-popover text-popover-foreground p-3 shadow-xl ring-1 ring-black/5"
               >
-                {dotColor && (
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+                <div className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Availability
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {STOCK_OPTIONS.map((opt) => {
+                    const isActive = stock === opt.value;
+                    const count = stockCounts[opt.value] ?? 0;
+                    const dotColor =
+                      opt.value === "latest" ? "var(--primary)" :
+                      opt.value === "in-stock" ? "var(--whatsapp)" :
+                      opt.value === "limited" ? "var(--amber)" :
+                      opt.value === "out" ? "var(--danger)" :
+                      undefined;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={isActive}
+                        onClick={() => { onStockChange(opt.value); setFiltersOpen(false); }}
+                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 min-h-9 text-[11px] font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                          isActive
+                            ? "border-transparent shadow-soft"
+                            : "border-border bg-card text-muted-foreground hover:text-foreground"
+                        }`}
+                        style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+                      >
+                        {dotColor && (
+                          <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+                        )}
+                        {opt.label}
+                        <span className="opacity-60">· {count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {(stock !== "all" || active !== "All" || sort !== "default") && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onStockChange("all");
+                      onActiveChange("All");
+                      onSortChange("default");
+                      setFiltersOpen(false);
+                    }}
+                    className="mt-3 w-full rounded-full border border-border bg-card min-h-9 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground transition hover:text-foreground"
+                  >
+                    Reset all filters
+                  </button>
                 )}
-                {opt.label}
-                <span className="opacity-60">· {count}</span>
-              </button>
-            );
-          })}
+              </div>
+            )}
+          </div>
         </div>
-
       </div>
     </div>
   );
