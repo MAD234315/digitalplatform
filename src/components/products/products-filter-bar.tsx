@@ -334,15 +334,6 @@ export function ProductsFilterBar({
                   {showingRecent ? "Recent searches" : showEmpty ? "No results" : "Suggestions"}
                 </div>
                 <div className="flex items-center gap-1">
-                  {showingRecent && recent.length > 0 && (
-                    <button
-                      type="button"
-                      onMouseDown={(e) => { e.preventDefault(); clearRecent(); }}
-                      className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      Clear history
-                    </button>
-                  )}
                   <button
                     type="button"
                     onMouseDown={(e) => { e.preventDefault(); closeOverlay(); }}
@@ -357,12 +348,8 @@ export function ProductsFilterBar({
               </div>
 
               {showingRecent ? (
-                recent.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No recent searches.
-                  </div>
-                ) : (
-                  <ul className="pb-2">
+                <>
+                  <ul className="pb-1">
                     {recent.map((term) => (
                       <li key={term}>
                         <button
