@@ -30,7 +30,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 const MAX_SUGGESTIONS = 8;
 const RECENT_SEARCHES_KEY = "products-recent-searches-v1";
-const MAX_RECENT = 8;
+const MAX_RECENT = 2;
 
 function readRecent(): string[] {
   if (typeof window === "undefined") return [];
