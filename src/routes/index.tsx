@@ -82,6 +82,7 @@ function Home() {
 
       </main>
       <ErrorBoundary boundary="shell:footer" fallback={null}><SiteFooter /></ErrorBoundary>
+      <ErrorBoundary boundary="shell:wa-fab" fallback={null}><WhatsAppFab /></ErrorBoundary>
     </div>
   );
 }
