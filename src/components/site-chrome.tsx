@@ -55,7 +55,20 @@ export function SiteNav() {
       </a>
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 h-16 sm:h-20 flex items-center justify-between gap-4">
 
-        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="Digital Platform home">
+        <Link
+          to="/"
+          className="flex min-w-0 items-center gap-3"
+          aria-label="Digital Platform — back to top"
+          onClick={(e) => {
+            if (pathname === "/") {
+              e.preventDefault();
+              const prefersReduced =
+                typeof window !== "undefined" &&
+                window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+              window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
+            }
+          }}
+        >
           <span
             aria-hidden
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md font-display text-xl"
@@ -68,6 +81,7 @@ export function SiteNav() {
             <span className="block text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Since 2020</span>
           </span>
         </Link>
+
 
         <nav aria-label="Primary" className="hidden md:flex items-center gap-8 text-sm">
           {LINKS.map((l) => {
