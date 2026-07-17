@@ -29,7 +29,30 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 ];
 
 const MAX_SUGGESTIONS = 8;
-const POPULAR_COUNT = 6;
+const RECENT_SEARCHES_KEY = "products-recent-searches-v1";
+const MAX_RECENT = 8;
+
+function readRecent(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((x): x is string => typeof x === "string" && x.trim().length > 0).slice(0, MAX_RECENT);
+  } catch {
+    return [];
+  }
+}
+
+function writeRecent(list: string[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(list.slice(0, MAX_RECENT)));
+  } catch {
+    // ignore quota / privacy-mode errors
+  }
+}
 
 type Suggestion = {
   key: string;
