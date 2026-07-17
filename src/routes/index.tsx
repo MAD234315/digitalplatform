@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { WhoWeAreSection } from "@/components/home/WhoWeAreSection";
 import { StatsCounterSection } from "@/components/home/StatsCounterSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
+import { FeaturedProductsSection } from "@/components/home/FeaturedProductsSection";
 import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
@@ -75,6 +76,7 @@ function Home() {
         <ErrorBoundary boundary="home:who-we-are"><div className="cv-auto"><WhoWeAreSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:stats"><div className="cv-auto"><StatsCounterSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:categories"><div className="cv-auto"><CategoriesSection /></div></ErrorBoundary>
+        <ErrorBoundary boundary="home:featured" fallback={null}><div className="cv-auto"><FeaturedProductsSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:reasons"><div className="cv-auto"><ReasonsSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:motto"><div className="cv-auto"><MottoPromiseSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:contact-prompt"><div className="cv-auto"><ContactPromptSection /></div></ErrorBoundary>
