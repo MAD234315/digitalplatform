@@ -268,6 +268,9 @@ export function ProductsFilterBar({
 
   const selectClass =
     "min-w-0 min-h-11 appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+  const activeSelectClass =
+    "border-amber ring-2 ring-amber/40 bg-amber/10 font-semibold text-foreground";
+  const categoryActive = active !== "All";
 
   const chevron = (
     <svg viewBox="0 0 24 24" aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -276,7 +279,7 @@ export function ProductsFilterBar({
   );
 
   return (
-    <div className="border-b border-border bg-background">
+    <div className={`border-b border-border bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur ${slot === "controls" ? "sticky top-0 z-30" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
         {/* Row 1: search */}
         {slot !== "controls" && (
@@ -442,7 +445,7 @@ export function ProductsFilterBar({
               id="products-category"
               value={active}
               onChange={(e) => onActiveChange(e.target.value)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${categoryActive ? activeSelectClass : ""}`}
             >
               <option value="All">All categories · {totalCount}</option>
               {categories.map((name) => (
