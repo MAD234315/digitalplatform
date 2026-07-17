@@ -59,7 +59,10 @@ function Contact() {
             <p className="mt-2 text-sm text-muted-foreground">
               Suggestions, feedback, or collabs? Drop us a line.
             </p>
-            <div className="mt-6 font-display text-lg break-all">{CONTACT.EMAIL}</div>
+            <div className="mt-6 flex items-center gap-3 flex-wrap">
+              <span className="font-display text-lg break-all">{CONTACT.EMAIL}</span>
+              <CopyEmailButton email={CONTACT.EMAIL} />
+            </div>
             <div className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Send email →</div>
           </a>
         </div>
