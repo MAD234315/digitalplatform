@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
@@ -56,7 +59,10 @@ function Contact() {
             <p className="mt-2 text-sm text-muted-foreground">
               Suggestions, feedback, or collabs? Drop us a line.
             </p>
-            <div className="mt-6 font-display text-lg break-all">{CONTACT.EMAIL}</div>
+            <div className="mt-6 flex items-center gap-3 flex-wrap">
+              <span className="font-display text-lg break-all">{CONTACT.EMAIL}</span>
+              <CopyEmailButton email={CONTACT.EMAIL} />
+            </div>
             <div className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Send email →</div>
           </a>
         </div>
@@ -110,5 +116,38 @@ function Contact() {
         </div>
       </section>
     </PageShell>
+  );
+}
+
+function CopyEmailButton({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      toast.success("Email copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Unable to copy email. Please copy it manually.");
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      aria-label={copied ? "Email copied" : "Copy email address"}
+      title={copied ? "Copied!" : "Copy email"}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/60 text-muted-foreground transition-all duration-200 hover:border-amber hover:text-amber hover:-translate-y-0.5 hover:shadow-[0_0_0_3px_rgba(212,175,55,0.12)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber/60"
+    >
+      {copied ? (
+        <Check className="h-4 w-4 text-emerald-400" aria-hidden />
+      ) : (
+        <Copy className="h-4 w-4" aria-hidden />
+      )}
+    </button>
   );
 }
