@@ -277,6 +277,25 @@ function Products() {
         )}
 
         <h2 className="sr-only">Live product catalogue</h2>
+        {filtered.length > 0 && (
+          <div
+            aria-live="polite"
+            className="mb-5 text-sm text-muted-foreground"
+          >
+            {q.trim() ? (
+              <>
+                <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
+                {filtered.length === 1 ? "Result" : "Results"} for &ldquo;
+                <span className="font-medium text-foreground">{q.trim()}</span>&rdquo;
+              </>
+            ) : (
+              <>
+                <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
+                {filtered.length === 1 ? "Product" : "Products"}
+              </>
+            )}
+          </div>
+        )}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
             <p className="text-base text-foreground">
