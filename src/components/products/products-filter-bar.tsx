@@ -162,7 +162,7 @@ export function ProductsFilterBar({
   }, [pool, trimmed]);
 
   const showingRecent = trimmed.length === 0;
-  const showEmpty = trimmed.length >= 2 && suggestions.length === 0;
+  const showEmpty = trimmed.length >= 1 && suggestions.length === 0;
   const items: Suggestion[] = showingRecent ? [] : suggestions;
   const showList = open;
   const navigableCount = items.length;
