@@ -121,6 +121,15 @@ export function StatsCounterSection() {
             />
           </div>
         </Reveal>
+        <Reveal>
+          <p className="mt-10 sm:mt-12 text-center text-sm sm:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Trusted by customers across the{" "}
+            <span className="text-foreground font-medium">
+              USA, UK, Canada, UAE, Kuwait, Malaysia, Singapore, Australia, Switzerland
+            </span>
+            , and many more.
+          </p>
+        </Reveal>
       </div>
     </section>
   );
