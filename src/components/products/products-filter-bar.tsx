@@ -140,11 +140,9 @@ export function ProductsFilterBar({
 }) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const filtersRef = useRef<HTMLDivElement | null>(null);
   const listboxId = useId();
 
   // Hydrate recent searches after mount (localStorage is client-only).
