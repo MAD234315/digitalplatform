@@ -46,7 +46,7 @@ function Privacy() {
           </Block>
           <Block title="Contact">
             Questions about this policy? Reach us on{" "}
-            <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="text-foreground underline">WhatsApp</a>{" "}
+            <a href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi, I have a question about your Privacy Policy.")}`} target="_blank" rel="noreferrer" className="text-foreground underline">WhatsApp</a>{" "}
             or email{" "}
             <a href={`mailto:${CONTACT.EMAIL}`} className="text-foreground underline">{CONTACT.EMAIL}</a>.
           </Block>
