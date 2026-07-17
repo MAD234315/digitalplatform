@@ -18,7 +18,7 @@ function Privacy() {
   return (
     <PageShell>
       <PageHero
-        eyebrow="Legal"
+        eyebrow={"POLICIES\n\n"}
         title="Privacy"
         titleAccent="Policy."
         lede="This page describes how Digital Platform handles the personal information you share when you contact us or place an order. It is maintained by the Digital Platform team and may be updated from time to time."

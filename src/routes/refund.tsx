@@ -18,7 +18,7 @@ function Refund() {
   return (
     <PageShell>
       <PageHero
-        eyebrow="Legal"
+        eyebrow={"POLICIES\n\n"}
         title="Refund"
         titleAccent="Policy."
         lede="Because we sell digital products, refunds are handled case by case. This page explains how we approach refunds and replacements, and how to raise a concern. Maintained by the Digital Platform team."
