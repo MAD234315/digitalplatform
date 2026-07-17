@@ -11,6 +11,7 @@ import { ProductsFilterBar } from "@/components/products/products-filter-bar";
 import { RecentlyViewed } from "@/components/products/recently-viewed";
 import { RecentlyAdded } from "@/components/products/recently-added";
 import { useProductsFilter } from "@/components/products/use-products-filter";
+import { ActiveFilters } from "@/components/products/active-filters";
 import { PageShell } from "@/components/layout/PageShell";
 import { ErrorBoundary } from "@/components/error-boundary";
 
@@ -277,6 +278,24 @@ function Products() {
         )}
 
         <h2 className="sr-only">Live product catalogue</h2>
+
+        <ActiveFilters
+          active={active}
+          stock={stock}
+          sort={sort}
+          query={q}
+          onCategoryReset={() => setActive("All")}
+          onStockReset={() => setStock("all")}
+          onSortReset={() => setSort("default")}
+          onQueryReset={() => setQ("")}
+          onClearAll={() => {
+            setActive("All");
+            setStock("all");
+            setSort("default");
+            setQ("");
+          }}
+        />
+
         {filtered.length > 0 && (
           <div
             aria-live="polite"
@@ -284,14 +303,16 @@ function Products() {
           >
             {q.trim() ? (
               <>
-                <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
-                {filtered.length === 1 ? "Result" : "Results"} for &ldquo;
+                Showing <span className="font-semibold text-foreground">{filtered.length}</span> of{" "}
+                <span className="font-semibold text-foreground">{data.products.length}</span>{" "}
+                {data.products.length === 1 ? "product" : "products"} for &ldquo;
                 <span className="font-medium text-foreground">{q.trim()}</span>&rdquo;
               </>
             ) : (
               <>
-                <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
-                {filtered.length === 1 ? "Product" : "Products"}
+                Showing <span className="font-semibold text-foreground">{filtered.length}</span> of{" "}
+                <span className="font-semibold text-foreground">{data.products.length}</span>{" "}
+                {data.products.length === 1 ? "product" : "products"}
               </>
             )}
           </div>

@@ -15,7 +15,7 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { gradientFor, initialsFor } from "@/lib/product-visuals";
 
 const STOCK_OPTIONS: { value: StockFilter; label: string }[] = [
-  { value: "all", label: "All" },
+  { value: "all", label: "All Products" },
   { value: "latest", label: "Latest" },
   { value: "in-stock", label: "In stock" },
   { value: "limited", label: "Low stock" },
@@ -268,6 +268,11 @@ export function ProductsFilterBar({
 
   const selectClass =
     "min-w-0 min-h-11 appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+  const activeSelectClass =
+    "border-amber/60 bg-amber/10 text-foreground shadow-[0_0_0_1px_var(--amber)]/10";
+  const isCategoryActive = active !== "All";
+  const isSortActive = sort !== "default";
+  const isStockActive = stock !== "all";
 
   const chevron = (
     <svg viewBox="0 0 24 24" aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -442,9 +447,9 @@ export function ProductsFilterBar({
               id="products-category"
               value={active}
               onChange={(e) => onActiveChange(e.target.value)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${isCategoryActive ? activeSelectClass : ""}`}
             >
-              <option value="All">All categories · {totalCount}</option>
+              <option value="All">All Products · {totalCount}</option>
               {categories.map((name) => (
                 <option key={name} value={name}>
                   {name} · {categoryCounts.get(name) ?? 0}
@@ -461,7 +466,7 @@ export function ProductsFilterBar({
               id="products-sort"
               value={sort}
               onChange={(e) => onSortChange(e.target.value as SortKey)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${isSortActive ? activeSelectClass : ""}`}
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -478,7 +483,7 @@ export function ProductsFilterBar({
               id="products-stock"
               value={stock}
               onChange={(e) => onStockChange(e.target.value as StockFilter)}
-              className={`w-full ${selectClass}`}
+              className={`w-full ${selectClass} ${isStockActive ? activeSelectClass : ""}`}
             >
               {STOCK_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
