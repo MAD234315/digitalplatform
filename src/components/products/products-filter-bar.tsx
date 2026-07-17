@@ -292,8 +292,15 @@ export function ProductsFilterBar({
             aria-expanded={showList}
             aria-controls={listboxId}
             aria-autocomplete="list"
-            aria-activedescendant={showList && navigableCount > 0 ? `${listboxId}-opt-${highlight}` : undefined}
+            aria-activedescendant={showList && highlight >= 0 ? `${listboxId}-opt-${highlight}` : undefined}
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            name="products-search"
+            data-1p-ignore
+            data-lpignore="true"
+            data-form-type="other"
             className="w-full rounded-full border border-border bg-card pl-11 pr-12 min-h-11 md:min-h-10 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           />
           {query && (
