@@ -141,18 +141,16 @@ export function ProductsFilterBar({
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [recent, setRecent] = useState<string[]>([]);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const filtersRef = useRef<HTMLDivElement | null>(null);
   const listboxId = useId();
 
-  const pool = useMemo(() => buildSuggestions(products), [products]);
+  // Hydrate recent searches after mount (localStorage is client-only).
+  useEffect(() => { setRecent(readRecent()); }, []);
 
-  const popular = useMemo(() => {
-    const inStock = pool.filter((s) => s.availability !== "out");
-    const source = inStock.length > 0 ? inStock : pool;
-    return source.slice(0, POPULAR_COUNT);
-  }, [pool]);
+  const pool = useMemo(() => buildSuggestions(products), [products]);
 
   const trimmed = query.trim();
   const suggestions = useMemo(() => {
@@ -160,13 +158,15 @@ export function ProductsFilterBar({
     return rankMatches(pool, trimmed);
   }, [pool, trimmed]);
 
-  const showingPopular = trimmed.length === 0;
+  const showingRecent = trimmed.length === 0;
   const showEmpty = trimmed.length >= 2 && suggestions.length === 0;
-  const items: Suggestion[] = showingPopular ? popular : suggestions;
-  const showList = open && (items.length > 0 || showEmpty);
+  const items: Suggestion[] = showingRecent ? [] : suggestions;
+  // Overlay always renders while open (recent list is always meaningful:
+  // either it shows history or the empty-state message).
+  const showList = open;
   const navigableCount = items.length;
 
-  useEffect(() => { setHighlight(0); }, [showingPopular, suggestions, popular]);
+  useEffect(() => { setHighlight(0); }, [showingRecent, suggestions]);
 
   useEffect(() => {
     if (!open) return;
@@ -193,25 +193,58 @@ export function ProductsFilterBar({
     };
   }, [filtersOpen]);
 
+  const pushRecent = (term: string) => {
+    const t = term.trim();
+    if (t.length < 2) return;
+    setRecent((prev) => {
+      const dedup = [t, ...prev.filter((x) => x.toLowerCase() !== t.toLowerCase())].slice(0, MAX_RECENT);
+      writeRecent(dedup);
+      return dedup;
+    });
+  };
+
+  const clearRecent = () => {
+    setRecent([]);
+    writeRecent([]);
+  };
+
+  const closeOverlay = () => {
+    setOpen(false);
+    inputRef.current?.blur();
+  };
+
   const commit = (s: Suggestion) => {
     onQueryChange(s.label);
+    pushRecent(s.label);
+    setOpen(false);
+    inputRef.current?.blur();
+  };
+
+  const applyRecent = (term: string) => {
+    onQueryChange(term);
+    pushRecent(term);
     setOpen(false);
     inputRef.current?.blur();
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Escape") { setOpen(false); return; }
-    if (!showList || navigableCount === 0) {
+    if (e.key === "Escape") { closeOverlay(); return; }
+    if (e.key === "Enter" && trimmed.length > 0) {
+      const s = items[highlight];
+      if (s) { e.preventDefault(); commit(s); return; }
+      // Save free-text query too so it appears in history next time.
+      pushRecent(trimmed);
+      closeOverlay();
+      return;
+    }
+    if (navigableCount === 0) {
       if (e.key === "ArrowDown" && navigableCount > 0) { setOpen(true); e.preventDefault(); }
       return;
     }
     if (e.key === "ArrowDown") { e.preventDefault(); setHighlight((h) => (h + 1) % navigableCount); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setHighlight((h) => (h - 1 + navigableCount) % navigableCount); }
-    else if (e.key === "Enter") {
-      const s = items[highlight];
-      if (s) { e.preventDefault(); commit(s); }
-    }
   };
+
 
   const renderHighlighted = (text: string, needle: string) => {
     const n = needle.trim().toLowerCase();
