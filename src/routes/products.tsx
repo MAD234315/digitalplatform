@@ -282,19 +282,25 @@ function Products() {
         {filtered.length > 0 && (
           <div
             aria-live="polite"
-            className="mb-5 text-sm text-muted-foreground"
+            className="mb-5 flex items-center gap-2 text-sm text-muted-foreground"
           >
             {q.trim() ? (
-              <>
+              <span>
                 <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
                 {filtered.length === 1 ? "Result" : "Results"} for &ldquo;
                 <span className="font-medium text-foreground">{q.trim()}</span>&rdquo;
-              </>
+              </span>
             ) : (
-              <>
+              <span>
                 <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
                 {filtered.length === 1 ? "Product" : "Products"}
-              </>
+              </span>
+            )}
+            {isFiltering && (
+              <span className="inline-flex items-center gap-1.5 text-xs">
+                <Spinner label="Filtering products" />
+                <span>Filtering…</span>
+              </span>
             )}
           </div>
         )}
