@@ -1,17 +1,11 @@
 /**
- * "Recently Added" horizontal strip shown at the top of the /products page.
+ * "Recently Added" header strip shown at the top of the /products page.
  *
  * Sourced from `useProductsFilter().latestProducts` — the same 7-day rolling
- * window that powers the "Latest" stock filter. Rendered as a scroll-snap
- * carousel of compact cards; each card links out to WhatsApp with a
- * pre-composed enquiry, mirroring the primary CTA on the full product card.
+ * window that powers the "Latest" stock filter. Renders only the section
+ * heading and a "See all latest" CTA that applies the Latest filter.
  */
 import type { SheetProduct } from "@/lib/sheet-products.functions";
-import { CONTACT } from "@/components/site-chrome";
-import { AvailabilityBadge } from "./badge";
-import { gradientFor } from "@/lib/product-visuals";
-import { LogoMark } from "./logo-mark";
-
 
 export function RecentlyAdded({
   products,
@@ -21,7 +15,6 @@ export function RecentlyAdded({
   onSeeAll: () => void;
 }) {
   if (products.length === 0) return null;
-  const items = products.slice(0, 12);
 
   return (
     <section
@@ -49,67 +42,7 @@ export function RecentlyAdded({
             See all latest →
           </button>
         </div>
-
-        <div
-          className="scroll-slim mt-6 -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2"
-          role="list"
-        >
-          {items.map((p) => (
-            <RecentCard key={p.id} p={p} />
-          ))}
-        </div>
       </div>
     </section>
-  );
-}
-
-function RecentCard({ p }: { p: SheetProduct }) {
-  const waMsg = encodeURIComponent(
-    `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
-  );
-  const gradient = gradientFor(p.name);
-
-  return (
-    <a
-      role="listitem"
-      href={`${CONTACT.WA_URL}?text=${waMsg}`}
-      target="_blank"
-      rel="noreferrer"
-      className="group relative flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5"
-    >
-
-      <div
-        className="relative aspect-[16/10] overflow-hidden"
-        style={{ background: gradient }}
-      >
-
-
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition duration-500 group-hover:scale-[1.06]">
-          <LogoMark name={p.name} size={56} />
-        </div>
-
-
-
-        <span className="absolute left-2 top-2 z-20 rounded-full bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] backdrop-blur">
-          New
-        </span>
-        <div className="absolute right-2 top-2 z-20">
-          <AvailabilityBadge availability={p.availability} />
-        </div>
-      </div>
-
-
-      <div className="flex flex-1 flex-col p-3">
-        <div className="min-w-0">
-          <div className="truncate text-sm font-medium">{p.name}</div>
-          {p.plan && (
-            <div className="truncate text-xs text-muted-foreground">{p.plan}</div>
-          )}
-        </div>
-        <div className="mt-3 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-          {p.category}
-        </div>
-      </div>
-    </a>
   );
 }
