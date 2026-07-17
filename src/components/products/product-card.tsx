@@ -58,12 +58,10 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
-      style={{
-        contentVisibility: "auto",
-        containIntrinsicSize: "520px 380px",
-      }}
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
     >
+
+
       <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-border">
 
         <div className="flex items-center gap-3 min-w-0">
@@ -92,7 +90,7 @@ export const ProductCard = memo(function ProductCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="flex min-h-[1.75rem] flex-wrap items-center gap-1">
           {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
           {p.badges.includes("high-demand") && <Badge tone="hot">🔥 Hot</Badge>}
           {p.loot && <Badge tone="loot">Loot</Badge>}
@@ -100,42 +98,41 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col p-5">
-        <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
-        {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
+      <div className="relative flex flex-1 flex-col justify-between p-5">
+        <div>
+          <h3 className="min-h-[3.75rem] font-display text-2xl leading-tight">{p.name}</h3>
+          {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
 
+          <dl className="mt-4 space-y-1.5 text-sm">
+            {p.plan && <Row label="Plan" value={p.plan} />}
+            {p.validity && <Row label="Validity" value={p.validity} />}
+            <Row label="Type" value={p.type || "—"} />
+            <Row label="Supports" value={p.supports || "—"} />
+            {p.warranty && <Row label="Warranty" value={p.warranty} />}
+          </dl>
+        </div>
 
+        <div className="pt-4">
+          <p className="text-[11px] text-muted-foreground">
+            Contact admin for detailed info.
+          </p>
 
-        <dl className="mt-4 space-y-1.5 text-sm">
-          {p.plan && <Row label="Plan" value={p.plan} />}
-          {p.validity && <Row label="Validity" value={p.validity} />}
-          <Row label="Type" value={p.type || "—"} />
-          <Row label="Supports" value={p.supports || "—"} />
-          {p.warranty && <Row label="Warranty" value={p.warranty} />}
-        </dl>
+          <LastUpdatedLine />
 
-
-
-
-        <p className="mt-auto pt-3 text-[11px] text-muted-foreground">
-          Contact admin for detailed info.
-        </p>
-
-
-        <LastUpdatedLine />
-
-        <a
-          href={`${CONTACT.WA_URL}?text=${waMsg}`}
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => onView?.(p)}
-          aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-          className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
-          style={{ backgroundColor: "var(--whatsapp)" }}
-        >
-          <WaGlyph /> Quick DM for Offer Price
-        </a>
+          <a
+            href={`${CONTACT.WA_URL}?text=${waMsg}`}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => onView?.(p)}
+            aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
+            style={{ backgroundColor: "var(--whatsapp)" }}
+          >
+            <WaGlyph /> Quick DM for Offer Price
+          </a>
+        </div>
       </div>
+
     </article>
   );
 });
