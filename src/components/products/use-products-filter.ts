@@ -179,6 +179,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     setQ,
     stock,
     setStock,
+    sort,
+    setSort,
     stockCounts,
     filtered,
     categoryCounts,
