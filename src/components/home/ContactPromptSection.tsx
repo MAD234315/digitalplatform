@@ -50,7 +50,7 @@ function FinalCta() {
       </p>
       <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
         <CtaRouterLink to="/products" size="md">Browse products</CtaRouterLink>
-        <CtaLink href={CONTACT.WA_URL} target="_blank" rel="noreferrer" variant="outline" size="md">
+        <CtaLink href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I'd like to upgrade my digital experience — tell me more about your products.")}`} target="_blank" rel="noreferrer" variant="outline" size="md">
           WhatsApp us
         </CtaLink>
       </div>
