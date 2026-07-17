@@ -46,14 +46,17 @@ function Row({ label, value }: { label: string; value: string }) {
 export const ProductCard = memo(function ProductCard({
   p,
   onView,
+  isLatest = false,
 }: {
   p: SheetProduct;
   onView?: (p: SheetProduct) => void;
+  isLatest?: boolean;
 }) {
   const waMsg = encodeURIComponent(
     `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
   );
   const initials = initialsFor(p.name);
+  const deliveryTime = p.availability === "out" ? "On restock" : "Instant";
 
   return (
     <article
@@ -96,7 +99,15 @@ export const ProductCard = memo(function ProductCard({
           {p.loot && <Badge tone="loot">Loot</Badge>}
           <AvailabilityBadge availability={p.availability} />
         </div>
+
+        <div className="flex flex-wrap items-center gap-1 pt-0.5">
+          <Chip tone="category">{p.category}</Chip>
+          {isLatest && <Chip tone="fresh">✨ Updated Today</Chip>}
+          <Chip tone="delivery">⚡ {deliveryTime}</Chip>
+          {p.warranty && <Chip tone="warranty">🛡 {p.warranty}</Chip>}
+        </div>
       </div>
+
 
       <div className="relative flex flex-1 flex-col justify-between p-5">
         <div>
