@@ -88,6 +88,7 @@ function Contact() {
             </div>
             <a href={`mailto:${CONTACT.EMAIL}`} className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Send email →</a>
           </div>
+        </div>
       </section>
 
       <section className="border-t border-border">
