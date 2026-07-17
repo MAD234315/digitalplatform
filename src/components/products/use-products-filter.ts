@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 
 type CategoryInfo = { name: string; count: number };
@@ -79,7 +79,12 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
   const [sort, setSort] = useState<SortKey>("default");
-  const deferredQ = useDeferredValue(q);
+  // 250ms debounce on the search query so typing feels smooth on mobile.
+  const [deferredQ, setDeferredQ] = useState(q);
+  useEffect(() => {
+    const t = window.setTimeout(() => setDeferredQ(q), 250);
+    return () => window.clearTimeout(t);
+  }, [q]);
 
   const [seen, setSeen] = useState<SeenMap>({});
 
@@ -157,7 +162,10 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
         if (stock === "out" && p.availability !== "out") return false;
         if (stock === "latest" && !latestKeys.has(keyOf(p))) return false;
       }
-      if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
+      if (needle) {
+        const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
+        if (!hay.includes(needle)) return false;
+      }
       return true;
     });
     if (sort === "name-asc") {
