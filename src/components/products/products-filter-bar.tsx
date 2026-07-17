@@ -142,7 +142,9 @@ export function ProductsFilterBar({
   slot?: "all" | "search" | "controls";
 }) {
   const [open, setOpen] = useState(false);
-  const [highlight, setHighlight] = useState(0);
+  // -1 = nothing highlighted. We NEVER auto-select the first suggestion;
+  // the user must press ArrowDown or hover explicitly.
+  const [highlight, setHighlight] = useState(-1);
   const [recent, setRecent] = useState<string[]>([]);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -162,12 +164,11 @@ export function ProductsFilterBar({
   const showingRecent = trimmed.length === 0;
   const showEmpty = trimmed.length >= 2 && suggestions.length === 0;
   const items: Suggestion[] = showingRecent ? [] : suggestions;
-  // Overlay always renders while open (recent list is always meaningful:
-  // either it shows history or the empty-state message).
   const showList = open;
   const navigableCount = items.length;
 
-  useEffect(() => { setHighlight(0); }, [showingRecent, suggestions]);
+  // Reset highlight to -1 (no selection) whenever the visible list changes.
+  useEffect(() => { setHighlight(-1); }, [showingRecent, suggestions]);
 
   useEffect(() => {
     if (!open) return;
@@ -216,20 +217,26 @@ export function ProductsFilterBar({
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") { closeOverlay(); return; }
-    if (e.key === "Enter" && trimmed.length > 0) {
-      const s = items[highlight];
-      if (s) { e.preventDefault(); commit(s); return; }
-      // Save free-text query too so it appears in history next time.
-      pushRecent(trimmed);
+    if (e.key === "Enter") {
+      // Never auto-commit a suggestion the user didn't deliberately highlight.
+      // Enter searches with whatever the user has typed and closes the panel.
+      e.preventDefault();
+      if (highlight >= 0) {
+        const s = items[highlight];
+        if (s) { commit(s); return; }
+      }
+      if (trimmed.length > 0) pushRecent(trimmed);
       closeOverlay();
       return;
     }
-    if (navigableCount === 0) {
-      if (e.key === "ArrowDown" && navigableCount > 0) { setOpen(true); e.preventDefault(); }
-      return;
+    if (navigableCount === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlight((h) => (h < 0 ? 0 : (h + 1) % navigableCount));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlight((h) => (h < 0 ? navigableCount - 1 : (h - 1 + navigableCount) % navigableCount));
     }
-    if (e.key === "ArrowDown") { e.preventDefault(); setHighlight((h) => (h + 1) % navigableCount); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setHighlight((h) => (h - 1 + navigableCount) % navigableCount); }
   };
 
 
@@ -285,8 +292,15 @@ export function ProductsFilterBar({
             aria-expanded={showList}
             aria-controls={listboxId}
             aria-autocomplete="list"
-            aria-activedescendant={showList && navigableCount > 0 ? `${listboxId}-opt-${highlight}` : undefined}
+            aria-activedescendant={showList && highlight >= 0 ? `${listboxId}-opt-${highlight}` : undefined}
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            name="products-search"
+            data-1p-ignore
+            data-lpignore="true"
+            data-form-type="other"
             className="w-full rounded-full border border-border bg-card pl-11 pr-12 min-h-11 md:min-h-10 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           />
           {query && (
