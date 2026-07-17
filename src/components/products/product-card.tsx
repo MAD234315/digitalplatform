@@ -100,21 +100,21 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col p-5">
-        <h3 className="min-h-[3.75rem] font-display text-2xl leading-tight">{p.name}</h3>
-        {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
+      <div className="relative flex flex-1 flex-col justify-between p-5">
+        <div>
+          <h3 className="min-h-[3.75rem] font-display text-2xl leading-tight">{p.name}</h3>
+          {p.plan && <div className="mt-1 text-xs uppercase tracking-[0.14em] text-muted-foreground">{p.plan}</div>}
 
+          <dl className="mt-4 space-y-1.5 text-sm">
+            {p.plan && <Row label="Plan" value={p.plan} />}
+            {p.validity && <Row label="Validity" value={p.validity} />}
+            <Row label="Type" value={p.type || "—"} />
+            <Row label="Supports" value={p.supports || "—"} />
+            {p.warranty && <Row label="Warranty" value={p.warranty} />}
+          </dl>
+        </div>
 
-
-        <dl className="mt-4 space-y-1.5 text-sm">
-          {p.plan && <Row label="Plan" value={p.plan} />}
-          {p.validity && <Row label="Validity" value={p.validity} />}
-          <Row label="Type" value={p.type || "—"} />
-          <Row label="Supports" value={p.supports || "—"} />
-          {p.warranty && <Row label="Warranty" value={p.warranty} />}
-        </dl>
-
-        <div className="mt-auto pt-3">
+        <div className="pt-4">
           <p className="text-[11px] text-muted-foreground">
             Contact admin for detailed info.
           </p>
@@ -133,8 +133,8 @@ export const ProductCard = memo(function ProductCard({
             <WaGlyph /> Quick DM for Offer Price
           </a>
         </div>
-
       </div>
+
     </article>
   );
 });
