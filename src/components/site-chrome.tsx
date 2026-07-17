@@ -222,13 +222,55 @@ export function SiteFooter() {
             <li><Link to="/refund" className={linkCls}>Refund Policy</Link></li>
           </ul>
         </nav>
-        <nav aria-label="Reach us">
-          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Reach us</h2>
+        <nav aria-label="Follow us">
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Follow us</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={WA_URL_FOOTER} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp →</a></li>
-            <li><a href={`mailto:${EMAIL}`} className={`${linkCls} break-all`}>{EMAIL}</a></li>
+            <li>
+              <a
+                href="https://instagram.com/digitalplatform_"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Follow Digital Platform on Instagram"
+                className={`${linkCls} inline-flex items-center gap-2`}
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+                Instagram →
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://whatsapp.com/channel/0029Va6aIix0VycQZ8cLaL2T"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Join Digital Platform WhatsApp channel"
+                className={`${linkCls} inline-flex items-center gap-2`}
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+                  <path d="M20.5 3.5A11 11 0 0 0 3 17l-1 5 5.2-1.3A11 11 0 1 0 20.5 3.5Zm-8.5 18a9 9 0 0 1-4.6-1.3l-.3-.2-3.1.8.8-3-.2-.3A9 9 0 1 1 12 21.5Zm5.2-6.7c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.2-.2.3-.7.9-.9 1-.2.2-.3.2-.6 0-.3-.1-1.2-.4-2.2-1.3-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.3s.9 2.7 1 2.9c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.7.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.1.2-1.3-.1-.1-.2-.2-.5-.3Z" />
+                </svg>
+                WhatsApp →
+              </a>
+            </li>
+            <li>
+              <a
+                href={`mailto:${EMAIL}`}
+                aria-label={`Email ${EMAIL}`}
+                className={`${linkCls} inline-flex items-center gap-2 break-all`}
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m3 7 9 6 9-6" />
+                </svg>
+                {EMAIL}
+              </a>
+            </li>
           </ul>
         </nav>
+
 
       </div>
       <div className="border-t border-border">
