@@ -28,7 +28,7 @@ export function HeroSection() {
           id="hero-heading"
           className="animate-rise delay-1 mt-8 font-display text-balance text-[38px] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl"
         >
-          Premium digital products
+          Digital products
           <br className="hidden sm:block" />
           <span className="sm:hidden"> </span>
           &amp; AI tools,
