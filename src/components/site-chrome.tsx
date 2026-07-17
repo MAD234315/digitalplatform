@@ -211,7 +211,7 @@ export function SiteFooter() {
           </ul>
         </nav>
         <nav aria-label="Legal">
-          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Legal</h2>
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">POLICIES</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link to="/privacy" className={linkCls}>Privacy Policy</Link></li>
             <li><Link to="/terms" className={linkCls}>Terms &amp; Conditions</Link></li>
