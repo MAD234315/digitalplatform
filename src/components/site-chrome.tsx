@@ -115,7 +115,7 @@ export function SiteNav() {
           <ThemeToggle />
 
           <a
-            href={WA_URL}
+            href={WA_URL_GENERAL}
             target="_blank"
             rel="noreferrer"
             className="hidden sm:inline-flex items-center min-h-11 rounded-full px-5 text-sm font-medium transition hover:brightness-110 shadow-gold"
