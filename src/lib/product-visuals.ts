@@ -3,18 +3,6 @@
  * chips. Kept pure and framework-free so any component can import them.
  */
 
-/**
- * Minimal random-logo image URL for a product. Uses DiceBear "shapes" so
- * each product gets a distinct, deterministic geometric glyph on a
- * transparent background — the parent gradient shows through and the
- * shape reads as a floating minimal logo.
- * Deterministic per product name: same product → same mark.
- */
-export function animeImageFor(name: string): string {
-  const seed = encodeURIComponent(name);
-  return `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}&backgroundType=solid&backgroundColor=transparent&shape1Color=ffffff,f8fafc&shape2Color=ffffffcc,f1f5f9cc&shape3Color=ffffff80,e2e8f080`;
-}
-
 /** Hue anchor per product name — shared by gradient and glow so they match. */
 export function hueFor(name: string): number {
   let h = 0;
