@@ -20,7 +20,7 @@ export const Route = createFileRoute("/about")({
         {
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          url: "https://www.digitalplatform.example/about",
+          url: `${SITE_URL}/about`,
           name: TITLE,
           description: DESC,
           publisher: { "@id": ORG_ID },
