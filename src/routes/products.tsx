@@ -222,6 +222,8 @@ function Products() {
         stock={stock}
         onStockChange={setStock}
         stockCounts={stockCounts}
+        sort={sort}
+        onSortChange={setSort}
         products={data.products}
       />
 
