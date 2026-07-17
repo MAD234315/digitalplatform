@@ -79,7 +79,12 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
   const [sort, setSort] = useState<SortKey>("default");
-  const deferredQ = useDeferredValue(q);
+  // 250ms debounce on the search query so typing feels smooth on mobile.
+  const [deferredQ, setDeferredQ] = useState(q);
+  useEffect(() => {
+    const t = window.setTimeout(() => setDeferredQ(q), 250);
+    return () => window.clearTimeout(t);
+  }, [q]);
 
   const [seen, setSeen] = useState<SeenMap>({});
 
