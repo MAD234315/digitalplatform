@@ -155,7 +155,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, stock, setStock, stockCounts, filtered, categoryCounts, latestProducts } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts } = useProductsFilter(
     data.products,
     data.categories,
   );
@@ -222,6 +222,8 @@ function Products() {
         stock={stock}
         onStockChange={setStock}
         stockCounts={stockCounts}
+        sort={sort}
+        onSortChange={setSort}
         products={data.products}
       />
 

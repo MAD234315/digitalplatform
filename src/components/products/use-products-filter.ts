@@ -4,6 +4,13 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 type CategoryInfo = { name: string; count: number };
 
 export type StockFilter = "all" | "latest" | "in-stock" | "limited" | "out";
+export type SortKey = "default" | "name-asc" | "availability";
+
+const AVAILABILITY_RANK: Record<SheetProduct["availability"], number> = {
+  available: 0,
+  limited: 1,
+  out: 2,
+};
 
 const SEEN_KEY = "products-first-seen-v3";
 const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
@@ -71,6 +78,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
+  const [sort, setSort] = useState<SortKey>("default");
   const deferredQ = useDeferredValue(q);
 
   const [seen, setSeen] = useState<SeenMap>({});
@@ -137,7 +145,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
-    return products.filter((p) => {
+    const list = products.filter((p) => {
       if (active !== "All" && p.category !== active) return false;
       if (stock === "in-stock" && p.availability !== "available") return false;
       if (stock === "limited" && p.availability !== "limited") return false;
@@ -146,7 +154,14 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       if (needle && !`${p.name} ${p.plan} ${p.category}`.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [products, active, stock, deferredQ, latestKeys]);
+    if (sort === "name-asc") {
+      return list.slice().sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (sort === "availability") {
+      return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
+    }
+    return list;
+  }, [products, active, stock, sort, deferredQ, latestKeys]);
 
   const latestProducts = useMemo(() => {
     const cutoff = Date.now() - LATEST_WINDOW_MS;
@@ -164,6 +179,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     setQ,
     stock,
     setStock,
+    sort,
+    setSort,
     stockCounts,
     filtered,
     categoryCounts,
