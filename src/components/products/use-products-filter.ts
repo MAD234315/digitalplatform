@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 
 type CategoryInfo = { name: string; count: number };
