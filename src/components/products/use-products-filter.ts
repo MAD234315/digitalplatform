@@ -208,6 +208,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     filtered,
     categoryCounts,
     latestKeys,
+    latestIds,
     latestProducts,
   };
 }
