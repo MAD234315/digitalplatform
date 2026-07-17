@@ -315,12 +315,69 @@ export function ProductsFilterBar({
           )}
 
           {showList && (
-            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-96 overflow-y-auto rounded-2xl border border-border bg-popover text-popover-foreground shadow-xl ring-1 ring-black/5 backdrop-blur">
-              <div className="px-4 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                {showingPopular ? "Popular" : showEmpty ? "No results" : "Suggestions"}
+            <div
+              className="animate-fade-in absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-border/70 bg-popover/85 text-popover-foreground shadow-2xl ring-1 ring-black/10 backdrop-blur-xl supports-[backdrop-filter]:bg-popover/70"
+            >
+              <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 pt-3 pb-2 bg-inherit backdrop-blur-xl">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  {showingRecent ? "Recent searches" : showEmpty ? "No results" : "Suggestions"}
+                </div>
+                <div className="flex items-center gap-1">
+                  {showingRecent && recent.length > 0 && (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); clearRecent(); }}
+                      className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      Clear history
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); closeOverlay(); }}
+                    aria-label="Close search"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                      <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              {showEmpty ? (
-                <div className="px-4 pb-3 pt-1 text-sm text-muted-foreground">
+
+              {showingRecent ? (
+                recent.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                    No recent searches.
+                  </div>
+                ) : (
+                  <ul className="pb-2">
+                    {recent.map((term) => (
+                      <li key={term}>
+                        <button
+                          type="button"
+                          onMouseDown={(e) => { e.preventDefault(); applyRecent(term); }}
+                          className="group flex w-full items-center gap-3 border-t border-border/40 first:border-t-0 px-4 py-2.5 text-left transition hover:bg-muted/60 focus-visible:bg-muted focus-visible:outline-none"
+                        >
+                          <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted/60 text-muted-foreground">
+                            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <circle cx="12" cy="12" r="9" />
+                              <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                          <span className="min-w-0 flex-1 truncate text-sm">{term}</span>
+                          <span aria-hidden className="shrink-0 text-muted-foreground opacity-0 transition group-hover:opacity-100">
+                            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )
+              ) : showEmpty ? (
+                <div className="px-4 py-6 text-sm text-muted-foreground">
                   No products match “<span className="text-foreground">{trimmed}</span>”. Try a shorter term.
                 </div>
               ) : (
@@ -336,7 +393,7 @@ export function ProductsFilterBar({
                         aria-selected={isActive}
                         onMouseEnter={() => setHighlight(i)}
                         onMouseDown={(e) => { e.preventDefault(); commit(s); }}
-                        className={`flex cursor-pointer items-center gap-3 border-t border-border/50 first:border-t-0 px-4 py-2.5 transition ${
+                        className={`flex cursor-pointer items-center gap-3 border-t border-border/40 first:border-t-0 px-4 py-2.5 transition ${
                           isActive ? "bg-muted" : "hover:bg-muted/60"
                         }`}
                       >
