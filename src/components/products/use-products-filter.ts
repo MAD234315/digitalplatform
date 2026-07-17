@@ -4,6 +4,13 @@ import type { SheetProduct } from "@/lib/sheet-products.functions";
 type CategoryInfo = { name: string; count: number };
 
 export type StockFilter = "all" | "latest" | "in-stock" | "limited" | "out";
+export type SortKey = "default" | "name-asc" | "availability";
+
+const AVAILABILITY_RANK: Record<SheetProduct["availability"], number> = {
+  available: 0,
+  limited: 1,
+  out: 2,
+};
 
 const SEEN_KEY = "products-first-seen-v3";
 const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
