@@ -71,10 +71,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      // Google Fonts stylesheet is injected non-blocking inside RootShell
-      // (see FONTS_LOAD_SCRIPT) to avoid ~1.5s of render-blocking on mobile.
+      { rel: "preload", as: "font", type: "font/woff2", href: dmSerif400Woff2, crossOrigin: "anonymous" },
+      { rel: "preload", as: "font", type: "font/woff2", href: firaSans400Woff2, crossOrigin: "anonymous" },
     ],
 
 
