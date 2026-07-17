@@ -28,8 +28,8 @@ export function PageHero({
 }) {
   const wrap =
     size === "wide"
-      ? "mx-auto max-w-7xl px-6 lg:px-10 pt-36 pb-14"
-      : "mx-auto max-w-5xl px-6 lg:px-10 pt-40 pb-16 lg:pt-48 lg:pb-24";
+      ? "mx-auto max-w-7xl px-6 lg:px-10 pt-32 sm:pt-36 pb-12 sm:pb-14"
+      : "mx-auto max-w-5xl px-6 lg:px-10 pt-32 pb-14 sm:pt-40 sm:pb-16 lg:pt-48 lg:pb-24";
 
   return (
     <section className="relative bg-hero">
@@ -63,7 +63,7 @@ function HeroCopy({
   return (
     <>
       <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground">{eyebrow}</div>
-      <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98]">
+      <h1 className="mt-6 font-display text-balance text-4xl sm:text-6xl lg:text-7xl leading-[1.02] sm:leading-[0.98]">
         {title}
         {titleAccent && (
           <>
@@ -73,7 +73,7 @@ function HeroCopy({
         )}
       </h1>
       {lede && (
-        <p className="mt-8 max-w-2xl text-lg text-muted-foreground leading-relaxed">{lede}</p>
+        <p className="mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">{lede}</p>
       )}
     </>
   );
