@@ -105,7 +105,7 @@ export function StatsCounterSection() {
         <Reveal>
           <div className="grid grid-cols-2 gap-4 sm:gap-8 items-start">
             <Stat
-              target={15}
+              target={10}
               suffix="K+"
               label="Customers served"
               sublabel="Trusted worldwide"
