@@ -78,6 +78,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
+  const [sort, setSort] = useState<SortKey>("default");
   const deferredQ = useDeferredValue(q);
 
   const [seen, setSeen] = useState<SeenMap>({});
