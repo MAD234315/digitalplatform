@@ -58,8 +58,9 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card transition duration-300 hover:-translate-y-1 focus-within:-translate-y-1 scroll-mt-32"
     >
+
 
       <div className="relative flex flex-col gap-2 px-3 py-2.5 border-b border-border">
 
