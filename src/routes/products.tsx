@@ -155,7 +155,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts, latestIds } = useProductsFilter(
     data.products,
     data.categories,
   );
@@ -320,7 +320,7 @@ function Products() {
                 {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
                     <TiltCard max={4}>
-                      <ProductCard p={p} onView={track} />
+                      <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
                     </TiltCard>
                   </ErrorBoundary>
                 ))}

@@ -42,18 +42,48 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Compact info chip used in the card header strip. */
+function Chip({
+  children,
+  tone,
+}: {
+  children: React.ReactNode;
+  tone: "category" | "fresh" | "delivery" | "warranty";
+}) {
+  const style: React.CSSProperties =
+    tone === "fresh"
+      ? { backgroundColor: "color-mix(in oklab, var(--whatsapp) 14%, transparent)", color: "var(--whatsapp)", borderColor: "color-mix(in oklab, var(--whatsapp) 32%, transparent)" }
+      : tone === "delivery"
+      ? { backgroundColor: "color-mix(in oklab, var(--amber) 14%, transparent)", color: "var(--amber)", borderColor: "color-mix(in oklab, var(--amber) 32%, transparent)" }
+      : tone === "warranty"
+      ? { backgroundColor: "color-mix(in oklab, var(--primary) 12%, transparent)", color: "var(--foreground)", borderColor: "color-mix(in oklab, var(--primary) 28%, transparent)" }
+      : { backgroundColor: "var(--muted)", color: "var(--muted-foreground)", borderColor: "var(--border)" };
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em]"
+      style={style}
+    >
+      {children}
+    </span>
+  );
+}
+
+
 
 export const ProductCard = memo(function ProductCard({
   p,
   onView,
+  isLatest = false,
 }: {
   p: SheetProduct;
   onView?: (p: SheetProduct) => void;
+  isLatest?: boolean;
 }) {
   const waMsg = encodeURIComponent(
     `Hi, I'm interested in ${p.name}${p.plan ? ` (${p.plan})` : ""}${p.validity ? ` — ${p.validity}` : ""}. Please share the price.`,
   );
   const initials = initialsFor(p.name);
+  const deliveryTime = p.availability === "out" ? "On restock" : "Instant";
 
   return (
     <article
@@ -96,7 +126,15 @@ export const ProductCard = memo(function ProductCard({
           {p.loot && <Badge tone="loot">Loot</Badge>}
           <AvailabilityBadge availability={p.availability} />
         </div>
+
+        <div className="flex flex-wrap items-center gap-1 pt-0.5">
+          <Chip tone="category">{p.category}</Chip>
+          {isLatest && <Chip tone="fresh">✨ Updated Today</Chip>}
+          <Chip tone="delivery">⚡ {deliveryTime}</Chip>
+          {p.warranty && <Chip tone="warranty">🛡 {p.warranty}</Chip>}
+        </div>
       </div>
+
 
       <div className="relative flex flex-1 flex-col justify-between p-5">
         <div>

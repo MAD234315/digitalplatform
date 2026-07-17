@@ -125,6 +125,15 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     return fresh;
   }, [products, seen]);
 
+  const latestIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const p of products) {
+      if (latestKeys.has(keyOf(p))) ids.add(p.id);
+    }
+    return ids;
+  }, [products, latestKeys]);
+
+
 
   const categoryCounts = useMemo(() => {
     const m = new Map<string, number>();
@@ -199,6 +208,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     filtered,
     categoryCounts,
     latestKeys,
+    latestIds,
     latestProducts,
   };
 }
