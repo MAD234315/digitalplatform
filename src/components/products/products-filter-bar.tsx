@@ -30,7 +30,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 const MAX_SUGGESTIONS = 8;
 const RECENT_SEARCHES_KEY = "products-recent-searches-v1";
-const MAX_RECENT = 8;
+const MAX_RECENT = 2;
 
 function readRecent(): string[] {
   if (typeof window === "undefined") return [];
@@ -164,7 +164,8 @@ export function ProductsFilterBar({
   const showingRecent = trimmed.length === 0;
   const showEmpty = trimmed.length >= 1 && suggestions.length === 0;
   const items: Suggestion[] = showingRecent ? [] : suggestions;
-  const showList = open;
+  // Hide overlay entirely when we'd only be showing an empty recent list.
+  const showList = open && !(showingRecent && recent.length === 0);
   const navigableCount = items.length;
 
   // Reset highlight to -1 (no selection) whenever the visible list changes.
@@ -225,7 +226,15 @@ export function ProductsFilterBar({
         const s = items[highlight];
         if (s) { commit(s); return; }
       }
-      if (trimmed.length > 0) pushRecent(trimmed);
+      if (trimmed.length > 0) {
+        // Only persist the term if it actually matches at least one product.
+        const needle = trimmed.toLowerCase();
+        const hasMatch = products.some((p) => {
+          const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
+          return hay.includes(needle);
+        });
+        if (hasMatch) pushRecent(trimmed);
+      }
       closeOverlay();
       return;
     }
@@ -325,15 +334,6 @@ export function ProductsFilterBar({
                   {showingRecent ? "Recent searches" : showEmpty ? "No results" : "Suggestions"}
                 </div>
                 <div className="flex items-center gap-1">
-                  {showingRecent && recent.length > 0 && (
-                    <button
-                      type="button"
-                      onMouseDown={(e) => { e.preventDefault(); clearRecent(); }}
-                      className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      Clear history
-                    </button>
-                  )}
                   <button
                     type="button"
                     onMouseDown={(e) => { e.preventDefault(); closeOverlay(); }}
@@ -348,12 +348,8 @@ export function ProductsFilterBar({
               </div>
 
               {showingRecent ? (
-                recent.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No recent searches.
-                  </div>
-                ) : (
-                  <ul className="pb-2">
+                <>
+                  <ul className="pb-1">
                     {recent.map((term) => (
                       <li key={term}>
                         <button
@@ -377,7 +373,16 @@ export function ProductsFilterBar({
                       </li>
                     ))}
                   </ul>
-                )
+                  <div className="flex justify-center border-t border-border/40 px-4 py-2">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); clearRecent(); }}
+                      className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      Clear history
+                    </button>
+                  </div>
+                </>
               ) : showEmpty ? (
                 <div className="px-4 py-6 text-sm text-muted-foreground">
                   No products match “<span className="text-foreground">{trimmed}</span>”. Try a shorter term.
