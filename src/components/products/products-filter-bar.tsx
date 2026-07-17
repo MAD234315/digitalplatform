@@ -176,20 +176,6 @@ export function ProductsFilterBar({
     return () => window.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  useEffect(() => {
-    if (!filtersOpen) return;
-    const onDown = (e: MouseEvent) => {
-      if (!filtersRef.current) return;
-      if (!filtersRef.current.contains(e.target as Node)) setFiltersOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFiltersOpen(false); };
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [filtersOpen]);
 
   const pushRecent = (term: string) => {
     const t = term.trim();
