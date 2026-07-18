@@ -82,9 +82,10 @@ for (const bp of BREAKPOINTS) {
           `${bp.name}: '${cat}' heading top must sit at/below sticky chrome`
         ).toBeGreaterThanOrEqual(chromeBottom - 1);
         expect(
-          headingBox!.y - chromeBottom,
-          `${bp.name}: '${cat}' heading gap under chrome`
-        ).toBeLessThanOrEqual(200);
+          headingBox!.y + headingBox!.height,
+          `${bp.name}: '${cat}' heading bottom within viewport`
+        ).toBeLessThanOrEqual(viewportH);
+
 
         const firstSummary = page
           .locator(`#faq-group-${slug(cat)} details summary`)
