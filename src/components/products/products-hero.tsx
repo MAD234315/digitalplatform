@@ -57,7 +57,8 @@ function useCountUp(target: number, durationMs = 900) {
   const [value, setValue] = useState(0);
   const startedRef = useRef(false);
   const nodeRef = useRef<HTMLDivElement | null>(null);
-
+  const targetRef = useRef(target);
+  targetRef.current = target;
 
   useEffect(() => {
     const node = nodeRef.current;
@@ -66,13 +67,14 @@ function useCountUp(target: number, durationMs = 900) {
       if (startedRef.current) return;
       startedRef.current = true;
       const from = 0;
-      const to = Math.max(0, Math.floor(target));
+      const to = Math.max(0, Math.floor(targetRef.current));
       const t0 = performance.now();
       const step = (now: number) => {
         const p = Math.min(1, (now - t0) / durationMs);
         const eased = 1 - Math.pow(1 - p, 3);
         setValue(Math.round(from + (to - from) * eased));
         if (p < 1) requestAnimationFrame(step);
+        else setValue(Math.max(0, Math.floor(targetRef.current)));
       };
       requestAnimationFrame(step);
     };
@@ -84,19 +86,27 @@ function useCountUp(target: number, durationMs = 900) {
       (entries) => {
         for (const e of entries) if (e.isIntersecting) start();
       },
-      { threshold: 0.2 },
+      { threshold: 0.01 },
     );
     io.observe(node);
-    return () => io.disconnect();
-  }, [target, durationMs]);
+    // Safety net: if the observer hasn't fired within one frame after mount
+    // (some browsers delay initial callback), kick the animation manually.
+    const fallback = window.setTimeout(() => start(), 300);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(fallback);
+    };
+  }, [durationMs]);
 
-  // If the target changes after animation, snap to it.
+  // Whenever the target changes after the intro animation has started,
+  // snap immediately so summary cards never drift from the source data.
   useEffect(() => {
     if (startedRef.current) setValue(Math.max(0, Math.floor(target)));
   }, [target]);
 
   return { value, ref: nodeRef };
 }
+
 
 
 function LiveStatusCard({
@@ -294,16 +304,17 @@ function LiveStatusCard({
           aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
           className="group mt-5 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
         >
-          <span className="flex items-center gap-2">
-            <Sparkles aria-hidden className="h-3.5 w-3.5 text-amber" />
-            <span className="font-semibold uppercase tracking-[0.16em] text-[10px] text-amber">
-              Latest · last 7 days
+          <span className="flex min-w-0 items-center gap-2">
+            <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-amber" />
+            <span className="min-w-0 truncate font-semibold uppercase tracking-[0.14em] text-[10px] text-amber">
+              Latest · 7 days
             </span>
           </span>
-          <span className="flex items-baseline gap-1.5">
+          <span className="flex shrink-0 items-baseline gap-1.5">
             <span className={`font-display text-base ${pulseCls}`}>{latestCount}</span>
-            <span className="text-[10px] text-muted-foreground">new arrivals →</span>
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">new →</span>
           </span>
+
         </button>
       )}
 
@@ -363,9 +374,10 @@ function StatCard({
         >
           {icon}
         </span>
-        <span id={id} className="min-w-0 truncate whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.1em]">
+        <span id={id} className="min-w-0 text-[9px] font-semibold uppercase leading-tight tracking-[0.08em] break-words">
           {label}
         </span>
+
       </div>
 
       <div
