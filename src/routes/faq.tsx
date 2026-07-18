@@ -16,6 +16,10 @@ const TITLE = "FAQ — Digital Platform | Orders, Delivery, Warranty & Support";
 const DESC =
   "Answers to the most common questions about our digital products, subscriptions, delivery process, warranty, and support at Digital Platform.";
 
+const slugifyCat = (name: string) =>
+  name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+
 export const Route = createFileRoute("/faq")({
   head: () =>
     buildRouteHead({
@@ -42,6 +46,21 @@ export const Route = createFileRoute("/faq")({
 function FAQPage() {
   const [active, setActive] = useState<(typeof CATEGORIES)[number]>("All");
   const [q, setQ] = useState("");
+
+  const handleActiveChange = (next: (typeof CATEGORIES)[number]) => {
+    setActive(next);
+    if (typeof window === "undefined") return;
+    // Wait for the list to re-render with the new filter before scrolling.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const targetId = next === "All" ? "faq-group-all" : `faq-group-${slugifyCat(next)}`;
+        const el = document.getElementById(targetId);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  };
+
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -74,7 +93,7 @@ function FAQPage() {
         categories={CATEGORIES}
         counts={counts}
         active={active}
-        onActiveChange={setActive}
+        onActiveChange={handleActiveChange}
         query={q}
         onQueryChange={setQ}
         searchLabel="Search FAQs"
@@ -83,7 +102,7 @@ function FAQPage() {
       />
 
       {/* Accordion list */}
-      <section className="mx-auto max-w-5xl px-6 lg:px-10 py-14">
+      <section id="faq-group-all" className="mx-auto max-w-5xl px-6 lg:px-10 py-14 scroll-mt-[160px] sm:scroll-mt-[180px]">
         <ErrorBoundary boundary="faq:list" resetKeys={[active, q]}>
           {filtered.length === 0 ? (
             <div className="py-24 text-center text-muted-foreground">
@@ -100,7 +119,7 @@ function FAQPage() {
               return (
                 <div className="space-y-14">
                   {groups.map((g) => (
-                    <div key={g.cat}>
+                    <div key={g.cat} id={`faq-group-${slugifyCat(g.cat)}`} className="scroll-mt-[160px] sm:scroll-mt-[180px]">
                       <div className="mb-5 flex items-center gap-4 pl-4 border-l-2 border-[color:var(--amber)]">
                         <h2 className="font-display text-2xl sm:text-3xl leading-tight">
                           <span className="text-headline">{g.cat}</span>
