@@ -57,7 +57,8 @@ function useCountUp(target: number, durationMs = 900) {
   const [value, setValue] = useState(0);
   const startedRef = useRef(false);
   const nodeRef = useRef<HTMLDivElement | null>(null);
-
+  const targetRef = useRef(target);
+  targetRef.current = target;
 
   useEffect(() => {
     const node = nodeRef.current;
@@ -66,13 +67,14 @@ function useCountUp(target: number, durationMs = 900) {
       if (startedRef.current) return;
       startedRef.current = true;
       const from = 0;
-      const to = Math.max(0, Math.floor(target));
+      const to = Math.max(0, Math.floor(targetRef.current));
       const t0 = performance.now();
       const step = (now: number) => {
         const p = Math.min(1, (now - t0) / durationMs);
         const eased = 1 - Math.pow(1 - p, 3);
         setValue(Math.round(from + (to - from) * eased));
         if (p < 1) requestAnimationFrame(step);
+        else setValue(Math.max(0, Math.floor(targetRef.current)));
       };
       requestAnimationFrame(step);
     };
@@ -84,27 +86,27 @@ function useCountUp(target: number, durationMs = 900) {
       (entries) => {
         for (const e of entries) if (e.isIntersecting) start();
       },
-      { threshold: 0.2 },
+      { threshold: 0.01 },
     );
     io.observe(node);
-    return () => io.disconnect();
-  }, [target, durationMs]);
+    // Safety net: if the observer hasn't fired within one frame after mount
+    // (some browsers delay initial callback), kick the animation manually.
+    const fallback = window.setTimeout(() => start(), 300);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(fallback);
+    };
+  }, [durationMs]);
 
-  // Keep displayed value in sync with the target whenever it changes.
-  // We only skip when the intro animation is actively running (0 → target)
-  // so it can finish smoothly; otherwise snap so summary cards never drift
-  // from the underlying data (e.g. IntersectionObserver never firing).
+  // Whenever the target changes after the intro animation has started,
+  // snap immediately so summary cards never drift from the source data.
   useEffect(() => {
-    if (!startedRef.current) {
-      setValue(Math.max(0, Math.floor(target)));
-    } else {
-      setValue(Math.max(0, Math.floor(target)));
-    }
+    if (startedRef.current) setValue(Math.max(0, Math.floor(target)));
   }, [target]);
-
 
   return { value, ref: nodeRef };
 }
+
 
 
 function LiveStatusCard({
