@@ -21,25 +21,40 @@ export interface RecentItem {
 const KEY = "dp:recently-viewed";
 const MAX = 8;
 
+function isRecentItem(v: unknown): v is RecentItem {
+  if (!v || typeof v !== "object") return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r.id === "string" &&
+    typeof r.name === "string" &&
+    typeof r.category === "string" &&
+    typeof r.viewedAt === "number" &&
+    (r.plan === undefined || typeof r.plan === "string")
+  );
+}
+
 function read(): RecentItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as RecentItem[]).slice(0, MAX) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isRecentItem).slice(0, MAX);
   } catch {
     return [];
   }
 }
 
 function write(items: RecentItem[]) {
+  if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX)));
   } catch {
     /* quota / private mode — safe to ignore */
   }
 }
+
 
 /** SSR-safe hook: returns [] on first render, hydrates from storage in effect. */
 export function useRecentlyViewed() {
