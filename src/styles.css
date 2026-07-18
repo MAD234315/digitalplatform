@@ -297,3 +297,19 @@ input[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
   appearance: none;
 }
+
+/* Mission card: smooth desktop hover (glow + lift), graceful mobile fallback */
+@media (hover: hover) and (pointer: fine) {
+  .mission-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--amber) 60%, transparent),
+      0 22px 70px -22px color-mix(in oklab, var(--amber) 55%, transparent),
+      0 6px 20px -12px color-mix(in oklab, var(--amber) 35%, transparent);
+    border-color: color-mix(in oklab, var(--amber) 65%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mission-card { transition: none !important; }
+  .mission-card:hover { transform: none !important; }
+}

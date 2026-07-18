@@ -34,9 +34,15 @@ export function WhoWeAreSection() {
             </p>
 
             <div
-              className="mt-10 rounded-sm border bg-card/60 p-6 sm:p-8 transition-all duration-300 md:hover:shadow-[0_0_0_1px_color-mix(in_oklab,var(--amber)_55%,transparent),0_18px_60px_-20px_color-mix(in_oklab,var(--amber)_45%,transparent)] md:hover:-translate-y-0.5"
-              style={{ borderColor: "color-mix(in oklab, var(--amber) 40%, transparent)" }}
+              className="mission-card mt-10 rounded-sm border bg-card/60 p-6 sm:p-8"
+              style={{
+                borderColor: "color-mix(in oklab, var(--amber) 40%, transparent)",
+                boxShadow: "0 0 0 1px color-mix(in oklab, var(--amber) 0%, transparent), 0 0 0 0 transparent",
+                transition: "transform 400ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 400ms cubic-bezier(0.22, 1, 0.36, 1), border-color 400ms ease",
+                willChange: "transform, box-shadow",
+              }}
             >
+
               <div className="flex items-center gap-3">
                 <span
                   aria-hidden
