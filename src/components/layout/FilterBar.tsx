@@ -33,7 +33,7 @@ export function FilterBar<T extends string>({
         <div
           role="group"
           aria-label="Filter by category"
-          className="scroll-slim flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+          className="scroll-slim flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1 [scroll-behavior:smooth] [-webkit-overflow-scrolling:touch]"
         >
           {categories.map((name) => {
             const isActive = active === name;
@@ -43,22 +43,38 @@ export function FilterBar<T extends string>({
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => onActiveChange(name)}
-                className={`whitespace-nowrap rounded-full border px-4 min-h-11 md:min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                className={`relative whitespace-nowrap rounded-full border px-5 min-h-11 md:min-h-10 text-[13px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   isActive
-                    ? "border-transparent shadow-soft"
-                    : "border-border bg-card hover:bg-muted hover:border-foreground/20"
+                    ? "border-transparent text-[color:var(--primary-foreground)] shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--amber)_60%,transparent),0_0_0_1px_color-mix(in_oklab,var(--amber)_45%,transparent)]"
+                    : "border-border bg-card hover:bg-muted hover:border-[color:var(--amber)]/40 hover:text-foreground"
                 }`}
-                style={isActive ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)" } : undefined}
+                style={
+                  isActive
+                    ? {
+                        backgroundImage:
+                          "linear-gradient(135deg, color-mix(in oklab, var(--amber) 100%, transparent) 0%, color-mix(in oklab, var(--amber) 78%, #000 8%) 100%)",
+                      }
+                    : undefined
+                }
               >
-                {name} <span className="opacity-60">· {counts.get(name) ?? 0}</span>
+                <span>
+                  {name} <span className="opacity-70">· {counts.get(name) ?? 0}</span>
+                </span>
+                {isActive && (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute left-1/2 -bottom-[7px] h-[3px] w-8 -translate-x-1/2 rounded-full animate-[fade-in_240ms_ease-out]"
+                    style={{ backgroundColor: "var(--amber)" }}
+                  />
+                )}
               </button>
             );
           })}
         </div>
-        <div className="relative w-full lg:w-72 lg:shrink-0">
+        <div className="relative w-full lg:w-80 lg:shrink-0">
           <label htmlFor={searchId} className="sr-only">{searchLabel}</label>
-          <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--amber)]/80">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.5-3.5" strokeLinecap="round" />
             </svg>
@@ -69,7 +85,7 @@ export function FilterBar<T extends string>({
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full rounded-full border border-border bg-card pl-11 pr-4 min-h-11 md:min-h-10 text-sm outline-none transition focus:border-foreground/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="w-full rounded-full border border-[color:var(--amber)]/25 bg-card/80 pl-11 pr-4 min-h-11 md:min-h-11 text-sm text-foreground placeholder:text-muted-foreground/80 outline-none transition-all duration-300 focus:border-[color:var(--amber)]/70 focus:bg-card focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--amber)_18%,transparent),0_10px_30px_-15px_color-mix(in_oklab,var(--amber)_40%,transparent)]"
           />
         </div>
       </div>
