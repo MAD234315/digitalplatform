@@ -469,7 +469,7 @@ export function ProductsFilterBar({
             <span className="sr-only">Currently showing {activeCategoryCount} products</span>
           </div>
 
-          <div className="relative min-w-0 flex-1 sm:flex-none sm:w-44">
+          <div className="relative min-w-0 sm:w-44">
             <label htmlFor="products-sort" className="sr-only">Sort</label>
             <select
               id="products-sort"
