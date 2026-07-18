@@ -45,10 +45,17 @@ for (const bp of BREAKPOINTS) {
           .locator("button[aria-pressed]", { hasText: new RegExp(`^${escapeRe(cat)}\\s·`) })
           .first();
         await chip.scrollIntoViewIfNeeded();
+        const beforeY = await page.evaluate(() => window.scrollY);
         await chip.click();
 
-        // Give smooth-scroll animation time to complete before measuring.
+        // Wait until scroll begins moving OR we determine no scroll is needed.
+        await page
+          .waitForFunction((y) => window.scrollY !== y, beforeY, { timeout: 1500 })
+          .catch(() => void 0);
+        // Then let smooth-scroll complete.
         await page.waitForTimeout(1500);
+
+
 
 
 
