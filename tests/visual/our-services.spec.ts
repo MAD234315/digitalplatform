@@ -27,12 +27,9 @@ test.describe("Our Services — visual regression", () => {
       `,
     });
 
-    // Locate the section by its heading; matches "Our Services".
-    const heading = page.getByRole("heading", { name: /our services/i });
-    await heading.waitFor({ state: "visible" });
-
-    // Walk up to the enclosing <section> for a stable clip target.
-    const section = heading.locator("xpath=ancestor::section[1]");
+    // Stable target: the Our Services section is aria-labelled by #cat-heading.
+    const section = page.locator('section[aria-labelledby="cat-heading"]');
+    await section.waitFor({ state: "visible" });
     await section.scrollIntoViewIfNeeded();
 
     // Wait for web fonts so glyph metrics don't shift between runs.
