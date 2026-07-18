@@ -89,7 +89,7 @@ function FAQPage() {
         categories={CATEGORIES}
         counts={counts}
         active={active}
-        onActiveChange={setActive}
+        onActiveChange={handleActiveChange}
         query={q}
         onQueryChange={setQ}
         searchLabel="Search FAQs"
