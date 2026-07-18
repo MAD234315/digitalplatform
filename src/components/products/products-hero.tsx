@@ -311,7 +311,7 @@ function LiveStatusCard({
         <div
           role="status"
           title="These products have limited stock left. Order soon to avoid disappointment."
-          className="mt-3 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
+          className="mt-4 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
         >
           <span aria-hidden className="flex h-2 w-2">
             <span className="inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--amber)" }} />
