@@ -373,9 +373,10 @@ function StatCard({
         >
           {icon}
         </span>
-        <span id={id} className="min-w-0 truncate whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.1em]">
+        <span id={id} className="min-w-0 text-[9px] font-semibold uppercase leading-tight tracking-[0.08em] break-words">
           {label}
         </span>
+
       </div>
 
       <div
