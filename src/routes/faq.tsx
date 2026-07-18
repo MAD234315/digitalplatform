@@ -98,7 +98,7 @@ function FAQPage() {
       />
 
       {/* Accordion list */}
-      <section className="mx-auto max-w-5xl px-6 lg:px-10 py-14">
+      <section id="faq-group-all" className="mx-auto max-w-5xl px-6 lg:px-10 py-14 scroll-mt-[160px] sm:scroll-mt-[180px]">
         <ErrorBoundary boundary="faq:list" resetKeys={[active, q]}>
           {filtered.length === 0 ? (
             <div className="py-24 text-center text-muted-foreground">
