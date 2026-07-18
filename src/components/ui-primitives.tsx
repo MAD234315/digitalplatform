@@ -41,7 +41,7 @@ const sizeMap: Record<CtaSize, string> = {
   lg: "min-h-12 px-7 text-sm",
 };
 const variantMap: Record<CtaVariant, string> = {
-  primary: "shadow-gold hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_0_0_1px_oklch(0.80_0.14_82/0.4),0_18px_50px_-12px_oklch(0.80_0.14_82/0.55)]",
+  primary: "border hover:-translate-y-0.5 hover:brightness-110",
   outline: "border border-border bg-transparent text-foreground hover:bg-card hover:border-amber/40 hover:-translate-y-0.5",
 };
 
@@ -51,7 +51,12 @@ function ctaClasses(variant: CtaVariant, size: CtaSize, extra = "") {
 
 function ctaStyle(variant: CtaVariant) {
   return variant === "primary"
-    ? { backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }
+    ? {
+        backgroundColor: "var(--amber)",
+        color: "var(--amber-foreground)",
+        borderColor: "color-mix(in oklab, var(--amber) 70%, transparent)",
+        boxShadow: "0 8px 24px -10px color-mix(in oklab, var(--amber) 55%, transparent)",
+      }
     : undefined;
 }
 
