@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { Target } from "lucide-react";
 import { Eyebrow } from "@/components/ui-primitives";
 import { Reveal } from "@/components/reveal";
+
 
 export function WhoWeAreSection() {
   return (
@@ -35,8 +37,22 @@ export function WhoWeAreSection() {
               className="mt-10 rounded-sm border bg-card/60 p-6 sm:p-8 transition-all duration-300 md:hover:shadow-[0_0_0_1px_color-mix(in_oklab,var(--amber)_55%,transparent),0_18px_60px_-20px_color-mix(in_oklab,var(--amber)_45%,transparent)] md:hover:-translate-y-0.5"
               style={{ borderColor: "color-mix(in oklab, var(--amber) 40%, transparent)" }}
             >
-              <Eyebrow>Our mission</Eyebrow>
+              <div className="flex items-center gap-3">
+                <span
+                  aria-hidden
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-sm border"
+                  style={{
+                    borderColor: "color-mix(in oklab, var(--amber) 55%, transparent)",
+                    backgroundColor: "color-mix(in oklab, var(--amber) 12%, transparent)",
+                    color: "var(--amber)",
+                  }}
+                >
+                  <Target className="h-4.5 w-4.5" strokeWidth={2} />
+                </span>
+                <Eyebrow className="!mt-0">Our mission</Eyebrow>
+              </div>
               <p className="mt-3 font-display text-2xl sm:text-3xl leading-snug">
+
                 Help normal people, creators, students, professionals, developers and businesses access
                 the digital tools they need — without paying unnecessary prices.
               </p>
