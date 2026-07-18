@@ -32,7 +32,7 @@ export function WhoWeAreSection() {
             </p>
 
             <div
-              className="mt-10 rounded-sm border bg-card/60 p-8 sm:p-10 transition-all duration-300 md:hover:shadow-[0_0_0_1px_color-mix(in_oklab,var(--amber)_55%,transparent),0_18px_60px_-20px_color-mix(in_oklab,var(--amber)_45%,transparent)] md:hover:-translate-y-0.5"
+              className="mt-10 rounded-sm border bg-card/60 p-6 sm:p-8 transition-all duration-300 md:hover:shadow-[0_0_0_1px_color-mix(in_oklab,var(--amber)_55%,transparent),0_18px_60px_-20px_color-mix(in_oklab,var(--amber)_45%,transparent)] md:hover:-translate-y-0.5"
               style={{ borderColor: "color-mix(in oklab, var(--amber) 40%, transparent)" }}
             >
               <Eyebrow>Our mission</Eyebrow>
