@@ -106,10 +106,10 @@ export function CategoriesSection() {
                   <Reveal as="li" key={c} delay={Math.min(i * 50, 400)} y={10}>
                     <Link
                       to="/products"
-                      className="group relative flex min-h-12 items-center gap-3 overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-card/60 to-card/20 px-3.5 py-3 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/50 hover:from-card/80 hover:to-card/40 hover:shadow-[0_10px_40px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] sm:gap-4 sm:px-4 sm:py-3.5"
+                      className="group relative flex min-h-[3.25rem] items-center gap-4 overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-card/60 to-card/20 px-4 py-3.5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/50 hover:from-card/80 hover:to-card/40 hover:shadow-[0_10px_40px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
                     >
                       {/* Premium numbering */}
-                      <span className="w-7 shrink-0 font-display text-sm tabular-nums text-muted-foreground/70 transition-colors duration-300 group-hover:text-amber sm:w-8">
+                      <span className="w-8 shrink-0 font-display text-sm tabular-nums leading-none text-muted-foreground/70 transition-colors duration-300 group-hover:text-amber">
                         {String(i + 1).padStart(2, "0")}
                       </span>
 
@@ -122,7 +122,7 @@ export function CategoriesSection() {
                       </span>
 
                       {/* Title */}
-                      <span className="min-w-0 flex-1 truncate font-display text-base tracking-tight transition-colors duration-300 group-hover:text-amber sm:text-lg">
+                      <span className="min-w-0 flex-1 truncate font-display text-base leading-none tracking-tight transition-colors duration-300 group-hover:text-amber sm:text-lg">
                         {c}
                       </span>
 
