@@ -74,12 +74,14 @@ export function CategoriesSection() {
             </div>
             <h2
               id="cat-heading"
-              className="mt-4 font-display text-3xl sm:text-4xl leading-[1.05] tracking-tight text-balance"
+              className="mt-4 font-display text-3xl sm:text-4xl leading-[1.1] tracking-tight"
             >
               Twelve worlds,{" "}
               <span
                 className="bg-clip-text text-transparent"
                 style={{
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
                   backgroundImage:
                     "linear-gradient(135deg, var(--foreground) 0%, var(--foreground) 55%, var(--amber) 100%)",
                 }}
