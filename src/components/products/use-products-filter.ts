@@ -179,7 +179,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   }, [products, latestProducts]);
 
   const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = deferredQ.trim().toLowerCase();
     // When the user is actively searching, ignore the category and stock
     // filters — the query should hit the whole catalogue so results aren't
     // silently hidden by an active "In stock" / "Latest" / category pill.
@@ -193,8 +193,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
         if (stock === "latest" && !latestIds.has(p.id)) return false;
       }
       if (needle) {
-        const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
-        if (!hay.includes(needle)) return false;
+        const hay = haystacks.get(p.id);
+        if (!hay || !hay.includes(needle)) return false;
       }
       return true;
     });
@@ -205,7 +205,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
     }
     return list;
-  }, [products, active, stock, sort, q, latestIds]);
+  }, [products, active, stock, sort, deferredQ, latestIds, haystacks]);
 
 
   return {
