@@ -21,15 +21,15 @@ export function RecentlyAdded({
       aria-labelledby="recently-added-heading"
       className="border-b border-border bg-hero"
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10">
-        <div className="flex items-end justify-between gap-4">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 sm:py-6">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+            <div className="text-[10px] sm:text-xs uppercase tracking-[0.22em] text-muted-foreground">
               Just in · last 7 days
             </div>
             <h2
               id="recently-added-heading"
-              className="mt-2 font-display text-2xl sm:text-3xl"
+              className="mt-1 font-display text-lg sm:text-xl"
             >
               Recently added
             </h2>
@@ -37,7 +37,7 @@ export function RecentlyAdded({
           <button
             type="button"
             onClick={onSeeAll}
-            className="shrink-0 rounded-full border border-border bg-card px-4 min-h-9 text-xs font-medium uppercase tracking-[0.14em] transition hover:bg-muted"
+            className="shrink-0 rounded-full border border-border bg-card px-3 sm:px-4 min-h-9 text-[11px] sm:text-xs font-medium uppercase tracking-[0.14em] transition hover:bg-muted"
           >
             See all latest →
           </button>
