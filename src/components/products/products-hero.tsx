@@ -161,7 +161,7 @@ function LiveStatusCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[20px] border border-amber/25 bg-card/60 p-6 shadow-soft backdrop-blur-xl animate-fade-in"
+      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-5 shadow-soft backdrop-blur-xl animate-fade-in"
       aria-busy={isRefreshing}
       style={{
         backgroundImage:
@@ -171,13 +171,13 @@ function LiveStatusCard({
       {/* Header: LIVE badge + sync line */}
       <div className="flex items-center justify-between gap-3">
         <span
-          className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-300"
+          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-emerald-300"
         >
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_var(--tw-shadow-color)] shadow-emerald-400/70" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
           </span>
-          Live status
+          Live
         </span>
         {isRefreshing && (
           <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground" aria-live="polite">
@@ -186,16 +186,16 @@ function LiveStatusCard({
         )}
       </div>
 
-      <div className="mt-3 text-[15px] font-medium text-foreground">
+      <div className="mt-2 text-sm font-medium text-foreground">
         Synced with stock sheet
       </div>
 
       {/* Last-updated pill */}
       <div
-        className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2.5 py-1 text-[11px] text-muted-foreground min-h-[26px]"
+        className="mt-1.5 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2 py-0.5 text-[10px] text-muted-foreground min-h-[22px]"
         suppressHydrationWarning
       >
-        <RefreshCw aria-hidden className={`h-3 w-3 ${isRefreshing ? "animate-spin" : ""}`} />
+        <RefreshCw aria-hidden className={`h-2.5 w-2.5 ${isRefreshing ? "animate-spin" : ""}`} />
         {updatedLabel ? (
           <>
             <span className="truncate">Updated {updatedLabel}</span>
@@ -208,27 +208,28 @@ function LiveStatusCard({
       </div>
 
       {/* Focal count */}
-      <div className="mt-5">
+      <div className="mt-4 flex items-baseline gap-2">
         <div
           ref={total.ref}
-          className={`font-display text-6xl leading-none tracking-tight sm:text-7xl ${pulseCls}`}
+          className={`font-display text-4xl leading-none tracking-tight ${pulseCls}`}
           aria-label={`${productCount} products listed`}
         >
           {total.value}
         </div>
-        <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
           Products listed
         </div>
       </div>
 
+
       {/* Stock availability progress */}
-      <div className="mt-5" aria-hidden={productCount === 0}>
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
+      <div className="mt-3" aria-hidden={productCount === 0}>
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
             {inStockCount} In stock ({inStockPct}%)
           </span>
-          <span className="inline-flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1">
             {outCount} Out ({outPct}%)
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
           </span>
@@ -239,7 +240,7 @@ function LiveStatusCard({
           aria-valuemax={100}
           aria-valuenow={inStockPct}
           aria-label="Stock availability"
-          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted/40"
+          className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
         >
           <div
             className="h-full rounded-full transition-[width] duration-1000 ease-out"
@@ -247,16 +248,16 @@ function LiveStatusCard({
               width: `${barFilled ? inStockPct : 0}%`,
               background:
                 "linear-gradient(90deg, rgb(52 211 153), rgb(16 185 129))",
-              boxShadow: "0 0 12px rgba(16,185,129,0.35)",
+              boxShadow: "0 0 10px rgba(16,185,129,0.35)",
             }}
           />
         </div>
       </div>
 
       {/* Dashboard-style stat cards */}
-      <dl className="mt-5 grid grid-cols-3 gap-2.5">
+      <dl className="mt-4 grid grid-cols-3 gap-2">
         <StatCard
-          icon={<Package className="h-3.5 w-3.5" />}
+          icon={<Package className="h-3 w-3" />}
           label="Total"
           sub="Products"
           countRef={total.ref}
@@ -264,7 +265,7 @@ function LiveStatusCard({
           <span className={pulseCls}>{total.value}</span>
         </StatCard>
         <StatCard
-          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+          icon={<CheckCircle2 className="h-3 w-3" />}
           label="In stock"
           sub="Available"
           valueClass="text-emerald-300"
@@ -273,7 +274,7 @@ function LiveStatusCard({
           <span className={pulseCls}>{inStock.value}</span>
         </StatCard>
         <StatCard
-          icon={<Sparkles className="h-3.5 w-3.5" />}
+          icon={<Sparkles className="h-3 w-3" />}
           label="Latest"
           sub="Last 7 days"
           valueClass="text-amber"
@@ -283,6 +284,7 @@ function LiveStatusCard({
           <span className={pulseCls}>{latest.value}</span>
         </StatCard>
       </dl>
+
 
       {/* Latest CTA */}
       {onShowLatest && (
@@ -345,33 +347,34 @@ function StatCard({
   const id = useId();
   return (
     <div
-      className={`group relative rounded-2xl border p-3 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
+      className={`group relative rounded-xl border p-2.5 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
         highlight
           ? "border-amber/40 bg-gradient-to-br from-amber/10 to-transparent"
           : "border-border/70 bg-card/60 hover:border-amber/40"
       }`}
       aria-labelledby={id}
     >
-      <div className="flex items-center gap-1.5 text-muted-foreground">
+      <div className="flex items-center gap-1 text-muted-foreground">
         <span
           aria-hidden
-          className={`inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
+          className={`inline-flex h-4 w-4 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
             highlight ? "text-amber" : ""
           }`}
         >
           {icon}
         </span>
-        <span id={id} className="text-[10px] font-semibold uppercase tracking-[0.16em]">
+        <span id={id} className="text-[9px] font-semibold uppercase tracking-[0.14em]">
           {label}
         </span>
       </div>
       <div
         ref={countRef}
-        className={`mt-2 font-display text-2xl leading-none sm:text-3xl ${valueClass ?? ""}`}
+        className={`mt-1 font-display text-xl leading-none ${valueClass ?? ""}`}
       >
         {children}
       </div>
-      <div className="mt-1 text-[10px] text-muted-foreground">{sub}</div>
+      <div className="mt-0.5 text-[9px] text-muted-foreground">{sub}</div>
     </div>
+
   );
 }
