@@ -347,33 +347,34 @@ function StatCard({
   const id = useId();
   return (
     <div
-      className={`group relative rounded-2xl border p-3 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
+      className={`group relative rounded-xl border p-2.5 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
         highlight
           ? "border-amber/40 bg-gradient-to-br from-amber/10 to-transparent"
           : "border-border/70 bg-card/60 hover:border-amber/40"
       }`}
       aria-labelledby={id}
     >
-      <div className="flex items-center gap-1.5 text-muted-foreground">
+      <div className="flex items-center gap-1 text-muted-foreground">
         <span
           aria-hidden
-          className={`inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
+          className={`inline-flex h-4 w-4 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
             highlight ? "text-amber" : ""
           }`}
         >
           {icon}
         </span>
-        <span id={id} className="text-[10px] font-semibold uppercase tracking-[0.16em]">
+        <span id={id} className="text-[9px] font-semibold uppercase tracking-[0.14em]">
           {label}
         </span>
       </div>
       <div
         ref={countRef}
-        className={`mt-2 font-display text-2xl leading-none sm:text-3xl ${valueClass ?? ""}`}
+        className={`mt-1 font-display text-xl leading-none ${valueClass ?? ""}`}
       >
         {children}
       </div>
-      <div className="mt-1 text-[10px] text-muted-foreground">{sub}</div>
+      <div className="mt-0.5 text-[9px] text-muted-foreground">{sub}</div>
     </div>
+
   );
 }
