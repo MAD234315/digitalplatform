@@ -207,7 +207,7 @@ export function SiteFooter() {
         <nav aria-label="Explore">
           <h2 className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-medium">Explore</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><Link to="/products" className={linkCls}>Products</Link></li>
+            <li><Link to="/products" className={linkCls}><strong>Catalogue</strong></Link></li>
             <li><Link to="/about" className={linkCls}>About</Link></li>
             <li><Link to="/faq" className={linkCls}>FAQ</Link></li>
             <li><Link to="/product-request" className={linkCls}>Product request</Link></li>
