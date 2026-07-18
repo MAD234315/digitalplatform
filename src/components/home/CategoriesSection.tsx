@@ -89,7 +89,7 @@ export function CategoriesSection() {
                 one shelf.
               </span>
             </h2>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground text-pretty">
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
               A wide range of{" "}
               <span className="font-medium text-amber/90">digital products</span>{" "}
               across categories — catalogue{" "}
