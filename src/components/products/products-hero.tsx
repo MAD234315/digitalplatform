@@ -363,7 +363,7 @@ function StatCard({
         >
           {icon}
         </span>
-        <span id={id} className="text-[9px] font-semibold uppercase tracking-[0.14em]">
+        <span id={id} className="truncate text-[9px] font-semibold uppercase tracking-[0.14em]">
           {label}
         </span>
       </div>
