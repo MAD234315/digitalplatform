@@ -56,7 +56,21 @@ function FAQPage() {
         const targetId = next === "All" ? "faq-group-all" : `faq-group-${slugifyCat(next)}`;
         const el = document.getElementById(targetId);
         if (!el) return;
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Measure any sticky/fixed elements currently pinned at the top so
+        // the first question stays fully visible beneath them across
+        // mobile, tablet, and desktop.
+        let stickyOffset = 0;
+        document.querySelectorAll<HTMLElement>("header, .sticky, [data-sticky]").forEach((node) => {
+          const style = window.getComputedStyle(node);
+          if (style.position !== "sticky" && style.position !== "fixed") return;
+          const rect = node.getBoundingClientRect();
+          if (rect.top <= 8 && rect.bottom > 0) {
+            stickyOffset = Math.max(stickyOffset, rect.bottom);
+          }
+        });
+        const gap = 20;
+        const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset - gap;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
       });
     });
   };
