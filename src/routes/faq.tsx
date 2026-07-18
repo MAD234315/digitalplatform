@@ -16,6 +16,10 @@ const TITLE = "FAQ — Digital Platform | Orders, Delivery, Warranty & Support";
 const DESC =
   "Answers to the most common questions about our digital products, subscriptions, delivery process, warranty, and support at Digital Platform.";
 
+const slugifyCat = (name: string) =>
+  name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+
 export const Route = createFileRoute("/faq")({
   head: () =>
     buildRouteHead({
