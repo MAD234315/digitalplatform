@@ -29,7 +29,7 @@ const ICONS: LucideIcon[] = [
   Bot,           // AI Productivity Tools
   Palette,       // Creative & Design Software
   Clapperboard,  // Streaming Subscriptions
-  FileText,      // Microsoft & Office
+  FileText,      // Workplace Solutions
   GraduationCap, // Educational Platforms
   Code2,         // Developer Tools
   Cloud,         // Cloud Services
