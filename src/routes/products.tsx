@@ -251,7 +251,7 @@ function Products() {
 
 
 
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 lg:py-16">
         {data.rateLimited && data.products.length > 0 && (
           <div className="mb-6 rounded-xl border border-amber/40 bg-amber/10 p-4 text-sm">
             Showing cached catalogue — the live sheet is temporarily rate-limited. Fresh data will resume automatically.
