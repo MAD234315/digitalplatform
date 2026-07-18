@@ -43,6 +43,21 @@ function FAQPage() {
   const [active, setActive] = useState<(typeof CATEGORIES)[number]>("All");
   const [q, setQ] = useState("");
 
+  const handleActiveChange = (next: (typeof CATEGORIES)[number]) => {
+    setActive(next);
+    if (typeof window === "undefined") return;
+    // Wait for the list to re-render with the new filter before scrolling.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const targetId = next === "All" ? "faq-group-all" : `faq-group-${slugifyCat(next)}`;
+        const el = document.getElementById(targetId);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  };
+
+
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return FAQS.filter((f) => {
