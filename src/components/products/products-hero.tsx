@@ -1,4 +1,5 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { Package, CheckCircle2, Sparkles, RefreshCw } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 
 
@@ -48,9 +49,53 @@ export function ProductsHero({
 }
 
 
+/**
+ * Smoothly counts up from 0 → target when it first appears in the viewport.
+ * Purely visual; the underlying number is passed through unchanged for a11y.
+ */
+function useCountUp(target: number, durationMs = 900) {
+  const [value, setValue] = useState(0);
+  const startedRef = useRef(false);
+  const nodeRef = useRef<HTMLSpanElement | null>(null);
 
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return;
+    const start = () => {
+      if (startedRef.current) return;
+      startedRef.current = true;
+      const from = 0;
+      const to = Math.max(0, Math.floor(target));
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / durationMs);
+        const eased = 1 - Math.pow(1 - p, 3);
+        setValue(Math.round(from + (to - from) * eased));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    if (typeof IntersectionObserver === "undefined") {
+      start();
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) start();
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [target, durationMs]);
 
+  // If the target changes after animation, snap to it.
+  useEffect(() => {
+    if (startedRef.current) setValue(Math.max(0, Math.floor(target)));
+  }, [target]);
 
+  return { value, ref: nodeRef };
+}
 
 
 function LiveStatusCard({
@@ -72,6 +117,19 @@ function LiveStatusCard({
 }) {
   const outCount = Math.max(0, productCount - inStockCount);
   const pulseCls = isRefreshing ? "animate-pulse" : "";
+  const inStockPct = productCount > 0 ? Math.round((inStockCount / productCount) * 100) : 0;
+  const outPct = Math.max(0, 100 - inStockPct);
+
+  const total = useCountUp(productCount);
+  const inStock = useCountUp(inStockCount);
+  const latest = useCountUp(latestCount);
+
+  // Animate the progress bar in on mount.
+  const [barFilled, setBarFilled] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setBarFilled(true), 60);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Format the timestamp only on the client — the server renders in UTC and
   // the client in the visitor's local zone, so doing this at render time
@@ -83,18 +141,15 @@ function LiveStatusCard({
       new Date(updatedAt).toLocaleString(undefined, {
         day: "2-digit",
         month: "short",
-        year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        second: "2-digit",
       }),
     );
     const format = () => {
       const diff = Math.max(0, Math.floor((Date.now() - updatedAt) / 1000));
       if (diff < 60) return `${diff}s ago`;
       const m = Math.floor(diff / 60);
-      const s = diff % 60;
-      if (m < 60) return `${m}m ${s}s ago`;
+      if (m < 60) return `${m}m ago`;
       const h = Math.floor(m / 60);
       return `${h}h ${m % 60}m ago`;
     };
@@ -104,76 +159,162 @@ function LiveStatusCard({
   }, [updatedAt]);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-soft" aria-busy={isRefreshing}>
-      <div className="flex items-center justify-between">
-        <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Live status</div>
+    <div
+      className="relative overflow-hidden rounded-[20px] border border-amber/25 bg-card/60 p-6 shadow-soft backdrop-blur-xl animate-fade-in"
+      aria-busy={isRefreshing}
+      style={{
+        backgroundImage:
+          "linear-gradient(135deg, color-mix(in oklab, var(--amber) 6%, transparent), transparent 55%)",
+      }}
+    >
+      {/* Header: LIVE badge + sync line */}
+      <div className="flex items-center justify-between gap-3">
+        <span
+          className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-300"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_var(--tw-shadow-color)] shadow-emerald-400/70" />
+          </span>
+          Live status
+        </span>
         {isRefreshing && (
           <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground" aria-live="polite">
             Refreshing…
           </span>
         )}
       </div>
-      <div className="mt-2 flex items-center gap-2 text-sm">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ backgroundColor: "var(--whatsapp)" }} />
-          <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--whatsapp)" }} />
-        </span>
+
+      <div className="mt-3 text-[15px] font-medium text-foreground">
         Synced with stock sheet
       </div>
-      <div className="mt-3 text-xs text-muted-foreground min-h-4" suppressHydrationWarning>
-        {updatedLabel ? `Last update: ${updatedLabel} · ${agoLabel}` : "\u00a0"}
-      </div>
-      <div className="mt-4 flex items-baseline gap-2">
-        <div className={`font-display text-4xl ${pulseCls}`}>{productCount}</div>
-        <div className="text-xs text-muted-foreground">products listed</div>
-      </div>
-      <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
-        <StatTile
-          label="Total"
-          tooltip="Every product currently listed in the catalogue, across all categories."
-        >
-          <span className={pulseCls}>{productCount}</span>
-        </StatTile>
-        <StatTile
-          label="In stock"
-          tooltip={`Available to order right now${outCount > 0 ? ` — ${outCount} item${outCount === 1 ? "" : "s"} temporarily out.` : "."}`}
-          valueStyle={{ color: "var(--whatsapp)" }}
-        >
-          <span className={pulseCls}>{inStockCount}</span>
-          {outCount > 0 && (
-            <span className="ml-1 align-middle text-[10px] font-sans text-muted-foreground">
-              · {outCount} out
-            </span>
-          )}
-        </StatTile>
-      </dl>
-      <button
-        type="button"
-        onClick={onShowLatest}
-        disabled={!onShowLatest}
-        aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
-        className="mt-3 flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-left text-xs transition hover:border-foreground/30 hover:bg-muted disabled:cursor-default disabled:hover:border-border disabled:hover:bg-card"
+
+      {/* Last-updated pill */}
+      <div
+        className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2.5 py-1 text-[11px] text-muted-foreground min-h-[26px]"
+        suppressHydrationWarning
       >
-        <span className="flex items-center gap-2">
-          <span aria-hidden className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "var(--primary)" }} />
-          <span className="font-medium uppercase tracking-[0.14em] text-[10px]">Latest · last 7 days</span>
-        </span>
-        <span className="flex items-baseline gap-1.5">
-          <span className={`font-display text-base ${pulseCls}`}>{latestCount}</span>
-          <span className="text-[10px] text-muted-foreground">· new arrivals</span>
-        </span>
-      </button>
+        <RefreshCw aria-hidden className={`h-3 w-3 ${isRefreshing ? "animate-spin" : ""}`} />
+        {updatedLabel ? (
+          <>
+            <span className="truncate">Updated {updatedLabel}</span>
+            <span aria-hidden className="opacity-40">·</span>
+            <span className="font-medium text-emerald-300">{agoLabel}</span>
+          </>
+        ) : (
+          <span className="opacity-0">placeholder</span>
+        )}
+      </div>
+
+      {/* Focal count */}
+      <div className="mt-5">
+        <div
+          ref={total.ref}
+          className={`font-display text-6xl leading-none tracking-tight sm:text-7xl ${pulseCls}`}
+          aria-label={`${productCount} products listed`}
+        >
+          {total.value}
+        </div>
+        <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+          Products listed
+        </div>
+      </div>
+
+      {/* Stock availability progress */}
+      <div className="mt-5" aria-hidden={productCount === 0}>
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            {inStockCount} In stock ({inStockPct}%)
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            {outCount} Out ({outPct}%)
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
+          </span>
+        </div>
+        <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={inStockPct}
+          aria-label="Stock availability"
+          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted/40"
+        >
+          <div
+            className="h-full rounded-full transition-[width] duration-1000 ease-out"
+            style={{
+              width: `${barFilled ? inStockPct : 0}%`,
+              background:
+                "linear-gradient(90deg, rgb(52 211 153), rgb(16 185 129))",
+              boxShadow: "0 0 12px rgba(16,185,129,0.35)",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Dashboard-style stat cards */}
+      <dl className="mt-5 grid grid-cols-3 gap-2.5">
+        <StatCard
+          icon={<Package className="h-3.5 w-3.5" />}
+          label="Total"
+          sub="Products"
+          countRef={total.ref}
+        >
+          <span className={pulseCls}>{total.value}</span>
+        </StatCard>
+        <StatCard
+          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+          label="In stock"
+          sub="Available"
+          valueClass="text-emerald-300"
+          countRef={inStock.ref}
+        >
+          <span className={pulseCls}>{inStock.value}</span>
+        </StatCard>
+        <StatCard
+          icon={<Sparkles className="h-3.5 w-3.5" />}
+          label="Latest"
+          sub="Last 7 days"
+          valueClass="text-amber"
+          highlight
+          countRef={latest.ref}
+        >
+          <span className={pulseCls}>{latest.value}</span>
+        </StatCard>
+      </dl>
+
+      {/* Latest CTA */}
+      {onShowLatest && (
+        <button
+          type="button"
+          onClick={onShowLatest}
+          aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
+          className="group mt-4 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
+        >
+          <span className="flex items-center gap-2">
+            <Sparkles aria-hidden className="h-3.5 w-3.5 text-amber" />
+            <span className="font-semibold uppercase tracking-[0.16em] text-[10px] text-amber">
+              Latest · last 7 days
+            </span>
+          </span>
+          <span className="flex items-baseline gap-1.5">
+            <span className={`font-display text-base ${pulseCls}`}>{latestCount}</span>
+            <span className="text-[10px] text-muted-foreground">new arrivals →</span>
+          </span>
+        </button>
+      )}
+
       {limitedCount > 0 && (
         <div
           role="status"
           title="These products have limited stock left. Order soon to avoid disappointment."
-          className="mt-3 flex items-center gap-2 rounded-lg border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
+          className="mt-3 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
         >
           <span aria-hidden className="flex h-2 w-2">
             <span className="inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--amber)" }} />
           </span>
           <span>
-            <span className="font-medium">Low stock warning:</span>{" "}
+            <span className="font-medium">Low stock:</span>{" "}
             <span className={pulseCls}>{limitedCount}</span> item{limitedCount === 1 ? "" : "s"} running low — grab before they&apos;re gone.
           </span>
         </div>
@@ -183,64 +324,53 @@ function LiveStatusCard({
 }
 
 
-function StatTile({
+function StatCard({
+  icon,
   label,
-  tooltip,
-  valueStyle,
+  sub,
+  valueClass,
+  highlight,
+  countRef,
   children,
 }: {
+  icon: React.ReactNode;
   label: string;
-  tooltip: string;
-  valueStyle?: React.CSSProperties;
+  sub: string;
+  valueClass?: string;
+  highlight?: boolean;
+  countRef?: React.Ref<HTMLSpanElement>;
   children: React.ReactNode;
 }) {
-  const tooltipId = useId();
-  const [open, setOpen] = useState(false);
-
-  // Dismiss on Escape per WAI-ARIA APG tooltip pattern.
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape" && open) {
-      e.stopPropagation();
-      setOpen(false);
-    }
-  };
-
+  const id = useId();
   return (
-    <div className="relative bg-card px-3 py-2" onKeyDown={onKeyDown}>
-      <dt className="flex items-center gap-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-        {label}
-        <button
-          type="button"
-          aria-label={`About ${label}`}
-          aria-describedby={tooltipId}
-          aria-expanded={open}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-5 w-5 min-h-5 min-w-5 cursor-help items-center justify-center rounded-full border border-border text-[9px] font-semibold leading-none text-muted-foreground outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-1 focus-visible:ring-offset-card"
+    <div
+      className={`group relative rounded-2xl border p-3 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
+        highlight
+          ? "border-amber/40 bg-gradient-to-br from-amber/10 to-transparent"
+          : "border-border/70 bg-card/60 hover:border-amber/40"
+      }`}
+      aria-labelledby={id}
+    >
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        <span
+          aria-hidden
+          className={`inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
+            highlight ? "text-amber" : ""
+          }`}
         >
-          <span aria-hidden>i</span>
-        </button>
-      </dt>
-      <dd className="mt-0.5 font-display text-xl" style={valueStyle}>
-        {children}
-      </dd>
-      <div
-        id={tooltipId}
-        role="tooltip"
-        aria-hidden={!open}
-        className={`pointer-events-none absolute left-1/2 top-full z-20 mt-1 w-52 -translate-x-1/2 rounded-md border border-border bg-card px-2.5 py-1.5 text-[11px] font-normal normal-case tracking-normal text-foreground shadow-soft transition-opacity duration-150 ${
-          open ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        {tooltip}
+          {icon}
+        </span>
+        <span id={id} className="text-[10px] font-semibold uppercase tracking-[0.16em]">
+          {label}
+        </span>
       </div>
+      <div
+        ref={countRef}
+        className={`mt-2 font-display text-2xl leading-none sm:text-3xl ${valueClass ?? ""}`}
+      >
+        {children}
+      </div>
+      <div className="mt-1 text-[10px] text-muted-foreground">{sub}</div>
     </div>
   );
 }
-
-
-
-
