@@ -161,7 +161,7 @@ function LiveStatusCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[20px] border border-amber/25 bg-card/60 p-6 shadow-soft backdrop-blur-xl animate-fade-in"
+      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-5 shadow-soft backdrop-blur-xl animate-fade-in"
       aria-busy={isRefreshing}
       style={{
         backgroundImage:
@@ -171,13 +171,13 @@ function LiveStatusCard({
       {/* Header: LIVE badge + sync line */}
       <div className="flex items-center justify-between gap-3">
         <span
-          className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-300"
+          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-emerald-300"
         >
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_var(--tw-shadow-color)] shadow-emerald-400/70" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
           </span>
-          Live status
+          Live
         </span>
         {isRefreshing && (
           <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground" aria-live="polite">
@@ -186,16 +186,16 @@ function LiveStatusCard({
         )}
       </div>
 
-      <div className="mt-3 text-[15px] font-medium text-foreground">
+      <div className="mt-2 text-sm font-medium text-foreground">
         Synced with stock sheet
       </div>
 
       {/* Last-updated pill */}
       <div
-        className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2.5 py-1 text-[11px] text-muted-foreground min-h-[26px]"
+        className="mt-1.5 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2 py-0.5 text-[10px] text-muted-foreground min-h-[22px]"
         suppressHydrationWarning
       >
-        <RefreshCw aria-hidden className={`h-3 w-3 ${isRefreshing ? "animate-spin" : ""}`} />
+        <RefreshCw aria-hidden className={`h-2.5 w-2.5 ${isRefreshing ? "animate-spin" : ""}`} />
         {updatedLabel ? (
           <>
             <span className="truncate">Updated {updatedLabel}</span>
@@ -208,18 +208,19 @@ function LiveStatusCard({
       </div>
 
       {/* Focal count */}
-      <div className="mt-5">
+      <div className="mt-4 flex items-baseline gap-2">
         <div
           ref={total.ref}
-          className={`font-display text-6xl leading-none tracking-tight sm:text-7xl ${pulseCls}`}
+          className={`font-display text-4xl leading-none tracking-tight ${pulseCls}`}
           aria-label={`${productCount} products listed`}
         >
           {total.value}
         </div>
-        <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
           Products listed
         </div>
       </div>
+
 
       {/* Stock availability progress */}
       <div className="mt-5" aria-hidden={productCount === 0}>
