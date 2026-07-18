@@ -208,7 +208,7 @@ function LiveStatusCard({
       </div>
 
       {/* Focal count */}
-      <div className="mt-4 flex items-baseline gap-2">
+      <div className="mt-5 flex items-baseline gap-2">
         <div
           ref={total.ref}
           className={`font-display text-4xl leading-none tracking-tight ${pulseCls}`}
