@@ -162,7 +162,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   }, [products, latestProducts]);
 
   const filtered = useMemo(() => {
-    const needle = deferredQ.trim().toLowerCase();
+    const needle = q.trim().toLowerCase();
     // When the user is actively searching, ignore the category and stock
     // filters — the query should hit the whole catalogue so results aren't
     // silently hidden by an active "In stock" / "Latest" / category pill.
@@ -188,7 +188,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
     }
     return list;
-  }, [products, active, stock, sort, deferredQ, latestIds]);
+  }, [products, active, stock, sort, q, latestIds]);
 
 
   return {
