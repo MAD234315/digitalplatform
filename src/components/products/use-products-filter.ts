@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 
 type CategoryInfo = { name: string; count: number };
@@ -79,12 +80,9 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
   const [sort, setSort] = useState<SortKey>("default");
-  // 250ms debounce on the search query so typing feels smooth on mobile.
-  const [deferredQ, setDeferredQ] = useState(q);
-  useEffect(() => {
-    const t = window.setTimeout(() => setDeferredQ(q), 250);
-    return () => window.clearTimeout(t);
-  }, [q]);
+  // No debounce: filter against the live query so cleared/changed input
+  // instantly resets results — never a stale keyword lingering on-screen.
+
 
   const [seen, setSeen] = useState<SeenMap>({});
 
@@ -164,7 +162,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   }, [products, latestProducts]);
 
   const filtered = useMemo(() => {
-    const needle = deferredQ.trim().toLowerCase();
+    const needle = q.trim().toLowerCase();
     // When the user is actively searching, ignore the category and stock
     // filters — the query should hit the whole catalogue so results aren't
     // silently hidden by an active "In stock" / "Latest" / category pill.
@@ -190,7 +188,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
     }
     return list;
-  }, [products, active, stock, sort, deferredQ, latestIds]);
+  }, [products, active, stock, sort, q, latestIds]);
 
 
   return {
