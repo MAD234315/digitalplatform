@@ -99,26 +99,26 @@ export function CategoriesSection() {
           </Reveal>
 
           <div className="lg:col-span-8">
-            <ul className="grid gap-1.5 sm:gap-2">
+            <ul className="grid gap-2.5 sm:gap-2">
               {CATEGORIES.map((c, i) => {
                 const Icon = ICONS[i] ?? Zap;
                 return (
                   <Reveal as="li" key={c} delay={Math.min(i * 50, 400)} y={10}>
                     <Link
                       to="/products"
-                      className="group relative flex min-h-[3.25rem] items-center gap-4 overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-card/60 to-card/20 px-4 py-3.5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/50 hover:from-card/80 hover:to-card/40 hover:shadow-[0_10px_40px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
+                      className="group relative flex min-h-[3.75rem] items-center gap-4 overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-card/60 to-card/20 px-4 py-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/50 hover:from-card/80 hover:to-card/40 hover:shadow-[0_10px_40px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] sm:min-h-[3.25rem] sm:py-3.5"
                     >
                       {/* Premium numbering */}
                       <span className="w-8 shrink-0 font-display text-sm tabular-nums leading-none text-muted-foreground/70 transition-colors duration-300 group-hover:text-amber">
                         {String(i + 1).padStart(2, "0")}
                       </span>
 
-                      {/* Icon tile */}
+                      {/* Icon tile — larger on mobile for a comfortable tap target */}
                       <span
                         aria-hidden
-                        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber/25 bg-amber/5 text-amber transition-all duration-300 group-hover:border-amber/60 group-hover:bg-amber/10"
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber/25 bg-amber/5 text-amber transition-all duration-300 group-hover:border-amber/60 group-hover:bg-amber/10 sm:h-8 sm:w-8 sm:rounded-lg"
                       >
-                        <Icon size={15} strokeWidth={1.6} />
+                        <Icon className="h-5 w-5 sm:h-[15px] sm:w-[15px]" strokeWidth={1.6} />
                       </span>
 
                       {/* Title */}
@@ -129,9 +129,9 @@ export function CategoriesSection() {
                       {/* Arrow */}
                       <span
                         aria-hidden
-                        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-amber"
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-amber sm:h-7 sm:w-7"
                       >
-                        <ArrowRight size={15} strokeWidth={1.8} />
+                        <ArrowRight className="h-[18px] w-[18px] sm:h-[15px] sm:w-[15px]" strokeWidth={1.8} />
                       </span>
                     </Link>
                   </Reveal>
