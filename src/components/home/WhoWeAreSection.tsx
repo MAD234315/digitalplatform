@@ -46,18 +46,23 @@ export function WhoWeAreSection() {
               <div className="flex items-center gap-3">
                 <span
                   aria-hidden
-                  className="mission-badge inline-flex h-9 w-9 items-center justify-center rounded-sm border"
+                  className="mission-badge inline-flex h-10 w-10 items-center justify-center rounded-sm border"
                   style={{
-                    borderColor: "color-mix(in oklab, var(--amber) 55%, transparent)",
-                    backgroundColor: "color-mix(in oklab, var(--amber) 12%, transparent)",
+                    borderColor: "color-mix(in oklab, var(--amber) 75%, transparent)",
+                    backgroundColor: "color-mix(in oklab, var(--amber) 22%, transparent)",
                     color: "var(--amber)",
                   }}
                 >
-                  <Target className="mission-badge-icon h-4.5 w-4.5" strokeWidth={2} />
+                  <Target className="mission-badge-icon h-5 w-5" strokeWidth={2.25} />
                 </span>
-
-                <Eyebrow className="!mt-0">Our mission</Eyebrow>
+                <span
+                  className="text-xs sm:text-[13px] font-semibold uppercase tracking-[0.22em] text-amber"
+                  style={{ color: "var(--amber)" }}
+                >
+                  Our mission
+                </span>
               </div>
+
               <p className="mt-3 font-display text-2xl sm:text-3xl leading-snug">
 
                 Help normal people, creators, students, professionals, developers and businesses access
