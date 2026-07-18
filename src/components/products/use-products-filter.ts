@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 
@@ -80,8 +80,25 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
   const [sort, setSort] = useState<SortKey>("default");
-  // No debounce: filter against the live query so cleared/changed input
-  // instantly resets results — never a stale keyword lingering on-screen.
+  // Defer the query for the heavy filter/sort work so the input keeps
+  // painting keystrokes at 60fps even on large catalogues / low-end mobiles.
+  // The input itself binds to the live `q`; only the filtered list lags by
+  // at most one frame, which feels instant.
+  const deferredQ = useDeferredValue(q);
+
+  // Precompute a lowercased haystack per product once per catalogue load,
+  // so every keystroke is a plain substring scan — no per-keystroke string
+  // building or toLowerCase() over hundreds of rows.
+  const haystacks = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of products) {
+      map.set(
+        p.id,
+        `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase(),
+      );
+    }
+    return map;
+  }, [products]);
 
 
   const [seen, setSeen] = useState<SeenMap>({});
@@ -162,7 +179,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
   }, [products, latestProducts]);
 
   const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = deferredQ.trim().toLowerCase();
     // When the user is actively searching, ignore the category and stock
     // filters — the query should hit the whole catalogue so results aren't
     // silently hidden by an active "In stock" / "Latest" / category pill.
@@ -176,8 +193,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
         if (stock === "latest" && !latestIds.has(p.id)) return false;
       }
       if (needle) {
-        const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
-        if (!hay.includes(needle)) return false;
+        const hay = haystacks.get(p.id);
+        if (!hay || !hay.includes(needle)) return false;
       }
       return true;
     });
@@ -188,7 +205,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
     }
     return list;
-  }, [products, active, stock, sort, q, latestIds]);
+  }, [products, active, stock, sort, deferredQ, latestIds, haystacks]);
 
 
   return {
