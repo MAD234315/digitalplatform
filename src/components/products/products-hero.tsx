@@ -304,16 +304,17 @@ function LiveStatusCard({
           aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
           className="group mt-5 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
         >
-          <span className="flex items-center gap-2">
-            <Sparkles aria-hidden className="h-3.5 w-3.5 text-amber" />
-            <span className="font-semibold uppercase tracking-[0.16em] text-[10px] text-amber">
-              Latest · last 7 days
+          <span className="flex min-w-0 items-center gap-2">
+            <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-amber" />
+            <span className="min-w-0 truncate font-semibold uppercase tracking-[0.14em] text-[10px] text-amber">
+              Latest · 7 days
             </span>
           </span>
-          <span className="flex items-baseline gap-1.5">
+          <span className="flex shrink-0 items-baseline gap-1.5">
             <span className={`font-display text-base ${pulseCls}`}>{latestCount}</span>
-            <span className="text-[10px] text-muted-foreground">new arrivals →</span>
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">new →</span>
           </span>
+
         </button>
       )}
 
