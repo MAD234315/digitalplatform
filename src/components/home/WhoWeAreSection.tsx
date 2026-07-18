@@ -43,25 +43,26 @@ export function WhoWeAreSection() {
               }}
             >
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3">
                 <span
                   aria-hidden
-                  className="mission-badge inline-flex h-10 w-10 items-center justify-center rounded-sm border"
+                  className="mission-badge inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-sm border"
                   style={{
                     borderColor: "color-mix(in oklab, var(--amber) 75%, transparent)",
                     backgroundColor: "color-mix(in oklab, var(--amber) 22%, transparent)",
                     color: "var(--amber)",
                   }}
                 >
-                  <Target className="mission-badge-icon h-5 w-5" strokeWidth={2.25} />
+                  <Target className="mission-badge-icon h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={2.25} />
                 </span>
                 <span
-                  className="text-xs sm:text-[13px] font-semibold uppercase tracking-[0.22em] text-amber"
+                  className="inline-flex items-center text-[11px] sm:text-[13px] leading-none font-semibold uppercase tracking-[0.2em] sm:tracking-[0.22em]"
                   style={{ color: "var(--amber)" }}
                 >
                   Our mission
                 </span>
               </div>
+
 
               <p className="mt-3 font-display text-2xl sm:text-3xl leading-snug">
 
