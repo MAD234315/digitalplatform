@@ -211,8 +211,11 @@ export const ProductCard = memo(function ProductCard({
         </button>
       </div>
 
-      <div className="px-5">
+      <div className="flex flex-wrap items-center gap-1.5 px-5">
         <AvailabilityPill availability={p.availability} />
+        {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
+        {p.badges.includes("high-demand") && <Badge tone="hot">🔥 Hot</Badge>}
+        {p.loot && <Badge tone="loot">Loot</Badge>}
       </div>
 
       {/* Specs */}
