@@ -339,7 +339,7 @@ function StatCard({
   sub: string;
   valueClass?: string;
   highlight?: boolean;
-  countRef?: React.Ref<HTMLSpanElement>;
+  countRef?: React.Ref<HTMLDivElement>;
   children: React.ReactNode;
 }) {
   const id = useId();
