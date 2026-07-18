@@ -9,7 +9,7 @@ export const STATS: Stat[] = [
 ];
 
 export const CATEGORIES: string[] = [
-  "AI Productivity Tools", "Creative & Design Software", "Streaming Subscriptions", "Microsoft & Office",
+  "AI Productivity Tools", "Creative & Design Software", "Streaming Subscriptions", "Workplace Solutions",
   "Educational Platforms", "Developer Tools", "Cloud Services", "Professional Software",
   "Gift Cards", "Productivity Apps", "Business Tools", "Premium Memberships",
 ];
