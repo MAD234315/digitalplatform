@@ -10,6 +10,7 @@ import { Calendar, Clock, Tag, Monitor, ShieldCheck, Info, Lock, Star } from "lu
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { WaGlyph } from "./wa-glyph";
+import { Badge } from "./badge";
 import { formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 import { LogoMark } from "./logo-mark";
 
