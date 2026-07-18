@@ -313,3 +313,33 @@ input[type="search"]::-webkit-search-decoration {
   .mission-card { transition: none !important; }
   .mission-card:hover { transform: none !important; }
 }
+
+/* Mission card icon badge: subtle hover polish (desktop only) */
+.mission-badge {
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 400ms ease,
+              background-color 400ms ease,
+              border-color 400ms ease;
+}
+.mission-badge-icon {
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mission-card:hover .mission-badge {
+    transform: translateY(-1px);
+    background-color: color-mix(in oklab, var(--amber) 22%, transparent);
+    border-color: color-mix(in oklab, var(--amber) 75%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--amber) 55%, transparent),
+      0 10px 24px -12px color-mix(in oklab, var(--amber) 55%, transparent);
+  }
+  .mission-card:hover .mission-badge-icon {
+    transform: rotate(6deg) scale(1.08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mission-badge,
+  .mission-badge-icon { transition: none !important; }
+  .mission-card:hover .mission-badge,
+  .mission-card:hover .mission-badge-icon { transform: none !important; }
+}
