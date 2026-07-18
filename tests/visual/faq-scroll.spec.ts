@@ -50,12 +50,13 @@ for (const bp of BREAKPOINTS) {
         const beforeY = await page.evaluate(() => window.scrollY);
         await chip.click();
 
-        // Wait until scroll begins moving OR we determine no scroll is needed.
+        // Wait until scroll begins moving OR determine no scroll needed.
         await page
-          .waitForFunction((y) => window.scrollY !== y, beforeY, { timeout: 1500 })
+          .waitForFunction((y) => window.scrollY !== y, beforeY, { timeout: 1200 })
           .catch(() => void 0);
         // Then let smooth-scroll complete.
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(900);
+
 
 
 
