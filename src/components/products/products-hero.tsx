@@ -56,7 +56,7 @@ export function ProductsHero({
 function useCountUp(target: number, durationMs = 900) {
   const [value, setValue] = useState(0);
   const startedRef = useRef(false);
-  const nodeRef = useRef<HTMLElement | null>(null);
+  const nodeRef = useRef<HTMLDivElement | null>(null);
 
 
   useEffect(() => {
