@@ -57,9 +57,10 @@ export function CategoriesSection() {
       />
 
       <div className="relative mx-auto max-w-6xl px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
-        <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
-          <Reveal className="lg:col-span-4">
-            <div className="inline-flex flex-col">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-12 lg:gap-10">
+          <Reveal className="min-w-0 lg:col-span-4">
+            <div className="flex min-w-0 flex-col items-start">
+
               <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-amber">
                 Our Services
               </span>
@@ -98,8 +99,8 @@ export function CategoriesSection() {
             </p>
           </Reveal>
 
-          <div className="lg:col-span-8">
-            <ul className="grid gap-2.5 sm:gap-2">
+          <div className="min-w-0 lg:col-span-8">
+            <ul className="grid grid-cols-1 gap-2.5 sm:gap-2">
               {CATEGORIES.map((c, i) => {
                 const Icon = ICONS[i] ?? Zap;
                 return (
