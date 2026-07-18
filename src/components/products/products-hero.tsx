@@ -354,19 +354,20 @@ function StatCard({
       }`}
       aria-labelledby={id}
     >
-      <div className="flex items-center gap-1 text-muted-foreground">
+      <div className="flex min-w-0 items-center gap-1 text-muted-foreground">
         <span
           aria-hidden
-          className={`inline-flex h-4 w-4 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
+          className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-border/70 bg-background/40 ${
             highlight ? "text-amber" : ""
           }`}
         >
           {icon}
         </span>
-        <span id={id} className="truncate text-[9px] font-semibold uppercase tracking-[0.14em]">
+        <span id={id} className="min-w-0 truncate whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.1em]">
           {label}
         </span>
       </div>
+
       <div
         ref={countRef}
         className={`mt-1 font-display text-xl leading-none ${valueClass ?? ""}`}
