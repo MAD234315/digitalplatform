@@ -37,7 +37,7 @@ function HeroContent() {
     <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-28 sm:pt-36 lg:pt-44 pb-16 sm:pb-20 lg:pb-24 text-center">
 
       <div className="animate-rise">
-        <LiveBadge>Trusted digital marketplace · Since 2020</LiveBadge>
+        <LiveBadge>TRUSTED MARKETPLACE · SINCE 2020</LiveBadge>
       </div>
 
       <h1
@@ -82,7 +82,7 @@ function HeroContent() {
 function HeroFallback() {
   return (
     <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-32 sm:pt-40 lg:pt-48 pb-20 sm:pb-24 lg:pb-32 text-center">
-      <LiveBadge>Trusted digital marketplace · Since 2020</LiveBadge>
+      <LiveBadge>TRUSTED MARKETPLACE · SINCE 2020</LiveBadge>
       <h1
         id="hero-heading"
         className="mt-8 font-display text-balance text-[38px] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl"
