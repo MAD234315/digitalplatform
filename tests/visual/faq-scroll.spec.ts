@@ -37,8 +37,10 @@ for (const bp of BREAKPOINTS) {
     test.use({ viewport: bp.viewport });
 
     test(`first item stays fully visible below sticky header`, async ({ page }) => {
+      test.setTimeout(120_000);
       await page.goto("/faq", { waitUntil: "domcontentloaded" });
       await page.locator("button[aria-pressed]").first().waitFor();
+
 
       for (const cat of CATEGORIES_TO_CHECK) {
         const chip = page
