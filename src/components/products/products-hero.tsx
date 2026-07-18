@@ -161,7 +161,7 @@ function LiveStatusCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-5 shadow-soft backdrop-blur-xl animate-fade-in"
+      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-6 sm:p-7 shadow-soft backdrop-blur-xl animate-fade-in"
       aria-busy={isRefreshing}
       style={{
         backgroundImage:
@@ -208,7 +208,7 @@ function LiveStatusCard({
       </div>
 
       {/* Focal count */}
-      <div className="mt-4 flex items-baseline gap-2">
+      <div className="mt-5 flex items-baseline gap-2">
         <div
           ref={total.ref}
           className={`font-display text-4xl leading-none tracking-tight ${pulseCls}`}
@@ -223,7 +223,7 @@ function LiveStatusCard({
 
 
       {/* Stock availability progress */}
-      <div className="mt-3" aria-hidden={productCount === 0}>
+      <div className="mt-4" aria-hidden={productCount === 0}>
         <div className="flex items-center justify-between text-[10px] text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -255,7 +255,7 @@ function LiveStatusCard({
       </div>
 
       {/* Dashboard-style stat cards */}
-      <dl className="mt-4 grid grid-cols-3 gap-2">
+      <dl className="mt-5 grid grid-cols-3 gap-2.5">
         <StatCard
           icon={<Package className="h-3 w-3" />}
           label="Total"
@@ -292,7 +292,7 @@ function LiveStatusCard({
           type="button"
           onClick={onShowLatest}
           aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
-          className="group mt-4 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
+          className="group mt-5 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
         >
           <span className="flex items-center gap-2">
             <Sparkles aria-hidden className="h-3.5 w-3.5 text-amber" />
@@ -311,7 +311,7 @@ function LiveStatusCard({
         <div
           role="status"
           title="These products have limited stock left. Order soon to avoid disappointment."
-          className="mt-3 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
+          className="mt-4 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
         >
           <span aria-hidden className="flex h-2 w-2">
             <span className="inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--amber)" }} />

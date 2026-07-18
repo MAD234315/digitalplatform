@@ -28,14 +28,14 @@ export function PageHero({
 }) {
   const wrap =
     size === "wide"
-      ? "mx-auto max-w-7xl px-6 lg:px-10 pt-32 sm:pt-36 pb-12 sm:pb-14"
-      : "mx-auto max-w-5xl px-6 lg:px-10 pt-32 pb-14 sm:pt-40 sm:pb-16 lg:pt-48 lg:pb-24";
+      ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-28 sm:pt-32 pb-10 sm:pb-12"
+      : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-28 pb-12 sm:pt-36 sm:pb-14 lg:pt-44 lg:pb-20";
 
   return (
     <section className="relative bg-hero">
       <div className={wrap}>
         {aside ? (
-          <div className="grid lg:grid-cols-12 gap-8 items-end">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end">
             <div className="lg:col-span-8">
               <HeroCopy eyebrow={eyebrow} title={title} titleAccent={titleAccent} lede={lede} />
             </div>
