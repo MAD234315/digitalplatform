@@ -53,24 +53,31 @@ function FAQPage() {
     // Wait for the list to re-render with the new filter before scrolling.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const targetId = next === "All" ? "faq-group-all" : `faq-group-${slugifyCat(next)}`;
+        const targetId = next === "All" ? "faq-group-all" : `faq-heading-${slugifyCat(next)}`;
         const el = document.getElementById(targetId);
         if (!el) return;
-        // Measure any sticky/fixed elements currently pinned at the top so
-        // the first question stays fully visible beneath them across
-        // mobile, tablet, and desktop.
+        // Measure the top chrome at its final sticky position so the category
+        // heading, not just the first question, lands fully below it.
         let stickyOffset = 0;
-        document.querySelectorAll<HTMLElement>("header, .sticky, [data-sticky]").forEach((node) => {
+        document.querySelectorAll<HTMLElement>("header, [data-sticky], .sticky").forEach((node) => {
           const style = window.getComputedStyle(node);
           if (style.position !== "sticky" && style.position !== "fixed") return;
           const rect = node.getBoundingClientRect();
-          if (rect.top <= 8 && rect.bottom > 0) {
+          if (rect.bottom <= 0) return;
+          if (node.dataset.sticky === "filter-bar" && style.position === "sticky") {
+            const cssTop = Number.parseFloat(style.top);
+            const pinnedTop = Number.isFinite(cssTop) ? cssTop : Math.max(0, rect.top);
+            stickyOffset = Math.max(stickyOffset, pinnedTop + rect.height);
+            return;
+          }
+          if (rect.top < Math.min(window.innerHeight * 0.45, 260)) {
             stickyOffset = Math.max(stickyOffset, rect.bottom);
           }
         });
         const gap = 20;
         const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset - gap;
-        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: Math.max(0, top), behavior: prefersReduced ? "auto" : "smooth" });
       });
     });
   };
@@ -133,8 +140,8 @@ function FAQPage() {
               return (
                 <div className="space-y-14">
                   {groups.map((g) => (
-                    <div key={g.cat} id={`faq-group-${slugifyCat(g.cat)}`} className="scroll-mt-[160px] sm:scroll-mt-[180px]">
-                      <div className="mb-5 flex items-center gap-4 pl-4 border-l-2 border-[color:var(--amber)]">
+                    <div key={g.cat} id={`faq-group-${slugifyCat(g.cat)}`} className="scroll-mt-[180px] sm:scroll-mt-[200px]">
+                      <div id={`faq-heading-${slugifyCat(g.cat)}`} className="mb-5 flex items-center gap-4 pl-4 border-l-2 border-[color:var(--amber)] scroll-mt-[180px] sm:scroll-mt-[200px]">
                         <h2 className="font-display text-2xl sm:text-3xl leading-tight">
                           <span className="text-headline">{g.cat}</span>
                         </h2>
