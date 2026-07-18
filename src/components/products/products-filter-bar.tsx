@@ -486,7 +486,7 @@ export function ProductsFilterBar({
             {chevron}
           </div>
 
-          <div className="relative min-w-0 flex-1 sm:flex-none sm:w-48">
+          <div className="relative min-w-0 sm:w-48">
             <label htmlFor="products-stock" className="sr-only">Filter by availability</label>
             <select
               id="products-stock"
