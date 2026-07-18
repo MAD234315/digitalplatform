@@ -223,13 +223,13 @@ function LiveStatusCard({
 
 
       {/* Stock availability progress */}
-      <div className="mt-5" aria-hidden={productCount === 0}>
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
+      <div className="mt-3" aria-hidden={productCount === 0}>
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
             {inStockCount} In stock ({inStockPct}%)
           </span>
-          <span className="inline-flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1">
             {outCount} Out ({outPct}%)
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
           </span>
@@ -240,7 +240,7 @@ function LiveStatusCard({
           aria-valuemax={100}
           aria-valuenow={inStockPct}
           aria-label="Stock availability"
-          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted/40"
+          className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
         >
           <div
             className="h-full rounded-full transition-[width] duration-1000 ease-out"
@@ -248,16 +248,16 @@ function LiveStatusCard({
               width: `${barFilled ? inStockPct : 0}%`,
               background:
                 "linear-gradient(90deg, rgb(52 211 153), rgb(16 185 129))",
-              boxShadow: "0 0 12px rgba(16,185,129,0.35)",
+              boxShadow: "0 0 10px rgba(16,185,129,0.35)",
             }}
           />
         </div>
       </div>
 
       {/* Dashboard-style stat cards */}
-      <dl className="mt-5 grid grid-cols-3 gap-2.5">
+      <dl className="mt-4 grid grid-cols-3 gap-2">
         <StatCard
-          icon={<Package className="h-3.5 w-3.5" />}
+          icon={<Package className="h-3 w-3" />}
           label="Total"
           sub="Products"
           countRef={total.ref}
@@ -265,7 +265,7 @@ function LiveStatusCard({
           <span className={pulseCls}>{total.value}</span>
         </StatCard>
         <StatCard
-          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+          icon={<CheckCircle2 className="h-3 w-3" />}
           label="In stock"
           sub="Available"
           valueClass="text-emerald-300"
@@ -274,7 +274,7 @@ function LiveStatusCard({
           <span className={pulseCls}>{inStock.value}</span>
         </StatCard>
         <StatCard
-          icon={<Sparkles className="h-3.5 w-3.5" />}
+          icon={<Sparkles className="h-3 w-3" />}
           label="Latest"
           sub="Last 7 days"
           valueClass="text-amber"
@@ -284,6 +284,7 @@ function LiveStatusCard({
           <span className={pulseCls}>{latest.value}</span>
         </StatCard>
       </dl>
+
 
       {/* Latest CTA */}
       {onShowLatest && (
