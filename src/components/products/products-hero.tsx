@@ -161,7 +161,7 @@ function LiveStatusCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-5 shadow-soft backdrop-blur-xl animate-fade-in"
+      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-6 sm:p-7 shadow-soft backdrop-blur-xl animate-fade-in"
       aria-busy={isRefreshing}
       style={{
         backgroundImage:
