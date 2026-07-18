@@ -47,8 +47,28 @@ for (const bp of BREAKPOINTS) {
         await chip.scrollIntoViewIfNeeded();
         await chip.click();
 
-        // Allow smooth-scroll + rAF-scheduled handler to settle.
-        await page.waitForTimeout(900);
+        // Wait for smooth-scroll to fully settle (poll scrollY until stable).
+        await page.waitForFunction(
+          () => {
+            const w = window as unknown as { __lastY?: number; __stableTicks?: number };
+            const y = window.scrollY;
+            if (w.__lastY === y) {
+              w.__stableTicks = (w.__stableTicks ?? 0) + 1;
+            } else {
+              w.__stableTicks = 0;
+              w.__lastY = y;
+            }
+            return (w.__stableTicks ?? 0) >= 6;
+          },
+          { polling: 100, timeout: 5000 }
+        );
+        await page.evaluate(() => {
+          const w = window as unknown as { __lastY?: number; __stableTicks?: number };
+          w.__lastY = undefined;
+          w.__stableTicks = 0;
+        });
+
+
 
         const chromeBottom = await stickyChromeBottom(page);
         const viewportH = bp.viewport.height;
