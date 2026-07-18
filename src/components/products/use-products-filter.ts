@@ -115,27 +115,31 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     setSeen(map);
   }, [products]);
 
-  const latestKeys = useMemo(() => {
+  // Single source of truth for "Latest": one filtered+sorted array; every
+  // other Latest-derived value (Set of keys, Set of ids, count, list) is
+  // derived from it so the Live Stats card and the product grid can never
+  // drift apart.
+  const latestProducts = useMemo(() => {
     const cutoff = Date.now() - LATEST_WINDOW_MS;
-    const fresh = new Set<string>();
-    for (const p of products) {
-      // Only available, in-stock products qualify as "Latest".
-      if (p.availability !== "available" || !p.inStock) continue;
-      const entry = seen[keyOf(p)];
-      if (entry && entry.t > cutoff) fresh.add(keyOf(p));
-    }
-    return fresh;
+    return products
+      .filter((p) => p.availability === "available" && p.inStock)
+      .map((p) => ({ p, t: seen[keyOf(p)]?.t ?? 0 }))
+      .filter((x) => x.t > cutoff)
+      .sort((a, b) => b.t - a.t)
+      .map((x) => x.p);
   }, [products, seen]);
 
+  const latestKeys = useMemo(() => {
+    const s = new Set<string>();
+    for (const p of latestProducts) s.add(keyOf(p));
+    return s;
+  }, [latestProducts]);
+
   const latestIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const p of products) {
-      if (latestKeys.has(keyOf(p))) ids.add(p.id);
-    }
-    return ids;
-  }, [products, latestKeys]);
-
-
+    const s = new Set<string>();
+    for (const p of latestProducts) s.add(p.id);
+    return s;
+  }, [latestProducts]);
 
   const categoryCounts = useMemo(() => {
     const m = new Map<string, number>();
@@ -152,12 +156,12 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     }
     return {
       all: products.length,
-      latest: latestKeys.size,
+      latest: latestProducts.length,
       "in-stock": inStock,
       limited,
       out,
     } as Record<StockFilter, number>;
-  }, [products, latestKeys]);
+  }, [products, latestProducts]);
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
@@ -171,7 +175,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
         if (stock === "in-stock" && p.availability !== "available") return false;
         if (stock === "limited" && p.availability !== "limited") return false;
         if (stock === "out" && p.availability !== "out") return false;
-        if (stock === "latest" && !latestKeys.has(keyOf(p))) return false;
+        if (stock === "latest" && !latestIds.has(p.id)) return false;
       }
       if (needle) {
         const hay = `${p.name} ${p.category} ${p.plan} ${p.type} ${p.validity} ${p.supports} ${p.badges.join(" ")}`.toLowerCase();
@@ -186,17 +190,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
     }
     return list;
-  }, [products, active, stock, sort, deferredQ, latestKeys]);
+  }, [products, active, stock, sort, deferredQ, latestIds]);
 
-  const latestProducts = useMemo(() => {
-    const cutoff = Date.now() - LATEST_WINDOW_MS;
-    return products
-      .filter((p) => p.availability === "available" && p.inStock)
-      .map((p) => ({ p, t: seen[keyOf(p)]?.t ?? 0 }))
-      .filter((x) => x.t > cutoff)
-      .sort((a, b) => b.t - a.t)
-      .map((x) => x.p);
-  }, [products, seen]);
 
   return {
     active,
