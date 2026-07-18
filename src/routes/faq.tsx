@@ -90,18 +90,47 @@ function FAQPage() {
               No questions match your search. Try a different keyword or category.
             </div>
           ) : (
-            <ul className="space-y-3">
-              {filtered.map((f, i) => (
-                <ErrorBoundary key={`${f.cat}-${i}`} boundary="faq:item" fallback={null}>
-                  <Reveal as="li" delay={Math.min(i, 6) * 60} y={18}>
-                    <FaqItem f={f} />
-                  </Reveal>
-                </ErrorBoundary>
-              ))}
-            </ul>
+            (() => {
+              // Group by category, preserving CATEGORIES order (skip "All").
+              const order = CATEGORIES.filter((c) => c !== "All");
+              const groups = order
+                .map((cat) => ({ cat, items: filtered.filter((f) => f.cat === cat) }))
+                .filter((g) => g.items.length > 0);
+              let idx = 0;
+              return (
+                <div className="space-y-14">
+                  {groups.map((g) => (
+                    <div key={g.cat}>
+                      <div className="mb-5 flex items-center gap-4 pl-4 border-l-2 border-[color:var(--amber)]">
+                        <h2 className="font-display text-2xl sm:text-3xl leading-tight">
+                          <span className="text-headline">{g.cat}</span>
+                        </h2>
+                        <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                          {g.items.length} {g.items.length === 1 ? "question" : "questions"}
+                        </span>
+                        <span aria-hidden className="hidden sm:block flex-1 h-px bg-gradient-to-r from-[color:var(--amber)]/30 to-transparent" />
+                      </div>
+                      <ul className="space-y-3.5">
+                        {g.items.map((f) => {
+                          const i = idx++;
+                          return (
+                            <ErrorBoundary key={`${f.cat}-${i}`} boundary="faq:item" fallback={null}>
+                              <Reveal as="li" delay={Math.min(i, 6) * 60} y={18}>
+                                <FaqItem f={f} />
+                              </Reveal>
+                            </ErrorBoundary>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()
           )}
         </ErrorBoundary>
       </section>
+
 
       {/* CTA */}
       <section className="border-t border-border bg-card/30">
