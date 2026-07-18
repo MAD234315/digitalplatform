@@ -115,7 +115,7 @@ function FAQPage() {
               return (
                 <div className="space-y-14">
                   {groups.map((g) => (
-                    <div key={g.cat}>
+                    <div key={g.cat} id={`faq-group-${slugifyCat(g.cat)}`} className="scroll-mt-[160px] sm:scroll-mt-[180px]">
                       <div className="mb-5 flex items-center gap-4 pl-4 border-l-2 border-[color:var(--amber)]">
                         <h2 className="font-display text-2xl sm:text-3xl leading-tight">
                           <span className="text-headline">{g.cat}</span>
