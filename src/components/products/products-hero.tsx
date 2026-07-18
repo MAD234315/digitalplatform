@@ -223,7 +223,7 @@ function LiveStatusCard({
 
 
       {/* Stock availability progress */}
-      <div className="mt-3" aria-hidden={productCount === 0}>
+      <div className="mt-4" aria-hidden={productCount === 0}>
         <div className="flex items-center justify-between text-[10px] text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
