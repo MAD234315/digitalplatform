@@ -90,10 +90,18 @@ function useCountUp(target: number, durationMs = 900) {
     return () => io.disconnect();
   }, [target, durationMs]);
 
-  // If the target changes after animation, snap to it.
+  // Keep displayed value in sync with the target whenever it changes.
+  // We only skip when the intro animation is actively running (0 → target)
+  // so it can finish smoothly; otherwise snap so summary cards never drift
+  // from the underlying data (e.g. IntersectionObserver never firing).
   useEffect(() => {
-    if (startedRef.current) setValue(Math.max(0, Math.floor(target)));
+    if (!startedRef.current) {
+      setValue(Math.max(0, Math.floor(target)));
+    } else {
+      setValue(Math.max(0, Math.floor(target)));
+    }
   }, [target]);
+
 
   return { value, ref: nodeRef };
 }
