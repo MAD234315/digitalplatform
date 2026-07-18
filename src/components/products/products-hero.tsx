@@ -292,7 +292,7 @@ function LiveStatusCard({
           type="button"
           onClick={onShowLatest}
           aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
-          className="group mt-4 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
+          className="group mt-5 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
         >
           <span className="flex items-center gap-2">
             <Sparkles aria-hidden className="h-3.5 w-3.5 text-amber" />
