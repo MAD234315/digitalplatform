@@ -255,7 +255,7 @@ function LiveStatusCard({
       </div>
 
       {/* Dashboard-style stat cards */}
-      <dl className="mt-4 grid grid-cols-3 gap-2">
+      <dl className="mt-5 grid grid-cols-3 gap-2.5">
         <StatCard
           icon={<Package className="h-3 w-3" />}
           label="Total"
