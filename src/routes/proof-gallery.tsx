@@ -57,7 +57,7 @@ function ProofGalleryPage() {
       <PageHero
         eyebrow="Proof Gallery"
         title="Genuine deliveries, receipts and setup screenshots"
-        subtitle="Real proofs from real orders. Reliable service, verifiable."
+        lede="Real proofs from real orders. Reliable service, verifiable."
       />
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:pb-20 select-none">
         {isLoading && <ProofSkeletonGrid />}

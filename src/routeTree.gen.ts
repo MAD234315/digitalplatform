@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RefundRouteImport } from './routes/refund'
+import { Route as ProofGalleryRouteImport } from './routes/proof-gallery'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProductRequestRouteImport } from './routes/product-request'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -38,6 +39,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const RefundRoute = RefundRouteImport.update({
   id: '/refund',
   path: '/refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProofGalleryRoute = ProofGalleryRouteImport.update({
+  id: '/proof-gallery',
+  path: '/proof-gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/product-request': typeof ProductRequestRoute
   '/products': typeof ProductsRoute
+  '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/product-request': typeof ProductRequestRoute
   '/products': typeof ProductsRoute
+  '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/product-request': typeof ProductRequestRoute
   '/products': typeof ProductsRoute
+  '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/product-request'
     | '/products'
+    | '/proof-gallery'
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/product-request'
     | '/products'
+    | '/proof-gallery'
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/product-request'
     | '/products'
+    | '/proof-gallery'
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
@@ -214,6 +226,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProductRequestRoute: typeof ProductRequestRoute
   ProductsRoute: typeof ProductsRoute
+  ProofGalleryRoute: typeof ProofGalleryRoute
   RefundRoute: typeof RefundRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/refund'
       fullPath: '/refund'
       preLoaderRoute: typeof RefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proof-gallery': {
+      id: '/proof-gallery'
+      path: '/proof-gallery'
+      fullPath: '/proof-gallery'
+      preLoaderRoute: typeof ProofGalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -354,6 +374,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProductRequestRoute: ProductRequestRoute,
   ProductsRoute: ProductsRoute,
+  ProofGalleryRoute: ProofGalleryRoute,
   RefundRoute: RefundRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
