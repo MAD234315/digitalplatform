@@ -69,11 +69,11 @@ function ProofsAdmin() {
   });
 
   return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
+    <div className="min-w-0">
+      <div className="mb-5 sm:mb-6 flex flex-wrap items-end justify-between gap-2">
+        <div className="min-w-0">
           <div className="text-[11px] uppercase tracking-[0.22em] text-amber">Proof Gallery</div>
-          <h1 className="font-display text-2xl sm:text-3xl mt-1">Manage proofs</h1>
+          <h1 className="font-display text-xl sm:text-2xl md:text-3xl mt-1">Manage proofs</h1>
         </div>
         <div className="text-xs text-muted-foreground">
           {data ? `${data.length} total` : ""}
@@ -89,23 +89,24 @@ function ProofsAdmin() {
       />
 
       <div className="mt-6 mb-3 relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search proofs…"
-          className="w-full min-h-11 pl-9 pr-3 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber"
+          className="w-full min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-base sm:text-sm outline-none focus:border-amber"
         />
       </div>
 
       {isLoading && <div className="text-sm text-muted-foreground">Loading…</div>}
       {error && (
-        <div className="text-sm text-destructive">
+        <div className="text-sm text-destructive break-words">
           {error instanceof Error ? error.message : "Failed to load"}
         </div>
       )}
 
-      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+
         {filtered.map((row) => (
           <ProofEditCard
             key={row.id}
