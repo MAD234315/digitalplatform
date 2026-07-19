@@ -384,19 +384,19 @@ function ProofEditCard({
             {new Date(row.created_at).toLocaleDateString()}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1.5">
           {editing ? (
             <>
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex-1 min-h-9 rounded-sm bg-amber text-amber-foreground text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1"
+                className="flex-1 min-w-[110px] min-h-10 rounded-sm bg-amber text-amber-foreground text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1"
               >
                 <Check className="h-3.5 w-3.5" /> Save
               </button>
               <button
                 onClick={() => { setEditing(false); setTitle(row.title); setDescription(row.description); }}
-                className="min-h-9 px-3 rounded-sm border border-border text-xs"
+                className="min-h-10 px-3 rounded-sm border border-border text-xs"
               >
                 Cancel
               </button>
@@ -405,26 +405,28 @@ function ProofEditCard({
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="min-h-9 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
               >
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </button>
               <button
                 onClick={onTogglePublished}
-                className="min-h-9 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
               >
                 {row.published ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 {row.published ? "Hide" : "Show"}
               </button>
               <button
                 onClick={onDelete}
-                className="min-h-9 px-3 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center gap-1 ml-auto"
+                aria-label="Delete"
+                className="min-h-10 min-w-10 px-3 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center justify-center gap-1 ml-auto"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             </>
           )}
         </div>
+
       </div>
     </li>
   );
