@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/proofs")({
-  component: ProofsAdmin;
+  component: ProofsAdmin,
 });
 
 // Accept common mobile capture formats. iOS returns HEIC unless the picker converts,
