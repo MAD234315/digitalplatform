@@ -1,0 +1,157 @@
+import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { z } from "zod";
+
+async function assertAdmin(supabase: any, userId: string) {
+  const { data, error } = await supabase.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("Forbidden: admin only");
+}
+
+/** Bootstrap: first signed-in user becomes admin if none exist. */
+export const claimAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase.rpc("claim_admin");
+    if (error) throw new Error(error.message);
+    return { ok: true, claimed: !!data };
+  });
+
+/** Check current user's admin status. */
+export const getMyAdminStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (error) throw new Error(error.message);
+    const { count } = await context.supabase
+      .from("user_roles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "admin");
+    return { isAdmin: !!data, adminCount: count ?? 0 };
+  });
+
+const settingSchema = z.object({
+  key: z.enum(["site_status", "spreadsheet_url"]),
+  value: z.any(),
+});
+
+export const getSettings = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("site_settings")
+      .select("key, value, updated_at");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const updateSetting = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) => settingSchema.parse(raw))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase
+      .from("site_settings")
+      .upsert({ key: data.key, value: data.value }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Admin: list all proofs with fresh signed URLs. */
+export const listProofsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("proofs")
+      .select("id, title, description, image_path, published, created_at, updated_at")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    const rows = data ?? [];
+    const signed = await Promise.all(
+      rows.map(async (r) => {
+        const { data: s } = await context.supabase.storage
+          .from("proofs")
+          .createSignedUrl(r.image_path, 60 * 60);
+        return { ...r, image_url: s?.signedUrl ?? null };
+      })
+    );
+    return signed;
+  });
+
+const createProofSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  description: z.string().trim().min(1).max(2000),
+  image_path: z.string().trim().min(1).max(500),
+  published: z.boolean().optional().default(true),
+});
+
+export const createProof = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) => createProofSchema.parse(raw))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    // Verify the object actually exists in storage before saving DB row.
+    const { data: signed, error: signErr } = await context.supabase.storage
+      .from("proofs")
+      .createSignedUrl(data.image_path, 60);
+    if (signErr || !signed?.signedUrl) {
+      throw new Error("Uploaded image not found in storage. Please retry.");
+    }
+    const { data: row, error } = await context.supabase
+      .from("proofs")
+      .insert({
+        title: data.title,
+        description: data.description,
+        image_path: data.image_path,
+        published: data.published ?? true,
+      })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+const updateProofSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().trim().min(1).max(200).optional(),
+  description: z.string().trim().min(1).max(2000).optional(),
+  image_path: z.string().trim().min(1).max(500).optional(),
+  published: z.boolean().optional(),
+});
+
+export const updateProof = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) => updateProofSchema.parse(raw))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { id, ...patch } = data;
+    const { error } = await context.supabase.from("proofs").update(patch).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteProof = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) => z.object({ id: z.string().uuid() }).parse(raw))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { data: row } = await context.supabase
+      .from("proofs")
+      .select("image_path")
+      .eq("id", data.id)
+      .single();
+    if (row?.image_path) {
+      await context.supabase.storage.from("proofs").remove([row.image_path]);
+    }
+    const { error } = await context.supabase.from("proofs").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
