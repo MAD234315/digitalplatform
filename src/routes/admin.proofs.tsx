@@ -360,15 +360,16 @@ function ProofEditCard({
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full min-h-10 rounded-sm border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+              className="w-full min-h-11 rounded-sm border border-border bg-background px-2 text-base sm:text-sm outline-none focus:border-amber"
             />
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full rounded-sm border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-amber"
+              className="w-full rounded-sm border border-border bg-background px-2 py-1.5 text-base sm:text-sm outline-none focus:border-amber resize-y"
             />
           </>
+
         ) : (
           <>
             <h3 className="font-semibold text-foreground text-sm">{row.title}</h3>
