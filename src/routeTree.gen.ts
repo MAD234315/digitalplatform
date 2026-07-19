@@ -22,6 +22,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 
 const TermsRoute = TermsRouteImport.update({
@@ -89,6 +90,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProofsRoute = AdminProofsRouteImport.update({
+  id: '/proofs',
+  path: '/proofs',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/proofs': typeof AdminProofsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/proofs': typeof AdminProofsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/proofs': typeof AdminProofsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/admin/login'
+    | '/admin/proofs'
     | '/admin/settings'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/admin/login'
+    | '/admin/proofs'
     | '/admin/settings'
     | '/admin'
   id:
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/admin/login'
+    | '/admin/proofs'
     | '/admin/settings'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -300,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/proofs': {
+      id: '/admin/proofs'
+      path: '/proofs'
+      fullPath: '/admin/proofs'
+      preLoaderRoute: typeof AdminProofsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -312,12 +331,14 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminProofsRoute: typeof AdminProofsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
+  AdminProofsRoute: AdminProofsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
