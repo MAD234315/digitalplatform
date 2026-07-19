@@ -69,11 +69,11 @@ function ProofsAdmin() {
   });
 
   return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
+    <div className="min-w-0">
+      <div className="mb-5 sm:mb-6 flex flex-wrap items-end justify-between gap-2">
+        <div className="min-w-0">
           <div className="text-[11px] uppercase tracking-[0.22em] text-amber">Proof Gallery</div>
-          <h1 className="font-display text-2xl sm:text-3xl mt-1">Manage proofs</h1>
+          <h1 className="font-display text-xl sm:text-2xl md:text-3xl mt-1">Manage proofs</h1>
         </div>
         <div className="text-xs text-muted-foreground">
           {data ? `${data.length} total` : ""}
@@ -89,23 +89,24 @@ function ProofsAdmin() {
       />
 
       <div className="mt-6 mb-3 relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search proofs…"
-          className="w-full min-h-11 pl-9 pr-3 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber"
+          className="w-full min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-base sm:text-sm outline-none focus:border-amber"
         />
       </div>
 
       {isLoading && <div className="text-sm text-muted-foreground">Loading…</div>}
       {error && (
-        <div className="text-sm text-destructive">
+        <div className="text-sm text-destructive break-words">
           {error instanceof Error ? error.message : "Failed to load"}
         </div>
       )}
 
-      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+
         {filtered.map((row) => (
           <ProofEditCard
             key={row.id}
@@ -219,14 +220,14 @@ function UploadCard({
   }
 
   return (
-    <form onSubmit={submit} className="rounded-lg border border-border bg-card p-5">
+    <form onSubmit={submit} className="rounded-lg border border-border bg-card p-4 sm:p-5">
       <h2 className="font-semibold text-foreground">Upload proof</h2>
       <p className="text-xs text-muted-foreground mt-1">
         JPG, PNG, WEBP, HEIC, GIF or BMP · max 15 MB · all fields required.
       </p>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,220px)_1fr]">
-        <div>
+      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,220px)_minmax(0,1fr)]">
+        <div className="min-w-0">
           <label
             htmlFor="proof-file"
             className="flex flex-col items-center justify-center rounded-sm border border-dashed border-border bg-background aspect-video cursor-pointer hover:border-amber/50 transition overflow-hidden"
@@ -237,6 +238,7 @@ function UploadCard({
               <div className="text-center px-3 py-6">
                 <Upload className="h-5 w-5 mx-auto text-muted-foreground" />
                 <div className="mt-2 text-xs text-muted-foreground">Tap to choose image</div>
+                <div className="mt-1 text-[10px] text-muted-foreground/70">Gallery · Camera · Files</div>
               </div>
             )}
           </label>
@@ -252,20 +254,20 @@ function UploadCard({
             <button
               type="button"
               onClick={reset}
-              className="mt-2 text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+              className="mt-2 text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 min-h-9"
             >
               <X className="h-3 w-3" /> Clear
             </button>
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 min-w-0">
           <input
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Title"
-            className="w-full min-h-11 rounded-sm border border-border bg-background px-3 text-sm outline-none focus:border-amber"
+            className="w-full min-h-12 rounded-sm border border-border bg-background px-3 text-base sm:text-sm outline-none focus:border-amber"
           />
           <textarea
             required
@@ -273,10 +275,10 @@ function UploadCard({
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description"
             rows={3}
-            className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm outline-none focus:border-amber"
+            className="w-full rounded-sm border border-border bg-background px-3 py-2 text-base sm:text-sm outline-none focus:border-amber resize-y"
           />
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex-1 min-w-0">
               {progress !== null && (
                 <div className="h-1.5 rounded-full bg-border overflow-hidden">
                   <div
@@ -289,7 +291,7 @@ function UploadCard({
             <button
               type="submit"
               disabled={busy || !file}
-              className="min-h-11 rounded-sm px-5 text-sm font-semibold uppercase tracking-wider disabled:opacity-60 inline-flex items-center gap-2"
+              className="w-full sm:w-auto min-h-12 rounded-sm px-5 text-sm font-semibold uppercase tracking-wider disabled:opacity-60 inline-flex items-center justify-center gap-2"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
@@ -301,6 +303,7 @@ function UploadCard({
     </form>
   );
 }
+
 
 /* ---------------- Row card ---------------- */
 
@@ -357,15 +360,16 @@ function ProofEditCard({
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full min-h-10 rounded-sm border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+              className="w-full min-h-11 rounded-sm border border-border bg-background px-2 text-base sm:text-sm outline-none focus:border-amber"
             />
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full rounded-sm border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-amber"
+              className="w-full rounded-sm border border-border bg-background px-2 py-1.5 text-base sm:text-sm outline-none focus:border-amber resize-y"
             />
           </>
+
         ) : (
           <>
             <h3 className="font-semibold text-foreground text-sm">{row.title}</h3>
@@ -380,19 +384,19 @@ function ProofEditCard({
             {new Date(row.created_at).toLocaleDateString()}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1.5">
           {editing ? (
             <>
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex-1 min-h-9 rounded-sm bg-amber text-amber-foreground text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1"
+                className="flex-1 min-w-[110px] min-h-10 rounded-sm bg-amber text-amber-foreground text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1"
               >
                 <Check className="h-3.5 w-3.5" /> Save
               </button>
               <button
                 onClick={() => { setEditing(false); setTitle(row.title); setDescription(row.description); }}
-                className="min-h-9 px-3 rounded-sm border border-border text-xs"
+                className="min-h-10 px-3 rounded-sm border border-border text-xs"
               >
                 Cancel
               </button>
@@ -401,26 +405,28 @@ function ProofEditCard({
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="min-h-9 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
               >
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </button>
               <button
                 onClick={onTogglePublished}
-                className="min-h-9 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
               >
                 {row.published ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 {row.published ? "Hide" : "Show"}
               </button>
               <button
                 onClick={onDelete}
-                className="min-h-9 px-3 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center gap-1 ml-auto"
+                aria-label="Delete"
+                className="min-h-10 min-w-10 px-3 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center justify-center gap-1 ml-auto"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             </>
           )}
         </div>
+
       </div>
     </li>
   );
