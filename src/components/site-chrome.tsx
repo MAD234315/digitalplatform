@@ -15,6 +15,7 @@ const EMAIL = "Productcreator11@zohomail.in";
 const LINKS = [
   { to: "/", label: "Home" },
   { to: "/products", label: "Catalogue" },
+  { to: "/proof-gallery", label: "Proofs" },
   { to: "/about", label: "About" },
   { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
