@@ -82,12 +82,12 @@ function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-background text-foreground flex items-center justify-center px-4 py-12">
+    <div className="min-h-dvh bg-background text-foreground flex items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-sm">
-        <Link to="/" className="mb-6 inline-block text-xs uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground">
+        <Link to="/" className="mb-5 inline-flex min-h-10 items-center text-xs uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground">
           ← Back to site
         </Link>
-        <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-lg">
+        <div className="rounded-lg border border-border bg-card p-5 sm:p-8 shadow-lg">
           <h1 className="font-display text-2xl text-foreground">Admin {mode === "signup" ? "Signup" : "Login"}</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             The first account created here automatically becomes admin.
@@ -97,11 +97,14 @@ function AdminLoginPage() {
               <span className="text-xs uppercase tracking-wider text-muted-foreground">Email</span>
               <input
                 type="email"
+                inputMode="email"
+                autoCapitalize="off"
+                spellCheck={false}
                 required
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full min-h-11 rounded-sm border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-amber"
+                className="mt-1 w-full min-h-12 rounded-sm border border-border bg-background px-3 text-base sm:text-sm text-foreground outline-none focus:border-amber"
               />
             </label>
             <label className="block">
@@ -113,13 +116,13 @@ function AdminLoginPage() {
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 w-full min-h-11 rounded-sm border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-amber"
+                className="mt-1 w-full min-h-12 rounded-sm border border-border bg-background px-3 text-base sm:text-sm text-foreground outline-none focus:border-amber"
               />
             </label>
             <button
               type="submit"
               disabled={busy}
-              className="w-full min-h-11 rounded-sm font-semibold uppercase tracking-[0.14em] text-sm disabled:opacity-60"
+              className="w-full min-h-12 rounded-sm font-semibold uppercase tracking-[0.14em] text-sm disabled:opacity-60"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
               {busy ? "Please wait…" : mode === "signup" ? "Create admin" : "Sign in"}
@@ -128,7 +131,7 @@ function AdminLoginPage() {
           <button
             type="button"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="mt-4 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+            className="mt-4 min-h-11 text-xs text-muted-foreground hover:text-foreground w-full text-center"
           >
             {mode === "signin" ? "Need to create the first admin? Sign up →" : "Have an account? Sign in →"}
           </button>
