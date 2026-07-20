@@ -589,6 +589,21 @@ function ProofEditCard({
                 {row.published ? "Hide" : "Show"}
               </button>
               <button
+                onClick={() => replaceRef.current?.click()}
+                disabled={replacing}
+                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+              >
+                {replacing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Replace className="h-3.5 w-3.5" />}
+                {replacing ? "Uploading…" : "Replace"}
+              </button>
+              <input
+                ref={replaceRef}
+                type="file"
+                accept={ACCEPTED.join(",")}
+                className="hidden"
+                onChange={(e) => onReplaceFile(e.target.files?.[0] ?? null)}
+              />
+              <button
                 onClick={onDelete}
                 aria-label="Delete"
                 className="min-h-10 min-w-10 px-3 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center justify-center gap-1 ml-auto"
