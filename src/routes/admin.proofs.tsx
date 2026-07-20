@@ -8,7 +8,7 @@ import {
   updateProof,
   deleteProof,
 } from "@/lib/admin.functions";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check, RefreshCw, WifiOff, Calendar as CalendarIcon, Replace } from "lucide-react";
 import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
@@ -25,6 +25,9 @@ import {
 
 
 export const Route = createFileRoute("/admin/proofs")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    highlight: typeof search.highlight === "string" ? search.highlight : undefined,
+  }),
   component: ProofsAdmin,
 });
 
@@ -46,6 +49,8 @@ type ProofRow = {
 
 function ProofsAdmin() {
   const qc = useQueryClient();
+  const { highlight } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const listFn = useServerFn(listProofsAdmin);
   const createFn = useServerFn(createProof);
   const updateFn = useServerFn(updateProof);
@@ -55,6 +60,18 @@ function ProofsAdmin() {
     queryKey: ["admin", "proofs"],
     queryFn: () => listFn() as Promise<ProofRow[]>,
   });
+
+  // Scroll to and briefly ring the highlighted proof after data loads.
+  useEffect(() => {
+    if (!highlight || !data) return;
+    const el = document.querySelector<HTMLElement>(`[data-proof-id="${highlight}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const t = setTimeout(() => {
+      navigate({ search: { highlight: undefined } as never, replace: true });
+    }, 2500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlight, data]);
 
   const [query, setQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -168,22 +185,31 @@ function ProofsAdmin() {
 
       <ul className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((row) => (
-          <ProofEditCard
+          <li
             key={row.id}
-            row={row}
-            onDelete={() => setPendingDelete(row)}
-            onTogglePublished={() => togglePub.mutate(row)}
-            onSaveEdit={async (patch) => {
-              await updateFn({ data: { id: row.id, ...patch } });
-              toast.success("Saved");
-              invalidate();
-            }}
-            onReplaceImage={async (image_path) => {
-              await updateFn({ data: { id: row.id, image_path } });
-              toast.success("Image replaced");
-              invalidate();
-            }}
-          />
+            data-proof-id={row.id}
+            className={
+              highlight === row.id
+                ? "rounded-lg ring-2 ring-amber/70 transition-shadow"
+                : "transition-shadow"
+            }
+          >
+            <ProofEditCard
+              row={row}
+              onDelete={() => setPendingDelete(row)}
+              onTogglePublished={() => togglePub.mutate(row)}
+              onSaveEdit={async (patch) => {
+                await updateFn({ data: { id: row.id, ...patch } });
+                toast.success("Saved");
+                invalidate();
+              }}
+              onReplaceImage={async (image_path) => {
+                await updateFn({ data: { id: row.id, image_path } });
+                toast.success("Image replaced");
+                invalidate();
+              }}
+            />
+          </li>
         ))}
       </ul>
 
