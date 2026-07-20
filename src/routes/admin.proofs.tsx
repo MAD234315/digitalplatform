@@ -56,11 +56,6 @@ function ProofsAdmin() {
   const updateFn = useServerFn(updateProof);
   const deleteFn = useServerFn(deleteProof);
 
-  const listFn = useServerFn(listProofsAdmin);
-  const createFn = useServerFn(createProof);
-  const updateFn = useServerFn(updateProof);
-  const deleteFn = useServerFn(deleteProof);
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "proofs"],
     queryFn: () => listFn() as Promise<ProofRow[]>,
@@ -77,11 +72,6 @@ function ProofsAdmin() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [highlight, data]);
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["admin", "proofs"],
-    queryFn: () => listFn() as Promise<ProofRow[]>,
-  });
 
   const [query, setQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
