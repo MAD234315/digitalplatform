@@ -24,12 +24,21 @@ function createPublicClient() {
   });
 }
 
-/** Public: list published proofs with signed image URLs (1 hour). */
+/** Append a stable cache-busting version so browsers/CDN refetch when the
+ *  underlying image changes, and never serve a stale variant. */
+function withVersion(url: string, version: string | number): string {
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}v=${encodeURIComponent(String(version))}`;
+}
+
+/** Public: list published proofs with signed image URLs (7 days).
+ *  Long TTL avoids expiry between visits; `?v=<updated_at>` busts caches
+ *  the moment an admin replaces the image. */
 export const listPublicProofs = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("proofs")
-    .select("id, title, description, image_path, created_at")
+    .select("id, title, description, image_path, created_at, updated_at")
     .eq("published", true)
     .order("created_at", { ascending: false })
     .limit(200);
@@ -39,13 +48,14 @@ export const listPublicProofs = createServerFn({ method: "GET" }).handler(async 
     rows.map(async (r) => {
       const { data: s } = await supabase.storage
         .from("proofs")
-        .createSignedUrl(r.image_path, 60 * 60);
+        .createSignedUrl(r.image_path, 60 * 60 * 24 * 7);
+      const version = new Date(r.updated_at ?? r.created_at).getTime() || Date.now();
       return {
         id: r.id,
         title: r.title,
         description: r.description,
         created_at: r.created_at,
-        image_url: s?.signedUrl ?? null,
+        image_url: s?.signedUrl ? withVersion(s.signedUrl, version) : null,
       };
     })
   );

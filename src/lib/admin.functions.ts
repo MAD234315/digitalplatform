@@ -114,8 +114,12 @@ export const listProofsAdmin = createServerFn({ method: "GET" })
       rows.map(async (r) => {
         const { data: s } = await context.supabase.storage
           .from("proofs")
-          .createSignedUrl(r.image_path, 60 * 60);
-        return { ...r, image_url: s?.signedUrl ?? null };
+          .createSignedUrl(r.image_path, 60 * 60 * 24 * 7);
+        const version = new Date(r.updated_at ?? r.created_at).getTime() || Date.now();
+        const url = s?.signedUrl
+          ? `${s.signedUrl}${s.signedUrl.includes("?") ? "&" : "?"}v=${version}`
+          : null;
+        return { ...r, image_url: url };
       })
     );
     return signed;
