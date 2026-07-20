@@ -3,13 +3,13 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getRequestHeader, getRequestIP } from "@tanstack/react-start/server";
 import { z } from "zod";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase.rpc("has_role", {
+async function assertPermission(supabase: any, userId: string, permission: string) {
+  const { data, error } = await supabase.rpc("has_permission", {
     _user_id: userId,
-    _role: "admin",
+    _permission: permission,
   });
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin only");
+  if (!data) throw new Error(`Forbidden: missing permission ${permission}`);
 }
 
 /** Best-effort audit trail entry. Never blocks the caller on failure. */
@@ -34,30 +34,25 @@ async function audit(
   }
 }
 
-
-/** Bootstrap: first signed-in user becomes admin if none exist. */
-export const claimAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.rpc("claim_admin");
-    if (error) throw new Error(error.message);
-    return { ok: true, claimed: !!data };
-  });
-
 /** Check current user's admin status. */
 export const getMyAdminStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
+    const { data: rolesRows, error } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
     if (error) throw new Error(error.message);
     const { count } = await context.supabase
       .from("user_roles")
       .select("*", { count: "exact", head: true })
-      .eq("role", "admin");
-    return { isAdmin: !!data, adminCount: count ?? 0 };
+      .in("role", ["super_admin", "admin", "editor", "viewer"] as any);
+    const roles = (rolesRows ?? []).map((r: any) => r.role as string);
+    return {
+      isAdmin: roles.some((r) => ["super_admin", "admin", "editor", "viewer"].includes(r)),
+      adminCount: count ?? 0,
+      roles,
+    };
   });
 
 const settingSchema = z.object({
@@ -68,7 +63,7 @@ const settingSchema = z.object({
 export const getSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertPermission(context.supabase, context.userId, "settings.manage");
     const { data, error } = await context.supabase
       .from("site_settings")
       .select("key, value, updated_at");
@@ -80,7 +75,11 @@ export const updateSetting = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => settingSchema.parse(raw))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertPermission(
+      context.supabase,
+      context.userId,
+      data.key === "site_status" ? "status.manage" : "settings.manage",
+    );
     const { data: prev } = await context.supabase
       .from("site_settings")
       .select("value")
@@ -103,7 +102,7 @@ export const updateSetting = createServerFn({ method: "POST" })
 export const listProofsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertPermission(context.supabase, context.userId, "proofs.manage");
     const { data, error } = await context.supabase
       .from("proofs")
       .select("id, title, description, image_path, published, created_at, updated_at")
@@ -136,7 +135,7 @@ export const createProof = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => createProofSchema.parse(raw))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertPermission(context.supabase, context.userId, "proofs.manage");
     // Verify the object actually exists in storage before saving DB row.
     const { data: signed, error: signErr } = await context.supabase.storage
       .from("proofs")
@@ -175,7 +174,7 @@ export const updateProof = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => updateProofSchema.parse(raw))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertPermission(context.supabase, context.userId, "proofs.manage");
     const { id, ...patch } = data;
     const { data: prev } = await context.supabase
       .from("proofs")
@@ -228,7 +227,7 @@ export const deleteProof = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertPermission(context.supabase, context.userId, "proofs.manage");
     const { data: row } = await context.supabase
       .from("proofs")
       .select("title, image_path")

@@ -543,14 +543,6 @@ export const postLoginCheck = createServerFn({ method: "POST" })
     return { ok: true, isSuperAdmin: isSuper, roles };
   });
 
-export const claimSuperAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.rpc("claim_super_admin");
-    if (error) throw new Error(error.message);
-    return { ok: true, claimed: !!data };
-  });
-
 // ---------- first-time super admin bootstrap (public, one-shot) ----------
 
 /** Public: returns whether a super admin already exists. Safe read (count only). */
