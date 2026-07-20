@@ -111,15 +111,52 @@ function ProofsAdmin() {
         }}
       />
 
-      <div className="mt-6 mb-3 relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search proofs…"
-          className="w-full min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-base sm:text-sm outline-none focus:border-amber"
-        />
+      <div className="mt-6 mb-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-center">
+        <div className="relative min-w-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search proofs…"
+            className="w-full min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-base sm:text-sm outline-none focus:border-amber"
+          />
+        </div>
+        <label className="relative flex items-center">
+          <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            aria-label="From date"
+            className="min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber w-full sm:w-[160px]"
+          />
+        </label>
+        <label className="relative flex items-center">
+          <span className="hidden sm:inline text-xs text-muted-foreground px-1">→</span>
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            aria-label="To date"
+            className="min-h-12 pl-3 pr-3 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber w-full sm:w-[160px]"
+          />
+        </label>
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={() => { setQuery(""); setFromDate(""); setToDate(""); }}
+            className="min-h-12 px-3 rounded-sm border border-border text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          >
+            <X className="h-3.5 w-3.5" /> Clear
+          </button>
+        )}
       </div>
+
+      {data && (query || fromDate || toDate) && (
+        <div className="mb-3 text-xs text-muted-foreground">
+          Showing {filtered.length} of {data.length}
+        </div>
+      )}
 
       {isLoading && <div className="text-sm text-muted-foreground">Loading…</div>}
       {error && (
@@ -129,18 +166,20 @@ function ProofsAdmin() {
       )}
 
       <ul className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-
         {filtered.map((row) => (
           <ProofEditCard
             key={row.id}
             row={row}
-            onDelete={() => {
-              if (confirm(`Delete "${row.title}"?`)) del.mutate(row.id);
-            }}
+            onDelete={() => setPendingDelete(row)}
             onTogglePublished={() => togglePub.mutate(row)}
             onSaveEdit={async (patch) => {
               await updateFn({ data: { id: row.id, ...patch } });
               toast.success("Saved");
+              invalidate();
+            }}
+            onReplaceImage={async (image_path) => {
+              await updateFn({ data: { id: row.id, image_path } });
+              toast.success("Image replaced");
               invalidate();
             }}
           />
@@ -149,9 +188,30 @@ function ProofsAdmin() {
 
       {!isLoading && filtered.length === 0 && (
         <div className="rounded-lg border border-dashed border-border bg-card/40 p-8 text-center text-sm text-muted-foreground">
-          No proofs yet. Upload your first above.
+          {hasFilters ? "No proofs match your filters." : "No proofs yet. Upload your first above."}
         </div>
       )}
+
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this proof?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "{pendingDelete?.title}" will be permanently removed from the gallery and storage. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => pendingDelete && del.mutate(pendingDelete.id)}
+              disabled={del.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {del.isPending ? "Deleting…" : "Delete permanently"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
