@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { getRequestHeader, getRequestIP } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 async function assertAdmin(supabase: any, userId: string) {
@@ -10,6 +11,29 @@ async function assertAdmin(supabase: any, userId: string) {
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Forbidden: admin only");
 }
+
+/** Best-effort audit trail entry. Never blocks the caller on failure. */
+async function audit(
+  supabase: any,
+  actorUserId: string,
+  action: string,
+  metadata: Record<string, unknown> = {},
+) {
+  try {
+    const ip = (() => { try { return getRequestIP({ xForwardedFor: true }) ?? null; } catch { return null; } })();
+    const ua = (() => { try { return getRequestHeader("user-agent") ?? null; } catch { return null; } })();
+    await supabase.from("admin_audit_log").insert({
+      actor_user_id: actorUserId,
+      action,
+      metadata,
+      ip,
+      user_agent: ua,
+    });
+  } catch (e) {
+    console.error("[audit] failed", e);
+  }
+}
+
 
 /** Bootstrap: first signed-in user becomes admin if none exist. */
 export const claimAdmin = createServerFn({ method: "POST" })
