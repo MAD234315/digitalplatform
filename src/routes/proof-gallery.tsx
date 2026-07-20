@@ -107,7 +107,7 @@ function ProofGalleryPage() {
         title="Genuine deliveries, receipts and setup screenshots"
         lede="Real proofs from real orders. Reliable service, verifiable."
       />
-      <section className="mx-auto max-w-6xl px-4 pb-16 sm:pb-20 select-none">
+      <section className="proof-protected mx-auto max-w-6xl px-4 pb-16 sm:pb-20 select-none">
         {isLoading && <ProofSkeletonGrid />}
         {error && (
           <div role="alert" className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
