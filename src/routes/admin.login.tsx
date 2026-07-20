@@ -42,13 +42,23 @@ function AdminLoginPage() {
   const [attempt, setAttempt] = useState(0);
   const online = useOnline();
   const check = useServerFn(postLoginCheck);
-  const claimSuper = useServerFn(claimSuperAdmin);
+  const setupCheck = useServerFn(hasSuperAdmin);
   const lockout = useServerFn(checkLoginLockout);
   const record = useServerFn(recordLoginAttempt);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
+      // If no super admin exists yet, force the one-time setup flow.
+      try {
+        const s = await setupCheck();
+        if (!mounted) return;
+        if (!s.exists) {
+          navigate({ to: "/admin/setup", replace: true });
+          return;
+        }
+      } catch { /* fall through to normal login */ }
+
       const { data } = await supabase.auth.getSession();
       if (!mounted) return;
       if (data.session) {
@@ -60,7 +70,8 @@ function AdminLoginPage() {
       setChecking(false);
     })();
     return () => { mounted = false; };
-  }, [navigate, check]);
+  }, [navigate, check, setupCheck]);
+
 
   async function attemptLogin() {
     setBusy(true);
