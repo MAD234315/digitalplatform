@@ -143,7 +143,7 @@ function SettingsPage() {
           <section className="rounded-lg border border-border bg-card p-4 sm:p-5">
             <h2 className="font-semibold text-foreground">Spreadsheet URL</h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Product catalogue source. Paste the Google Sheets URL.
+              Product catalogue source. Paste a Google Sheets link or an Excel/CSV URL.
             </p>
             <div className="mt-4 flex flex-col sm:flex-row gap-2">
               <input
@@ -153,12 +153,20 @@ function SettingsPage() {
                 autoCapitalize="off"
                 spellCheck={false}
                 value={sheetUrl}
-                onChange={(e) => setSheetUrl(e.target.value)}
+                onChange={(e) => {
+                  setSheetUrl(e.target.value);
+                  if (sheetError) setSheetError(null);
+                }}
+                onBlur={() => setSheetError(validateSpreadsheetUrl(sheetUrl))}
+                aria-invalid={!!sheetError}
+                aria-describedby={sheetError ? "sheet-url-error" : undefined}
                 placeholder="https://docs.google.com/spreadsheets/…"
-                className="flex-1 min-w-0 min-h-12 rounded-sm border border-border bg-background px-3 text-base sm:text-sm outline-none focus:border-amber"
+                className={`flex-1 min-w-0 min-h-12 rounded-sm border bg-background px-3 text-base sm:text-sm outline-none focus:border-amber ${
+                  sheetError ? "border-destructive" : "border-border"
+                }`}
               />
               <button
-                onClick={() => save.mutate({ key: "spreadsheet_url", value: sheetUrl })}
+                onClick={handleSaveSheet}
                 disabled={save.isPending || !online}
                 className="min-h-12 rounded-sm px-5 text-sm font-semibold uppercase tracking-wider disabled:opacity-60"
                 style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
@@ -166,7 +174,13 @@ function SettingsPage() {
                 {save.isPending && attempt > 1 ? `Retrying ${attempt}/3…` : save.isPending ? "Saving…" : "Save"}
               </button>
             </div>
+            {sheetError && (
+              <p id="sheet-url-error" className="mt-2 text-xs text-destructive">
+                {sheetError}
+              </p>
+            )}
           </section>
+
 
           {lastFailed && !save.isPending && (
             <section className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
