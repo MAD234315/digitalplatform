@@ -25,8 +25,12 @@ function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const online = useOnline();
   const claim = useServerFn(claimAdmin);
   const status = useServerFn(getMyAdminStatus);
+
 
   useEffect(() => {
     let mounted = true;
