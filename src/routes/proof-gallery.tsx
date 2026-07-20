@@ -199,6 +199,14 @@ const ProofCard = forwardRef<HTMLButtonElement, CardProps>(function ProofCard(
 ) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const queryClient = useQueryClient();
+  // Cache-bust: if a signed URL 403s (expired) or the CDN served a stale copy,
+  // refetch the list once to get freshly signed URLs, then bump `?r=` to
+  // force the <img> to reload.
+  const imgSrc = proof.image_url
+    ? `${proof.image_url}${proof.image_url.includes("?") ? "&" : "?"}r=${retry}`
+    : "";
   return (
     <button
       ref={ref}
@@ -216,14 +224,21 @@ const ProofCard = forwardRef<HTMLButtonElement, CardProps>(function ProofCard(
           </div>
         ) : (
           <img
-            src={proof.image_url}
+            src={imgSrc}
             alt={proof.title}
             loading="lazy"
             decoding="async"
             draggable={false}
             onContextMenu={(e) => e.preventDefault()}
             onLoad={() => setLoaded(true)}
-            onError={() => setFailed(true)}
+            onError={async () => {
+              if (retry === 0) {
+                await queryClient.invalidateQueries({ queryKey: ["public", "proofs"] });
+                setRetry(1);
+                return;
+              }
+              setFailed(true);
+            }}
             className={`h-full w-full object-cover pointer-events-none transition-all duration-500 ease-out ${
               loaded ? "opacity-100 scale-100 group-hover:scale-[1.04]" : "opacity-0 scale-105"
             }`}
