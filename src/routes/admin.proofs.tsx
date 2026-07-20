@@ -149,6 +149,10 @@ function UploadCard({
   const [description, setDescription] = useState("");
   const [progress, setProgress] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const online = useOnline();
+
 
   function reset() {
     setFile(null);
