@@ -25,6 +25,9 @@ import {
 
 
 export const Route = createFileRoute("/admin/proofs")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    highlight: typeof search.highlight === "string" ? search.highlight : undefined,
+  }),
   component: ProofsAdmin,
 });
 
