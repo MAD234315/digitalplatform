@@ -1,0 +1,1 @@
+ALTER TABLE public.proofs REPLICA IDENTITY FULL; ALTER PUBLICATION supabase_realtime ADD TABLE public.proofs;
