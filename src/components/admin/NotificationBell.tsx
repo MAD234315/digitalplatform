@@ -143,9 +143,31 @@ export function NotificationBell() {
 
   async function markOne(id: string) {
     const target = items.find((n) => n.id === id);
+    if (!target || target.read) return;
+    // Optimistic: update badge + row instantly so UI reflects the change
+    // before the network round trip completes.
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-    if (target && !target.read) setUnreadTotal((c) => Math.max(0, c - 1));
-    await supabase.from("admin_notifications").update({ read: true }).eq("id", id);
+    setUnreadTotal((c) => Math.max(0, c - 1));
+    const { error } = await supabase
+      .from("admin_notifications")
+      .update({ read: true })
+      .eq("id", id);
+    if (error) {
+      // Roll back on failure
+      setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: false } : n)));
+      setUnreadTotal((c) => c + 1);
+      toast.error("Couldn't mark as read");
+    }
+  }
+
+  async function openNotification(n: Notif) {
+    // Mark read the moment details are opened, update badge instantly,
+    // close the dropdown, then navigate to the related record.
+    await markOne(n.id);
+    setOpen(false);
+    if (n.proof_id) {
+      navigate({ to: "/admin/proofs", search: { highlight: n.proof_id } as never });
+    }
   }
 
   async function clearAll() {
