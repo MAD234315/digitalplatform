@@ -266,10 +266,13 @@ export const rejectAdminRequest = createServerFn({ method: "POST" })
     if (error || !req) throw new Error("Request not found");
     if (req.status !== "pending") throw new Error("Request is not pending");
 
-    await supabaseAdmin
-      .from("admin_profiles")
-      .update({ status: "rejected" })
-      .eq("user_id", req.user_id);
+    if (req.user_id) {
+      await supabaseAdmin
+        .from("admin_profiles")
+        .update({ status: "rejected" })
+        .eq("user_id", req.user_id);
+    }
+
     await supabaseAdmin
       .from("admin_requests")
       .update({
