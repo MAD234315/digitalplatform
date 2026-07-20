@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/setup")({
   component: SetupPage,
 });
 
-type FieldErrors = Partial<Record<"fullName" | "email" | "mobile" | "password" | "confirm", string>>;
+type FieldErrors = Partial<Record<"fullName" | "email" | "mobile" | "password" | "confirm" | "setupToken", string>>;
 
 function SetupPage() {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ function SetupPage() {
     mobile: "",
     password: "",
     confirm: "",
+    setupToken: "",
   });
 
   useEffect(() => {
