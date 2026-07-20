@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Image, Settings, ExternalLink } from "lucide-react";
+import { Image, Settings, ExternalLink, FileDown } from "lucide-react";
+
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
