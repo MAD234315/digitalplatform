@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAdminStatus } from "@/lib/admin.functions";
-import { LayoutDashboard, Image, Settings, LogOut, Menu, X, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Image, Settings, LogOut, Menu, X, ExternalLink, Users, UserPlus, ShieldCheck, ScrollText } from "lucide-react";
 import { NetworkBanner } from "@/components/admin/NetworkBanner";
 import { NotificationBell } from "@/components/admin/NotificationBell";
+import { usePermissions } from "@/hooks/use-permissions";
+import { useSessionTimeout } from "@/hooks/use-session-timeout";
 
 
 export const Route = createFileRoute("/admin")({
@@ -19,11 +21,16 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const LINKS = [
+type NavLink = { to: string; label: string; icon: typeof LayoutDashboard; exact: boolean; perm?: string; superOnly?: boolean };
+const LINKS: NavLink[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/proofs", label: "Proof Gallery", icon: Image, exact: false },
-  { to: "/admin/settings", label: "Settings", icon: Settings, exact: false },
-] as const;
+  { to: "/admin/proofs", label: "Proof Gallery", icon: Image, exact: false, perm: "proofs.manage" },
+  { to: "/admin/settings", label: "Settings", icon: Settings, exact: false, perm: "settings.manage" },
+  { to: "/admin/requests", label: "Admin Requests", icon: UserPlus, exact: false, superOnly: true },
+  { to: "/admin/admins", label: "Admins", icon: Users, exact: false, superOnly: true },
+  { to: "/admin/roles", label: "Roles", icon: ShieldCheck, exact: false, superOnly: true },
+  { to: "/admin/audit", label: "Audit Log", icon: ScrollText, exact: false, perm: "audit.view" },
+];
 
 function AdminLayout() {
   const navigate = useNavigate();
@@ -31,9 +38,20 @@ function AdminLayout() {
   const [state, setState] = useState<"checking" | "ok" | "denied">("checking");
   const [drawer, setDrawer] = useState(false);
   const status = useServerFn(getMyAdminStatus);
+  const perms = usePermissions();
+  useSessionTimeout(state === "ok" && pathname !== "/admin/login");
+
+  const visibleLinks = LINKS.filter((l) => {
+    if (l.to === "/admin") return true;
+    if (perms.loading) return perms.isSuperAdmin || !l.superOnly;
+    if (perms.isSuperAdmin) return true;
+    if (l.superOnly) return false;
+    if (l.perm) return perms.has(l.perm);
+    return true;
+  });
 
   useEffect(() => {
-    if (pathname === "/admin/login") { setState("ok"); return; }
+    if (pathname === "/admin/login" || pathname === "/admin/request") { setState("ok"); return; }
     let mounted = true;
     (async () => {
       const { data } = await supabase.auth.getSession();
@@ -120,7 +138,7 @@ function AdminLayout() {
         {/* Desktop sidebar */}
         <nav className="hidden lg:block lg:sticky lg:top-20 lg:self-start">
           <ul className="flex flex-col gap-1">
-            {LINKS.map(({ to, label, icon: Icon, exact }) => {
+            {visibleLinks.map(({ to, label, icon: Icon, exact }) => {
               const active = exact ? pathname === to : pathname.startsWith(to);
               return (
                 <li key={to}>
@@ -164,7 +182,7 @@ function AdminLayout() {
               </button>
             </div>
             <ul className="flex-1 p-3 space-y-1 overflow-y-auto">
-              {LINKS.map(({ to, label, icon: Icon, exact }) => {
+              {visibleLinks.map(({ to, label, icon: Icon, exact }) => {
                 const active = exact ? pathname === to : pathname.startsWith(to);
                 return (
                   <li key={to}>

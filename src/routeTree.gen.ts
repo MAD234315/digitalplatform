@@ -23,8 +23,13 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
+import { Route as AdminRequestRouteImport } from './routes/admin.request'
 import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -96,6 +101,21 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRequestRoute = AdminRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProofsRoute = AdminProofsRouteImport.update({
   id: '/proofs',
   path: '/proofs',
@@ -104,6 +124,16 @@ const AdminProofsRoute = AdminProofsRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -120,8 +150,13 @@ export interface FileRoutesByFullPath {
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/proofs': typeof AdminProofsRoute
+  '/admin/request': typeof AdminRequestRoute
+  '/admin/requests': typeof AdminRequestsRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -137,8 +172,13 @@ export interface FileRoutesByTo {
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/proofs': typeof AdminProofsRoute
+  '/admin/request': typeof AdminRequestRoute
+  '/admin/requests': typeof AdminRequestsRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -156,8 +196,13 @@ export interface FileRoutesById {
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/proofs': typeof AdminProofsRoute
+  '/admin/request': typeof AdminRequestRoute
+  '/admin/requests': typeof AdminRequestsRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -176,8 +221,13 @@ export interface FileRouteTypes {
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
+    | '/admin/admins'
+    | '/admin/audit'
     | '/admin/login'
     | '/admin/proofs'
+    | '/admin/request'
+    | '/admin/requests'
+    | '/admin/roles'
     | '/admin/settings'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -193,8 +243,13 @@ export interface FileRouteTypes {
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
+    | '/admin/admins'
+    | '/admin/audit'
     | '/admin/login'
     | '/admin/proofs'
+    | '/admin/request'
+    | '/admin/requests'
+    | '/admin/roles'
     | '/admin/settings'
     | '/admin'
   id:
@@ -211,8 +266,13 @@ export interface FileRouteTypes {
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
+    | '/admin/admins'
+    | '/admin/audit'
     | '/admin/login'
     | '/admin/proofs'
+    | '/admin/request'
+    | '/admin/requests'
+    | '/admin/roles'
     | '/admin/settings'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -332,6 +392,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/request': {
+      id: '/admin/request'
+      path: '/request'
+      fullPath: '/admin/request'
+      preLoaderRoute: typeof AdminRequestRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/proofs': {
       id: '/admin/proofs'
       path: '/proofs'
@@ -346,19 +427,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminAdminsRoute: typeof AdminAdminsRoute
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminProofsRoute: typeof AdminProofsRoute
+  AdminRequestRoute: typeof AdminRequestRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
+  AdminRolesRoute: typeof AdminRolesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdminsRoute: AdminAdminsRoute,
+  AdminAuditRoute: AdminAuditRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminProofsRoute: AdminProofsRoute,
+  AdminRequestRoute: AdminRequestRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
+  AdminRolesRoute: AdminRolesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

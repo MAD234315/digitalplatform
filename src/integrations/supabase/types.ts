@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          id: string
+          ip: string | null
+          metadata: Json
+          target_user_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          ip?: string | null
+          metadata?: Json
+          target_user_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          ip?: string | null
+          metadata?: Json
+          target_user_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           created_at: string
@@ -44,6 +77,117 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          last_login_at: string | null
+          mobile: string | null
+          status: string
+          suspended_at: string | null
+          suspended_reason: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          last_login_at?: string | null
+          mobile?: string | null
+          status?: string
+          suspended_at?: string | null
+          suspended_reason?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          last_login_at?: string | null
+          mobile?: string | null
+          status?: string
+          suspended_at?: string | null
+          suspended_reason?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_requests: {
+        Row: {
+          created_at: string
+          device_info: string | null
+          email: string
+          full_name: string
+          id: string
+          mobile: string | null
+          reason: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_info?: string | null
+          email: string
+          full_name: string
+          id?: string
+          mobile?: string | null
+          reason: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_info?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          mobile?: string | null
+          reason?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip: string | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip?: string | null
+          success: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       proofs: {
         Row: {
           created_at: string
@@ -71,6 +215,21 @@ export type Database = {
           published?: boolean
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      role_permissions: {
+        Row: {
+          permission: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          permission: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          permission?: string
+          role?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
       }
@@ -119,6 +278,11 @@ export type Database = {
     }
     Functions: {
       claim_admin: { Args: never; Returns: boolean }
+      claim_super_admin: { Args: never; Returns: boolean }
+      has_permission: {
+        Args: { _permission: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -126,9 +290,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin"
+      app_role: "admin" | "super_admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -256,7 +421,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin"],
+      app_role: ["admin", "super_admin", "editor", "viewer"],
     },
   },
 } as const
