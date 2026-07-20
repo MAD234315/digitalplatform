@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/setup")({
   component: SetupPage,
 });
 
-type FieldErrors = Partial<Record<"fullName" | "email" | "mobile" | "password" | "confirm", string>>;
+type FieldErrors = Partial<Record<"fullName" | "email" | "mobile" | "password" | "confirm" | "setupToken", string>>;
 
 function SetupPage() {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ function SetupPage() {
     mobile: "",
     password: "",
     confirm: "",
+    setupToken: "",
   });
 
   useEffect(() => {
@@ -71,6 +72,7 @@ function SetupPage() {
     else if (!/[A-Za-z]/.test(form.password) || !/\d/.test(form.password))
       e.password = "Include at least one letter and one number.";
     if (form.confirm !== form.password) e.confirm = "Passwords do not match.";
+    if (form.setupToken.trim().length < 16) e.setupToken = "Enter the setup token from your server secrets.";
     return e;
   }
 
@@ -87,6 +89,7 @@ function SetupPage() {
           email: form.email.trim().toLowerCase(),
           mobile: form.mobile.trim(),
           password: form.password,
+          setupToken: form.setupToken.trim(),
         },
       });
       // Auto sign-in with the credentials we just created.
@@ -198,6 +201,21 @@ function SetupPage() {
                 value={form.confirm}
                 onChange={(e) => set("confirm", e.target.value)}
                 className={fieldCls(!!errors.confirm)}
+              />
+            </Field>
+            <Field
+              label="Setup Token"
+              error={errors.setupToken}
+              hint="Paste the ADMIN_BOOTSTRAP_TOKEN value from your Cloud secrets."
+            >
+              <input
+                type="password"
+                required
+                autoComplete="off"
+                spellCheck={false}
+                value={form.setupToken}
+                onChange={(e) => set("setupToken", e.target.value)}
+                className={fieldCls(!!errors.setupToken)}
               />
             </Field>
 

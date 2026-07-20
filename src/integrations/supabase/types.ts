@@ -277,8 +277,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      claim_admin: { Args: never; Returns: boolean }
-      claim_super_admin: { Args: never; Returns: boolean }
       has_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean
