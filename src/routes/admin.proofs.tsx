@@ -10,7 +10,9 @@ import {
 } from "@/lib/admin.functions";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check } from "lucide-react";
+import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check, RefreshCw, WifiOff } from "lucide-react";
+import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
+
 
 export const Route = createFileRoute("/admin/proofs")({
   component: ProofsAdmin,
