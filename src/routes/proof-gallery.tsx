@@ -42,6 +42,7 @@ function ProofGalleryPage() {
   const { data, isLoading, error } = useQuery(proofsQuery(fn));
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const stop = (e: Event) => e.preventDefault();
