@@ -38,8 +38,20 @@ function AdminLayout() {
   const [state, setState] = useState<"checking" | "ok" | "denied">("checking");
   const [drawer, setDrawer] = useState(false);
   const status = useServerFn(getMyAdminStatus);
+  const perms = usePermissions();
+  useSessionTimeout(30 * 60 * 1000, async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/admin/login" });
+  });
 
-  useEffect(() => {
+  const visibleLinks = LINKS.filter((l) => {
+    if (l.to === "/admin") return true;
+    if (perms.loading) return perms.isSuperAdmin || !l.superOnly;
+    if (perms.isSuperAdmin) return true;
+    if (l.superOnly) return false;
+    if (l.perm) return perms.has(l.perm);
+    return true;
+  });
     if (pathname === "/admin/login") { setState("ok"); return; }
     let mounted = true;
     (async () => {
