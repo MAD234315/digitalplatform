@@ -147,65 +147,56 @@ type CardProps = {
   onOpen: () => void;
 };
 
-const ProofCard = (() => {
-  function Inner(
-    { proof, onOpen }: CardProps,
-    ref: React.Ref<HTMLButtonElement>
-  ) {
-    const [loaded, setLoaded] = useState(false);
-    const [failed, setFailed] = useState(false);
-    return (
-      <button
-        ref={ref}
-        onClick={onOpen}
-        aria-label={`Open ${proof.title}`}
-        className="group block w-full text-left rounded-lg overflow-hidden border border-border bg-card transition-all duration-300 hover:border-amber/50 hover:shadow-[0_8px_28px_-12px_rgba(255,183,77,0.35)] hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        <div className="relative aspect-[4/5] overflow-hidden bg-background">
-          {!loaded && !failed && (
-            <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-card animate-pulse" aria-hidden />
-          )}
-          {failed ? (
-            <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
-              Image unavailable
-            </div>
-          ) : (
-            <img
-              src={proof.image_url}
-              alt={proof.title}
-              loading="lazy"
-              decoding="async"
-              draggable={false}
-              onContextMenu={(e) => e.preventDefault()}
-              onLoad={() => setLoaded(true)}
-              onError={() => setFailed(true)}
-              className={`h-full w-full object-cover pointer-events-none transition-all duration-500 ease-out ${
-                loaded ? "opacity-100 scale-100 group-hover:scale-[1.04]" : "opacity-0 scale-105"
-              }`}
-              style={{ WebkitUserSelect: "none", WebkitTouchCallout: "none" } as any}
-            />
-          )}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </div>
-        <div className="p-3">
-          <h3 className="text-sm font-semibold text-foreground line-clamp-1">{proof.title}</h3>
-          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{proof.description}</p>
-          <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            {formatDate(proof.created_at)}
-          </p>
-        </div>
-      </button>
-    );
-  }
-  return Object.assign(
-    // eslint-disable-next-line react/display-name
-    (require ? undefined : undefined) as never,
-    {} as never
-  ) as unknown as React.ForwardRefExoticComponent<CardProps & React.RefAttributes<HTMLButtonElement>>;
-})();
+const ProofCard = forwardRef<HTMLButtonElement, CardProps>(function ProofCard(
+  { proof, onOpen },
+  ref
+) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  return (
+    <button
+      ref={ref}
+      onClick={onOpen}
+      aria-label={`Open ${proof.title}`}
+      className="group block w-full text-left rounded-lg overflow-hidden border border-border bg-card transition-all duration-300 hover:border-amber/50 hover:shadow-[0_8px_28px_-12px_rgba(255,183,77,0.35)] hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      <div className="relative aspect-[4/5] overflow-hidden bg-background">
+        {!loaded && !failed && (
+          <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-card animate-pulse" aria-hidden />
+        )}
+        {failed ? (
+          <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+            Image unavailable
+          </div>
+        ) : (
+          <img
+            src={proof.image_url}
+            alt={proof.title}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+            onLoad={() => setLoaded(true)}
+            onError={() => setFailed(true)}
+            className={`h-full w-full object-cover pointer-events-none transition-all duration-500 ease-out ${
+              loaded ? "opacity-100 scale-100 group-hover:scale-[1.04]" : "opacity-0 scale-105"
+            }`}
+            style={{ WebkitUserSelect: "none", WebkitTouchCallout: "none" } as any}
+          />
+        )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+      <div className="p-3">
+        <h3 className="text-sm font-semibold text-foreground line-clamp-1">{proof.title}</h3>
+        <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{proof.description}</p>
+        <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          {formatDate(proof.created_at)}
+        </p>
+      </div>
+    </button>
+  );
+});
 
-// Replace the awkward IIFE above with a real forwardRef export.
-// (Kept the local const for JSX name; assign via Object.defineProperty pattern below.)
 
 function Lightbox({
   items,
