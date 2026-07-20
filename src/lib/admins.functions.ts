@@ -582,12 +582,16 @@ export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => bootstrapSchema.parse(raw))
   .handler(async ({ data }) => {
     const expected = process.env.ADMIN_BOOTSTRAP_TOKEN;
+    // Deliberately generic: never reveal whether the token is unconfigured
+    // on the server or simply wrong in the request — both look identical
+    // to the caller so config state can't be probed.
     if (!expected || expected.length < 16) {
-      throw new Error("Setup is disabled: ADMIN_BOOTSTRAP_TOKEN is not configured on the server.");
+      throw new Error("Invalid setup token.");
     }
     if (!safeEqual(data.setupToken, expected)) {
       throw new Error("Invalid setup token.");
     }
+
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
