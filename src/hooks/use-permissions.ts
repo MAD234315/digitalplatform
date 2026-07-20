@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyPermissions } from "@/lib/admins.functions";
+import { supabase } from "@/integrations/supabase/client";
+
 
 export type PermissionsState = {
   loading: boolean;
