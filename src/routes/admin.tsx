@@ -39,10 +39,7 @@ function AdminLayout() {
   const [drawer, setDrawer] = useState(false);
   const status = useServerFn(getMyAdminStatus);
   const perms = usePermissions();
-  useSessionTimeout(30 * 60 * 1000, async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/admin/login" });
-  });
+  useSessionTimeout(state === "ok" && pathname !== "/admin/login");
 
   const visibleLinks = LINKS.filter((l) => {
     if (l.to === "/admin") return true;
