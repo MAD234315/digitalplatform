@@ -123,16 +123,25 @@ function ProofGalleryPage() {
         )}
         {data && data.length > 0 && (
           <ul
+            data-proof-gallery
             className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"
             onKeyDown={onGridKeyDown}
             aria-label="Proof gallery. Use arrow keys to navigate, Enter to open."
           >
             {data.map((p, i) => (
-              <li key={p.id} style={{ animation: `fade-in 0.4s ease-out both`, animationDelay: `${Math.min(i, 12) * 30}ms` }}>
+              <li
+                key={p.id}
+                style={
+                  reducedMotion
+                    ? undefined
+                    : { animation: `fade-in 0.4s ease-out both`, animationDelay: `${Math.min(i, 12) * 30}ms` }
+                }
+              >
                 <ProofCard
                   ref={(el) => { cardRefs.current[i] = el; }}
                   proof={p}
                   onOpen={() => setLightboxIdx(i)}
+                  reducedMotion={reducedMotion}
                 />
               </li>
             ))}
