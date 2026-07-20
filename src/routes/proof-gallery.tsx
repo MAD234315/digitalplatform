@@ -46,9 +46,22 @@ function ProofGalleryPage() {
     const stop = (e: Event) => e.preventDefault();
     document.addEventListener("contextmenu", stop);
     document.addEventListener("dragstart", stop);
+    // Discourage screenshots: blur proof images briefly when the tab/window
+    // loses focus. Cannot fully prevent screenshots, but reduces value.
+    const root = document.documentElement;
+    const onHide = () => root.classList.add("proofs-blur");
+    const onShow = () => root.classList.remove("proofs-blur");
+    const onVis = () => (document.hidden ? onHide() : onShow());
+    window.addEventListener("blur", onHide);
+    window.addEventListener("focus", onShow);
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       document.removeEventListener("contextmenu", stop);
       document.removeEventListener("dragstart", stop);
+      window.removeEventListener("blur", onHide);
+      window.removeEventListener("focus", onShow);
+      document.removeEventListener("visibilitychange", onVis);
+      root.classList.remove("proofs-blur");
     };
   }, []);
 
