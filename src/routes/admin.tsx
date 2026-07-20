@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAdminStatus } from "@/lib/admin.functions";
 import { LayoutDashboard, Image, Settings, LogOut, Menu, X, ExternalLink } from "lucide-react";
+import { NetworkBanner } from "@/components/admin/NetworkBanner";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -107,6 +108,9 @@ function AdminLayout() {
           </div>
         </div>
       </header>
+      <NetworkBanner />
+
+
 
       <div className="mx-auto max-w-6xl px-3 sm:px-4 py-5 sm:py-8 grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         {/* Desktop sidebar */}

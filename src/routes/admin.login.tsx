@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { claimAdmin, getMyAdminStatus } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
+import { WifiOff, RefreshCw } from "lucide-react";
+
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
@@ -22,8 +25,12 @@ function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const online = useOnline();
   const claim = useServerFn(claimAdmin);
   const status = useServerFn(getMyAdminStatus);
+
 
   useEffect(() => {
     let mounted = true;
@@ -44,38 +51,69 @@ function AdminLoginPage() {
     return () => { mounted = false; };
   }, [navigate, status]);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function attemptLogin() {
     setBusy(true);
+    setLastError(null);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-        toast.success("Account created. Signing in…");
-      }
-      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInErr) throw signInErr;
+      await retry(
+        async () => {
+          if (mode === "signup") {
+            const { error } = await withTimeout(
+              supabase.auth.signUp({
+                email,
+                password,
+                options: { emailRedirectTo: `${window.location.origin}/admin` },
+              }),
+              20000,
+              "Sign up"
+            );
+            if (error) throw error;
+            toast.success("Account created. Signing in…");
+          }
+          const { error: signInErr } = await withTimeout(
+            supabase.auth.signInWithPassword({ email, password }),
+            20000,
+            "Sign in"
+          );
+          if (signInErr) throw signInErr;
 
-      // Try to bootstrap admin (only works if no admins exist yet).
-      try { await claim(); } catch { /* ignore */ }
+          try { await withTimeout(claim(), 15000, "Bootstrap"); } catch { /* ignore */ }
 
-      const s = await status();
-      if (!s.isAdmin) {
-        await supabase.auth.signOut();
-        throw new Error("This account is not an admin.");
-      }
+          const s = await withTimeout(status(), 15000, "Verify admin");
+          if (!s.isAdmin) {
+            await supabase.auth.signOut();
+            // Non-transient: don't retry a permissions error.
+            const err = new Error("This account is not an admin.");
+            (err as any).permanent = true;
+            throw err;
+          }
+        },
+        {
+          attempts: 3,
+          onAttempt: (n) => setAttempt(n),
+        }
+      );
       toast.success("Welcome, admin.");
       navigate({ to: "/admin" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Login failed");
+      const msg = err instanceof Error ? err.message : "Login failed";
+      setLastError(msg);
+      toast.error(msg);
     } finally {
       setBusy(false);
+      setAttempt(0);
     }
   }
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!online) {
+      toast.error("You're offline. Connect to the internet and try again.");
+      return;
+    }
+    await attemptLogin();
+  }
+
 
   if (checking) {
     return <div className="min-h-dvh bg-background" />;
@@ -119,15 +157,38 @@ function AdminLoginPage() {
                 className="mt-1 w-full min-h-12 rounded-sm border border-border bg-background px-3 text-base sm:text-sm text-foreground outline-none focus:border-amber"
               />
             </label>
+            {!online && (
+              <div className="rounded-sm border border-destructive/40 bg-destructive/10 text-destructive text-xs px-3 py-2 flex items-center gap-2">
+                <WifiOff className="h-4 w-4 shrink-0" />
+                <span>You're offline. Sign-in will resume when you're back.</span>
+              </div>
+            )}
             <button
               type="submit"
-              disabled={busy}
+              disabled={busy || !online}
               className="w-full min-h-12 rounded-sm font-semibold uppercase tracking-[0.14em] text-sm disabled:opacity-60"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
-              {busy ? "Please wait…" : mode === "signup" ? "Create admin" : "Sign in"}
+              {busy
+                ? attempt > 1 ? `Retrying (attempt ${attempt}/3)…` : "Please wait…"
+                : mode === "signup" ? "Create admin" : "Sign in"}
             </button>
+            {lastError && !busy && (
+              <div className="rounded-sm border border-destructive/30 bg-destructive/5 text-destructive text-xs px-3 py-2 space-y-2">
+                <div className="break-words">{lastError}</div>
+                {isTransient(new Error(lastError)) && (
+                  <button
+                    type="button"
+                    onClick={attemptLogin}
+                    className="inline-flex items-center gap-1.5 min-h-9 px-3 rounded-sm border border-destructive/40 text-destructive text-xs font-semibold uppercase tracking-wider"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" /> Retry
+                  </button>
+                )}
+              </div>
+            )}
           </form>
+
           <button
             type="button"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}

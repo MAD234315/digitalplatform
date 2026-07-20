@@ -10,7 +10,9 @@ import {
 } from "@/lib/admin.functions";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check } from "lucide-react";
+import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check, RefreshCw, WifiOff } from "lucide-react";
+import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
+
 
 export const Route = createFileRoute("/admin/proofs")({
   component: ProofsAdmin,
@@ -147,6 +149,10 @@ function UploadCard({
   const [description, setDescription] = useState("");
   const [progress, setProgress] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const online = useOnline();
+
 
   function reset() {
     setFile(null);
@@ -177,47 +183,73 @@ function UploadCard({
     setPreview(URL.createObjectURL(f));
   }
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) return toast.error("Please choose an image.");
-    if (!title.trim()) return toast.error("Title is required.");
-    if (!description.trim()) return toast.error("Description is required.");
-
+  async function runUpload() {
+    if (!file) return;
+    if (!online) {
+      const msg = "You're offline. Reconnect and retry the upload.";
+      setLastError(msg);
+      toast.error(msg);
+      return;
+    }
     setBusy(true);
+    setLastError(null);
     setProgress(5);
     try {
-      // Verify image can actually decode before uploading — prevents blank cards later.
       await verifyImageLoadable(file);
       setProgress(15);
 
       const ext = extensionFromFile(file);
       const path = `${cryptoId()}.${ext}`;
 
-      setProgress(35);
-      const { error: upErr } = await supabase.storage
-        .from("proofs")
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type || `image/${ext}`,
-        });
-      if (upErr) throw upErr;
-      setProgress(80);
+      await retry(
+        async () => {
+          setProgress(35);
+          const { error: upErr } = await withTimeout(
+            supabase.storage.from("proofs").upload(path, file, {
+              cacheControl: "3600",
+              upsert: true, // safe: same generated path only reused across retries
+              contentType: file.type || `image/${ext}`,
+            }),
+            // Slow-network friendly: scale timeout with file size (min 30s, ~1s/MB).
+            Math.max(30_000, Math.round((file.size / (1024 * 1024)) * 1000) + 20_000),
+            "Upload"
+          );
+          if (upErr) throw upErr;
+          setProgress(80);
 
-      await onUploaded({
-        title: title.trim(),
-        description: description.trim(),
-        image_path: path,
-      });
+          await withTimeout(
+            onUploaded({
+              title: title.trim(),
+              description: description.trim(),
+              image_path: path,
+            }),
+            20_000,
+            "Publish"
+          );
+        },
+        { attempts: 3, onAttempt: (n) => setAttempt(n) }
+      );
       setProgress(100);
       reset();
+      setAttempt(0);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      setLastError(msg);
+      toast.error(msg);
       setProgress(null);
     } finally {
       setBusy(false);
     }
   }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) return toast.error("Please choose an image.");
+    if (!title.trim()) return toast.error("Title is required.");
+    if (!description.trim()) return toast.error("Description is required.");
+    await runUpload();
+  }
+
 
   return (
     <form onSubmit={submit} className="rounded-lg border border-border bg-card p-4 sm:p-5">
@@ -287,20 +319,47 @@ function UploadCard({
                   />
                 </div>
               )}
+              {busy && attempt > 1 && (
+                <div className="mt-1 text-[11px] text-muted-foreground">Retrying (attempt {attempt}/3)…</div>
+              )}
             </div>
             <button
               type="submit"
-              disabled={busy || !file}
+              disabled={busy || !file || !online}
               className="w-full sm:w-auto min-h-12 rounded-sm px-5 text-sm font-semibold uppercase tracking-wider disabled:opacity-60 inline-flex items-center justify-center gap-2"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              {busy ? "Uploading…" : "Publish"}
+              {busy ? (attempt > 1 ? `Retrying ${attempt}/3…` : "Uploading…") : "Publish"}
             </button>
           </div>
+
+          {!online && (
+            <div className="rounded-sm border border-destructive/40 bg-destructive/10 text-destructive text-xs px-3 py-2 flex items-center gap-2">
+              <WifiOff className="h-4 w-4 shrink-0" />
+              <span>You're offline. Uploads will fail until your connection returns.</span>
+            </div>
+          )}
+
+          {lastError && !busy && (
+            <div className="rounded-sm border border-destructive/30 bg-destructive/5 text-destructive text-xs px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="min-w-0 flex-1 break-words">{lastError}</span>
+              {isTransient(new Error(lastError)) && file && (
+                <button
+                  type="button"
+                  onClick={runUpload}
+                  disabled={!online}
+                  className="inline-flex items-center gap-1.5 min-h-10 px-3 rounded-sm border border-destructive/40 text-destructive text-xs font-semibold uppercase tracking-wider disabled:opacity-50"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" /> Retry upload
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </form>
+
   );
 }
 
