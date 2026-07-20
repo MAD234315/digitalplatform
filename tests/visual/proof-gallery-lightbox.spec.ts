@@ -36,9 +36,13 @@ async function openLightboxOrSkip(page: Page) {
 }
 
 test.describe("Proof Gallery lightbox — mobile viewports", () => {
-  // Only meaningful on the mobile project; skip on desktop-chrome.
-  test.skip(({ browserName }, testInfo) => testInfo.project.name !== "mobile-chrome",
-    "Runs only in the mobile-chrome project.");
+  // Only meaningful on the mobile project; skip elsewhere.
+  test.beforeEach(({}, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "mobile-chrome",
+      "Runs only in the mobile-chrome project.",
+    );
+  });
 
   for (const vp of MOBILE_VIEWPORTS) {
     test.describe(vp.name, () => {
