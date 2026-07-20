@@ -108,6 +108,9 @@ function AdminLayout() {
           </div>
         </div>
       </header>
+      <NetworkBanner />
+
+
 
       <div className="mx-auto max-w-6xl px-3 sm:px-4 py-5 sm:py-8 grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         {/* Desktop sidebar */}
