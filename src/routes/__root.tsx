@@ -15,6 +15,7 @@ import firaSans400Woff2 from "@fontsource/fira-sans/files/fira-sans-latin-400-no
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorListeners } from "../lib/client-error-listeners";
 import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
+import { MaintenanceGate } from "@/components/maintenance-gate";
 
 function NotFoundComponent() {
   return (
@@ -168,12 +169,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  // One-shot: attach window.onerror + unhandledrejection listeners on the
-  // client so anything that escapes React boundaries still gets reported.
   useEffect(() => { installClientErrorListeners(); }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <MaintenanceGate>
+        <Outlet />
+      </MaintenanceGate>
     </QueryClientProvider>
   );
 }

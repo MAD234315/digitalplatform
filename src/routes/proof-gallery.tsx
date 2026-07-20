@@ -46,9 +46,22 @@ function ProofGalleryPage() {
     const stop = (e: Event) => e.preventDefault();
     document.addEventListener("contextmenu", stop);
     document.addEventListener("dragstart", stop);
+    // Discourage screenshots: blur proof images briefly when the tab/window
+    // loses focus. Cannot fully prevent screenshots, but reduces value.
+    const root = document.documentElement;
+    const onHide = () => root.classList.add("proofs-blur");
+    const onShow = () => root.classList.remove("proofs-blur");
+    const onVis = () => (document.hidden ? onHide() : onShow());
+    window.addEventListener("blur", onHide);
+    window.addEventListener("focus", onShow);
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       document.removeEventListener("contextmenu", stop);
       document.removeEventListener("dragstart", stop);
+      window.removeEventListener("blur", onHide);
+      window.removeEventListener("focus", onShow);
+      document.removeEventListener("visibilitychange", onVis);
+      root.classList.remove("proofs-blur");
     };
   }, []);
 
@@ -94,7 +107,7 @@ function ProofGalleryPage() {
         title="Genuine deliveries, receipts and setup screenshots"
         lede="Real proofs from real orders. Reliable service, verifiable."
       />
-      <section className="mx-auto max-w-6xl px-4 pb-16 sm:pb-20 select-none">
+      <section className="proof-protected mx-auto max-w-6xl px-4 pb-16 sm:pb-20 select-none">
         {isLoading && <ProofSkeletonGrid />}
         {error && (
           <div role="alert" className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
@@ -293,7 +306,7 @@ function Lightbox({
       aria-modal="true"
       aria-labelledby={titleId}
       aria-describedby={descId}
-      className={`fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col transition-opacity duration-200 ${
+      className={`proof-protected fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col transition-opacity duration-200 ${
         mounted ? "opacity-100" : "opacity-0"
       }`}
       onClick={onClose}
