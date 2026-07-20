@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Bell, Check, Trash2, Upload, Eye, EyeOff, Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { toast } from "sonner";
