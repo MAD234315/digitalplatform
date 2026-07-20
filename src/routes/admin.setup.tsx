@@ -72,6 +72,7 @@ function SetupPage() {
     else if (!/[A-Za-z]/.test(form.password) || !/\d/.test(form.password))
       e.password = "Include at least one letter and one number.";
     if (form.confirm !== form.password) e.confirm = "Passwords do not match.";
+    if (form.setupToken.trim().length < 16) e.setupToken = "Enter the setup token from your server secrets.";
     return e;
   }
 
