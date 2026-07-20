@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Image, Settings, ExternalLink } from "lucide-react";
+import { Image, Settings, ExternalLink, FileDown } from "lucide-react";
+
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -49,6 +50,30 @@ function AdminDashboard() {
           </Link>
         ))}
       </div>
+
+      <section className="mt-6 rounded-lg border border-amber/30 bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div
+          className="inline-flex h-10 w-10 items-center justify-center rounded-sm shrink-0"
+          style={{ backgroundColor: "color-mix(in oklab, var(--amber) 18%, transparent)", color: "var(--amber)" }}
+        >
+          <FileDown className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="font-semibold text-foreground">Cross-Browser Mobile QA Checklist</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            10-section audit covering Chrome, Safari, Firefox, Edge, Samsung and in-app browsers across iOS &amp; Android.
+          </p>
+        </div>
+        <a
+          href="/admin-console-qa-checklist.pdf"
+          download
+          className="inline-flex items-center justify-center gap-2 min-h-11 rounded-sm px-4 text-sm font-semibold uppercase tracking-wider shrink-0"
+          style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
+        >
+          <FileDown className="h-4 w-4" /> Download PDF
+        </a>
+      </section>
     </div>
   );
 }
+
