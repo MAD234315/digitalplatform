@@ -168,12 +168,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  // One-shot: attach window.onerror + unhandledrejection listeners on the
-  // client so anything that escapes React boundaries still gets reported.
   useEffect(() => { installClientErrorListeners(); }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <MaintenanceGate>
+        <Outlet />
+      </MaintenanceGate>
     </QueryClientProvider>
   );
 }
