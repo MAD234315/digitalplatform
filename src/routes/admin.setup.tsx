@@ -89,6 +89,7 @@ function SetupPage() {
           email: form.email.trim().toLowerCase(),
           mobile: form.mobile.trim(),
           password: form.password,
+          setupToken: form.setupToken.trim(),
         },
       });
       // Auto sign-in with the credentials we just created.
