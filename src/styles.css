@@ -381,3 +381,33 @@ input[type="search"]::-webkit-search-decoration {
   filter: blur(18px) saturate(0.6);
   transition: filter 120ms ease-out;
 }
+
+/* Reduced-motion: neutralize proof gallery + lightbox transitions/animations. */
+@media (prefers-reduced-motion: reduce) {
+  [data-proof-gallery] li,
+  [data-proof-gallery] *,
+  .proof-protected,
+  .proof-protected * {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  /* Kill hover/enter transforms so nothing slides, scales, or lifts. */
+  [data-proof-gallery] button:hover,
+  [data-proof-gallery] img,
+  .proof-protected img {
+    transform: none !important;
+  }
+  /* Skeleton pulse becomes a static tint. */
+  [data-proof-gallery] .animate-pulse,
+  .proof-protected .animate-pulse {
+    animation: none !important;
+    opacity: 0.6;
+  }
+  /* Spinner in lightbox: keep visible but stop spinning. */
+  .proof-protected .animate-spin {
+    animation: none !important;
+  }
+}
