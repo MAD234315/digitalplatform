@@ -3,6 +3,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useId, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listPublicProofs } from "@/lib/proof-gallery.functions";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { SITE_URL } from "@/lib/site-config";
