@@ -105,13 +105,30 @@ function SetupPage() {
       toast.success("Welcome, Super Admin.");
       navigate({ to: "/admin", replace: true });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Setup failed. Please try again.";
-      if (/already exists/i.test(msg)) {
+      const raw = err instanceof Error ? err.message : "";
+      if (/already exists/i.test(raw)) {
         toast.error("Super Admin already exists. Redirecting to sign in.");
         navigate({ to: "/admin/login", replace: true });
         return;
       }
-      toast.error(msg);
+      // Map server responses to friendly, non-revealing messages. Anything
+      // token-related surfaces inline under the Setup Token field so the
+      // user sees exactly what to fix without exposing server internals.
+      if (/setup token|invalid|disabled|not configured|bootstrap/i.test(raw)) {
+        setErrors((e) => ({
+          ...e,
+          setupToken: "That setup token isn't valid. Copy the current value from your server secrets and try again.",
+        }));
+        toast.error("Setup token not accepted.");
+        return;
+      }
+      if (/email/i.test(raw) && /use|exist|taken/i.test(raw)) {
+        setErrors((e) => ({ ...e, email: "This email is already registered. Use a different address or sign in." }));
+        toast.error("Couldn't create account.");
+        return;
+      }
+      toast.error("Setup failed. Please check your details and try again.");
+
     } finally {
       setBusy(false);
     }
