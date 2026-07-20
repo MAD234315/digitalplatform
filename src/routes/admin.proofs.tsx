@@ -8,7 +8,7 @@ import {
   updateProof,
   deleteProof,
 } from "@/lib/admin.functions";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Trash2, Eye, EyeOff, Upload, Search, X, Loader2, Pencil, Check, RefreshCw, WifiOff, Calendar as CalendarIcon, Replace } from "lucide-react";
 import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
