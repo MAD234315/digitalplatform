@@ -33,16 +33,36 @@ function SettingsPage() {
     setSheetUrl(typeof u === "string" ? u : "");
   }, [data]);
 
+  const online = useOnline();
+  const [attempt, setAttempt] = useState(0);
+  const [lastFailed, setLastFailed] = useState<
+    | { key: "site_status" | "spreadsheet_url"; value: any; message: string }
+    | null
+  >(null);
+
   const save = useMutation({
     mutationFn: async (input: { key: "site_status" | "spreadsheet_url"; value: any }) => {
-      return updateFn({ data: input });
+      if (!online) throw new Error("You're offline. Reconnect and try again.");
+      setAttempt(0);
+      return retry(
+        () => withTimeout(updateFn({ data: input }), 15000, "Save"),
+        { attempts: 3, onAttempt: (n) => setAttempt(n) }
+      );
     },
     onSuccess: () => {
       toast.success("Saved");
+      setLastFailed(null);
+      setAttempt(0);
       qc.invalidateQueries({ queryKey: ["admin", "settings"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Save failed"),
+    onError: (e, vars) => {
+      const message = e instanceof Error ? e.message : "Save failed";
+      setLastFailed({ key: vars.key, value: vars.value, message });
+      setAttempt(0);
+      toast.error(message);
+    },
   });
+
 
   return (
     <div className="min-w-0">
