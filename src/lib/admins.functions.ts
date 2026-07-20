@@ -581,86 +581,139 @@ function safeEqual(a: string, b: string): boolean {
 export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => bootstrapSchema.parse(raw))
   .handler(async ({ data }) => {
-    const expected = process.env.ADMIN_BOOTSTRAP_TOKEN;
-    // Deliberately generic: never reveal whether the token is unconfigured
-    // on the server or simply wrong in the request — both look identical
-    // to the caller so config state can't be probed.
-    if (!expected || expected.length < 16) {
-      throw new Error("Invalid setup token.");
-    }
-    if (!safeEqual(data.setupToken, expected)) {
-      throw new Error("Invalid setup token.");
-    }
-
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    // Hard guard: refuse if a super admin already exists.
-    const { count, error: countErr } = await supabaseAdmin
-      .from("user_roles")
-      .select("*", { count: "exact", head: true })
-      .eq("role", "super_admin");
-    if (countErr) throw new Error(countErr.message);
-    if ((count ?? 0) > 0) {
-      throw new Error("Super Admin already exists. Setup is disabled.");
-    }
-
-    // Create the auth user (email confirmed so they can sign in immediately).
-    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+    // Never log or persist the setup token, password, or their lengths.
+    // Emails and mobile numbers are logged since they identify the actor
+    // in an audit trail; add masking later if the compliance bar changes.
+    const attemptedAt = new Date().toISOString();
+    const baseMeta: Record<string, unknown> = {
       email: data.email,
-      password: data.password,
-      email_confirm: true,
-      user_metadata: { full_name: data.fullName, mobile: data.mobile },
-    });
-    if (createErr || !created?.user) {
-      throw new Error(createErr?.message || "Could not create account. The email may already be in use.");
-    }
-    const uid = created.user.id;
+      full_name: data.fullName,
+      mobile: data.mobile,
+      attempted_at: attemptedAt,
+    };
 
-    // Re-check the guard atomically before granting the role.
-    const { count: recount } = await supabaseAdmin
-      .from("user_roles")
-      .select("*", { count: "exact", head: true })
-      .eq("role", "super_admin");
-    if ((recount ?? 0) > 0) {
-      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
-      throw new Error("Super Admin was created by another session. Please sign in.");
-    }
+    // `audit()` requires an actor id; before the auth user exists we use
+    // a fixed sentinel so failure rows still land in the audit table
+    // rather than being silently dropped by NOT-NULL constraints upstream.
+    const ANONYMOUS_ACTOR = "00000000-0000-0000-0000-000000000000";
 
-    const { error: roleErr } = await supabaseAdmin
-      .from("user_roles")
-      .insert({ user_id: uid, role: "super_admin" });
-    if (roleErr) {
-      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
-      throw new Error(roleErr.message);
-    }
+    const logFailure = (reason: string, extra: Record<string, unknown> = {}) =>
+      audit(ANONYMOUS_ACTOR, "super_admin.bootstrap_failed", null, {
+        ...baseMeta,
+        reason,
+        ...extra,
+      });
 
-    const { error: profErr } = await supabaseAdmin.from("admin_profiles").upsert(
-      {
-        user_id: uid,
-        full_name: data.fullName,
+    try {
+      const expected = process.env.ADMIN_BOOTSTRAP_TOKEN;
+      // Deliberately generic to the caller (see admin.setup.tsx), but the
+      // audit row distinguishes the two so operators can tell "no secret
+      // configured" from "wrong token submitted".
+      if (!expected || expected.length < 16) {
+        await logFailure("setup_token_not_configured");
+        throw new Error("Invalid setup token.");
+      }
+      if (!safeEqual(data.setupToken, expected)) {
+        await logFailure("invalid_setup_token");
+        throw new Error("Invalid setup token.");
+      }
+
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+      // Hard guard: refuse if a super admin already exists.
+      const { count, error: countErr } = await supabaseAdmin
+        .from("user_roles")
+        .select("*", { count: "exact", head: true })
+        .eq("role", "super_admin");
+      if (countErr) {
+        await logFailure("count_check_failed", { error: countErr.message });
+        throw new Error(countErr.message);
+      }
+      if ((count ?? 0) > 0) {
+        await logFailure("super_admin_already_exists");
+        throw new Error("Super Admin already exists. Setup is disabled.");
+      }
+
+      // Create the auth user (email confirmed so they can sign in immediately).
+      const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
         email: data.email,
-        mobile: data.mobile,
-        status: "active",
-      },
-      { onConflict: "user_id" },
-    );
-    if (profErr) {
-      // Roll back role + user so setup remains available on retry.
-      await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
-      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
-      throw new Error(profErr.message);
+        password: data.password,
+        email_confirm: true,
+        user_metadata: { full_name: data.fullName, mobile: data.mobile },
+      });
+      if (createErr || !created?.user) {
+        await logFailure("auth_user_create_failed", { error: createErr?.message ?? null });
+        throw new Error(createErr?.message || "Could not create account. The email may already be in use.");
+      }
+      const uid = created.user.id;
+
+      // Re-check the guard atomically before granting the role.
+      const { count: recount } = await supabaseAdmin
+        .from("user_roles")
+        .select("*", { count: "exact", head: true })
+        .eq("role", "super_admin");
+      if ((recount ?? 0) > 0) {
+        await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
+        await audit(uid, "super_admin.bootstrap_failed", uid, {
+          ...baseMeta,
+          reason: "race_lost_super_admin_exists",
+        });
+        throw new Error("Super Admin was created by another session. Please sign in.");
+      }
+
+      const { error: roleErr } = await supabaseAdmin
+        .from("user_roles")
+        .insert({ user_id: uid, role: "super_admin" });
+      if (roleErr) {
+        await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
+        await audit(uid, "super_admin.bootstrap_failed", uid, {
+          ...baseMeta,
+          reason: "role_grant_failed",
+          error: roleErr.message,
+        });
+        throw new Error(roleErr.message);
+      }
+
+      const { error: profErr } = await supabaseAdmin.from("admin_profiles").upsert(
+        {
+          user_id: uid,
+          full_name: data.fullName,
+          email: data.email,
+          mobile: data.mobile,
+          status: "active",
+        },
+        { onConflict: "user_id" },
+      );
+      if (profErr) {
+        // Roll back role + user so setup remains available on retry.
+        await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
+        await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
+        await audit(uid, "super_admin.bootstrap_failed", uid, {
+          ...baseMeta,
+          reason: "profile_upsert_failed",
+          error: profErr.message,
+        });
+        throw new Error(profErr.message);
+      }
+
+      await audit(uid, "super_admin.bootstrapped", uid, {
+        ...baseMeta,
+        created_auth_user_id: uid,
+        completed_at: new Date().toISOString(),
+      });
+
+      return { ok: true, email: data.email };
+    } catch (err) {
+      // Any un-tagged failure (transport, unexpected throw) still gets a
+      // row so operators aren't blind to it. Known failures above already
+      // logged with a specific reason and will not double-log here.
+      if (!(err instanceof Error) || !/Invalid setup token\.|Super Admin (already exists|was created)|Could not create account/.test(err.message)) {
+        await logFailure("unexpected_error", {
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+      throw err;
     }
-
-    await supabaseAdmin.from("admin_audit_log").insert({
-      actor_user_id: uid,
-      action: "super_admin.bootstrapped",
-      target_user_id: uid,
-      metadata: { email: data.email },
-      ip: (() => { try { return getRequestIP({ xForwardedFor: true }) ?? null; } catch { return null; } })(),
-      user_agent: (() => { try { return getRequestHeader("user-agent") ?? null; } catch { return null; } })(),
-    });
-
-    return { ok: true, email: data.email };
   });
+
 
