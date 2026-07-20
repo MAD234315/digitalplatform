@@ -262,7 +262,7 @@ export function NotificationBell() {
               return (
                 <li key={n.id}>
                   <button
-                    onClick={() => markOne(n.id)}
+                    onClick={() => openNotification(n)}
                     className={`w-full text-left flex gap-3 px-3 py-3 hover:bg-card transition ${
                       n.read ? "opacity-70" : ""
                     }`}
