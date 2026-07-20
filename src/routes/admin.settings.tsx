@@ -35,10 +35,42 @@ function SettingsPage() {
 
   const online = useOnline();
   const [attempt, setAttempt] = useState(0);
+  const [sheetError, setSheetError] = useState<string | null>(null);
   const [lastFailed, setLastFailed] = useState<
     | { key: "site_status" | "spreadsheet_url"; value: any; message: string }
     | null
   >(null);
+
+  function validateSpreadsheetUrl(raw: string): string | null {
+    const value = raw.trim();
+    if (!value) return "Spreadsheet URL is required.";
+    let url: URL;
+    try {
+      url = new URL(value);
+    } catch {
+      return "Enter a valid URL (starting with https://).";
+    }
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return "URL must start with http:// or https://.";
+    }
+    const host = url.hostname.toLowerCase();
+    const path = url.pathname;
+    const isGoogleSheet =
+      host === "docs.google.com" && /^\/spreadsheets\/d\/[A-Za-z0-9_-]+/.test(path);
+    const isExcelOnline =
+      (host.endsWith("live.com") ||
+        host.endsWith("office.com") ||
+        host.endsWith("sharepoint.com") ||
+        host.endsWith("onedrive.com")) &&
+      /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(url.href.split("#")[0]) === false
+        ? true
+        : /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(url.href);
+    const isDirectFile = /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(url.href);
+    if (!isGoogleSheet && !isExcelOnline && !isDirectFile) {
+      return "Enter a Google Sheets link or an Excel/CSV spreadsheet URL.";
+    }
+    return null;
+  }
 
   const save = useMutation({
     mutationFn: async (input: { key: "site_status" | "spreadsheet_url"; value: any }) => {
@@ -62,6 +94,16 @@ function SettingsPage() {
       toast.error(message);
     },
   });
+
+  function handleSaveSheet() {
+    const err = validateSpreadsheetUrl(sheetUrl);
+    setSheetError(err);
+    if (err) {
+      toast.error(err);
+      return;
+    }
+    save.mutate({ key: "spreadsheet_url", value: sheetUrl.trim() });
+  }
 
 
   return (
