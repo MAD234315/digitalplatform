@@ -54,19 +54,19 @@ function SettingsPage() {
       return "URL must start with http:// or https://.";
     }
     const host = url.hostname.toLowerCase();
-    const path = url.pathname;
     const isGoogleSheet =
-      host === "docs.google.com" && /^\/spreadsheets\/d\/[A-Za-z0-9_-]+/.test(path);
-    const isExcelOnline =
-      (host.endsWith("live.com") ||
-        host.endsWith("office.com") ||
-        host.endsWith("sharepoint.com") ||
-        host.endsWith("onedrive.com")) &&
-      /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(url.href.split("#")[0]) === false
-        ? true
-        : /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(url.href);
-    const isDirectFile = /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(url.href);
-    if (!isGoogleSheet && !isExcelOnline && !isDirectFile) {
+      host === "docs.google.com" &&
+      /^\/spreadsheets\/d\/[A-Za-z0-9_-]+/.test(url.pathname);
+    const isExcelHost =
+      host.endsWith("live.com") ||
+      host.endsWith("office.com") ||
+      host.endsWith("sharepoint.com") ||
+      host.endsWith("onedrive.com") ||
+      host.endsWith("office.net");
+    const isDirectFile = /\.(xlsx|xls|xlsm|csv)(\?|$)/i.test(
+      url.pathname + url.search,
+    );
+    if (!isGoogleSheet && !isExcelHost && !isDirectFile) {
       return "Enter a Google Sheets link or an Excel/CSV spreadsheet URL.";
     }
     return null;
