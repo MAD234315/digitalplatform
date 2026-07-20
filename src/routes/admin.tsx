@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAdminStatus } from "@/lib/admin.functions";
 import { LayoutDashboard, Image, Settings, LogOut, Menu, X, ExternalLink } from "lucide-react";
+import { NetworkBanner } from "@/components/admin/NetworkBanner";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
