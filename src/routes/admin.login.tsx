@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import {
   postLoginCheck,
-  claimSuperAdmin,
   checkLoginLockout,
   recordLoginAttempt,
+  hasSuperAdmin,
 } from "@/lib/admins.functions";
+
 import { toast } from "sonner";
 import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
 import { WifiOff, RefreshCw } from "lucide-react";
