@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyPermissions } from "@/lib/admins.functions";
+import { supabase } from "@/integrations/supabase/client";
+
 
 export type PermissionsState = {
   loading: boolean;
@@ -30,6 +32,14 @@ export function usePermissions(): PermissionsState {
 
   const load = useCallback(async () => {
     try {
+      // Skip the auth-required RPC when there is no session (e.g. on
+      // /admin/setup or /admin/login) — otherwise it 401s and surfaces
+      // as a runtime error in the overlay.
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) {
+        setState({ loading: false, roles: [], permissions: [], isSuperAdmin: false, profile: null });
+        return;
+      }
       const r = await fetchPerms();
       setState({
         loading: false,
@@ -42,6 +52,7 @@ export function usePermissions(): PermissionsState {
       setState((s) => ({ ...s, loading: false }));
     }
   }, [fetchPerms]);
+
 
   useEffect(() => { load(); }, [load]);
 
