@@ -557,19 +557,19 @@ function ProofEditCard({
             {new Date(row.created_at).toLocaleDateString()}
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
           {editing ? (
             <>
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex-1 min-w-[110px] min-h-10 rounded-sm bg-amber text-amber-foreground text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1"
+                className="col-span-2 min-h-11 rounded-sm bg-amber text-amber-foreground text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1 disabled:opacity-60"
               >
-                <Check className="h-3.5 w-3.5" /> Save
+                <Check className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
               </button>
               <button
                 onClick={() => { setEditing(false); setTitle(row.title); setDescription(row.description); }}
-                className="min-h-10 px-3 rounded-sm border border-border text-xs"
+                className="col-span-2 min-h-11 px-3 rounded-sm border border-border text-xs"
               >
                 Cancel
               </button>
@@ -578,13 +578,13 @@ function ProofEditCard({
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-11 px-2 rounded-sm border border-border text-xs inline-flex items-center justify-center gap-1"
               >
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </button>
               <button
                 onClick={onTogglePublished}
-                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-11 px-2 rounded-sm border border-border text-xs inline-flex items-center justify-center gap-1"
               >
                 {row.published ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 {row.published ? "Hide" : "Show"}
@@ -592,7 +592,7 @@ function ProofEditCard({
               <button
                 onClick={() => replaceRef.current?.click()}
                 disabled={replacing}
-                className="min-h-10 px-3 rounded-sm border border-border text-xs inline-flex items-center gap-1"
+                className="min-h-11 px-2 rounded-sm border border-border text-xs inline-flex items-center justify-center gap-1 disabled:opacity-60"
               >
                 {replacing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Replace className="h-3.5 w-3.5" />}
                 {replacing ? "Uploading…" : "Replace"}
@@ -607,9 +607,9 @@ function ProofEditCard({
               <button
                 onClick={onDelete}
                 aria-label="Delete"
-                className="min-h-10 min-w-10 px-3 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center justify-center gap-1 ml-auto"
+                className="min-h-11 px-2 rounded-sm border border-destructive/40 text-destructive text-xs inline-flex items-center justify-center gap-1"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3.5 w-3.5" /> Delete
               </button>
             </>
           )}
