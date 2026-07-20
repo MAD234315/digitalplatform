@@ -49,10 +49,26 @@ type ProofRow = {
 
 function ProofsAdmin() {
   const qc = useQueryClient();
+  const { highlight } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const listFn = useServerFn(listProofsAdmin);
   const createFn = useServerFn(createProof);
   const updateFn = useServerFn(updateProof);
   const deleteFn = useServerFn(deleteProof);
+
+  // Scroll to and briefly ring the highlighted proof after data loads.
+  useEffect(() => {
+    if (!highlight || !data) return;
+    const el = document.querySelector<HTMLElement>(`[data-proof-id="${highlight}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    const t = setTimeout(() => {
+      navigate({ search: { highlight: undefined } as never, replace: true });
+    }, 2500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlight, data]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "proofs"],
