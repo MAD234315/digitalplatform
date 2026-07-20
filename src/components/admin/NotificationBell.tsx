@@ -33,6 +33,7 @@ function timeAgo(iso: string) {
 }
 
 export function NotificationBell() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Notif[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [open, setOpen] = useState(false);
