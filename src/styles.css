@@ -374,3 +374,10 @@ input[type="search"]::-webkit-search-decoration {
   .mission-card:active .mission-badge,
   .mission-card:active .mission-badge-icon { transform: none !important; }
 }
+
+/* Screenshot deterrent: blur proof images while tab/window is not focused. */
+.proofs-blur .proof-protected img,
+.proofs-blur .proof-protected [data-proof-image] {
+  filter: blur(18px) saturate(0.6);
+  transition: filter 120ms ease-out;
+}
