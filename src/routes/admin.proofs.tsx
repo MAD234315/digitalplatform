@@ -56,13 +56,21 @@ function ProofsAdmin() {
   const updateFn = useServerFn(updateProof);
   const deleteFn = useServerFn(deleteProof);
 
+  const listFn = useServerFn(listProofsAdmin);
+  const createFn = useServerFn(createProof);
+  const updateFn = useServerFn(updateProof);
+  const deleteFn = useServerFn(deleteProof);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin", "proofs"],
+    queryFn: () => listFn() as Promise<ProofRow[]>,
+  });
+
   // Scroll to and briefly ring the highlighted proof after data loads.
   useEffect(() => {
     if (!highlight || !data) return;
     const el = document.querySelector<HTMLElement>(`[data-proof-id="${highlight}"]`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
     const t = setTimeout(() => {
       navigate({ search: { highlight: undefined } as never, replace: true });
     }, 2500);
