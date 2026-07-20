@@ -157,15 +157,38 @@ function AdminLoginPage() {
                 className="mt-1 w-full min-h-12 rounded-sm border border-border bg-background px-3 text-base sm:text-sm text-foreground outline-none focus:border-amber"
               />
             </label>
+            {!online && (
+              <div className="rounded-sm border border-destructive/40 bg-destructive/10 text-destructive text-xs px-3 py-2 flex items-center gap-2">
+                <WifiOff className="h-4 w-4 shrink-0" />
+                <span>You're offline. Sign-in will resume when you're back.</span>
+              </div>
+            )}
             <button
               type="submit"
-              disabled={busy}
+              disabled={busy || !online}
               className="w-full min-h-12 rounded-sm font-semibold uppercase tracking-[0.14em] text-sm disabled:opacity-60"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
-              {busy ? "Please wait…" : mode === "signup" ? "Create admin" : "Sign in"}
+              {busy
+                ? attempt > 1 ? `Retrying (attempt ${attempt}/3)…` : "Please wait…"
+                : mode === "signup" ? "Create admin" : "Sign in"}
             </button>
+            {lastError && !busy && (
+              <div className="rounded-sm border border-destructive/30 bg-destructive/5 text-destructive text-xs px-3 py-2 space-y-2">
+                <div className="break-words">{lastError}</div>
+                {isTransient(new Error(lastError)) && (
+                  <button
+                    type="button"
+                    onClick={attemptLogin}
+                    className="inline-flex items-center gap-1.5 min-h-9 px-3 rounded-sm border border-destructive/40 text-destructive text-xs font-semibold uppercase tracking-wider"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" /> Retry
+                  </button>
+                )}
+              </div>
+            )}
           </form>
+
           <button
             type="button"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
