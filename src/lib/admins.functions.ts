@@ -561,17 +561,34 @@ const bootstrapSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email").max(255),
   mobile: z.string().trim().min(6, "Mobile number is required").max(30),
   password: z.string().min(8, "Password must be at least 8 characters").max(128),
+  setupToken: z.string().trim().min(1, "Setup token is required").max(256),
 });
+
+// Constant-time string comparison to avoid leaking token length/prefix via timing.
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
 
 /**
  * Public one-shot: creates the very first Super Admin account.
- * Refuses to run once any super admin exists. Uses admin.createUser with
- * email_confirm=true so the account is immediately usable regardless of
- * the project's email-confirmation setting.
+ * Requires the server-side ADMIN_BOOTSTRAP_TOKEN secret to prevent
+ * random visitors from seizing admin access before the real owner
+ * completes setup. Refuses to run once any super admin exists.
  */
 export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => bootstrapSchema.parse(raw))
   .handler(async ({ data }) => {
+    const expected = process.env.ADMIN_BOOTSTRAP_TOKEN;
+    if (!expected || expected.length < 16) {
+      throw new Error("Setup is disabled: ADMIN_BOOTSTRAP_TOKEN is not configured on the server.");
+    }
+    if (!safeEqual(data.setupToken, expected)) {
+      throw new Error("Invalid setup token.");
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Hard guard: refuse if a super admin already exists.
