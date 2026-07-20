@@ -183,47 +183,73 @@ function UploadCard({
     setPreview(URL.createObjectURL(f));
   }
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) return toast.error("Please choose an image.");
-    if (!title.trim()) return toast.error("Title is required.");
-    if (!description.trim()) return toast.error("Description is required.");
-
+  async function runUpload() {
+    if (!file) return;
+    if (!online) {
+      const msg = "You're offline. Reconnect and retry the upload.";
+      setLastError(msg);
+      toast.error(msg);
+      return;
+    }
     setBusy(true);
+    setLastError(null);
     setProgress(5);
     try {
-      // Verify image can actually decode before uploading — prevents blank cards later.
       await verifyImageLoadable(file);
       setProgress(15);
 
       const ext = extensionFromFile(file);
       const path = `${cryptoId()}.${ext}`;
 
-      setProgress(35);
-      const { error: upErr } = await supabase.storage
-        .from("proofs")
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type || `image/${ext}`,
-        });
-      if (upErr) throw upErr;
-      setProgress(80);
+      await retry(
+        async () => {
+          setProgress(35);
+          const { error: upErr } = await withTimeout(
+            supabase.storage.from("proofs").upload(path, file, {
+              cacheControl: "3600",
+              upsert: true, // safe: same generated path only reused across retries
+              contentType: file.type || `image/${ext}`,
+            }),
+            // Slow-network friendly: scale timeout with file size (min 30s, ~1s/MB).
+            Math.max(30_000, Math.round((file.size / (1024 * 1024)) * 1000) + 20_000),
+            "Upload"
+          );
+          if (upErr) throw upErr;
+          setProgress(80);
 
-      await onUploaded({
-        title: title.trim(),
-        description: description.trim(),
-        image_path: path,
-      });
+          await withTimeout(
+            onUploaded({
+              title: title.trim(),
+              description: description.trim(),
+              image_path: path,
+            }),
+            20_000,
+            "Publish"
+          );
+        },
+        { attempts: 3, onAttempt: (n) => setAttempt(n) }
+      );
       setProgress(100);
       reset();
+      setAttempt(0);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      setLastError(msg);
+      toast.error(msg);
       setProgress(null);
     } finally {
       setBusy(false);
     }
   }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) return toast.error("Please choose an image.");
+    if (!title.trim()) return toast.error("Title is required.");
+    if (!description.trim()) return toast.error("Description is required.");
+    await runUpload();
+  }
+
 
   return (
     <form onSubmit={submit} className="rounded-lg border border-border bg-card p-4 sm:p-5">
