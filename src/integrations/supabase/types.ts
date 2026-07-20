@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          proof_id: string | null
+          proof_title: string
+          read: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          message: string
+          proof_id?: string | null
+          proof_title: string
+          read?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          proof_id?: string | null
+          proof_title?: string
+          read?: boolean
+        }
+        Relationships: []
+      }
       proofs: {
         Row: {
           created_at: string
