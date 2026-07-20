@@ -51,38 +51,69 @@ function AdminLoginPage() {
     return () => { mounted = false; };
   }, [navigate, status]);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function attemptLogin() {
     setBusy(true);
+    setLastError(null);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-        toast.success("Account created. Signing in…");
-      }
-      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInErr) throw signInErr;
+      await retry(
+        async () => {
+          if (mode === "signup") {
+            const { error } = await withTimeout(
+              supabase.auth.signUp({
+                email,
+                password,
+                options: { emailRedirectTo: `${window.location.origin}/admin` },
+              }),
+              20000,
+              "Sign up"
+            );
+            if (error) throw error;
+            toast.success("Account created. Signing in…");
+          }
+          const { error: signInErr } = await withTimeout(
+            supabase.auth.signInWithPassword({ email, password }),
+            20000,
+            "Sign in"
+          );
+          if (signInErr) throw signInErr;
 
-      // Try to bootstrap admin (only works if no admins exist yet).
-      try { await claim(); } catch { /* ignore */ }
+          try { await withTimeout(claim(), 15000, "Bootstrap"); } catch { /* ignore */ }
 
-      const s = await status();
-      if (!s.isAdmin) {
-        await supabase.auth.signOut();
-        throw new Error("This account is not an admin.");
-      }
+          const s = await withTimeout(status(), 15000, "Verify admin");
+          if (!s.isAdmin) {
+            await supabase.auth.signOut();
+            // Non-transient: don't retry a permissions error.
+            const err = new Error("This account is not an admin.");
+            (err as any).permanent = true;
+            throw err;
+          }
+        },
+        {
+          attempts: 3,
+          onAttempt: (n) => setAttempt(n),
+        }
+      );
       toast.success("Welcome, admin.");
       navigate({ to: "/admin" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Login failed");
+      const msg = err instanceof Error ? err.message : "Login failed";
+      setLastError(msg);
+      toast.error(msg);
     } finally {
       setBusy(false);
+      setAttempt(0);
     }
   }
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!online) {
+      toast.error("You're offline. Connect to the internet and try again.");
+      return;
+    }
+    await attemptLogin();
+  }
+
 
   if (checking) {
     return <div className="min-h-dvh bg-background" />;
