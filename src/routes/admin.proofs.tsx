@@ -319,20 +319,47 @@ function UploadCard({
                   />
                 </div>
               )}
+              {busy && attempt > 1 && (
+                <div className="mt-1 text-[11px] text-muted-foreground">Retrying (attempt {attempt}/3)…</div>
+              )}
             </div>
             <button
               type="submit"
-              disabled={busy || !file}
+              disabled={busy || !file || !online}
               className="w-full sm:w-auto min-h-12 rounded-sm px-5 text-sm font-semibold uppercase tracking-wider disabled:opacity-60 inline-flex items-center justify-center gap-2"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              {busy ? "Uploading…" : "Publish"}
+              {busy ? (attempt > 1 ? `Retrying ${attempt}/3…` : "Uploading…") : "Publish"}
             </button>
           </div>
+
+          {!online && (
+            <div className="rounded-sm border border-destructive/40 bg-destructive/10 text-destructive text-xs px-3 py-2 flex items-center gap-2">
+              <WifiOff className="h-4 w-4 shrink-0" />
+              <span>You're offline. Uploads will fail until your connection returns.</span>
+            </div>
+          )}
+
+          {lastError && !busy && (
+            <div className="rounded-sm border border-destructive/30 bg-destructive/5 text-destructive text-xs px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="min-w-0 flex-1 break-words">{lastError}</span>
+              {isTransient(new Error(lastError)) && file && (
+                <button
+                  type="button"
+                  onClick={runUpload}
+                  disabled={!online}
+                  className="inline-flex items-center gap-1.5 min-h-10 px-3 rounded-sm border border-destructive/40 text-destructive text-xs font-semibold uppercase tracking-wider disabled:opacity-50"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" /> Retry upload
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </form>
+
   );
 }
 
