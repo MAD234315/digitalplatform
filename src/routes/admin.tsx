@@ -138,7 +138,7 @@ function AdminLayout() {
         {/* Desktop sidebar */}
         <nav className="hidden lg:block lg:sticky lg:top-20 lg:self-start">
           <ul className="flex flex-col gap-1">
-            {LINKS.map(({ to, label, icon: Icon, exact }) => {
+            {visibleLinks.map(({ to, label, icon: Icon, exact }) => {
               const active = exact ? pathname === to : pathname.startsWith(to);
               return (
                 <li key={to}>
@@ -182,7 +182,7 @@ function AdminLayout() {
               </button>
             </div>
             <ul className="flex-1 p-3 space-y-1 overflow-y-auto">
-              {LINKS.map(({ to, label, icon: Icon, exact }) => {
+              {visibleLinks.map(({ to, label, icon: Icon, exact }) => {
                 const active = exact ? pathname === to : pathname.startsWith(to);
                 return (
                   <li key={to}>
