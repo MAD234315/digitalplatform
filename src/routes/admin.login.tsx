@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import {
   postLoginCheck,
-  claimSuperAdmin,
   checkLoginLockout,
   recordLoginAttempt,
+  hasSuperAdmin,
 } from "@/lib/admins.functions";
+
 import { toast } from "sonner";
 import { useOnline, withTimeout, retry, isTransient } from "@/lib/network";
 import { WifiOff, RefreshCw } from "lucide-react";
@@ -41,13 +42,23 @@ function AdminLoginPage() {
   const [attempt, setAttempt] = useState(0);
   const online = useOnline();
   const check = useServerFn(postLoginCheck);
-  const claimSuper = useServerFn(claimSuperAdmin);
+  const setupCheck = useServerFn(hasSuperAdmin);
   const lockout = useServerFn(checkLoginLockout);
   const record = useServerFn(recordLoginAttempt);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
+      // If no super admin exists yet, force the one-time setup flow.
+      try {
+        const s = await setupCheck();
+        if (!mounted) return;
+        if (!s.exists) {
+          navigate({ to: "/admin/setup", replace: true });
+          return;
+        }
+      } catch { /* fall through to normal login */ }
+
       const { data } = await supabase.auth.getSession();
       if (!mounted) return;
       if (data.session) {
@@ -59,7 +70,8 @@ function AdminLoginPage() {
       setChecking(false);
     })();
     return () => { mounted = false; };
-  }, [navigate, check]);
+  }, [navigate, check, setupCheck]);
+
 
   async function attemptLogin() {
     setBusy(true);
@@ -84,10 +96,8 @@ function AdminLoginPage() {
             (err as any).permanent = true;
             throw err;
           }
-          // Try to claim super admin (only succeeds if none exists yet)
-          try { await withTimeout(claimSuper(), 15000, "Bootstrap"); } catch { /* ignore */ }
-
           const s = await withTimeout(check(), 15000, "Verify admin");
+
           if (!s.ok) {
             await supabase.auth.signOut();
             const msg = REASON_MSG[s.reason] ?? "Access denied.";
