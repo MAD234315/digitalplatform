@@ -51,7 +51,7 @@ function AdminLayout() {
   });
 
   useEffect(() => {
-    if (pathname === "/admin/login" || pathname === "/admin/request") { setState("ok"); return; }
+    if (pathname === "/admin/login" || pathname === "/admin/request" || pathname === "/admin/setup") { setState("ok"); return; }
     let mounted = true;
     (async () => {
       const { data } = await supabase.auth.getSession();
@@ -87,7 +87,7 @@ function AdminLayout() {
     navigate({ to: "/admin/login" });
   }
 
-  if (pathname === "/admin/login") return <Outlet />;
+  if (pathname === "/admin/login" || pathname === "/admin/request" || pathname === "/admin/setup") return <Outlet />;
   if (state !== "ok") return <div className="min-h-dvh bg-background" />;
 
   return (

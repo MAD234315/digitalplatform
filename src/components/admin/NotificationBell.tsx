@@ -1,12 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check, Trash2, Upload, Eye, EyeOff, Search, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Bell, Check, Trash2, Upload, Eye, EyeOff, Search, ChevronLeft, ChevronRight, X, UserPlus, ShieldCheck, ShieldX, UserX } from "lucide-react";
 import { toast } from "sonner";
 
 type Notif = {
   id: string;
-  kind: "proof_uploaded" | "proof_published" | "proof_hidden";
+  kind:
+    | "proof_uploaded"
+    | "proof_published"
+    | "proof_hidden"
+    | "admin_requested"
+    | "admin_approved"
+    | "admin_rejected"
+    | "admin_suspended"
+    | "admin_deleted";
   proof_id: string | null;
   proof_title: string;
   message: string;
@@ -19,7 +27,22 @@ const PAGE_SIZE = 15;
 function iconFor(kind: Notif["kind"]) {
   if (kind === "proof_uploaded") return Upload;
   if (kind === "proof_published") return Eye;
-  return EyeOff;
+  if (kind === "proof_hidden") return EyeOff;
+  if (kind === "admin_requested") return UserPlus;
+  if (kind === "admin_approved") return ShieldCheck;
+  if (kind === "admin_rejected") return ShieldX;
+  return UserX;
+}
+
+function labelFor(kind: Notif["kind"]) {
+  if (kind === "proof_uploaded") return "New proof uploaded";
+  if (kind === "proof_published") return "Proof published";
+  if (kind === "proof_hidden") return "Proof hidden";
+  if (kind === "admin_requested") return "Admin request received";
+  if (kind === "admin_approved") return "Admin approved";
+  if (kind === "admin_rejected") return "Admin rejected";
+  if (kind === "admin_suspended") return "Admin suspended";
+  return "Admin deleted";
 }
 
 function timeAgo(iso: string) {
@@ -99,13 +122,7 @@ export function NotificationBell() {
             setTotal((t) => t + 1);
           }
           if (seenInitial.current) {
-            const label =
-              n.kind === "proof_uploaded"
-                ? "New proof uploaded"
-                : n.kind === "proof_published"
-                ? "Proof published"
-                : "Proof hidden";
-            toast(label, { description: n.proof_title });
+            toast(labelFor(n.kind), { description: n.proof_title });
           }
         }
       )
@@ -167,6 +184,10 @@ export function NotificationBell() {
     setOpen(false);
     if (n.proof_id) {
       navigate({ to: "/admin/proofs", search: { highlight: n.proof_id } as never });
+    } else if (n.kind === "admin_requested") {
+      navigate({ to: "/admin/requests" });
+    } else if (n.kind.startsWith("admin_")) {
+      navigate({ to: "/admin/admins" });
     }
   }
 
