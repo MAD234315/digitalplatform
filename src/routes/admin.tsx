@@ -93,12 +93,14 @@ function AdminLayout() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 justify-end">
+            <NotificationBell />
             <Link
               to="/"
               className="hidden sm:inline-flex text-xs text-muted-foreground hover:text-foreground px-3 py-2 min-h-11 items-center"
             >
               View site
             </Link>
+
             <button
               onClick={signOut}
               className="inline-flex items-center gap-1.5 rounded-sm border border-border px-2.5 sm:px-3 min-h-11 text-xs text-foreground hover:bg-card"
