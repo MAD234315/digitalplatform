@@ -52,7 +52,9 @@ function AdminLayout() {
     if (l.perm) return perms.has(l.perm);
     return true;
   });
-    if (pathname === "/admin/login") { setState("ok"); return; }
+
+  useEffect(() => {
+    if (pathname === "/admin/login" || pathname === "/admin/request") { setState("ok"); return; }
     let mounted = true;
     (async () => {
       const { data } = await supabase.auth.getSession();
