@@ -57,20 +57,31 @@ function ProofsAdmin() {
   });
 
   const [query, setQuery] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [pendingDelete, setPendingDelete] = useState<ProofRow | null>(null);
+
   const filtered = useMemo(() => {
     if (!data) return [];
     const q = query.trim().toLowerCase();
-    if (!q) return data;
-    return data.filter(
-      (r) => r.title.toLowerCase().includes(q) || r.description.toLowerCase().includes(q)
-    );
-  }, [data, query]);
+    const fromTs = fromDate ? new Date(fromDate + "T00:00:00").getTime() : null;
+    const toTs = toDate ? new Date(toDate + "T23:59:59").getTime() : null;
+    return data.filter((r) => {
+      if (q && !(r.title.toLowerCase().includes(q) || r.description.toLowerCase().includes(q))) return false;
+      const ts = new Date(r.created_at).getTime();
+      if (fromTs !== null && ts < fromTs) return false;
+      if (toTs !== null && ts > toTs) return false;
+      return true;
+    });
+  }, [data, query, fromDate, toDate]);
+
+  const hasFilters = !!(query || fromDate || toDate);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["admin", "proofs"] });
 
   const del = useMutation({
     mutationFn: (id: string) => deleteFn({ data: { id } }),
-    onSuccess: () => { toast.success("Deleted"); invalidate(); },
+    onSuccess: () => { toast.success("Deleted"); setPendingDelete(null); invalidate(); },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Delete failed"),
   });
 
