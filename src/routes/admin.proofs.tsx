@@ -111,7 +111,7 @@ function ProofsAdmin() {
         }}
       />
 
-      <div className="mt-6 mb-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-center">
+      <div className="mt-6 mb-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
         <div className="relative min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <input
@@ -121,33 +121,34 @@ function ProofsAdmin() {
             className="w-full min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-base sm:text-sm outline-none focus:border-amber"
           />
         </div>
-        <label className="relative flex items-center">
-          <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            aria-label="From date"
-            className="min-h-12 pl-9 pr-3 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber w-full sm:w-[160px]"
-          />
-        </label>
-        <label className="relative flex items-center">
-          <span className="hidden sm:inline text-xs text-muted-foreground px-1">→</span>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            aria-label="To date"
-            className="min-h-12 pl-3 pr-3 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber w-full sm:w-[160px]"
-          />
-        </label>
+        <div className="grid grid-cols-2 gap-2 sm:contents">
+          <label className="relative flex items-center">
+            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              aria-label="From date"
+              className="w-full min-h-12 pl-9 pr-2 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber sm:w-[160px]"
+            />
+          </label>
+          <label className="relative flex items-center">
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              aria-label="To date"
+              className="w-full min-h-12 pl-3 pr-2 rounded-sm border border-border bg-background text-sm outline-none focus:border-amber sm:w-[160px]"
+            />
+          </label>
+        </div>
         {hasFilters && (
           <button
             type="button"
             onClick={() => { setQuery(""); setFromDate(""); setToDate(""); }}
-            className="min-h-12 px-3 rounded-sm border border-border text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+            className="w-full sm:w-auto min-h-12 px-3 rounded-sm border border-border text-xs text-muted-foreground hover:text-foreground inline-flex items-center justify-center gap-1"
           >
-            <X className="h-3.5 w-3.5" /> Clear
+            <X className="h-3.5 w-3.5" /> Clear filters
           </button>
         )}
       </div>
