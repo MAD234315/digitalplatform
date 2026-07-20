@@ -23,6 +23,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
 import { Route as AdminRequestRouteImport } from './routes/admin.request'
 import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -97,6 +98,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRequestRoute = AdminRequestRouteImport.update({
   id: '/request',
   path: '/request',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/request': typeof AdminRequestRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/request': typeof AdminRequestRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/request': typeof AdminRequestRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/proofs'
     | '/admin/request'
+    | '/admin/requests'
     | '/admin/settings'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/proofs'
     | '/admin/request'
+    | '/admin/requests'
     | '/admin/settings'
     | '/admin'
   id:
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/proofs'
     | '/admin/request'
+    | '/admin/requests'
     | '/admin/settings'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -344,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/request': {
       id: '/admin/request'
       path: '/request'
@@ -372,6 +391,7 @@ interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminProofsRoute: typeof AdminProofsRoute
   AdminRequestRoute: typeof AdminRequestRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -380,6 +400,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminProofsRoute: AdminProofsRoute,
   AdminRequestRoute: AdminRequestRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
