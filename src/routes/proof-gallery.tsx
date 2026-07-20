@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, queryOptions } from "@tanstack/react-query";
+import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useId, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listPublicProofs } from "@/lib/proof-gallery.functions";
@@ -7,6 +7,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { SITE_URL } from "@/lib/site-config";
+import { supabase } from "@/integrations/supabase/client";
 import { X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 type Proof = {
@@ -40,9 +41,29 @@ const proofsQuery = (fn: () => Promise<Proof[]>) =>
 function ProofGalleryPage() {
   const fn = useServerFn(listPublicProofs) as unknown as () => Promise<Proof[]>;
   const { data, isLoading, error } = useQuery(proofsQuery(fn));
+  const queryClient = useQueryClient();
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const reducedMotion = useReducedMotion();
+
+  // Realtime: refetch when published proofs change so the gallery updates
+  // without a manual refresh.
+  useEffect(() => {
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: ["public", "proofs"] });
+    };
+    const channel = supabase
+      .channel("public:proofs")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "proofs" },
+        invalidate,
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   useEffect(() => {
     const stop = (e: Event) => e.preventDefault();
