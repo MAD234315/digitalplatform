@@ -81,12 +81,23 @@ export const updateSetting = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => settingSchema.parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { data: prev } = await context.supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", data.key)
+      .maybeSingle();
     const { error } = await context.supabase
       .from("site_settings")
       .upsert({ key: data.key, value: data.value }, { onConflict: "key" });
     if (error) throw new Error(error.message);
+    await audit(context.supabase, context.userId, `setting.${data.key}.updated`, {
+      key: data.key,
+      previous_value: prev?.value ?? null,
+      new_value: data.value,
+    });
     return { ok: true };
   });
+
 
 /** Admin: list all proofs with fresh signed URLs. */
 export const listProofsAdmin = createServerFn({ method: "GET" })
