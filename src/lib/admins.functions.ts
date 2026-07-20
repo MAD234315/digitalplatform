@@ -32,13 +32,14 @@ async function audit(
       actor_user_id: actorId,
       action,
       target_user_id: targetUserId ?? null,
-      metadata,
+      metadata: metadata as any,
       ip: (() => { try { return getRequestIP({ xForwardedFor: true }) ?? null; } catch { return null; } })(),
       user_agent: (() => { try { return getRequestHeader("user-agent") ?? null; } catch { return null; } })(),
     });
   } catch (e) {
     console.error("[audit] failed", e);
   }
+
 }
 
 // ---------- roles / permissions ----------
