@@ -96,10 +96,8 @@ function AdminLoginPage() {
             (err as any).permanent = true;
             throw err;
           }
-          // Try to claim super admin (only succeeds if none exists yet)
-          try { await withTimeout(claimSuper(), 15000, "Bootstrap"); } catch { /* ignore */ }
-
           const s = await withTimeout(check(), 15000, "Verify admin");
+
           if (!s.ok) {
             await supabase.auth.signOut();
             const msg = REASON_MSG[s.reason] ?? "Access denied.";
