@@ -550,3 +550,104 @@ export const claimSuperAdmin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true, claimed: !!data };
   });
+
+// ---------- first-time super admin bootstrap (public, one-shot) ----------
+
+/** Public: returns whether a super admin already exists. Safe read (count only). */
+export const hasSuperAdmin = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { count, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("*", { count: "exact", head: true })
+    .eq("role", "super_admin");
+  if (error) throw new Error(error.message);
+  return { exists: (count ?? 0) > 0 };
+});
+
+const bootstrapSchema = z.object({
+  fullName: z.string().trim().min(2, "Full name is required").max(120),
+  email: z.string().trim().toLowerCase().email("Enter a valid email").max(255),
+  mobile: z.string().trim().min(6, "Mobile number is required").max(30),
+  password: z.string().min(8, "Password must be at least 8 characters").max(128),
+});
+
+/**
+ * Public one-shot: creates the very first Super Admin account.
+ * Refuses to run once any super admin exists. Uses admin.createUser with
+ * email_confirm=true so the account is immediately usable regardless of
+ * the project's email-confirmation setting.
+ */
+export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
+  .inputValidator((raw: unknown) => bootstrapSchema.parse(raw))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Hard guard: refuse if a super admin already exists.
+    const { count, error: countErr } = await supabaseAdmin
+      .from("user_roles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "super_admin");
+    if (countErr) throw new Error(countErr.message);
+    if ((count ?? 0) > 0) {
+      throw new Error("Super Admin already exists. Setup is disabled.");
+    }
+
+    // Create the auth user (email confirmed so they can sign in immediately).
+    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+      user_metadata: { full_name: data.fullName, mobile: data.mobile },
+    });
+    if (createErr || !created?.user) {
+      throw new Error(createErr?.message || "Could not create account. The email may already be in use.");
+    }
+    const uid = created.user.id;
+
+    // Re-check the guard atomically before granting the role.
+    const { count: recount } = await supabaseAdmin
+      .from("user_roles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "super_admin");
+    if ((recount ?? 0) > 0) {
+      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
+      throw new Error("Super Admin was created by another session. Please sign in.");
+    }
+
+    const { error: roleErr } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: uid, role: "super_admin" });
+    if (roleErr) {
+      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
+      throw new Error(roleErr.message);
+    }
+
+    const { error: profErr } = await supabaseAdmin.from("admin_profiles").upsert(
+      {
+        user_id: uid,
+        full_name: data.fullName,
+        email: data.email,
+        mobile: data.mobile,
+        status: "active",
+      },
+      { onConflict: "user_id" },
+    );
+    if (profErr) {
+      // Roll back role + user so setup remains available on retry.
+      await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
+      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
+      throw new Error(profErr.message);
+    }
+
+    await supabaseAdmin.from("admin_audit_log").insert({
+      actor_user_id: uid,
+      action: "super_admin.bootstrapped",
+      target_user_id: uid,
+      metadata: { email: data.email },
+      ip: (() => { try { return getRequestIP({ xForwardedFor: true }) ?? null; } catch { return null; } })(),
+      user_agent: (() => { try { return getRequestHeader("user-agent") ?? null; } catch { return null; } })(),
+    });
+
+    return { ok: true, email: data.email };
+  });
+
