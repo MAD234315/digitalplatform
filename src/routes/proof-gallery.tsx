@@ -169,10 +169,11 @@ function ProofGalleryPage() {
 type CardProps = {
   proof: Proof;
   onOpen: () => void;
+  reducedMotion?: boolean;
 };
 
 const ProofCard = forwardRef<HTMLButtonElement, CardProps>(function ProofCard(
-  { proof, onOpen },
+  { proof, onOpen, reducedMotion },
   ref
 ) {
   const [loaded, setLoaded] = useState(false);
