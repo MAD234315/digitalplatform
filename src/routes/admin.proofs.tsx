@@ -171,22 +171,31 @@ function ProofsAdmin() {
 
       <ul className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((row) => (
-          <ProofEditCard
+          <li
             key={row.id}
-            row={row}
-            onDelete={() => setPendingDelete(row)}
-            onTogglePublished={() => togglePub.mutate(row)}
-            onSaveEdit={async (patch) => {
-              await updateFn({ data: { id: row.id, ...patch } });
-              toast.success("Saved");
-              invalidate();
-            }}
-            onReplaceImage={async (image_path) => {
-              await updateFn({ data: { id: row.id, image_path } });
-              toast.success("Image replaced");
-              invalidate();
-            }}
-          />
+            data-proof-id={row.id}
+            className={
+              highlight === row.id
+                ? "rounded-lg ring-2 ring-amber/70 transition-shadow"
+                : "transition-shadow"
+            }
+          >
+            <ProofEditCard
+              row={row}
+              onDelete={() => setPendingDelete(row)}
+              onTogglePublished={() => togglePub.mutate(row)}
+              onSaveEdit={async (patch) => {
+                await updateFn({ data: { id: row.id, ...patch } });
+                toast.success("Saved");
+                invalidate();
+              }}
+              onReplaceImage={async (image_path) => {
+                await updateFn({ data: { id: row.id, image_path } });
+                toast.success("Image replaced");
+                invalidate();
+              }}
+            />
+          </li>
         ))}
       </ul>
 
