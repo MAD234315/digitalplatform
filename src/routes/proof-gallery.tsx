@@ -41,9 +41,29 @@ const proofsQuery = (fn: () => Promise<Proof[]>) =>
 function ProofGalleryPage() {
   const fn = useServerFn(listPublicProofs) as unknown as () => Promise<Proof[]>;
   const { data, isLoading, error } = useQuery(proofsQuery(fn));
+  const queryClient = useQueryClient();
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const reducedMotion = useReducedMotion();
+
+  // Realtime: refetch when published proofs change so the gallery updates
+  // without a manual refresh.
+  useEffect(() => {
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: ["public", "proofs"] });
+    };
+    const channel = supabase
+      .channel("public:proofs")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "proofs" },
+        invalidate,
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   useEffect(() => {
     const stop = (e: Event) => e.preventDefault();
