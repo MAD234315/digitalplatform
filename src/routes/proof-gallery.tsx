@@ -306,7 +306,7 @@ function Lightbox({
       aria-modal="true"
       aria-labelledby={titleId}
       aria-describedby={descId}
-      className={`fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col transition-opacity duration-200 ${
+      className={`proof-protected fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col transition-opacity duration-200 ${
         mounted ? "opacity-100" : "opacity-0"
       }`}
       onClick={onClose}
