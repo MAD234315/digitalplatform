@@ -452,16 +452,48 @@ function ProofEditCard({
   onDelete,
   onTogglePublished,
   onSaveEdit,
+  onReplaceImage,
 }: {
   row: ProofRow;
   onDelete: () => void;
   onTogglePublished: () => void;
   onSaveEdit: (patch: { title: string; description: string }) => Promise<void>;
+  onReplaceImage: (image_path: string) => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(row.title);
   const [description, setDescription] = useState(row.description);
   const [saving, setSaving] = useState(false);
+  const [replacing, setReplacing] = useState(false);
+  const replaceRef = useRef<HTMLInputElement>(null);
+
+  async function onReplaceFile(f: File | null) {
+    if (!f) return;
+    const type = (f.type || "").toLowerCase();
+    const extOk = /\.(jpg|jpeg|png|webp|gif|bmp|heic|heif)$/i.test(f.name);
+    if (type && !ACCEPTED.includes(type) && !extOk) {
+      toast.error("Unsupported file format.");
+      return;
+    }
+    if (f.size > MAX_BYTES) { toast.error("Image too large (max 15 MB)."); return; }
+    setReplacing(true);
+    try {
+      const ext = extensionFromFile(f);
+      const path = `${cryptoId()}.${ext}`;
+      const { error } = await supabase.storage.from("proofs").upload(path, f, {
+        cacheControl: "3600",
+        upsert: true,
+        contentType: f.type || `image/${ext}`,
+      });
+      if (error) throw error;
+      await onReplaceImage(path);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Replace failed");
+    } finally {
+      setReplacing(false);
+      if (replaceRef.current) replaceRef.current.value = "";
+    }
+  }
 
   async function save() {
     if (!title.trim() || !description.trim()) {
