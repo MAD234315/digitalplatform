@@ -117,16 +117,42 @@ function SettingsPage() {
               />
               <button
                 onClick={() => save.mutate({ key: "spreadsheet_url", value: sheetUrl })}
-                disabled={save.isPending}
+                disabled={save.isPending || !online}
                 className="min-h-12 rounded-sm px-5 text-sm font-semibold uppercase tracking-wider disabled:opacity-60"
                 style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
               >
-                Save
+                {save.isPending && attempt > 1 ? `Retrying ${attempt}/3…` : save.isPending ? "Saving…" : "Save"}
               </button>
             </div>
           </section>
+
+          {lastFailed && !save.isPending && (
+            <section className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="text-xs text-destructive min-w-0 flex-1">
+                <div className="font-semibold uppercase tracking-wider">Save failed</div>
+                <div className="mt-1 break-words">{lastFailed.message}</div>
+              </div>
+              {isTransient(new Error(lastFailed.message)) && (
+                <button
+                  onClick={() => save.mutate({ key: lastFailed.key, value: lastFailed.value })}
+                  disabled={!online}
+                  className="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-sm border border-destructive/40 text-destructive text-xs font-semibold uppercase tracking-wider disabled:opacity-50"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" /> Retry last save
+                </button>
+              )}
+            </section>
+          )}
+
+          {!online && (
+            <div className="rounded-sm border border-destructive/40 bg-destructive/10 text-destructive text-xs px-3 py-2 flex items-center gap-2">
+              <WifiOff className="h-4 w-4 shrink-0" />
+              <span>You're offline. Changes will fail until your connection returns.</span>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
+
