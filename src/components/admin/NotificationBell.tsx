@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check, Trash2, Upload, Eye, EyeOff } from "lucide-react";
+import { Bell, Check, Trash2, Upload, Eye, EyeOff, Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { toast } from "sonner";
 
 type Notif = {
@@ -12,6 +12,8 @@ type Notif = {
   read: boolean;
   created_at: string;
 };
+
+const PAGE_SIZE = 15;
 
 function iconFor(kind: Notif["kind"]) {
   if (kind === "proof_uploaded") return Upload;
@@ -31,22 +33,56 @@ function timeAgo(iso: string) {
 
 export function NotificationBell() {
   const [items, setItems] = useState<Notif[]>([]);
+  const [unreadTotal, setUnreadTotal] = useState(0);
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [debounced, setDebounced] = useState("");
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const seenInitial = useRef(false);
+  const listRef = useRef<HTMLUListElement>(null);
 
-  async function load() {
-    const { data } = await supabase
+  // Debounce search
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebounced(query.trim());
+      setPage(0);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  async function loadUnreadCount() {
+    const { count } = await supabase
       .from("admin_notifications")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(30);
+      .select("*", { count: "exact", head: true })
+      .eq("read", false);
+    setUnreadTotal(count ?? 0);
+  }
+
+  async function loadPage(p: number, q: string) {
+    setLoading(true);
+    let query = supabase
+      .from("admin_notifications")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false });
+    if (q) {
+      const like = `%${q.replace(/[%_]/g, (m) => `\\${m}`)}%`;
+      query = query.or(`message.ilike.${like},proof_title.ilike.${like}`);
+    }
+    const from = p * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    const { data, count } = await query.range(from, to);
     if (data) setItems(data as Notif[]);
+    setTotal(count ?? 0);
+    setLoading(false);
     seenInitial.current = true;
+    if (listRef.current) listRef.current.scrollTop = 0;
   }
 
   useEffect(() => {
-    load();
+    loadUnreadCount();
     const channel = supabase
       .channel("admin_notifications")
       .on(
@@ -54,7 +90,12 @@ export function NotificationBell() {
         { event: "INSERT", schema: "public", table: "admin_notifications" },
         (payload) => {
           const n = payload.new as Notif;
-          setItems((prev) => [n, ...prev].slice(0, 30));
+          setUnreadTotal((c) => c + 1);
+          // If viewing first page with no search, prepend live
+          if (open && page === 0 && !debounced) {
+            setItems((prev) => [n, ...prev].slice(0, PAGE_SIZE));
+            setTotal((t) => t + 1);
+          }
           if (seenInitial.current) {
             const label =
               n.kind === "proof_uploaded"
@@ -70,7 +111,14 @@ export function NotificationBell() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, page, debounced]);
+
+  // Load when open, page, or search changes
+  useEffect(() => {
+    if (!open) return;
+    loadPage(page, debounced);
+  }, [open, page, debounced]);
 
   useEffect(() => {
     if (!open) return;
@@ -81,25 +129,29 @@ export function NotificationBell() {
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  const unread = items.filter((n) => !n.read).length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pageUnread = useMemo(() => items.filter((n) => !n.read).length, [items]);
 
   async function markAllRead() {
-    const ids = items.filter((n) => !n.read).map((n) => n.id);
-    if (ids.length === 0) return;
+    if (unreadTotal === 0) return;
     setItems((prev) => prev.map((n) => ({ ...n, read: true })));
-    await supabase.from("admin_notifications").update({ read: true }).in("id", ids);
+    setUnreadTotal(0);
+    await supabase.from("admin_notifications").update({ read: true }).eq("read", false);
   }
 
   async function markOne(id: string) {
+    const target = items.find((n) => n.id === id);
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    if (target && !target.read) setUnreadTotal((c) => Math.max(0, c - 1));
     await supabase.from("admin_notifications").update({ read: true }).eq("id", id);
   }
 
   async function clearAll() {
-    const ids = items.map((n) => n.id);
-    if (ids.length === 0) return;
+    if (!confirm("Clear ALL notifications? This cannot be undone.")) return;
     setItems([]);
-    await supabase.from("admin_notifications").delete().in("id", ids);
+    setTotal(0);
+    setUnreadTotal(0);
+    await supabase.from("admin_notifications").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
   return (
@@ -108,29 +160,29 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="relative inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border text-foreground hover:bg-card"
-        aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}
+        aria-label={`Notifications${unreadTotal ? ` (${unreadTotal} unread)` : ""}`}
       >
         <Bell className="h-4 w-4" />
-        {unread > 0 && (
+        {unreadTotal > 0 && (
           <span
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
             style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
           >
-            {unread > 9 ? "9+" : unread}
+            {unreadTotal > 9 ? "9+" : unreadTotal}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[min(92vw,340px)] rounded-lg border border-border bg-background shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[min(94vw,380px)] rounded-lg border border-border bg-background shadow-2xl z-50 overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 border-b border-border">
             <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              Notifications
+              Notifications {total > 0 && <span className="ml-1 normal-case tracking-normal text-[10px]">({total})</span>}
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={markAllRead}
-                disabled={unread === 0}
+                disabled={unreadTotal === 0}
                 className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground px-2 py-1 disabled:opacity-40"
                 title="Mark all read"
               >
@@ -138,18 +190,47 @@ export function NotificationBell() {
               </button>
               <button
                 onClick={clearAll}
-                disabled={items.length === 0}
+                disabled={total === 0}
                 className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive px-2 py-1 disabled:opacity-40"
-                title="Clear"
+                title="Clear all"
               >
                 <Trash2 className="h-3.5 w-3.5" /> Clear
               </button>
             </div>
           </div>
-          <ul className="max-h-[60vh] overflow-y-auto divide-y divide-border">
-            {items.length === 0 && (
+
+          {/* Search */}
+          <div className="px-3 py-2 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search notifications…"
+                autoComplete="off"
+                className="w-full h-9 rounded-sm border border-border bg-card pl-7 pr-8 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber/60"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 h-6 w-6 inline-flex items-center justify-center text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <ul ref={listRef} className="max-h-[55vh] overflow-y-auto divide-y divide-border">
+            {loading && items.length === 0 && (
+              <li className="p-6 text-center text-xs text-muted-foreground">Loading…</li>
+            )}
+            {!loading && items.length === 0 && (
               <li className="p-6 text-center text-xs text-muted-foreground">
-                You're all caught up.
+                {debounced ? `No results for "${debounced}".` : "You're all caught up."}
               </li>
             )}
             {items.map((n) => {
@@ -189,6 +270,34 @@ export function NotificationBell() {
               );
             })}
           </ul>
+
+          {/* Pagination */}
+          {total > PAGE_SIZE && (
+            <div className="flex items-center justify-between px-3 py-2 border-t border-border">
+              <div className="text-[11px] text-muted-foreground">
+                Page {page + 1} of {totalPages}
+                {pageUnread > 0 && <span className="ml-2">· {pageUnread} unread</span>}
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0 || loading}
+                  className="inline-flex items-center h-7 px-2 rounded-sm border border-border text-[11px] text-foreground disabled:opacity-40 hover:bg-card"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1 || loading}
+                  className="inline-flex items-center h-7 px-2 rounded-sm border border-border text-[11px] text-foreground disabled:opacity-40 hover:bg-card"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
