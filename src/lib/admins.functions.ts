@@ -56,7 +56,7 @@ export const getMyPermissions = createServerFn({ method: "GET" })
     const { data: permRows } = await context.supabase
       .from("role_permissions")
       .select("permission")
-      .in("role", roles);
+      .in("role", roles as any);
     const permissions = Array.from(new Set((permRows ?? []).map((r: any) => r.permission as string)));
     const { data: profile } = await context.supabase
       .from("admin_profiles")
