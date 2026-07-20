@@ -203,6 +203,21 @@ function SetupPage() {
                 className={fieldCls(!!errors.confirm)}
               />
             </Field>
+            <Field
+              label="Setup Token"
+              error={errors.setupToken}
+              hint="Paste the ADMIN_BOOTSTRAP_TOKEN value from your Cloud secrets."
+            >
+              <input
+                type="password"
+                required
+                autoComplete="off"
+                spellCheck={false}
+                value={form.setupToken}
+                onChange={(e) => set("setupToken", e.target.value)}
+                className={fieldCls(!!errors.setupToken)}
+              />
+            </Field>
 
             <button
               type="submit"
