@@ -17,6 +17,7 @@ export const Route = createFileRoute("/reset-password")({
 function ResetPasswordPage() {
   const nav = useNavigate();
   const [ready, setReady] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
@@ -24,15 +25,42 @@ function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
+  const [resendEmail, setResendEmail] = useState("");
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
+  const [resendErr, setResendErr] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+
   useEffect(() => {
+    // Supabase surfaces recovery-link errors (expired/invalid) via the URL hash.
+    if (typeof window !== "undefined" && window.location.hash) {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const errCode = params.get("error_code") || params.get("error");
+      const desc = params.get("error_description");
+      if (errCode) {
+        setLinkError(
+          desc?.replace(/\+/g, " ") ||
+            "This recovery link is invalid or has expired. Request a new one below.",
+        );
+      }
+    }
     const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
+        setReady(true);
+        setLinkError(null);
+      }
     });
     supabase.auth.getSession().then(({ data: s }) => {
       if (s.session) setReady(true);
     });
     return () => data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   useEffect(() => {
     if (!success) return;
@@ -43,6 +71,30 @@ function ResetPasswordPage() {
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [success, countdown, nav]);
+
+  async function onResend(e: React.FormEvent) {
+    e.preventDefault();
+    setResendErr(null);
+    setResendMsg(null);
+    const email = resendEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setResendErr("Enter a valid email address.");
+    }
+    setResendBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
+      if (error) throw error;
+      setResendMsg("If an account exists for that email, a new reset link has been sent.");
+      setCooldown(30);
+    } catch (e) {
+      setResendErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setResendBusy(false);
+    }
+  }
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -164,8 +216,55 @@ function ResetPasswordPage() {
               {busy ? "Updating…" : "Update password"}
             </button>
           </form>
+
+          {!ready && (
+            <div className="mt-8 border-t border-border pt-6">
+              {linkError && (
+                <p className="mb-4 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                  {linkError}
+                </p>
+              )}
+              <h2 className="text-sm font-semibold">Link expired or missing?</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Enter your email and we'll send a fresh reset link.
+              </p>
+              <form onSubmit={onResend} className="mt-4 space-y-3">
+                <input
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                  className="h-12 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-amber"
+                />
+                {resendErr && (
+                  <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                    {resendErr}
+                  </p>
+                )}
+                {resendMsg && (
+                  <p className="rounded-md border border-amber/40 bg-amber/10 px-3 py-2 text-sm">
+                    {resendMsg}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={resendBusy || cooldown > 0}
+                  className="h-12 w-full rounded-full border border-amber/60 bg-background font-medium text-amber disabled:opacity-60"
+                >
+                  {resendBusy
+                    ? "Sending…"
+                    : cooldown > 0
+                      ? `Resend link (${cooldown}s)`
+                      : "Resend reset link"}
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </section>
     </PageShell>
   );
 }
+
