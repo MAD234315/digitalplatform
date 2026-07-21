@@ -11,6 +11,9 @@ import {
   Activity,
   ShieldCheck,
   Database,
+  Copy,
+  Check,
+  AlertTriangle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
