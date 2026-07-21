@@ -13,8 +13,9 @@ const AVAILABILITY_RANK: Record<SheetProduct["availability"], number> = {
   out: 2,
 };
 
-const SEEN_KEY = "products-first-seen-v3";
+const SEEN_KEY = "products-first-seen-v4";
 const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
+
 
 /** Stable product identity across sheet re-parses (sheet ids are positional). */
 function keyOf(p: SheetProduct): string {
