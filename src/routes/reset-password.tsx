@@ -46,7 +46,7 @@ function writeAttempts(key: string, list: Attempt[]) {
 function ResetPasswordPage() {
   const nav = useNavigate();
   const [ready, setReady] = useState(false);
-  const [linkError, setLinkError] = useState<string | null>(null);
+  const [linkError, setLinkError] = useState<{ code: string; title: string; message: string } | null>(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
