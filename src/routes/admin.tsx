@@ -32,7 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
 import {
   getMyRole,
-  claimFirstAdmin,
+  
   getAppSettings,
   updateSheetUrl,
   revokeSheetUrl,
@@ -85,12 +85,8 @@ function AdminPage() {
   const [status, setStatus] = useState<"loading" | "unauth" | "not-admin" | "ok">("loading");
   const [tab, setTab] = useState<Tab>("overview");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [claiming, setClaiming] = useState(false);
-  const [claimMsg, setClaimMsg] = useState<string | null>(null);
-  const [canClaim, setCanClaim] = useState(false);
 
   const fetchRole = useServerFn(getMyRole);
-  const claimFn = useServerFn(claimFirstAdmin);
 
   useEffect(() => {
     let alive = true;
@@ -113,38 +109,6 @@ function AdminPage() {
     };
   }, [fetchRole]);
 
-  useEffect(() => {
-    if (status !== "not-admin") return;
-    let alive = true;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    (async () => {
-      let hasAdmin = true;
-      try {
-        const r = await claimFn();
-        if (!alive) return;
-        if (r.claimed) {
-          setStatus("ok");
-          return;
-        }
-        hasAdmin = true;
-      } catch {
-        hasAdmin = true;
-      }
-      if (!alive) return;
-      if (!hasAdmin) {
-        setCanClaim(true);
-        return;
-      }
-      timer = setTimeout(() => {
-        if (alive) nav({ to: "/" });
-      }, 2500);
-    })();
-    return () => {
-      alive = false;
-      if (timer) clearTimeout(timer);
-    };
-  }, [status, claimFn, nav]);
-
   if (status === "loading")
     return (
       <PageShell>
@@ -166,46 +130,28 @@ function AdminPage() {
             </div>
             <h2 className="mt-5 font-display text-3xl">Access denied</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              This area is reserved for administrators. You&apos;ll be redirected to the home page shortly.
+              This area is reserved for administrators. If no admin has been created yet, use the setup page.
             </p>
-            {canClaim && (
-              <div className="mx-auto mt-6 max-w-md rounded-xl border border-amber/30 bg-amber/5 p-5 text-left">
-                <p className="text-sm text-muted-foreground">
-                  No admin has been created yet. If this is your site, claim the first admin role now.
-                </p>
-                <button
-                  onClick={async () => {
-                    setClaiming(true);
-                    setClaimMsg(null);
-                    try {
-                      const r = await claimFn();
-                      if (r.claimed) setStatus("ok");
-                      else setClaimMsg("An admin already exists. Ask them to grant you access.");
-                    } catch (e) {
-                      setClaimMsg(e instanceof Error ? e.message : "Could not claim admin.");
-                    } finally {
-                      setClaiming(false);
-                    }
-                  }}
-                  disabled={claiming}
-                  className="mt-4 rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground shadow-gold disabled:opacity-60"
-                >
-                  {claiming ? "Working…" : "Claim first admin"}
-                </button>
-                {claimMsg && <p className="mt-3 text-sm">{claimMsg}</p>}
-              </div>
-            )}
-            <button
-              onClick={() => nav({ to: "/" })}
-              className="mt-6 rounded-full border border-border px-5 py-2 text-sm hover:border-amber"
-            >
-              Go to home
-            </button>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => nav({ to: "/admin/setup" })}
+                className="rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground shadow-gold"
+              >
+                Go to setup
+              </button>
+              <button
+                onClick={() => nav({ to: "/" })}
+                className="rounded-full border border-border px-5 py-2 text-sm hover:border-amber"
+              >
+                Go to home
+              </button>
+            </div>
           </div>
         </section>
       </PageShell>
     );
   }
+
 
   return (
     <PageShell>
