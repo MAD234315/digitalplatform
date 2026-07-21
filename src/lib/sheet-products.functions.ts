@@ -25,23 +25,28 @@ function toCsvUrl(sheetUrl: string): string {
 let cachedUrl: { at: number; url: string } | null = null;
 const URL_TTL = 30_000;
 
+async function getPublicAppSettings(): Promise<{ sheet_url: string | null; site_online: boolean } | null> {
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+    if (!url || !key) return null;
+    const sb = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    const { data } = await sb.rpc("get_public_app_settings");
+    const row = Array.isArray(data) ? data[0] : data;
+    return row ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function resolveCsvUrl(): Promise<string> {
   const now = Date.now();
   if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url;
-  try {
-    // app_settings is admin-only via RLS; read it server-side with the admin client.
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("app_settings")
-      .select("sheet_url")
-      .eq("id", 1)
-      .maybeSingle();
-    const url2 = data?.sheet_url ? toCsvUrl(data.sheet_url) : DEFAULT_CSV_URL;
-    cachedUrl = { at: now, url: url2 };
-    return url2;
-  } catch {
-    return DEFAULT_CSV_URL;
-  }
+  const row = await getPublicAppSettings();
+  const url2 = row?.sheet_url ? toCsvUrl(row.sheet_url) : DEFAULT_CSV_URL;
+  cachedUrl = { at: now, url: url2 };
+  return url2;
 }
 
 export type Availability = "available" | "limited" | "out";
