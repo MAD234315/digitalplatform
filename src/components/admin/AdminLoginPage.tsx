@@ -8,16 +8,92 @@ import { getAdminBootstrapStatus, getMyRole } from "@/lib/admin.functions";
 
 type AuthMode = "signin" | "signup" | "forgot";
 
-function humanizeError(raw: string): string {
+type NextAction = { label: string; run: () => void };
+type AuthErrorInfo = {
+  title: string;
+  hint: string;
+  raw: string;
+  code?: string;
+  status?: number;
+  action?: NextAction;
+};
+
+function classifyAuthError(
+  e: unknown,
+  mode: AuthMode,
+  ctx: { email: string; goForgot: () => void; goSignup: () => void; goSignin: () => void },
+): AuthErrorInfo {
+  const anyErr = (e ?? {}) as { message?: string; code?: string; status?: number };
+  const raw = anyErr.message ?? String(e);
+  const code = anyErr.code;
+  const status = anyErr.status;
   const m = raw.toLowerCase();
-  if (m.includes("invalid login credentials")) return "Email or password is incorrect.";
-  if (m.includes("email not confirmed")) return "Please confirm your email first — check your inbox.";
-  if (m.includes("rate") && m.includes("limit")) return "Too many attempts. Please wait a minute and try again.";
-  if (m.includes("over_email_send_rate_limit")) return "Too many emails sent. Please wait before requesting another.";
-  if (m.includes("user already registered")) return "An account with this email already exists — try signing in instead.";
-  if (m.includes("password") && m.includes("short")) return "Password is too short. Use at least 6 characters.";
-  if (m.includes("network")) return "Network error. Check your connection and try again.";
-  return raw;
+
+  if (m.includes("invalid login credentials") || code === "invalid_credentials") {
+    return {
+      title: "Email or password is incorrect",
+      hint:
+        "If you just changed your password, make sure you're typing the NEW one. Old sessions and refresh tokens no longer work — only the new password does.",
+      raw, code, status,
+      action: { label: "Send a fresh reset link", run: ctx.goForgot },
+    };
+  }
+  if (m.includes("email not confirmed") || code === "email_not_confirmed") {
+    return {
+      title: "Email not confirmed",
+      hint: `Open the confirmation email sent to ${ctx.email || "your inbox"} and click the link, then sign in again.`,
+      raw, code, status,
+    };
+  }
+  if (code === "user_not_found" || m.includes("user not found")) {
+    return {
+      title: "No account found for this email",
+      hint: "Double-check the address, or create the first admin account if none exists yet.",
+      raw, code, status,
+      action: { label: "Create account", run: ctx.goSignup },
+    };
+  }
+  if (m.includes("refresh token") || code === "refresh_token_not_found") {
+    return {
+      title: "Session expired",
+      hint: "Your previous session was invalidated (usually after a password change). Sign in again with your NEW password.",
+      raw, code, status,
+    };
+  }
+  if (code === "over_email_send_rate_limit" || (m.includes("rate") && m.includes("limit"))) {
+    return {
+      title: "Too many attempts",
+      hint: "Wait a minute before trying again. The auth server throttles repeated requests to prevent abuse.",
+      raw, code, status,
+    };
+  }
+  if (code === "weak_password" || (m.includes("password") && m.includes("short"))) {
+    return {
+      title: "Password too weak",
+      hint: "Use at least 6 characters. Mix letters, numbers, and symbols for a stronger password.",
+      raw, code, status,
+    };
+  }
+  if (m.includes("user already registered") || code === "user_already_exists") {
+    return {
+      title: "Account already exists",
+      hint: "Sign in with this email instead, or use \u201CForgot password?\u201D if you can't remember it.",
+      raw, code, status,
+      action: { label: "Switch to sign in", run: ctx.goSignin },
+    };
+  }
+  if (m.includes("network") || m.includes("failed to fetch")) {
+    return {
+      title: "Network error",
+      hint: "Check your internet connection and try again. If it keeps failing, the auth server may be temporarily unreachable.",
+      raw, code, status,
+    };
+  }
+  return {
+    title: mode === "signin" ? "Sign-in failed" : mode === "signup" ? "Sign-up failed" : "Reset failed",
+    hint: "The auth server returned an unexpected error. The exact response is shown below \u2014 share it if you need help.",
+    raw, code, status,
+  };
 }
 
 export function AdminLoginPage() {
@@ -33,7 +109,7 @@ export function AdminLoginPage() {
   const [checking, setChecking] = useState(true);
   const [adminExists, setAdminExists] = useState(true);
   const [successCard, setSuccessCard] = useState<{ title: string; body: string } | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState<AuthErrorInfo | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -62,7 +138,11 @@ export function AdminLoginPage() {
       } catch {
         if (!alive) return;
         setAdminExists(true);
-        setErr("Could not verify setup status. Setup remains locked until the backend confirms zero admins.");
+        setErr({
+          title: "Backend unreachable",
+          hint: "Could not verify setup status. Setup remains locked until the backend confirms zero admins.",
+          raw: "Failed to reach getAdminBootstrapStatus server function.",
+        });
       } finally {
         if (alive) setChecking(false);
       }
@@ -128,7 +208,14 @@ export function AdminLoginPage() {
         });
       }
     } catch (e) {
-      setErr(humanizeError(e instanceof Error ? e.message : String(e)));
+      setErr(
+        classifyAuthError(e, mode, {
+          email,
+          goForgot: () => handleModeChange("forgot"),
+          goSignup: () => handleModeChange("signup"),
+          goSignin: () => handleModeChange("signin"),
+        }),
+      );
     } finally {
       setBusy(false);
     }
@@ -240,11 +327,59 @@ export function AdminLoginPage() {
               </label>
             )}
 
-            <div aria-live="polite">
+            <div aria-live="assertive">
               {err && (
-                <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
-                  {err}
-                </p>
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100">
+                  <div className="flex items-start gap-3">
+                    <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-red-100">{err.title}</p>
+                      <p className="mt-1 text-red-200/90">{err.hint}</p>
+
+                      <details className="mt-3 group">
+                        <summary className="cursor-pointer text-xs uppercase tracking-[0.18em] text-red-200/80 hover:text-red-100">
+                          Show technical details
+                        </summary>
+                        <dl className="mt-2 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 rounded-md border border-red-500/30 bg-black/30 p-3 font-mono text-xs text-red-100/90">
+                          <dt className="text-red-300/70">message</dt>
+                          <dd className="break-words">{err.raw}</dd>
+                          {err.code && (
+                            <>
+                              <dt className="text-red-300/70">code</dt>
+                              <dd className="break-words">{err.code}</dd>
+                            </>
+                          )}
+                          {typeof err.status === "number" && (
+                            <>
+                              <dt className="text-red-300/70">status</dt>
+                              <dd>{err.status}</dd>
+                            </>
+                          )}
+                        </dl>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const payload = `message: ${err.raw}${err.code ? `\ncode: ${err.code}` : ""}${typeof err.status === "number" ? `\nstatus: ${err.status}` : ""}`;
+                            void navigator.clipboard?.writeText(payload);
+                          }}
+                          className="mt-2 text-xs text-red-200/80 underline-offset-2 hover:text-red-100 hover:underline"
+                        >
+                          Copy details
+                        </button>
+                      </details>
+
+                      {err.action && (
+                        <button
+                          type="button"
+                          onClick={err.action.run}
+                          className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-full bg-amber px-4 text-xs font-medium text-amber-foreground shadow-gold"
+                        >
+                          {err.action.label}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
