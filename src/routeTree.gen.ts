@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as ProofGalleryRouteImport } from './routes/proof-gallery'
 import { Route as ProductsRouteImport } from './routes/products'
@@ -33,6 +34,11 @@ const TermsRoute = TermsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefundRoute = RefundRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRoute
   '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsRoute
   '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/products': typeof ProductsRoute
   '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/proof-gallery'
     | '/refund'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/diagnostics'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/proof-gallery'
     | '/refund'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/diagnostics'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/proof-gallery'
     | '/refund'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/diagnostics'
@@ -219,6 +231,7 @@ export interface RootRouteChildren {
   ProductsRoute: typeof ProductsRoute
   ProofGalleryRoute: typeof ProofGalleryRoute
   RefundRoute: typeof RefundRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
 }
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refund': {
@@ -357,6 +377,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRoute: ProductsRoute,
   ProofGalleryRoute: ProofGalleryRoute,
   RefundRoute: RefundRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
 }
