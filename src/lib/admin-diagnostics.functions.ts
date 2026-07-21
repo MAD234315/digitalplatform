@@ -78,7 +78,13 @@ const ROUTES_TO_CHECK = [
   { path: "/robots.txt", label: "Robots" },
 ] as const;
 
-export type EnvCheck = { name: string; present: boolean; required: boolean };
+export type EnvCheck = {
+  name: string;
+  present: boolean;
+  required: boolean;
+  purpose: string;
+  remediation: string;
+};
 export type RouteCheck = {
   path: string;
   label: string;
