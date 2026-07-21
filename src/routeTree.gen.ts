@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SetupRouteImport } from './routes/setup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as ProofGalleryRouteImport } from './routes/proof-gallery'
@@ -23,7 +24,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
 
 const TermsRoute = TermsRouteImport.update({
@@ -34,6 +37,11 @@ const TermsRoute = TermsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupRoute = SetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -96,9 +104,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSetupRoute = AdminSetupRouteImport.update({
   id: '/setup',
   path: '/setup',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
@@ -120,15 +138,17 @@ export interface FileRoutesByFullPath {
   '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/setup': typeof SetupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -138,10 +158,13 @@ export interface FileRoutesByTo {
   '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/setup': typeof SetupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -157,10 +180,13 @@ export interface FileRoutesById {
   '/proof-gallery': typeof ProofGalleryRoute
   '/refund': typeof RefundRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/setup': typeof SetupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -177,15 +203,17 @@ export interface FileRouteTypes {
     | '/proof-gallery'
     | '/refund'
     | '/reset-password'
+    | '/setup'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/diagnostics'
+    | '/admin/login'
     | '/admin/setup'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/admin'
     | '/auth'
     | '/contact'
     | '/faq'
@@ -195,10 +223,13 @@ export interface FileRouteTypes {
     | '/proof-gallery'
     | '/refund'
     | '/reset-password'
+    | '/setup'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/diagnostics'
+    | '/admin/login'
     | '/admin/setup'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -213,10 +244,13 @@ export interface FileRouteTypes {
     | '/proof-gallery'
     | '/refund'
     | '/reset-password'
+    | '/setup'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/diagnostics'
+    | '/admin/login'
     | '/admin/setup'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -232,6 +266,7 @@ export interface RootRouteChildren {
   ProofGalleryRoute: typeof ProofGalleryRoute
   RefundRoute: typeof RefundRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SetupRoute: typeof SetupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
 }
@@ -250,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup': {
+      id: '/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof SetupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -336,11 +378,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/setup': {
       id: '/admin/setup'
       path: '/setup'
       fullPath: '/admin/setup'
       preLoaderRoute: typeof AdminSetupRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/diagnostics': {
@@ -355,12 +411,16 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   AdminSetupRoute: typeof AdminSetupRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminDiagnosticsRoute: AdminDiagnosticsRoute,
+  AdminLoginRoute: AdminLoginRoute,
   AdminSetupRoute: AdminSetupRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -378,6 +438,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProofGalleryRoute: ProofGalleryRoute,
   RefundRoute: RefundRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SetupRoute: SetupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
 }

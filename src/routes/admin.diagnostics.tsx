@@ -53,7 +53,8 @@ function DiagnosticsPage() {
       setState("ok");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      if (/forbidden/i.test(msg)) setState("forbidden");
+      if (/unauthorized|authorization|jwt|session|auth/i.test(msg)) setState("unauth");
+      else if (/forbidden/i.test(msg)) setState("forbidden");
       else {
         setError(msg);
         setState("error");
@@ -76,7 +77,7 @@ function DiagnosticsPage() {
   }
 
   if (state === "unauth") {
-    nav({ to: "/auth" });
+    nav({ to: "/admin/login", replace: true });
     return null;
   }
 
