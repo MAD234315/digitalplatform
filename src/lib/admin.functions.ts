@@ -188,16 +188,38 @@ async function signImages(
 
 // ============ AUTH / ROLE ============
 
-/** Public-safe bootstrap status. Returns only whether setup is still allowed. */
+/** Public-safe bootstrap status. Uses a SECURITY DEFINER RPC callable with the
+ *  publishable key so this works on Lovable Cloud (no service-role key). */
 export const getAdminBootstrapStatus = createServerFn({ method: "GET" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { count, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("id", { count: "exact", head: true })
-    .eq("role", "admin");
-  if (error) throw new Error("Could not verify admin setup status.");
-  const adminCount = count ?? 0;
-  return { adminExists: adminCount > 0, adminCount, setupAllowed: adminCount === 0 };
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error(
+      "Missing Supabase env: SUPABASE_URL and/or SUPABASE_PUBLISHABLE_KEY are not set on the server.",
+    );
+  }
+  const key = SUPABASE_PUBLISHABLE_KEY;
+  const supabasePublic = createClient<Database>(SUPABASE_URL, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
+          h.delete("Authorization");
+        }
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
+      },
+    },
+  });
+  const { data, error } = await supabasePublic.rpc("get_admin_bootstrap_status");
+  if (error) {
+    throw new Error(`get_admin_bootstrap_status failed: ${error.message}`);
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  const adminCount = Number(row?.admin_count ?? 0);
+  const adminExists = Boolean(row?.admin_exists) || adminCount > 0;
+  return { adminExists, adminCount, setupAllowed: adminCount === 0 };
 });
 
 export const getMyRole = createServerFn({ method: "GET" })

@@ -135,13 +135,16 @@ export function AdminLoginPage() {
             // Stay on the login page for expired or non-admin sessions.
           }
         }
-      } catch {
+      } catch (e) {
         if (!alive) return;
         setAdminExists(true);
+        const anyErr = (e ?? {}) as { message?: string; code?: string; status?: number };
         setErr({
           title: "Backend unreachable",
           hint: "Could not verify setup status. Setup remains locked until the backend confirms zero admins.",
-          raw: "Failed to reach getAdminBootstrapStatus server function.",
+          raw: anyErr.message ?? String(e),
+          code: anyErr.code,
+          status: anyErr.status,
         });
       } finally {
         if (alive) setChecking(false);
