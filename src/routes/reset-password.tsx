@@ -17,6 +17,7 @@ export const Route = createFileRoute("/reset-password")({
 function ResetPasswordPage() {
   const nav = useNavigate();
   const [ready, setReady] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
@@ -24,15 +25,42 @@ function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
+  const [resendEmail, setResendEmail] = useState("");
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
+  const [resendErr, setResendErr] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+
   useEffect(() => {
+    // Supabase surfaces recovery-link errors (expired/invalid) via the URL hash.
+    if (typeof window !== "undefined" && window.location.hash) {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const errCode = params.get("error_code") || params.get("error");
+      const desc = params.get("error_description");
+      if (errCode) {
+        setLinkError(
+          desc?.replace(/\+/g, " ") ||
+            "This recovery link is invalid or has expired. Request a new one below.",
+        );
+      }
+    }
     const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
+        setReady(true);
+        setLinkError(null);
+      }
     });
     supabase.auth.getSession().then(({ data: s }) => {
       if (s.session) setReady(true);
     });
     return () => data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   useEffect(() => {
     if (!success) return;
@@ -43,6 +71,30 @@ function ResetPasswordPage() {
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [success, countdown, nav]);
+
+  async function onResend(e: React.FormEvent) {
+    e.preventDefault();
+    setResendErr(null);
+    setResendMsg(null);
+    const email = resendEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setResendErr("Enter a valid email address.");
+    }
+    setResendBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
+      if (error) throw error;
+      setResendMsg("If an account exists for that email, a new reset link has been sent.");
+      setCooldown(30);
+    } catch (e) {
+      setResendErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setResendBusy(false);
+    }
+  }
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
