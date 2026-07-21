@@ -173,24 +173,12 @@ function DiagnosticsPage() {
 
             <Section icon={KeyRound} title="Environment variables">
               <p className="mb-3 text-xs text-muted-foreground">
-                Only names and presence are shown — values are never exposed.
+                Only names and presence are shown — values are never exposed. Expand a row
+                for its purpose and a copyable remediation step.
               </p>
-              <ul className="grid gap-2 sm:grid-cols-2">
-                {report.env.map((e) => (
-                  <li
-                    key={e.name}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background/40 px-3 py-2 text-sm"
-                  >
-                    <span className="truncate font-mono text-xs">{e.name}</span>
-                    <StatusPill
-                      ok={e.present}
-                      label={e.present ? "Set" : e.required ? "Missing" : "Not set"}
-                      muted={!e.required && !e.present}
-                    />
-                  </li>
-                ))}
-              </ul>
+              <EnvTable rows={report.env} />
             </Section>
+
 
             <Section icon={Activity} title="Route health">
               <p className="mb-3 text-xs text-muted-foreground">
