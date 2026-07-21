@@ -286,6 +286,33 @@ function ResetPasswordPage() {
               <p className="mt-1 text-xs text-muted-foreground">
                 Enter your email and we'll send a fresh reset link.
               </p>
+              {cooldown > 0 && (
+                <div
+                  role="timer"
+                  aria-live="polite"
+                  className="mt-4 flex items-center justify-between rounded-lg border border-amber/40 bg-amber/10 px-4 py-3"
+                >
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      Next resend available in
+                    </p>
+                    <p className="mt-0.5 font-display text-2xl tabular-nums text-amber">
+                      {String(Math.floor(cooldown / 60)).padStart(2, "0")}:
+                      {String(cooldown % 60).padStart(2, "0")}
+                    </p>
+                  </div>
+                  <div
+                    className="relative h-10 w-10"
+                    aria-hidden="true"
+                    style={{
+                      background: `conic-gradient(hsl(var(--amber)) ${(cooldown / RESEND_COOLDOWN_S) * 360}deg, hsl(var(--border)) 0deg)`,
+                      borderRadius: "9999px",
+                    }}
+                  >
+                    <div className="absolute inset-1 rounded-full bg-card" />
+                  </div>
+                </div>
+              )}
               <form onSubmit={onResend} className="mt-4 space-y-3">
                 <input
                   type="email"
