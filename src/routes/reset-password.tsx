@@ -14,6 +14,35 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPasswordPage,
 });
 
+type Captcha = { a: number; b: number; op: "+" | "-"; answer: number };
+function makeCaptcha(): Captcha {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  const op: "+" | "-" = Math.random() > 0.5 ? "+" : "-";
+  const [x, y] = op === "-" && b > a ? [b, a] : [a, b];
+  return { a: x, b: y, op, answer: op === "+" ? x + y : x - y };
+}
+
+type Attempt = { email: string; at: number };
+function readAttempts(key: string): Attempt[] {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const now = Date.now();
+    return (JSON.parse(raw) as Attempt[]).filter((a) => now - a.at < 60 * 60 * 1000);
+  } catch {
+    return [];
+  }
+}
+function writeAttempts(key: string, list: Attempt[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+
 function ResetPasswordPage() {
   const nav = useNavigate();
   const [ready, setReady] = useState(false);
