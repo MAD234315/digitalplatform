@@ -208,7 +208,14 @@ export function AdminLoginPage() {
         });
       }
     } catch (e) {
-      setErr(humanizeError(e instanceof Error ? e.message : String(e)));
+      setErr(
+        classifyAuthError(e, mode, {
+          email,
+          goForgot: () => handleModeChange("forgot"),
+          goSignup: () => handleModeChange("signup"),
+          goSignin: () => handleModeChange("signin"),
+        }),
+      );
     } finally {
       setBusy(false);
     }
