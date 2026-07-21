@@ -14,6 +14,35 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPasswordPage,
 });
 
+type Captcha = { a: number; b: number; op: "+" | "-"; answer: number };
+function makeCaptcha(): Captcha {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  const op: "+" | "-" = Math.random() > 0.5 ? "+" : "-";
+  const [x, y] = op === "-" && b > a ? [b, a] : [a, b];
+  return { a: x, b: y, op, answer: op === "+" ? x + y : x - y };
+}
+
+type Attempt = { email: string; at: number };
+function readAttempts(key: string): Attempt[] {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const now = Date.now();
+    return (JSON.parse(raw) as Attempt[]).filter((a) => now - a.at < 60 * 60 * 1000);
+  } catch {
+    return [];
+  }
+}
+function writeAttempts(key: string, list: Attempt[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+
 function ResetPasswordPage() {
   const nav = useNavigate();
   const [ready, setReady] = useState(false);
@@ -30,6 +59,15 @@ function ResetPasswordPage() {
   const [resendMsg, setResendMsg] = useState<string | null>(null);
   const [resendErr, setResendErr] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
+
+  // Simple math captcha to block automated abuse.
+  const [captcha, setCaptcha] = useState(() => makeCaptcha());
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+
+  // Track send attempts to enforce a client-side rate limit per email.
+  const RESEND_COOLDOWN_S = 60;
+  const MAX_PER_HOUR = 3;
+  const RL_KEY = "rp_resend_attempts_v1";
 
   useEffect(() => {
     // Supabase surfaces recovery-link errors (expired/invalid) via the URL hash.
@@ -76,9 +114,23 @@ function ResetPasswordPage() {
     e.preventDefault();
     setResendErr(null);
     setResendMsg(null);
-    const email = resendEmail.trim();
+    const email = resendEmail.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return setResendErr("Enter a valid email address.");
+    }
+    if (Number(captchaAnswer) !== captcha.answer) {
+      setCaptcha(makeCaptcha());
+      setCaptchaAnswer("");
+      return setResendErr("Captcha answer is incorrect. Try the new one.");
+    }
+    const attempts = readAttempts(RL_KEY);
+    const forEmail = attempts.filter((a) => a.email === email);
+    if (forEmail.length >= MAX_PER_HOUR) {
+      const nextAt = Math.min(...forEmail.map((a) => a.at)) + 60 * 60 * 1000;
+      const mins = Math.max(1, Math.ceil((nextAt - Date.now()) / 60000));
+      return setResendErr(
+        `Too many requests for this email. Try again in about ${mins} minute${mins === 1 ? "" : "s"}.`,
+      );
     }
     setResendBusy(true);
     try {
@@ -86,14 +138,20 @@ function ResetPasswordPage() {
         redirectTo: window.location.origin + "/reset-password",
       });
       if (error) throw error;
+      writeAttempts(RL_KEY, [...attempts, { email, at: Date.now() }]);
       setResendMsg("If an account exists for that email, a new reset link has been sent.");
-      setCooldown(30);
+      setCooldown(RESEND_COOLDOWN_S);
+      setCaptcha(makeCaptcha());
+      setCaptchaAnswer("");
     } catch (e) {
       setResendErr(e instanceof Error ? e.message : String(e));
+      setCaptcha(makeCaptcha());
+      setCaptchaAnswer("");
     } finally {
       setResendBusy(false);
     }
   }
+
 
 
   async function onSubmit(e: React.FormEvent) {
@@ -238,6 +296,35 @@ function ResetPasswordPage() {
                   onChange={(e) => setResendEmail(e.target.value)}
                   className="h-12 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-amber"
                 />
+                <label className="block">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Verify you're human — what is {captcha.a} {captcha.op} {captcha.b}?
+                  </span>
+                  <div className="mt-1 flex gap-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="-?[0-9]*"
+                      required
+                      autoComplete="off"
+                      placeholder="Answer"
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      className="h-12 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-amber"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCaptcha(makeCaptcha());
+                        setCaptchaAnswer("");
+                      }}
+                      className="h-12 shrink-0 rounded-lg border border-border bg-background px-3 text-xs text-muted-foreground"
+                      aria-label="Refresh captcha"
+                    >
+                      ↻
+                    </button>
+                  </div>
+                </label>
                 {resendErr && (
                   <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
                     {resendErr}
