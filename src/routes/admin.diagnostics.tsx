@@ -285,3 +285,121 @@ function StatusPill({ ok, label, muted }: { ok: boolean; label: string; muted?: 
     </span>
   );
 }
+
+function EnvTable({
+  rows,
+}: {
+  rows: DiagnosticsReport["env"];
+}) {
+  const [openName, setOpenName] = useState<string | null>(null);
+  const [copiedName, setCopiedName] = useState<string | null>(null);
+
+  const missingRequired = rows.filter((r) => r.required && !r.present);
+
+  const copy = async (name: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedName(name);
+      setTimeout(() => setCopiedName((n) => (n === name ? null : n)), 1500);
+    } catch {
+      /* clipboard blocked — ignore */
+    }
+  };
+
+  const statusLabel = (r: DiagnosticsReport["env"][number]) =>
+    r.present ? "Set" : r.required ? "Missing" : "Not set";
+
+  return (
+    <div className="space-y-3">
+      {missingRequired.length > 0 && (
+        <div className="flex items-start gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>
+            {missingRequired.length} required variable
+            {missingRequired.length === 1 ? "" : "s"} missing. Expand{" "}
+            {missingRequired.map((r, i) => (
+              <span key={r.name}>
+                <span className="font-mono">{r.name}</span>
+                {i < missingRequired.length - 1 ? ", " : ""}
+              </span>
+            ))}{" "}
+            below for the fix.
+          </span>
+        </div>
+      )}
+
+      <div className="overflow-hidden rounded-lg border border-border">
+        <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-border bg-background/40 px-3 py-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span>Variable</span>
+          <span className="hidden sm:inline">Required</span>
+          <span>Status</span>
+        </div>
+        <ul className="divide-y divide-border">
+          {rows.map((r) => {
+            const isOpen = openName === r.name;
+            const isMissingRequired = r.required && !r.present;
+            return (
+              <li key={r.name}>
+                <button
+                  type="button"
+                  onClick={() => setOpenName(isOpen ? null : r.name)}
+                  className="grid w-full grid-cols-[1fr_auto_auto] items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-background/40"
+                  aria-expanded={isOpen}
+                >
+                  <span className="min-w-0 truncate font-mono text-xs sm:text-sm">
+                    {r.name}
+                  </span>
+                  <span className="hidden text-xs text-muted-foreground sm:inline">
+                    {r.required ? "Required" : "Optional"}
+                  </span>
+                  <StatusPill
+                    ok={r.present}
+                    label={statusLabel(r)}
+                    muted={!r.required && !r.present}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="border-t border-border/60 bg-background/30 px-3 py-3 text-sm">
+                    <p className="text-muted-foreground">{r.purpose}</p>
+                    {isMissingRequired || !r.present ? (
+                      <div className="mt-3">
+                        <div className="mb-1.5 flex items-center justify-between gap-2">
+                          <span className="text-[11px] uppercase tracking-wider text-amber">
+                            {isMissingRequired ? "Fix this" : "How to set it"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => copy(r.name, r.remediation)}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-[11px] hover:border-amber"
+                          >
+                            {copiedName === r.name ? (
+                              <>
+                                <Check className="h-3 w-3" /> Copied
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3 w-3" /> Copy steps
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <pre className="whitespace-pre-wrap rounded-md border border-border bg-background/60 p-3 text-xs leading-relaxed text-foreground/90">
+                          {r.remediation}
+                        </pre>
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-xs text-emerald-300/80">
+                        ✓ Currently set. No action needed.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
