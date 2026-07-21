@@ -13,9 +13,8 @@ const AVAILABILITY_RANK: Record<SheetProduct["availability"], number> = {
   out: 2,
 };
 
-const SEEN_KEY = "products-first-seen-v4";
+const SEEN_KEY = "products-first-seen-v5";
 const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
-
 
 /** Stable product identity across sheet re-parses (sheet ids are positional). */
 function keyOf(p: SheetProduct): string {
@@ -24,11 +23,13 @@ function keyOf(p: SheetProduct): string {
 
 /**
  * Content fingerprint of a product row. Any edit in the spreadsheet that
- * changes one of these fields flips the signature and re-stamps the
- * first-seen timestamp — so edited products re-enter "Latest" for 7 days.
+ * changes ANY user-visible field flips the signature and re-stamps the
+ * timestamp — so edited products re-enter "Latest" for 7 days.
  */
 function signatureOf(p: SheetProduct): string {
   return [
+    p.category,
+    p.name,
     p.status,
     p.validity,
     p.plan,
@@ -36,9 +37,12 @@ function signatureOf(p: SheetProduct): string {
     p.supports,
     p.warranty,
     p.availability,
+    p.inStock ? "1" : "0",
+    p.loot ? "1" : "0",
     p.badges.slice().sort().join(","),
   ].join("|");
 }
+
 
 type SeenEntry = { t: number; sig: string };
 type SeenMap = Record<string, SeenEntry>;
