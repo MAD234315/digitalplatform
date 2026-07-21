@@ -296,6 +296,35 @@ function ResetPasswordPage() {
                   onChange={(e) => setResendEmail(e.target.value)}
                   className="h-12 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-amber"
                 />
+                <label className="block">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Verify you're human — what is {captcha.a} {captcha.op} {captcha.b}?
+                  </span>
+                  <div className="mt-1 flex gap-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="-?[0-9]*"
+                      required
+                      autoComplete="off"
+                      placeholder="Answer"
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      className="h-12 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-amber"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCaptcha(makeCaptcha());
+                        setCaptchaAnswer("");
+                      }}
+                      className="h-12 shrink-0 rounded-lg border border-border bg-background px-3 text-xs text-muted-foreground"
+                      aria-label="Refresh captcha"
+                    >
+                      ↻
+                    </button>
+                  </div>
+                </label>
                 {resendErr && (
                   <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
                     {resendErr}
