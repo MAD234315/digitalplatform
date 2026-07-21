@@ -1,27 +1,28 @@
-# Recover the Super Admin Setup Token
+# Create the Super Admin
 
-## Situation
+Your project uses the mirrored admin panel — there is **no `/admin/setup` page and no setup token** here. Roles live in the `user_roles` table and the first admin is claimed via a one-time button on `/admin` itself (backed by the `claim_first_admin` DB function, which only succeeds when zero admins exist).
 
-The `/admin/setup` page requires the `ADMIN_BOOTSTRAP_TOKEN` server secret. This secret was generated previously and stored securely on the server. Secret values are write-only — neither the Lovable UI nor I can read back the stored value, so it can't simply be "shown" to you.
+## Steps
 
-## Options
+1. Go to **`/auth`** and either sign up or sign in with the email you want to make the Super Admin.
+   - If sign-ups are disabled in Cloud → Users → Auth Settings, enable "Allow new users to sign up" temporarily, or invite the user from the Users list.
+2. After signing in, go to **`/admin`**.
+3. You'll see a card that says *"No admin has been created yet…"* with a **"Claim first admin"** button. Click it.
+4. The page reloads showing the full admin dashboard. That account is now the Super Admin.
+5. (Optional) Turn sign-ups back off in Cloud auth settings so no one else can register.
 
-Pick one:
+## Adding more admins later
 
-### Option A — Reset the token to a value you choose (recommended)
-1. Open the secure secret form for `ADMIN_BOOTSTRAP_TOKEN`.
-2. You paste in a new strong random string (e.g. from a password manager, or `openssl rand -hex 32`).
-3. Use that same string on the `/admin/setup` page to create the Super Admin.
-4. After Super Admin is created, the token stops being needed for day-to-day use.
+From the admin dashboard's **Admins** tab, invite additional users by email — they'll appear in `user_roles` with the `admin` role.
 
-### Option B — Skip the token gate for first-time bootstrap
-1. Temporarily relax `bootstrapSuperAdmin` in `src/lib/admins.functions.ts` so that when zero admins exist, the token check is bypassed (still requires an authenticated user).
-2. You complete `/admin/setup` without a token.
-3. Immediately re-enable the token check so no one else can claim admin later.
+## Notes
 
-Option A is safer (no code change, no temporary open window). Option B is faster if you want to skip touching secrets.
+- The old `/admin/setup` + `ADMIN_BOOTSTRAP_TOKEN` flow was replaced when we switched to the mirrored admin panel. The `ADMIN_BOOTSTRAP_TOKEN` secret is currently unused; it can stay or be deleted — your call.
+- If the "Claim first admin" button errors with *"already claimed"*, an admin row already exists — sign in as that account, or (if you've lost access) I can walk you through resetting it.
 
-## What I need from you
+## Want me to change anything?
 
-- Confirm Option A or Option B.
-- If Option A: I'll open the secure form; you paste the new token, then reuse it on `/admin/setup`.
+- Delete the unused `ADMIN_BOOTSTRAP_TOKEN` secret?
+- Restore a dedicated `/admin/setup` page instead of the inline button?
+
+Otherwise no code changes needed — just follow the 5 steps above.
