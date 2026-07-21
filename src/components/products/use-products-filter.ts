@@ -109,7 +109,6 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     if (products.length === 0) return;
     const existing = readSeen();
     const now = Date.now();
-    const firstRun = existing === null;
     const map: SeenMap = { ...(existing ?? {}) };
     let changed = false;
     for (const p of products) {
@@ -117,9 +116,11 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       const sig = signatureOf(p);
       const prev = map[k];
       if (!prev) {
-        // First run: backfill with 0 so pre-existing items aren't "latest".
-        // Later runs: stamp with now so new items stay "latest" for 7 days.
-        map[k] = { t: firstRun ? 0 : now, sig };
+        // Newly-observed product (first sight in this browser OR truly new
+        // in the catalogue) → stamp with `now` so it appears in Latest for
+        // the next 7 days. Same behaviour whether this is the very first
+        // visit or a subsequent one.
+        map[k] = { t: now, sig };
         changed = true;
       } else if (prev.sig !== sig) {
         // Row edited in the spreadsheet → restart the 7-day window from today.
@@ -130,6 +131,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     if (changed) writeSeen(map);
     setSeen(map);
   }, [products]);
+
 
   // Map of stable product key → last-observed update timestamp (0 = pre-existing
   // baseline, i.e. present on the very first mount before we started tracking).
