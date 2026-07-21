@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/layout/PageShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,10 +21,10 @@ function ResetPasswordPage() {
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    // Supabase parses the recovery hash and emits PASSWORD_RECOVERY / SIGNED_IN.
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
     });
@@ -34,24 +34,81 @@ function ResetPasswordPage() {
     return () => data.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!success) return;
+    if (countdown <= 0) {
+      nav({ to: "/admin" });
+      return;
+    }
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [success, countdown, nav]);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    setMsg(null);
     if (password.length < 1) return setErr("Password is required.");
     if (password !== confirm) return setErr("Passwords do not match.");
     setBusy(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      setMsg("Password updated. Redirecting to admin…");
-      setTimeout(() => nav({ to: "/admin" }), 1200);
+      setSuccess(true);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }
   }
+
+  if (success) {
+    return (
+      <PageShell>
+        <section className="mx-auto max-w-md px-5 pt-32 pb-24">
+          <div className="rounded-2xl border border-amber/40 bg-card/70 p-8 text-center shadow-gold backdrop-blur">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-amber/50 bg-amber/10 shadow-gold">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-8 w-8 text-amber"
+                aria-hidden="true"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </div>
+            <h1 className="mt-6 font-display text-3xl">Password updated</h1>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Your password has been changed successfully. You can now sign in with your new
+              password.
+            </p>
+            <p className="mt-6 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Redirecting to admin in {countdown}s
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link
+                to="/admin"
+                className="h-12 flex-1 inline-flex items-center justify-center rounded-full bg-amber font-medium text-amber-foreground shadow-gold"
+              >
+                Go to admin
+              </Link>
+              <Link
+                to="/auth"
+                className="h-12 flex-1 inline-flex items-center justify-center rounded-full border border-border bg-background font-medium"
+              >
+                Sign in
+              </Link>
+            </div>
+          </div>
+        </section>
+      </PageShell>
+    );
+  }
+
 
   return (
     <PageShell>
@@ -97,11 +154,6 @@ function ResetPasswordPage() {
             {err && (
               <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
                 {err}
-              </p>
-            )}
-            {msg && (
-              <p className="rounded-md border border-amber/40 bg-amber/10 px-3 py-2 text-sm">
-                {msg}
               </p>
             )}
             <button
