@@ -12,17 +12,58 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const REQUIRED_ENV = [
-  "SUPABASE_URL",
-  "SUPABASE_PUBLISHABLE_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY",
-] as const;
+type EnvSpec = {
+  name: string;
+  required: boolean;
+  purpose: string;
+  remediation: string;
+};
 
-const OPTIONAL_ENV = [
-  "LOVABLE_API_KEY",
-  "ADMIN_BOOTSTRAP_TOKEN",
-  "SUPABASE_DB_URL",
-] as const;
+const ENV_SPECS: EnvSpec[] = [
+  {
+    name: "SUPABASE_URL",
+    required: true,
+    purpose:
+      "Server-side Supabase base URL. Used by every server function and the auth middleware.",
+    remediation:
+      "Lovable Cloud auto-injects this. If it's missing, open the Cloud panel in the Lovable sidebar, confirm the backend is provisioned and healthy, then republish. For local dev, add SUPABASE_URL=https://<project-ref>.supabase.co to your .env file at the repo root.",
+  },
+  {
+    name: "SUPABASE_PUBLISHABLE_KEY",
+    required: true,
+    purpose:
+      "Server-side publishable/anon key. Powers requireSupabaseAuth and the public server client used during SSR.",
+    remediation:
+      "Lovable Cloud auto-injects this. If missing, verify the backend is healthy in the Cloud panel and republish. For local dev, add SUPABASE_PUBLISHABLE_KEY=<sb_publishable_...> to .env at the repo root.",
+  },
+  {
+    name: "SUPABASE_SERVICE_ROLE_KEY",
+    required: false,
+    purpose:
+      "Service-role key that bypasses RLS. Used only for admin-only writes (e.g. auth.admin.*, cross-user maintenance).",
+    remediation:
+      "This key is NOT available on Lovable Cloud — do not attempt to set it here. Admin operations use user-scoped requireSupabaseAuth + RLS instead. For local dev only, you may add SUPABASE_SERVICE_ROLE_KEY to .env (never commit it).",
+  },
+  {
+    name: "SUPABASE_PROJECT_ID",
+    required: false,
+    purpose: "Supabase project ref. Informational only; no runtime path depends on it.",
+    remediation: "Optional. Safe to leave unset.",
+  },
+  {
+    name: "LOVABLE_API_KEY",
+    required: false,
+    purpose: "Auth token for the Lovable AI Gateway. Only needed if you call AI models server-side.",
+    remediation:
+      "Auto-injected on Lovable Cloud. If missing and you need AI features, open Project Settings → Secrets in the Lovable editor and rotate/re-add it.",
+  },
+  {
+    name: "SUPABASE_DB_URL",
+    required: false,
+    purpose: "Direct Postgres connection string. Not used by the app at runtime.",
+    remediation: "Optional. Safe to leave unset.",
+  },
+];
 
 const ROUTES_TO_CHECK = [
   { path: "/", label: "Home" },
@@ -37,7 +78,13 @@ const ROUTES_TO_CHECK = [
   { path: "/robots.txt", label: "Robots" },
 ] as const;
 
-export type EnvCheck = { name: string; present: boolean; required: boolean };
+export type EnvCheck = {
+  name: string;
+  present: boolean;
+  required: boolean;
+  purpose: string;
+  remediation: string;
+};
 export type RouteCheck = {
   path: string;
   label: string;
@@ -115,10 +162,13 @@ export const getAdminDiagnostics = createServerFn({ method: "GET" })
     const origin = `${url.protocol}//${url.host}`;
 
     // Env presence (names only, no values).
-    const env: EnvCheck[] = [
-      ...REQUIRED_ENV.map((n) => ({ name: n, present: Boolean(process.env[n]), required: true })),
-      ...OPTIONAL_ENV.map((n) => ({ name: n, present: Boolean(process.env[n]), required: false })),
-    ];
+    const env: EnvCheck[] = ENV_SPECS.map((s) => ({
+      name: s.name,
+      present: Boolean(process.env[s.name]),
+      required: s.required,
+      purpose: s.purpose,
+      remediation: s.remediation,
+    }));
 
     // Caller metadata + admin count.
     let email: string | null = null;
