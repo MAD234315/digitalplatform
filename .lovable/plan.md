@@ -1,22 +1,49 @@
-## Current behavior (already implemented last turn)
+# Admin Login UX Improvements
 
-`src/components/products/use-products-filter.ts` tracks a per-product content fingerprint in `localStorage` (`products-first-seen-v4`):
+Scope: `src/components/admin/AdminLoginPage.tsx` only. Keep the existing black & gold theme, layout, and auth logic. No changes to server functions, routes, or auth flow.
 
-- **Added** — a product key never seen before is stamped with `now` and appears in Latest for 7 days.
-- **Edited** — when any tracked field (status, validity, plan, type, supports, warranty, availability, badges) changes vs. the stored fingerprint, the timestamp is reset to `now` and the item jumps back to the top of Latest for another 7 days.
-- **Sort** — Latest is sorted by `updatedAt DESC`, tie-broken by original catalogue order.
-- **Expiry** — after 7 days without further edits, the item drops out of Latest but stays in the main catalogue.
+## Changes
 
-So any edit made in the Google Sheet (the product source) or a newly-added row will surface in Latest on the next page load.
+1. **First-time setup banner (prominent)**
+   - When `adminExists === false`, replace the small amber note with a large, unmissable card: shield icon, heading "No admin exists yet — create the first one", and a primary "Create first admin account" button that switches to signup mode immediately (one click instead of scrolling to find the small link).
 
-## Gap this plan closes
+2. **Clearer mode header + icons**
+   - Add a small icon per mode (LogIn / UserPlus / KeyRound) next to the title.
+   - Rewrite subtitles to be action-oriented: "Sign in to the admin console", "Create the first Super Admin account", "We'll email you a reset link".
 
-The current tracker only reacts to a limited set of fields. If you edit **name**, **category**, **description**, **image**, or **price/detail text** in the sheet, the fingerprint does not change and Latest does not update.
+3. **Show/hide password toggle**
+   - Add an eye icon inside the password field to toggle visibility. Standard accessibility pattern with `aria-label`.
 
-## Plan
+4. **Inline field validation + friendlier errors**
+   - Map common Supabase error strings to human copy:
+     - "Invalid login credentials" → "Email or password is incorrect."
+     - "Email not confirmed" → "Please confirm your email first — check your inbox."
+     - Rate-limit errors → "Too many attempts. Please wait a minute and try again."
+   - Fall back to the raw message otherwise.
 
-1. **Expand the edit signal** in `signatureOf()` to include every user-visible field on `SheetProduct` (name, category, description, price, image URL, etc.), so any sheet edit — not just status/badges — moves the row to the top of Latest.
-2. **Bump `SEEN_KEY`** to `products-first-seen-v5` so existing browsers rebuild the fingerprint map cleanly with the new field set (one-time reset; visible products get re-stamped as "just seen" per the current first-sight rule).
-3. **Verify on `/products`** by toggling the Latest pill: the count should equal recently-seen + recently-edited items, and the most recently changed product should be first.
+5. **Loading state polish**
+   - Replace "Please wait…" with a spinner + contextual label ("Signing in…", "Creating account…", "Sending reset link…").
+   - Disable form fields (not just the button) during submit to prevent double-submits.
 
-No schema or admin-panel changes are needed — the product catalogue is sourced from the Google Sheet, and edits there already flow through this tracker.
+6. **Success feedback for reset + signup**
+   - After signup with email confirmation required, show a success card (green check, "Account created — check your inbox") instead of only swapping the mode + tiny amber message.
+   - After reset link sent, show the same success card style with the email address echoed back.
+
+7. **Caps Lock warning on password**
+   - Small inline hint under the password field when Caps Lock is detected — prevents the #1 cause of "wrong password" complaints.
+
+8. **Helpful footer links**
+   - Add a small footer row: "← Back to site" (links to `/`) and "Need help? Contact support" (mailto). Currently there's no escape hatch if a user lands here by mistake.
+
+9. **Accessibility**
+   - Add `aria-live="polite"` region for error/success messages so screen readers announce them.
+   - Ensure the submit button has a descriptive `aria-label` matching current mode.
+   - Autofocus the email field on mount (and password field after switching modes).
+
+## Out of scope
+- No changes to `src/lib/admin.functions.ts`, routing, or the `/admin/setup` page.
+- No visual theme changes — same amber/gold tokens, same `PageShell`, same card structure.
+- No new dependencies.
+
+## Files touched
+- `src/components/admin/AdminLoginPage.tsx` (single file)
