@@ -85,12 +85,8 @@ function AdminPage() {
   const [status, setStatus] = useState<"loading" | "unauth" | "not-admin" | "ok">("loading");
   const [tab, setTab] = useState<Tab>("overview");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [claiming, setClaiming] = useState(false);
-  const [claimMsg, setClaimMsg] = useState<string | null>(null);
-  const [canClaim, setCanClaim] = useState(false);
 
   const fetchRole = useServerFn(getMyRole);
-  const claimFn = useServerFn(claimFirstAdmin);
 
   useEffect(() => {
     let alive = true;
@@ -112,38 +108,6 @@ function AdminPage() {
       alive = false;
     };
   }, [fetchRole]);
-
-  useEffect(() => {
-    if (status !== "not-admin") return;
-    let alive = true;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    (async () => {
-      let hasAdmin = true;
-      try {
-        const r = await claimFn();
-        if (!alive) return;
-        if (r.claimed) {
-          setStatus("ok");
-          return;
-        }
-        hasAdmin = true;
-      } catch {
-        hasAdmin = true;
-      }
-      if (!alive) return;
-      if (!hasAdmin) {
-        setCanClaim(true);
-        return;
-      }
-      timer = setTimeout(() => {
-        if (alive) nav({ to: "/" });
-      }, 2500);
-    })();
-    return () => {
-      alive = false;
-      if (timer) clearTimeout(timer);
-    };
-  }, [status, claimFn, nav]);
 
   if (status === "loading")
     return (
