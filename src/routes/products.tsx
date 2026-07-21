@@ -221,7 +221,7 @@ function Products() {
       {stock !== "latest" && (
         <ErrorBoundary boundary="products:recently-added" fallback={null}>
           <RecentlyAdded
-            products={latestProducts}
+            products={recentlyUpdatedProducts}
             onSeeAll={() => {
               setActive("All");
               setQ("");
