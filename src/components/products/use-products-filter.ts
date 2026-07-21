@@ -130,31 +130,62 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     setSeen(map);
   }, [products]);
 
-  // Single source of truth for "Latest": one filtered+sorted array; every
-  // other Latest-derived value (Set of keys, Set of ids, count, list) is
-  // derived from it so the Live Stats card and the product grid can never
-  // drift apart.
-  const latestProducts = useMemo(() => {
-    const cutoff = Date.now() - LATEST_WINDOW_MS;
-    return products
-      .filter((p) => p.availability === "available" && p.inStock)
-      .map((p) => ({ p, t: seen[keyOf(p)]?.t ?? 0 }))
-      .filter((x) => x.t > cutoff)
-      .sort((a, b) => b.t - a.t)
-      .map((x) => x.p);
+  // Map of stable product key → last-observed update timestamp (0 = pre-existing
+  // baseline, i.e. present on the very first mount before we started tracking).
+  // Used both to sort "Latest" and to badge recently-edited cards.
+  const updatedAtByKey = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of products) m.set(keyOf(p), seen[keyOf(p)]?.t ?? 0);
+    return m;
   }, [products, seen]);
+
+  // Original catalogue order — used as a stable tiebreaker (proxy for creation
+  // order) so products with the same updatedAt stay in a deterministic slot.
+  const originalIndex = useMemo(() => {
+    const m = new Map<string, number>();
+    products.forEach((p, i) => m.set(p.id, i));
+    return m;
+  }, [products]);
+
+  // "Latest" = every product sorted by most-recently-updated first, tiebroken
+  // by original creation order. Any edit in the admin panel flips the row's
+  // signature (see effect above), restamps its timestamp to `now`, and the
+  // product jumps to the top of this list on the next render.
+  const latestProducts = useMemo(() => {
+    return products
+      .slice()
+      .sort((a, b) => {
+        const tb = updatedAtByKey.get(keyOf(b)) ?? 0;
+        const ta = updatedAtByKey.get(keyOf(a)) ?? 0;
+        if (tb !== ta) return tb - ta;
+        return (originalIndex.get(a.id) ?? 0) - (originalIndex.get(b.id) ?? 0);
+      });
+  }, [products, updatedAtByKey, originalIndex]);
+
+  // Subset of latestProducts within the 7-day window — powers the "New" card
+  // badge and the "Recently added · last 7 days" strip. Kept separate from the
+  // sort behaviour so the Latest filter itself is never empty.
+  const recentlyUpdatedProducts = useMemo(() => {
+    const cutoff = Date.now() - LATEST_WINDOW_MS;
+    return latestProducts.filter(
+      (p) =>
+        p.availability === "available" &&
+        p.inStock &&
+        (updatedAtByKey.get(keyOf(p)) ?? 0) > cutoff,
+    );
+  }, [latestProducts, updatedAtByKey]);
 
   const latestKeys = useMemo(() => {
     const s = new Set<string>();
-    for (const p of latestProducts) s.add(keyOf(p));
+    for (const p of recentlyUpdatedProducts) s.add(keyOf(p));
     return s;
-  }, [latestProducts]);
+  }, [recentlyUpdatedProducts]);
 
   const latestIds = useMemo(() => {
     const s = new Set<string>();
-    for (const p of latestProducts) s.add(p.id);
+    for (const p of recentlyUpdatedProducts) s.add(p.id);
     return s;
-  }, [latestProducts]);
+  }, [recentlyUpdatedProducts]);
 
   const categoryCounts = useMemo(() => {
     const m = new Map<string, number>();
@@ -171,12 +202,13 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     }
     return {
       all: products.length,
-      latest: latestProducts.length,
+      // Latest is a sort mode over the full catalogue — count matches All.
+      latest: products.length,
       "in-stock": inStock,
       limited,
       out,
     } as Record<StockFilter, number>;
-  }, [products, latestProducts]);
+  }, [products]);
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
@@ -190,7 +222,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
         if (stock === "in-stock" && p.availability !== "available") return false;
         if (stock === "limited" && p.availability !== "limited") return false;
         if (stock === "out" && p.availability !== "out") return false;
-        if (stock === "latest" && !latestIds.has(p.id)) return false;
+        // "latest" does NOT filter — it only changes the sort order below.
       }
       if (needle) {
         const hay = haystacks.get(p.id);
@@ -198,6 +230,16 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       }
       return true;
     });
+    // Latest sort takes precedence over the sort dropdown so clicking the
+    // Latest pill always surfaces the most-recently-edited products first.
+    if (stock === "latest" && !searching) {
+      return list.slice().sort((a, b) => {
+        const tb = updatedAtByKey.get(keyOf(b)) ?? 0;
+        const ta = updatedAtByKey.get(keyOf(a)) ?? 0;
+        if (tb !== ta) return tb - ta;
+        return (originalIndex.get(a.id) ?? 0) - (originalIndex.get(b.id) ?? 0);
+      });
+    }
     if (sort === "name-asc") {
       return list.slice().sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -205,7 +247,9 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       return list.slice().sort((a, b) => AVAILABILITY_RANK[a.availability] - AVAILABILITY_RANK[b.availability]);
     }
     return list;
-  }, [products, active, stock, sort, deferredQ, latestIds, haystacks]);
+  }, [products, active, stock, sort, deferredQ, haystacks, updatedAtByKey, originalIndex]);
+
+
 
 
   return {
