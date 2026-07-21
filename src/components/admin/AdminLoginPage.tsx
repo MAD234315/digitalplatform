@@ -109,7 +109,7 @@ export function AdminLoginPage() {
   const [checking, setChecking] = useState(true);
   const [adminExists, setAdminExists] = useState(true);
   const [successCard, setSuccessCard] = useState<{ title: string; body: string } | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState<AuthErrorInfo | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
