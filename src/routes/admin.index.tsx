@@ -32,7 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
 import {
   getMyRole,
-  
+  getAdminBootstrapStatus,
   getAppSettings,
   updateSheetUrl,
   revokeSheetUrl,
