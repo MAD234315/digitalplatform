@@ -8,16 +8,92 @@ import { getAdminBootstrapStatus, getMyRole } from "@/lib/admin.functions";
 
 type AuthMode = "signin" | "signup" | "forgot";
 
-function humanizeError(raw: string): string {
+type NextAction = { label: string; run: () => void };
+type AuthErrorInfo = {
+  title: string;
+  hint: string;
+  raw: string;
+  code?: string;
+  status?: number;
+  action?: NextAction;
+};
+
+function classifyAuthError(
+  e: unknown,
+  mode: AuthMode,
+  ctx: { email: string; goForgot: () => void; goSignup: () => void; goSignin: () => void },
+): AuthErrorInfo {
+  const anyErr = (e ?? {}) as { message?: string; code?: string; status?: number };
+  const raw = anyErr.message ?? String(e);
+  const code = anyErr.code;
+  const status = anyErr.status;
   const m = raw.toLowerCase();
-  if (m.includes("invalid login credentials")) return "Email or password is incorrect.";
-  if (m.includes("email not confirmed")) return "Please confirm your email first — check your inbox.";
-  if (m.includes("rate") && m.includes("limit")) return "Too many attempts. Please wait a minute and try again.";
-  if (m.includes("over_email_send_rate_limit")) return "Too many emails sent. Please wait before requesting another.";
-  if (m.includes("user already registered")) return "An account with this email already exists — try signing in instead.";
-  if (m.includes("password") && m.includes("short")) return "Password is too short. Use at least 6 characters.";
-  if (m.includes("network")) return "Network error. Check your connection and try again.";
-  return raw;
+
+  if (m.includes("invalid login credentials") || code === "invalid_credentials") {
+    return {
+      title: "Email or password is incorrect",
+      hint:
+        "If you just changed your password, make sure you're typing the NEW one. Old sessions and refresh tokens no longer work — only the new password does.",
+      raw, code, status,
+      action: { label: "Send a fresh reset link", run: ctx.goForgot },
+    };
+  }
+  if (m.includes("email not confirmed") || code === "email_not_confirmed") {
+    return {
+      title: "Email not confirmed",
+      hint: `Open the confirmation email sent to ${ctx.email || "your inbox"} and click the link, then sign in again.`,
+      raw, code, status,
+    };
+  }
+  if (code === "user_not_found" || m.includes("user not found")) {
+    return {
+      title: "No account found for this email",
+      hint: "Double-check the address, or create the first admin account if none exists yet.",
+      raw, code, status,
+      action: { label: "Create account", run: ctx.goSignup },
+    };
+  }
+  if (m.includes("refresh token") || code === "refresh_token_not_found") {
+    return {
+      title: "Session expired",
+      hint: "Your previous session was invalidated (usually after a password change). Sign in again with your NEW password.",
+      raw, code, status,
+    };
+  }
+  if (code === "over_email_send_rate_limit" || (m.includes("rate") && m.includes("limit"))) {
+    return {
+      title: "Too many attempts",
+      hint: "Wait a minute before trying again. The auth server throttles repeated requests to prevent abuse.",
+      raw, code, status,
+    };
+  }
+  if (code === "weak_password" || (m.includes("password") && m.includes("short"))) {
+    return {
+      title: "Password too weak",
+      hint: "Use at least 6 characters. Mix letters, numbers, and symbols for a stronger password.",
+      raw, code, status,
+    };
+  }
+  if (m.includes("user already registered") || code === "user_already_exists") {
+    return {
+      title: "Account already exists",
+      hint: "Sign in with this email instead, or use \u201CForgot password?\u201D if you can't remember it.",
+      raw, code, status,
+      action: { label: "Switch to sign in", run: ctx.goSignin },
+    };
+  }
+  if (m.includes("network") || m.includes("failed to fetch")) {
+    return {
+      title: "Network error",
+      hint: "Check your internet connection and try again. If it keeps failing, the auth server may be temporarily unreachable.",
+      raw, code, status,
+    };
+  }
+  return {
+    title: mode === "signin" ? "Sign-in failed" : mode === "signup" ? "Sign-up failed" : "Reset failed",
+    hint: "The auth server returned an unexpected error. The exact response is shown below \u2014 share it if you need help.",
+    raw, code, status,
+  };
 }
 
 export function AdminLoginPage() {
