@@ -147,13 +147,15 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     return m;
   }, [products]);
 
-  // "Latest" = every product sorted by most-recently-updated first, tiebroken
-  // by original creation order. Any edit in the admin panel flips the row's
+  // "Latest" = products edited/added within the last 7 days, sorted by most
+  // recently updated first. Any edit in the admin panel flips the row's
   // signature (see effect above), restamps its timestamp to `now`, and the
-  // product jumps to the top of this list on the next render.
-  const latestProducts = useMemo(() => {
+  // product jumps to the top. After 7 days it drops out automatically but
+  // remains in the main catalogue.
+  const recentlyUpdatedProducts = useMemo(() => {
+    const cutoff = Date.now() - LATEST_WINDOW_MS;
     return products
-      .slice()
+      .filter((p) => (updatedAtByKey.get(keyOf(p)) ?? 0) > cutoff)
       .sort((a, b) => {
         const tb = updatedAtByKey.get(keyOf(b)) ?? 0;
         const ta = updatedAtByKey.get(keyOf(a)) ?? 0;
@@ -162,18 +164,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       });
   }, [products, updatedAtByKey, originalIndex]);
 
-  // Subset of latestProducts within the 7-day window — powers the "New" card
-  // badge and the "Recently added · last 7 days" strip. Kept separate from the
-  // sort behaviour so the Latest filter itself is never empty.
-  const recentlyUpdatedProducts = useMemo(() => {
-    const cutoff = Date.now() - LATEST_WINDOW_MS;
-    return latestProducts.filter(
-      (p) =>
-        p.availability === "available" &&
-        p.inStock &&
-        (updatedAtByKey.get(keyOf(p)) ?? 0) > cutoff,
-    );
-  }, [latestProducts, updatedAtByKey]);
+  // Kept for back-compat with any consumer that used the full sorted list.
+  const latestProducts = recentlyUpdatedProducts;
 
   const latestKeys = useMemo(() => {
     const s = new Set<string>();
@@ -202,13 +194,14 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     }
     return {
       all: products.length,
-      // Latest is a sort mode over the full catalogue — count matches All.
-      latest: products.length,
+      // Latest counts only rows edited within the 7-day window.
+      latest: recentlyUpdatedProducts.length,
       "in-stock": inStock,
       limited,
       out,
     } as Record<StockFilter, number>;
-  }, [products]);
+  }, [products, recentlyUpdatedProducts]);
+
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
