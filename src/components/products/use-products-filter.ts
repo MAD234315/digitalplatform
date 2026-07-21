@@ -147,13 +147,15 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     return m;
   }, [products]);
 
-  // "Latest" = every product sorted by most-recently-updated first, tiebroken
-  // by original creation order. Any edit in the admin panel flips the row's
+  // "Latest" = products edited/added within the last 7 days, sorted by most
+  // recently updated first. Any edit in the admin panel flips the row's
   // signature (see effect above), restamps its timestamp to `now`, and the
-  // product jumps to the top of this list on the next render.
-  const latestProducts = useMemo(() => {
+  // product jumps to the top. After 7 days it drops out automatically but
+  // remains in the main catalogue.
+  const recentlyUpdatedProducts = useMemo(() => {
+    const cutoff = Date.now() - LATEST_WINDOW_MS;
     return products
-      .slice()
+      .filter((p) => (updatedAtByKey.get(keyOf(p)) ?? 0) > cutoff)
       .sort((a, b) => {
         const tb = updatedAtByKey.get(keyOf(b)) ?? 0;
         const ta = updatedAtByKey.get(keyOf(a)) ?? 0;
@@ -162,18 +164,8 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       });
   }, [products, updatedAtByKey, originalIndex]);
 
-  // Subset of latestProducts within the 7-day window — powers the "New" card
-  // badge and the "Recently added · last 7 days" strip. Kept separate from the
-  // sort behaviour so the Latest filter itself is never empty.
-  const recentlyUpdatedProducts = useMemo(() => {
-    const cutoff = Date.now() - LATEST_WINDOW_MS;
-    return latestProducts.filter(
-      (p) =>
-        p.availability === "available" &&
-        p.inStock &&
-        (updatedAtByKey.get(keyOf(p)) ?? 0) > cutoff,
-    );
-  }, [latestProducts, updatedAtByKey]);
+  // Kept for back-compat with any consumer that used the full sorted list.
+  const latestProducts = recentlyUpdatedProducts;
 
   const latestKeys = useMemo(() => {
     const s = new Set<string>();
@@ -202,27 +194,26 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     }
     return {
       all: products.length,
-      // Latest is a sort mode over the full catalogue — count matches All.
-      latest: products.length,
+      // Latest counts only rows edited within the 7-day window.
+      latest: recentlyUpdatedProducts.length,
       "in-stock": inStock,
       limited,
       out,
     } as Record<StockFilter, number>;
-  }, [products]);
+  }, [products, recentlyUpdatedProducts]);
+
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
-    // When the user is actively searching, ignore the category and stock
-    // filters — the query should hit the whole catalogue so results aren't
-    // silently hidden by an active "In stock" / "Latest" / category pill.
     const searching = needle.length > 0;
+    const cutoff = Date.now() - LATEST_WINDOW_MS;
     const list = products.filter((p) => {
       if (!searching) {
         if (active !== "All" && p.category !== active) return false;
         if (stock === "in-stock" && p.availability !== "available") return false;
         if (stock === "limited" && p.availability !== "limited") return false;
         if (stock === "out" && p.availability !== "out") return false;
-        // "latest" does NOT filter — it only changes the sort order below.
+        if (stock === "latest" && (updatedAtByKey.get(keyOf(p)) ?? 0) <= cutoff) return false;
       }
       if (needle) {
         const hay = haystacks.get(p.id);
@@ -230,8 +221,6 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       }
       return true;
     });
-    // Latest sort takes precedence over the sort dropdown so clicking the
-    // Latest pill always surfaces the most-recently-edited products first.
     if (stock === "latest" && !searching) {
       return list.slice().sort((a, b) => {
         const tb = updatedAtByKey.get(keyOf(b)) ?? 0;
@@ -248,6 +237,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     }
     return list;
   }, [products, active, stock, sort, deferredQ, haystacks, updatedAtByKey, originalIndex]);
+
 
 
 
