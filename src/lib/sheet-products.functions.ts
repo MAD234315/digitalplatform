@@ -12,9 +12,37 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 
+const DEFAULT_SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
+const DEFAULT_CSV_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/export?format=csv`;
 
-const SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+/** Turn an /edit or /view sheet URL into a CSV export URL. Falls back to the input. */
+function toCsvUrl(sheetUrl: string): string {
+  const m = /\/d\/([a-zA-Z0-9_-]+)/.exec(sheetUrl);
+  if (m) return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
+  return sheetUrl;
+}
+
+let cachedUrl: { at: number; url: string } | null = null;
+const URL_TTL = 30_000;
+
+async function resolveCsvUrl(): Promise<string> {
+  const now = Date.now();
+  if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url;
+  try {
+    // app_settings is admin-only via RLS; read it server-side with the admin client.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("app_settings")
+      .select("sheet_url")
+      .eq("id", 1)
+      .maybeSingle();
+    const url2 = data?.sheet_url ? toCsvUrl(data.sheet_url) : DEFAULT_CSV_URL;
+    cachedUrl = { at: now, url: url2 };
+    return url2;
+  } catch {
+    return DEFAULT_CSV_URL;
+  }
+}
 
 export type Availability = "available" | "limited" | "out";
 export type ProductBadge = "new" | "high-demand";
@@ -26,7 +54,7 @@ export type SheetProduct = {
   name: string;
   validity: string;
   plan: string;
-  
+
   type: string;
   supports: string;
   warranty: string;
@@ -43,6 +71,8 @@ export type ProductsPayload = {
   error?: string;
   /** True when the current payload is being served from cache because upstream is rate-limited (HTTP 429). */
   rateLimited?: boolean;
+  /** True when the site has been switched Offline in the admin panel. */
+  maintenance?: boolean;
 };
 
 // Minimal RFC 4180 CSV row parser (handles quoted commas & escaped quotes)
@@ -55,17 +85,32 @@ function parseCsv(text: string): string[][] {
     const c = text[i];
     if (inQ) {
       if (c === '"') {
-        if (text[i + 1] === '"') { cur += '"'; i++; } else { inQ = false; }
+        if (text[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQ = false;
+        }
       } else cur += c;
     } else {
       if (c === '"') inQ = true;
-      else if (c === ",") { row.push(cur); cur = ""; }
-      else if (c === "\n") { row.push(cur); rows.push(row); row = []; cur = ""; }
-      else if (c === "\r") { /* skip */ }
-      else cur += c;
+      else if (c === ",") {
+        row.push(cur);
+        cur = "";
+      } else if (c === "\n") {
+        row.push(cur);
+        rows.push(row);
+        row = [];
+        cur = "";
+      } else if (c === "\r") {
+        /* skip */
+      } else cur += c;
     }
   }
-  if (cur.length || row.length) { row.push(cur); rows.push(row); }
+  if (cur.length || row.length) {
+    row.push(cur);
+    rows.push(row);
+  }
   return rows;
 }
 
@@ -85,9 +130,6 @@ function isTableHeader(row: string[]): boolean {
   return first === "STATUS" || first === "PRODUCT STATUS";
 }
 
-
-
-
 // Cross-request in-memory cache. On serverless workers this shares within an
 // isolate, which still absorbs the burst of clients polling every 60s.
 const CACHE_TTL_MS = 60_000;
@@ -95,8 +137,8 @@ let cache: { at: number; payload: ProductsPayload } | null = null;
 let inflight: Promise<ProductsPayload> | null = null;
 
 const FETCH_TIMEOUT_MS = 8_000;
-const MAX_RETRIES = 1;              // one polite retry on 429 / 503
-const MAX_RETRY_WAIT_MS = 4_000;    // cap Retry-After to keep the Worker snappy
+const MAX_RETRIES = 1; // one polite retry on 429 / 503
+const MAX_RETRY_WAIT_MS = 4_000; // cap Retry-After to keep the Worker snappy
 const RESPONSE_MAX_BYTES = 2_000_000; // 2 MB hard cap on CSV size (OOM guard)
 
 /**
@@ -104,7 +146,11 @@ const RESPONSE_MAX_BYTES = 2_000_000; // 2 MB hard cap on CSV size (OOM guard)
  * rate-limits (429) or upstream 5xx without regex-matching the message.
  */
 class SheetFetchError extends Error {
-  constructor(message: string, readonly status: number, readonly retryAfterMs?: number) {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly retryAfterMs?: number,
+  ) {
     super(message);
     this.name = "SheetFetchError";
   }
@@ -139,13 +185,14 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  * leaking raw internals to the client.
  */
 async function fetchSheetCsv(): Promise<string> {
+  const csvUrl = await resolveCsvUrl();
   let attempt = 0;
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-      const res = await fetch(CSV_URL, { signal: controller.signal });
+      const res = await fetch(csvUrl, { signal: controller.signal });
 
       if (!res.ok) {
         const retryable = res.status === 429 || res.status === 503;
@@ -192,10 +239,7 @@ async function fetchSheetCsv(): Promise<string> {
       );
     } catch (e) {
       if (e instanceof Error && e.name === "AbortError") {
-        throw new SheetFetchError(
-          `Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`,
-          408,
-        );
+        throw new SheetFetchError(`Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`, 408);
       }
       throw e;
     } finally {
@@ -207,7 +251,10 @@ async function fetchSheetCsv(): Promise<string> {
 function concatChunks(chunks: Uint8Array[], total: number): Uint8Array {
   const out = new Uint8Array(total);
   let offset = 0;
-  for (const c of chunks) { out.set(c, offset); offset += c.byteLength; }
+  for (const c of chunks) {
+    out.set(c, offset);
+    offset += c.byteLength;
+  }
   return out;
 }
 
@@ -233,7 +280,8 @@ async function loadFromSheet(): Promise<ProductsPayload> {
       const name = (row[2] || "").trim();
       if (!name) continue;
       if (name.length > 60) continue;
-      if (/YOU ARE IN|NOTE|LAST UPDATED|WhatsApp Me|PLANS & PRICES|FOR OUR PRICES/i.test(name)) continue;
+      if (/YOU ARE IN|NOTE|LAST UPDATED|WhatsApp Me|PLANS & PRICES|FOR OUR PRICES/i.test(name))
+        continue;
       if (!/^[A-Za-z0-9]/.test(name)) continue;
 
       // Sheet columns:
@@ -245,9 +293,10 @@ async function loadFromSheet(): Promise<ProductsPayload> {
       const supports = (row[9] || "").trim();
       const warranty = (row[10] || "").trim();
 
-
       const statusVal = status || "IN-STOCK";
-      const isOut = /\b(out\s*of\s*stock|not\s*in\s*stock|sold\s*out|unavailable)\b/i.test(statusVal);
+      const isOut = /\b(out\s*of\s*stock|not\s*in\s*stock|sold\s*out|unavailable)\b/i.test(
+        statusVal,
+      );
       const isLimited = /\b(limited|low\s*stock|few\s*left|almost\s*(out|gone))\b/i.test(statusVal);
       const inStock = !isOut && /\bin[\s-]?stock\b/i.test(statusVal);
       const loot = /\bloot\b/i.test(statusVal);
@@ -266,7 +315,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         name,
         validity,
         plan,
-        
+
         type,
         supports,
         warranty,
@@ -298,27 +347,56 @@ async function loadFromSheet(): Promise<ProductsPayload> {
   }
 }
 
-export const getSheetProducts = createServerFn({ method: "GET" }).handler(async (): Promise<ProductsPayload> => {
-  const now = Date.now();
-  if (cache && now - cache.at < CACHE_TTL_MS) return cache.payload;
-
-  // Coalesce concurrent misses into a single upstream fetch. On failure —
-  // especially 429 rate-limits — fall back to the last successful cache
-  // (even if stale) so the UI stays populated instead of going blank.
-  if (!inflight) {
-    inflight = loadFromSheet().then((payload) => {
-      if (!payload.error) {
-        cache = { at: Date.now(), payload };
-        return payload;
-      }
-      if (payload.rateLimited && cache) {
-        // Serve stale cache during a rate-limit window; flag it so the UI
-        // can show a subtle "using cached data" hint.
-        return { ...cache.payload, rateLimited: true, error: payload.error };
-      }
-      return payload;
-    }).finally(() => { inflight = null; });
+async function isSiteOnline(): Promise<boolean> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("app_settings")
+      .select("site_online")
+      .eq("id", 1)
+      .maybeSingle();
+    return data?.site_online ?? true;
+  } catch {
+    return true; // fail-open
   }
-  return inflight;
-});
+}
 
+export const getSheetProducts = createServerFn({ method: "GET" }).handler(
+  async (): Promise<ProductsPayload> => {
+    // Honour the admin Website Status toggle — when Offline, don't scan the sheet.
+    if (!(await isSiteOnline())) {
+      return {
+        categories: [],
+        products: [],
+        fetchedAt: new Date().toISOString(),
+        maintenance: true,
+      };
+    }
+
+    const now = Date.now();
+    if (cache && now - cache.at < CACHE_TTL_MS) return cache.payload;
+
+    // Coalesce concurrent misses into a single upstream fetch. On failure —
+    // especially 429 rate-limits — fall back to the last successful cache
+    // (even if stale) so the UI stays populated instead of going blank.
+    if (!inflight) {
+      inflight = loadFromSheet()
+        .then((payload) => {
+          if (!payload.error) {
+            cache = { at: Date.now(), payload };
+            return payload;
+          }
+          if (payload.rateLimited && cache) {
+            // Serve stale cache during a rate-limit window; flag it so the UI
+            // can show a subtle "using cached data" hint.
+            return { ...cache.payload, rateLimited: true, error: payload.error };
+          }
+          return payload;
+        })
+        .finally(() => {
+          inflight = null;
+        });
+    }
+    return inflight;
+  },
+);

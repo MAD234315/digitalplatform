@@ -1,457 +1,348 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
-import { forwardRef, useCallback, useEffect, useId, useRef, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { listPublicProofs } from "@/lib/proof-gallery.functions";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
+import { listPublishedProofs, type ProofRecord } from "@/lib/admin.functions";
 import { SITE_URL } from "@/lib/site-config";
-import { supabase } from "@/integrations/supabase/client";
-import { X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
-type Proof = {
-  id: string;
-  title: string;
-  description: string;
-  created_at: string;
-  image_url: string;
-};
+const proofsQuery = queryOptions({
+  queryKey: ["published-proofs"],
+  queryFn: () => listPublishedProofs(),
+  staleTime: 30_000,
+});
 
 export const Route = createFileRoute("/proof-gallery")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(proofsQuery),
   head: () => ({
     meta: [
       { title: "Proof Gallery — Digital Platform" },
-      { name: "description", content: "Real screenshots of customer deliveries. Genuine sources. Reliable service." },
+      {
+        name: "description",
+        content: "Real proofs of delivery and customer trust from Digital Platform.",
+      },
       { property: "og:title", content: "Proof Gallery — Digital Platform" },
-      { property: "og:description", content: "Real screenshots of customer deliveries and orders." },
-      { property: "og:url", content: `${SITE_URL}/proof-gallery` },
+      {
+        property: "og:description",
+        content: "Real proofs of delivery and customer trust from Digital Platform.",
+      },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/proof-gallery` }],
   }),
   component: ProofGalleryPage,
 });
 
-const proofsQuery = (fn: () => Promise<Proof[]>) =>
-  queryOptions({
-    queryKey: ["public", "proofs"],
-    queryFn: fn,
-    staleTime: 30_000,
-  });
-
 function ProofGalleryPage() {
-  const fn = useServerFn(listPublicProofs) as unknown as () => Promise<Proof[]>;
-  const { data, isLoading, error } = useQuery(proofsQuery(fn));
-  const queryClient = useQueryClient();
-  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-  const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const reducedMotion = useReducedMotion();
-
-  // Realtime: refetch when published proofs change so the gallery updates
-  // without a manual refresh.
-  useEffect(() => {
-    const invalidate = () => {
-      queryClient.invalidateQueries({ queryKey: ["public", "proofs"] });
-    };
-    const channel = supabase
-      .channel("public:proofs")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "proofs" },
-        invalidate,
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  useEffect(() => {
-    const stop = (e: Event) => e.preventDefault();
-    document.addEventListener("contextmenu", stop);
-    document.addEventListener("dragstart", stop);
-    // Discourage screenshots: blur proof images briefly when the tab/window
-    // loses focus. Cannot fully prevent screenshots, but reduces value.
-    const root = document.documentElement;
-    const onHide = () => root.classList.add("proofs-blur");
-    const onShow = () => root.classList.remove("proofs-blur");
-    const onVis = () => (document.hidden ? onHide() : onShow());
-    window.addEventListener("blur", onHide);
-    window.addEventListener("focus", onShow);
-    document.addEventListener("visibilitychange", onVis);
-    return () => {
-      document.removeEventListener("contextmenu", stop);
-      document.removeEventListener("dragstart", stop);
-      window.removeEventListener("blur", onHide);
-      window.removeEventListener("focus", onShow);
-      document.removeEventListener("visibilitychange", onVis);
-      root.classList.remove("proofs-blur");
-    };
-  }, []);
-
-  // Grid arrow-key navigation between cards.
-  function onGridKeyDown(e: React.KeyboardEvent<HTMLUListElement>) {
-    if (!data) return;
-    const target = document.activeElement as HTMLElement | null;
-    if (!target) return;
-    const currentIndex = cardRefs.current.findIndex((r) => r === target);
-    if (currentIndex < 0) return;
-
-    // Compute columns from first two cards' offsetTop.
-    const cols = (() => {
-      const first = cardRefs.current[0];
-      const refs = cardRefs.current.filter(Boolean) as HTMLButtonElement[];
-      if (!first) return 1;
-      let n = 0;
-      for (const r of refs) {
-        if (r.offsetTop === first.offsetTop) n++;
-        else break;
-      }
-      return Math.max(1, n);
-    })();
-
-    let next = currentIndex;
-    switch (e.key) {
-      case "ArrowRight": next = Math.min(data.length - 1, currentIndex + 1); break;
-      case "ArrowLeft":  next = Math.max(0, currentIndex - 1); break;
-      case "ArrowDown":  next = Math.min(data.length - 1, currentIndex + cols); break;
-      case "ArrowUp":    next = Math.max(0, currentIndex - cols); break;
-      case "Home":       next = 0; break;
-      case "End":        next = data.length - 1; break;
-      default: return;
-    }
-    e.preventDefault();
-    cardRefs.current[next]?.focus();
-  }
-
   return (
     <PageShell>
       <PageHero
-        eyebrow="Proof Gallery"
-        title="Genuine deliveries, receipts and setup screenshots"
-        lede="Real proofs from real orders. Reliable service, verifiable."
+        eyebrow="Trust & transparency"
+        title="Proof Gallery"
+        lede="Verified screenshots of orders delivered, customer chats and delivery confirmations."
       />
-      <section className="proof-protected mx-auto max-w-6xl px-4 pb-16 sm:pb-20 select-none">
-        {isLoading && <ProofSkeletonGrid />}
-        {error && (
-          <div role="alert" className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-            Couldn&apos;t load the gallery right now. Please try again.
-          </div>
-        )}
-        {data && data.length === 0 && (
-          <div className="rounded-lg border border-dashed border-border bg-card/40 p-10 text-center text-sm text-muted-foreground">
-            Proofs are being uploaded — check back shortly.
-          </div>
-        )}
-        {data && data.length > 0 && (
-          <ul
-            data-proof-gallery
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"
-            onKeyDown={onGridKeyDown}
-            aria-label="Proof gallery. Use arrow keys to navigate, Enter to open."
-          >
-            {data.map((p, i) => (
-              <li
-                key={p.id}
-                style={
-                  reducedMotion
-                    ? undefined
-                    : { animation: `fade-in 0.4s ease-out both`, animationDelay: `${Math.min(i, 12) * 30}ms` }
-                }
-              >
-                <ProofCard
-                  ref={(el) => { cardRefs.current[i] = el; }}
-                  proof={p}
-                  onOpen={() => setLightboxIdx(i)}
-                  reducedMotion={reducedMotion}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24 proof-protect">
+        <Suspense fallback={<GallerySkeleton />}>
+          <Gallery />
+        </Suspense>
       </section>
-
-      {lightboxIdx !== null && data && (
-        <Lightbox
-          items={data}
-          index={lightboxIdx}
-          onClose={() => {
-            const idx = lightboxIdx;
-            setLightboxIdx(null);
-            // Restore focus back to the originating card.
-            requestAnimationFrame(() => cardRefs.current[idx]?.focus());
-          }}
-          onIndex={setLightboxIdx}
-        />
-      )}
+      <ProtectStyles />
     </PageShell>
   );
 }
 
-type CardProps = {
-  proof: Proof;
-  onOpen: () => void;
-  reducedMotion?: boolean;
-};
-
-const ProofCard = forwardRef<HTMLButtonElement, CardProps>(function ProofCard(
-  { proof, onOpen, reducedMotion },
-  ref
-) {
-  const [loaded, setLoaded] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [retry, setRetry] = useState(0);
-  const queryClient = useQueryClient();
-  // Cache-bust: if a signed URL 403s (expired) or the CDN served a stale copy,
-  // refetch the list once to get freshly signed URLs, then bump `?r=` to
-  // force the <img> to reload.
-  const imgSrc = proof.image_url
-    ? `${proof.image_url}${proof.image_url.includes("?") ? "&" : "?"}r=${retry}`
-    : "";
+/** Global overrides for the gallery: disable selection, drag & context. */
+function ProtectStyles() {
   return (
-    <button
-      ref={ref}
-      onClick={onOpen}
-      aria-label={`Open ${proof.title}`}
-      className="group block w-full text-left rounded-lg overflow-hidden border border-border bg-card transition-all duration-300 hover:border-amber/50 hover:shadow-[0_8px_28px_-12px_rgba(255,183,77,0.35)] hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-    >
-      <div className="relative aspect-[4/5] overflow-hidden bg-background">
-        {!loaded && !failed && (
-          <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-card animate-pulse" aria-hidden />
-        )}
-        {failed ? (
-          <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
-            Image unavailable
-          </div>
-        ) : (
-          <img
-            src={imgSrc}
-            alt={proof.title}
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-            onContextMenu={(e) => e.preventDefault()}
-            onLoad={() => setLoaded(true)}
-            onError={async () => {
-              if (retry === 0) {
-                await queryClient.invalidateQueries({ queryKey: ["public", "proofs"] });
-                setRetry(1);
-                return;
-              }
-              setFailed(true);
-            }}
-            className={`h-full w-full object-cover pointer-events-none transition-all duration-500 ease-out ${
-              loaded ? "opacity-100 scale-100 group-hover:scale-[1.04]" : "opacity-0 scale-105"
-            }`}
-            style={{ WebkitUserSelect: "none", WebkitTouchCallout: "none" } as any}
-          />
-        )}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-      <div className="p-3">
-        <h3 className="text-sm font-semibold text-foreground line-clamp-1">{proof.title}</h3>
-        <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{proof.description}</p>
-        <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-          {formatDate(proof.created_at)}
-        </p>
-      </div>
-    </button>
+    <style
+      dangerouslySetInnerHTML={{
+        __html: `
+        .proof-protect, .proof-protect * {
+          -webkit-user-select: none; user-select: none;
+          -webkit-touch-callout: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .proof-protect img { -webkit-user-drag: none; user-drag: none; pointer-events: auto; }
+        .proof-blur img, .proof-blur .proof-lightbox-img { filter: blur(18px) brightness(0.4); transition: filter .2s ease; }
+        .proof-wm::after {
+          content: attr(data-wm);
+          position: absolute; inset: 0; display: grid; place-items: center;
+          font-size: 14px; letter-spacing: .35em; text-transform: uppercase;
+          color: rgba(255,255,255,.18); pointer-events: none; transform: rotate(-24deg);
+          text-shadow: 0 1px 2px rgba(0,0,0,.4);
+        }
+        @keyframes lb-in { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+        .lb-anim { animation: lb-in .22s ease-out; }
+        `,
+      }}
+    />
   );
-});
+}
 
-
-function Lightbox({
-  items,
-  index,
-  onClose,
-  onIndex,
-}: {
-  items: Proof[];
-  index: number;
-  onClose: () => void;
-  onIndex: (i: number) => void;
-}) {
-  const p = items[index];
-  const titleId = useId();
-  const descId = useId();
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const [imgLoaded, setImgLoaded] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  const goNext = useCallback(() => onIndex((index + 1) % items.length), [index, items.length, onIndex]);
-  const goPrev = useCallback(() => onIndex((index - 1 + items.length) % items.length), [index, items.length, onIndex]);
-
-  // Mount transition.
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  // Reset loading state on image change.
-  useEffect(() => { setImgLoaded(false); }, [index]);
-
-  // Preload adjacent images for snappy navigation.
-  useEffect(() => {
-    const next = items[(index + 1) % items.length];
-    const prev = items[(index - 1 + items.length) % items.length];
-    [next, prev].forEach((it) => {
-      if (!it) return;
-      const img = new Image();
-      img.src = it.image_url;
-    });
-  }, [index, items]);
-
-  // Keyboard: Esc, arrows, Home/End + focus trap.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { e.preventDefault(); onClose(); return; }
-      if (e.key === "ArrowRight") { e.preventDefault(); goNext(); return; }
-      if (e.key === "ArrowLeft")  { e.preventDefault(); goPrev(); return; }
-      if (e.key === "Home") { e.preventDefault(); onIndex(0); return; }
-      if (e.key === "End")  { e.preventDefault(); onIndex(items.length - 1); return; }
-      if (e.key === "Tab") {
-        // Simple focus trap across dialog buttons.
-        const root = dialogRef.current;
-        if (!root) return;
-        const focusables = root.querySelectorAll<HTMLElement>(
-          'button, [href], [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusables.length === 0) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        const active = document.activeElement as HTMLElement | null;
-        if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    // Initial focus.
-    closeBtnRef.current?.focus();
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [goNext, goPrev, onClose, onIndex, items.length]);
-
-  // Swipe support.
-  const [touchX, setTouchX] = useState<number | null>(null);
-  function onTouchStart(e: React.TouchEvent) { setTouchX(e.touches[0].clientX); }
-  function onTouchEnd(e: React.TouchEvent) {
-    if (touchX === null) return;
-    const dx = e.changedTouches[0].clientX - touchX;
-    if (Math.abs(dx) > 50) { if (dx < 0) goNext(); else goPrev(); }
-    setTouchX(null);
-  }
-
-  if (!p) return null;
-
+function GallerySkeleton() {
   return (
-    <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={titleId}
-      aria-describedby={descId}
-      className={`proof-protected fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col transition-opacity duration-200 ${
-        mounted ? "opacity-100" : "opacity-0"
-      }`}
-      onClick={onClose}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-    >
-      <button
-        ref={closeBtnRef}
-        onClick={(e) => { e.stopPropagation(); onClose(); }}
-        className="absolute top-3 right-3 z-10 h-11 w-11 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber transition"
-        aria-label="Close (Esc)"
-      >
-        <X className="h-5 w-5" />
-      </button>
-      <button
-        onClick={(e) => { e.stopPropagation(); goPrev(); }}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 h-11 w-11 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber transition"
-        aria-label="Previous image (Left arrow)"
-      >
-        <ChevronLeft className="h-6 w-6" />
-      </button>
-      <button
-        onClick={(e) => { e.stopPropagation(); goNext(); }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-11 w-11 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber transition"
-        aria-label="Next image (Right arrow)"
-      >
-        <ChevronRight className="h-6 w-6" />
-      </button>
-
-      <div className="flex-1 flex items-center justify-center p-4 relative">
-        {!imgLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden>
-            <Loader2 className="h-8 w-8 text-white/70 animate-spin" />
-          </div>
-        )}
-        <img
-          key={p.image_url}
-          src={p.image_url}
-          alt={p.title}
-          draggable={false}
-          onContextMenu={(e) => e.preventDefault()}
-          onLoad={() => setImgLoaded(true)}
-          onClick={(e) => e.stopPropagation()}
-          className={`max-h-full max-w-full object-contain rounded-md transition-all duration-300 ease-out ${
-            imgLoaded ? "opacity-100 scale-100" : "opacity-0 scale-[0.98]"
-          }`}
-          style={{ WebkitUserSelect: "none", WebkitTouchCallout: "none" } as any}
-        />
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="text-white/10 text-4xl sm:text-6xl font-display rotate-[-20deg] tracking-widest select-none">
-            DIGITAL PLATFORM
-          </span>
-        </div>
-      </div>
-      <div
-        className="bg-black/60 text-white p-4 sm:p-5 border-t border-white/10"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 id={titleId} className="font-display text-lg sm:text-xl">{p.title}</h2>
-        <p id={descId} className="mt-1 text-sm text-white/70">{p.description}</p>
-        <p className="mt-2 text-[10px] uppercase tracking-[0.22em] text-white/50">
-          {formatDateTime(p.created_at)} · {index + 1} / {items.length}
-        </p>
-        <p className="sr-only">
-          Use left and right arrow keys to navigate. Press Escape to close.
-        </p>
-      </div>
+    <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <div key={i} className="aspect-[4/5] animate-pulse rounded-2xl border border-border bg-card/40" />
+      ))}
     </div>
   );
 }
 
-function ProofSkeletonGrid() {
+function Gallery() {
+  const { data } = useSuspenseQuery(proofsQuery);
+  const proofs: ProofRecord[] = data ?? [];
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [blur, setBlur] = useState(false);
+
+  // Flatten every image across every proof — swipe steps through them all.
+  const slides = useMemo(
+    () =>
+      proofs.flatMap((p) =>
+        (p.images.length ? p.images : [{ path: "", url: "" }]).map((img, i) => ({
+          proof: p,
+          image: img,
+          proofImageIndex: i,
+          proofImageCount: p.images.length,
+        })),
+      ),
+    [proofs],
+  );
+
+  // Blur on tab hidden / window blur to discourage casual screenshotting.
+  useEffect(() => {
+    const onVis = () => setBlur(document.visibilityState === "hidden");
+    const onBlur = () => setBlur(true);
+    const onFocus = () => setBlur(false);
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
+  const stopContext = useCallback((e: React.MouseEvent) => e.preventDefault(), []);
+
+  if (proofs.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
+        No proofs published yet. Check back soon.
+      </div>
+    );
+  }
+
   return (
-    <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" aria-busy="true" aria-label="Loading proofs">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <li key={i} className="rounded-lg border border-border bg-card overflow-hidden">
-          <div className="aspect-[4/5] bg-gradient-to-br from-card via-background to-card animate-pulse" />
-          <div className="p-3 space-y-2">
-            <div className="h-3 w-3/4 bg-background animate-pulse rounded" />
-            <div className="h-2 w-full bg-background animate-pulse rounded" />
-            <div className="h-2 w-1/3 bg-background animate-pulse rounded" />
-          </div>
-        </li>
-      ))}
-    </ul>
+    <>
+      <div
+        onContextMenu={stopContext}
+        className={`grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 ${
+          blur ? "proof-blur" : ""
+        }`}
+      >
+        {proofs.map((p) => {
+          const flatIdx = slides.findIndex((s) => s.proof.id === p.id);
+          return (
+            <ProofCard
+              key={p.id}
+              proof={p}
+              onOpen={() => setOpenIdx(flatIdx >= 0 ? flatIdx : 0)}
+            />
+          );
+        })}
+      </div>
+      {openIdx !== null && (
+        <Lightbox
+          slides={slides}
+          index={openIdx}
+          blurred={blur}
+          onIndex={setOpenIdx}
+          onClose={() => setOpenIdx(null)}
+        />
+      )}
+    </>
   );
 }
 
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
-  } catch { return ""; }
+function ProofCard({ proof, onOpen }: { proof: ProofRecord; onOpen: () => void }) {
+  const cover = proof.images[0];
+  const d = new Date(proof.createdAt);
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <article className="group animate-[fadeIn_0.4s_ease-out_both] overflow-hidden rounded-2xl border border-amber/20 bg-card/70 shadow-sm transition hover:-translate-y-0.5 hover:border-amber/60 hover:shadow-gold">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="relative block aspect-[4/5] w-full overflow-hidden bg-muted proof-wm"
+        data-wm="Digital Platform"
+        aria-label={`Open ${proof.title}`}
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        {!loaded && <div className="absolute inset-0 animate-pulse bg-muted" />}
+        {cover ? (
+          <img
+            src={cover.url}
+            alt={proof.title}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            onLoad={() => setLoaded(true)}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <div className="grid h-full place-items-center text-xs text-muted-foreground">No image</div>
+        )}
+        {proof.images.length > 1 && (
+          <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[11px] text-white backdrop-blur">
+            +{proof.images.length - 1}
+          </span>
+        )}
+      </button>
+      <div className="p-3 sm:p-4">
+        <h2 className="line-clamp-1 font-display text-sm sm:text-base">{proof.title}</h2>
+        {proof.description && (
+          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{proof.description}</p>
+        )}
+        <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span>{d.toLocaleDateString()}</span>
+          <span>{d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+        </div>
+      </div>
+    </article>
+  );
 }
-function formatDateTime(iso: string) {
-  try {
-    return new Date(iso).toLocaleString(undefined, {
-      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
-    });
-  } catch { return ""; }
+
+type Slide = {
+  proof: ProofRecord;
+  image: { path: string; url: string };
+  proofImageIndex: number;
+  proofImageCount: number;
+};
+
+function Lightbox({
+  slides,
+  index,
+  blurred,
+  onIndex,
+  onClose,
+}: {
+  slides: Slide[];
+  index: number;
+  blurred: boolean;
+  onIndex: (i: number) => void;
+  onClose: () => void;
+}) {
+  const next = useCallback(() => onIndex((index + 1) % slides.length), [index, slides.length, onIndex]);
+  const prev = useCallback(
+    () => onIndex((index - 1 + slides.length) % slides.length),
+    [index, slides.length, onIndex],
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [next, prev, onClose]);
+
+  // Swipe support
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touch.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touch.current.x;
+    const dy = t.clientY - touch.current.y;
+    touch.current = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) next();
+      else prev();
+    }
+  };
+
+  const s = slides[index];
+  if (!s) return null;
+
+  return (
+    <div
+      className={`fixed inset-0 z-[60] grid place-items-center bg-black/95 p-4 proof-protect ${
+        blurred ? "proof-blur" : ""
+      }`}
+      onClick={onClose}
+      onContextMenu={(e) => e.preventDefault()}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      <button
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full border border-white/30 text-white hover:bg-white/10"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      {slides.length > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prev();
+            }}
+            aria-label="Previous"
+            className="absolute left-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full border border-white/30 text-white hover:bg-white/10 sm:left-6"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              next();
+            }}
+            aria-label="Next"
+            className="absolute right-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full border border-white/30 text-white hover:bg-white/10 sm:right-6"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </>
+      )}
+      <div
+        key={index}
+        className="lb-anim flex max-h-[92vh] w-full max-w-5xl flex-col items-center gap-3"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="relative proof-wm" data-wm="Digital Platform">
+          <img
+            src={s.image.url}
+            alt={s.proof.title}
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+            className="proof-lightbox-img max-h-[72vh] max-w-full rounded-lg object-contain shadow-2xl"
+          />
+        </div>
+        <div className="max-w-2xl text-center text-white">
+          <h3 className="font-display text-lg sm:text-xl">{s.proof.title}</h3>
+          {s.proof.description && (
+            <p className="mt-1 text-sm text-white/70">{s.proof.description}</p>
+          )}
+          <p className="mt-2 text-[11px] uppercase tracking-wider text-white/50">
+            {new Date(s.proof.createdAt).toLocaleString()} · {index + 1} / {slides.length}
+            {s.proofImageCount > 1 && (
+              <> · image {s.proofImageIndex + 1}/{s.proofImageCount}</>
+            )}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }

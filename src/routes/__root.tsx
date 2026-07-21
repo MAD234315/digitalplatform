@@ -15,7 +15,7 @@ import firaSans400Woff2 from "@fontsource/fira-sans/files/fira-sans-latin-400-no
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorListeners } from "../lib/client-error-listeners";
 import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
-import { MaintenanceGate } from "@/components/maintenance-gate";
+
 
 function NotFoundComponent() {
   return (
@@ -172,9 +172,7 @@ function RootComponent() {
   useEffect(() => { installClientErrorListeners(); }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      <MaintenanceGate>
-        <Outlet />
-      </MaintenanceGate>
+      <Outlet />
     </QueryClientProvider>
   );
 }

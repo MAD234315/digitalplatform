@@ -18,19 +18,10 @@ import { Route as ProductRequestRouteImport } from './routes/product-request'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminSetupRouteImport } from './routes/admin.setup'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
-import { Route as AdminRolesRouteImport } from './routes/admin.roles'
-import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
-import { Route as AdminRequestRouteImport } from './routes/admin.request'
-import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminAuditRouteImport } from './routes/admin.audit'
-import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -77,6 +68,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -92,61 +88,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSetupRoute = AdminSetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRequestsRoute = AdminRequestsRouteImport.update({
-  id: '/requests',
-  path: '/requests',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRequestRoute = AdminRequestRouteImport.update({
-  id: '/request',
-  path: '/request',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProofsRoute = AdminProofsRouteImport.update({
-  id: '/proofs',
-  path: '/proofs',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAuditRoute = AdminAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAdminsRoute = AdminAdminsRouteImport.update({
-  id: '/admins',
-  path: '/admins',
-  getParentRoute: () => AdminRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
@@ -156,20 +103,12 @@ export interface FileRoutesByFullPath {
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/admin/admins': typeof AdminAdminsRoute
-  '/admin/audit': typeof AdminAuditRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/proofs': typeof AdminProofsRoute
-  '/admin/request': typeof AdminRequestRoute
-  '/admin/requests': typeof AdminRequestsRoute
-  '/admin/roles': typeof AdminRolesRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/setup': typeof AdminSetupRoute
-  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
@@ -179,22 +118,13 @@ export interface FileRoutesByTo {
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/admin/admins': typeof AdminAdminsRoute
-  '/admin/audit': typeof AdminAuditRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/proofs': typeof AdminProofsRoute
-  '/admin/request': typeof AdminRequestRoute
-  '/admin/requests': typeof AdminRequestsRoute
-  '/admin/roles': typeof AdminRolesRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/setup': typeof AdminSetupRoute
-  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
@@ -204,16 +134,6 @@ export interface FileRoutesById {
   '/refund': typeof RefundRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/admin/admins': typeof AdminAdminsRoute
-  '/admin/audit': typeof AdminAuditRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/proofs': typeof AdminProofsRoute
-  '/admin/request': typeof AdminRequestRoute
-  '/admin/requests': typeof AdminRequestsRoute
-  '/admin/roles': typeof AdminRolesRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/setup': typeof AdminSetupRoute
-  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/auth'
     | '/contact'
     | '/faq'
     | '/privacy'
@@ -230,20 +151,12 @@ export interface FileRouteTypes {
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
-    | '/admin/admins'
-    | '/admin/audit'
-    | '/admin/login'
-    | '/admin/proofs'
-    | '/admin/request'
-    | '/admin/requests'
-    | '/admin/roles'
-    | '/admin/settings'
-    | '/admin/setup'
-    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
+    | '/auth'
     | '/contact'
     | '/faq'
     | '/privacy'
@@ -253,21 +166,12 @@ export interface FileRouteTypes {
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
-    | '/admin/admins'
-    | '/admin/audit'
-    | '/admin/login'
-    | '/admin/proofs'
-    | '/admin/request'
-    | '/admin/requests'
-    | '/admin/roles'
-    | '/admin/settings'
-    | '/admin/setup'
-    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/admin'
+    | '/auth'
     | '/contact'
     | '/faq'
     | '/privacy'
@@ -277,22 +181,13 @@ export interface FileRouteTypes {
     | '/refund'
     | '/sitemap.xml'
     | '/terms'
-    | '/admin/admins'
-    | '/admin/audit'
-    | '/admin/login'
-    | '/admin/proofs'
-    | '/admin/request'
-    | '/admin/requests'
-    | '/admin/roles'
-    | '/admin/settings'
-    | '/admin/setup'
-    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -369,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -390,111 +292,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/setup': {
-      id: '/admin/setup'
-      path: '/setup'
-      fullPath: '/admin/setup'
-      preLoaderRoute: typeof AdminSetupRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/requests': {
-      id: '/admin/requests'
-      path: '/requests'
-      fullPath: '/admin/requests'
-      preLoaderRoute: typeof AdminRequestsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/request': {
-      id: '/admin/request'
-      path: '/request'
-      fullPath: '/admin/request'
-      preLoaderRoute: typeof AdminRequestRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/proofs': {
-      id: '/admin/proofs'
-      path: '/proofs'
-      fullPath: '/admin/proofs'
-      preLoaderRoute: typeof AdminProofsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/audit': {
-      id: '/admin/audit'
-      path: '/audit'
-      fullPath: '/admin/audit'
-      preLoaderRoute: typeof AdminAuditRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/admins': {
-      id: '/admin/admins'
-      path: '/admins'
-      fullPath: '/admin/admins'
-      preLoaderRoute: typeof AdminAdminsRouteImport
-      parentRoute: typeof AdminRoute
-    }
   }
 }
-
-interface AdminRouteChildren {
-  AdminAdminsRoute: typeof AdminAdminsRoute
-  AdminAuditRoute: typeof AdminAuditRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminProofsRoute: typeof AdminProofsRoute
-  AdminRequestRoute: typeof AdminRequestRoute
-  AdminRequestsRoute: typeof AdminRequestsRoute
-  AdminRolesRoute: typeof AdminRolesRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminSetupRoute: typeof AdminSetupRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminAdminsRoute: AdminAdminsRoute,
-  AdminAuditRoute: AdminAuditRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  AdminProofsRoute: AdminProofsRoute,
-  AdminRequestRoute: AdminRequestRoute,
-  AdminRequestsRoute: AdminRequestsRoute,
-  AdminRolesRoute: AdminRolesRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
-  AdminSetupRoute: AdminSetupRoute,
-  AdminIndexRoute: AdminIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRouteWithChildren,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   PrivacyRoute: PrivacyRoute,
@@ -508,13 +313,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
