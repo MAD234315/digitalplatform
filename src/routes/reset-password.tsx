@@ -38,7 +38,7 @@ function ResetPasswordPage() {
     e.preventDefault();
     setErr(null);
     setMsg(null);
-    if (password.length < 6) return setErr("Password must be at least 6 characters.");
+    if (password.length < 1) return setErr("Password is required.");
     if (password !== confirm) return setErr("Passwords do not match.");
     setBusy(true);
     try {
@@ -71,7 +71,7 @@ function ResetPasswordPage() {
               <input
                 type="password"
                 required
-                minLength={6}
+                minLength={1}
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -86,7 +86,7 @@ function ResetPasswordPage() {
               <input
                 type="password"
                 required
-                minLength={6}
+                minLength={1}
                 autoComplete="new-password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
