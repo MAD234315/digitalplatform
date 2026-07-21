@@ -57,7 +57,7 @@ import {
 } from "@/lib/admin.functions";
 
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/admin/")({
   ssr: false,
   head: () => ({
     meta: [
