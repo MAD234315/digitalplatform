@@ -162,10 +162,13 @@ export const getAdminDiagnostics = createServerFn({ method: "GET" })
     const origin = `${url.protocol}//${url.host}`;
 
     // Env presence (names only, no values).
-    const env: EnvCheck[] = [
-      ...REQUIRED_ENV.map((n) => ({ name: n, present: Boolean(process.env[n]), required: true })),
-      ...OPTIONAL_ENV.map((n) => ({ name: n, present: Boolean(process.env[n]), required: false })),
-    ];
+    const env: EnvCheck[] = ENV_SPECS.map((s) => ({
+      name: s.name,
+      present: Boolean(process.env[s.name]),
+      required: s.required,
+      purpose: s.purpose,
+      remediation: s.remediation,
+    }));
 
     // Caller metadata + admin count.
     let email: string | null = null;
