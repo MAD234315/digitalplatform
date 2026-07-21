@@ -137,6 +137,13 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      get_admin_bootstrap_status: {
+        Args: never
+        Returns: {
+          admin_count: number
+          admin_exists: boolean
+        }[]
+      }
       get_public_app_settings: {
         Args: never
         Returns: {

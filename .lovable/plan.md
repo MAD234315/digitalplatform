@@ -1,49 +1,35 @@
-# Admin Login UX Improvements
+## Problem
 
-Scope: `src/components/admin/AdminLoginPage.tsx` only. Keep the existing black & gold theme, layout, and auth logic. No changes to server functions, routes, or auth flow.
+The admin login page shows "Could not verify setup status" because `getAdminBootstrapStatus` (in `src/lib/admin.functions.ts`) calls `supabaseAdmin` — which needs `SUPABASE_SERVICE_ROLE_KEY`. Lovable Cloud does not inject that key, so the server function throws at first use and the login page falls into its catch branch.
 
-## Changes
+This is the same class of issue we already fixed for the catalogue's `app_settings` read (we swapped `supabaseAdmin` for a `SECURITY DEFINER` RPC callable with the publishable key). We'll apply the same pattern here.
 
-1. **First-time setup banner (prominent)**
-   - When `adminExists === false`, replace the small amber note with a large, unmissable card: shield icon, heading "No admin exists yet — create the first one", and a primary "Create first admin account" button that switches to signup mode immediately (one click instead of scrolling to find the small link).
+## Fix
 
-2. **Clearer mode header + icons**
-   - Add a small icon per mode (LogIn / UserPlus / KeyRound) next to the title.
-   - Rewrite subtitles to be action-oriented: "Sign in to the admin console", "Create the first Super Admin account", "We'll email you a reset link".
+1. **New database RPC** `public.get_admin_bootstrap_status()`
+   - Returns only aggregate info: `admin_exists boolean, admin_count int`.
+   - `SECURITY DEFINER`, `STABLE`, `SET search_path = public`.
+   - `GRANT EXECUTE` to `anon`, `authenticated`, `service_role` (bootstrap check must work before anyone signs in).
+   - No row data leaks — only a count, exactly what the login page needs.
 
-3. **Show/hide password toggle**
-   - Add an eye icon inside the password field to toggle visibility. Standard accessibility pattern with `aria-label`.
+2. **Refactor `getAdminBootstrapStatus`** in `src/lib/admin.functions.ts`
+   - Replace the `supabaseAdmin.from("user_roles").select(...)` call with a publishable-key server client (same pattern as `sheet-products.functions.ts`) calling `rpc("get_admin_bootstrap_status")`.
+   - No more dependency on the service-role key on Lovable Cloud.
 
-4. **Inline field validation + friendlier errors**
-   - Map common Supabase error strings to human copy:
-     - "Invalid login credentials" → "Email or password is incorrect."
-     - "Email not confirmed" → "Please confirm your email first — check your inbox."
-     - Rate-limit errors → "Too many attempts. Please wait a minute and try again."
-   - Fall back to the raw message otherwise.
+3. **Login-page error clarity** (`src/components/admin/AdminLoginPage.tsx`)
+   - The initial `checking` failure currently surfaces a generic hint. Extend the existing new error card to show the exact server-fn error message and code when the bootstrap check fails, so any future backend hiccup is diagnosable at a glance.
 
-5. **Loading state polish**
-   - Replace "Please wait…" with a spinner + contextual label ("Signing in…", "Creating account…", "Sending reset link…").
-   - Disable form fields (not just the button) during submit to prevent double-submits.
+## Security note (linter warning you already see)
 
-6. **Success feedback for reset + signup**
-   - After signup with email confirmation required, show a success card (green check, "Account created — check your inbox") instead of only swapping the mode + tiny amber message.
-   - After reset link sent, show the same success card style with the email address echoed back.
-
-7. **Caps Lock warning on password**
-   - Small inline hint under the password field when Caps Lock is detected — prevents the #1 cause of "wrong password" complaints.
-
-8. **Helpful footer links**
-   - Add a small footer row: "← Back to site" (links to `/`) and "Need help? Contact support" (mailto). Currently there's no escape hatch if a user lands here by mistake.
-
-9. **Accessibility**
-   - Add `aria-live="polite"` region for error/success messages so screen readers announce them.
-   - Ensure the submit button has a descriptive `aria-label` matching current mode.
-   - Autofocus the email field on mount (and password field after switching modes).
-
-## Out of scope
-- No changes to `src/lib/admin.functions.ts`, routing, or the `/admin/setup` page.
-- No visual theme changes — same amber/gold tokens, same `PageShell`, same card structure.
-- No new dependencies.
+The scanner flags "Public Can Execute SECURITY DEFINER Function". This RPC is intentionally callable pre-auth (the login page needs to know whether to show "Create first admin"), and it only returns an aggregate boolean/count — no PII, no rows. We'll document that in the migration comment. If you'd rather avoid the warning entirely, the alternative is to expose a narrow anon `SELECT count` policy on `user_roles`, which is strictly worse.
 
 ## Files touched
-- `src/components/admin/AdminLoginPage.tsx` (single file)
+
+- `supabase/migrations/<timestamp>_admin_bootstrap_rpc.sql` (new)
+- `src/lib/admin.functions.ts` (rewrite `getAdminBootstrapStatus` handler only)
+- `src/components/admin/AdminLoginPage.tsx` (richer error card on the initial check)
+
+## Verification
+
+- After deploy, hit `/admin/login` in an incognito tab — the page should load, show either the login form (admin exists) or the setup CTA (no admin), with no red "Could not verify setup status" banner.
+- Invoke the server fn directly to confirm 200 + `{ adminExists, adminCount, setupAllowed }`.
