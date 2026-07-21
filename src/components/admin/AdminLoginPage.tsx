@@ -327,11 +327,59 @@ export function AdminLoginPage() {
               </label>
             )}
 
-            <div aria-live="polite">
+            <div aria-live="assertive">
               {err && (
-                <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
-                  {err}
-                </p>
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100">
+                  <div className="flex items-start gap-3">
+                    <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-red-100">{err.title}</p>
+                      <p className="mt-1 text-red-200/90">{err.hint}</p>
+
+                      <details className="mt-3 group">
+                        <summary className="cursor-pointer text-xs uppercase tracking-[0.18em] text-red-200/80 hover:text-red-100">
+                          Show technical details
+                        </summary>
+                        <dl className="mt-2 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 rounded-md border border-red-500/30 bg-black/30 p-3 font-mono text-xs text-red-100/90">
+                          <dt className="text-red-300/70">message</dt>
+                          <dd className="break-words">{err.raw}</dd>
+                          {err.code && (
+                            <>
+                              <dt className="text-red-300/70">code</dt>
+                              <dd className="break-words">{err.code}</dd>
+                            </>
+                          )}
+                          {typeof err.status === "number" && (
+                            <>
+                              <dt className="text-red-300/70">status</dt>
+                              <dd>{err.status}</dd>
+                            </>
+                          )}
+                        </dl>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const payload = `message: ${err.raw}${err.code ? `\ncode: ${err.code}` : ""}${typeof err.status === "number" ? `\nstatus: ${err.status}` : ""}`;
+                            void navigator.clipboard?.writeText(payload);
+                          }}
+                          className="mt-2 text-xs text-red-200/80 underline-offset-2 hover:text-red-100 hover:underline"
+                        >
+                          Copy details
+                        </button>
+                      </details>
+
+                      {err.action && (
+                        <button
+                          type="button"
+                          onClick={err.action.run}
+                          className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-full bg-amber px-4 text-xs font-medium text-amber-foreground shadow-gold"
+                        >
+                          {err.action.label}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
