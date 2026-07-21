@@ -157,7 +157,7 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
-  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, latestProducts, latestIds } = useProductsFilter(
+  const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, recentlyUpdatedProducts, latestIds } = useProductsFilter(
     data.products,
     data.categories,
   );
@@ -221,7 +221,7 @@ function Products() {
       {stock !== "latest" && (
         <ErrorBoundary boundary="products:recently-added" fallback={null}>
           <RecentlyAdded
-            products={latestProducts}
+            products={recentlyUpdatedProducts}
             onSeeAll={() => {
               setActive("All");
               setQ("");
