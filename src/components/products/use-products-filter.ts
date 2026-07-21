@@ -267,5 +267,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     latestKeys,
     latestIds,
     latestProducts,
+    recentlyUpdatedProducts,
+
   };
 }
