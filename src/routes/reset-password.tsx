@@ -358,9 +358,28 @@ function ResetPasswordPage() {
                   </p>
                 )}
                 {resendMsg && (
-                  <p className="rounded-md border border-amber/40 bg-amber/10 px-3 py-2 text-sm">
-                    {resendMsg}
-                  </p>
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-4"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-500/50 bg-emerald-500/15">
+                        <svg viewBox="0 0 24 24" className="h-4 w-4 text-emerald-300" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-emerald-200">Reset link sent</p>
+                        <p className="mt-0.5 text-xs text-emerald-100/80">{resendMsg}</p>
+                        <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                          <li>• Check your inbox for <span className="text-foreground">{resendEmail.trim().toLowerCase()}</span></li>
+                          <li>• Look in Spam or Promotions if you don't see it in 1–2 minutes</li>
+                          <li>• The link expires in 60 minutes — open it on this device</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 <button
                   type="submit"
