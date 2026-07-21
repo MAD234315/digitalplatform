@@ -205,17 +205,15 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
 
   const filtered = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
-    // When the user is actively searching, ignore the category and stock
-    // filters — the query should hit the whole catalogue so results aren't
-    // silently hidden by an active "In stock" / "Latest" / category pill.
     const searching = needle.length > 0;
+    const cutoff = Date.now() - LATEST_WINDOW_MS;
     const list = products.filter((p) => {
       if (!searching) {
         if (active !== "All" && p.category !== active) return false;
         if (stock === "in-stock" && p.availability !== "available") return false;
         if (stock === "limited" && p.availability !== "limited") return false;
         if (stock === "out" && p.availability !== "out") return false;
-        // "latest" does NOT filter — it only changes the sort order below.
+        if (stock === "latest" && (updatedAtByKey.get(keyOf(p)) ?? 0) <= cutoff) return false;
       }
       if (needle) {
         const hay = haystacks.get(p.id);
@@ -223,8 +221,6 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
       }
       return true;
     });
-    // Latest sort takes precedence over the sort dropdown so clicking the
-    // Latest pill always surfaces the most-recently-edited products first.
     if (stock === "latest" && !searching) {
       return list.slice().sort((a, b) => {
         const tb = updatedAtByKey.get(keyOf(b)) ?? 0;
@@ -241,6 +237,7 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
     }
     return list;
   }, [products, active, stock, sort, deferredQ, haystacks, updatedAtByKey, originalIndex]);
+
 
 
 
