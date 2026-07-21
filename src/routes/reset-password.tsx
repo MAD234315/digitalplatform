@@ -370,6 +370,7 @@ function ResetPasswordPage() {
               )}
               <form onSubmit={onResend} className="mt-4 space-y-3">
                 <input
+                  id="resend-email"
                   type="email"
                   required
                   autoComplete="email"
