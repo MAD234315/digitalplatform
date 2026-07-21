@@ -1,28 +1,22 @@
-# Create the Super Admin
+## Current behavior (already implemented last turn)
 
-Your project uses the mirrored admin panel — there is **no `/admin/setup` page and no setup token** here. Roles live in the `user_roles` table and the first admin is claimed via a one-time button on `/admin` itself (backed by the `claim_first_admin` DB function, which only succeeds when zero admins exist).
+`src/components/products/use-products-filter.ts` tracks a per-product content fingerprint in `localStorage` (`products-first-seen-v4`):
 
-## Steps
+- **Added** — a product key never seen before is stamped with `now` and appears in Latest for 7 days.
+- **Edited** — when any tracked field (status, validity, plan, type, supports, warranty, availability, badges) changes vs. the stored fingerprint, the timestamp is reset to `now` and the item jumps back to the top of Latest for another 7 days.
+- **Sort** — Latest is sorted by `updatedAt DESC`, tie-broken by original catalogue order.
+- **Expiry** — after 7 days without further edits, the item drops out of Latest but stays in the main catalogue.
 
-1. Go to **`/auth`** and either sign up or sign in with the email you want to make the Super Admin.
-   - If sign-ups are disabled in Cloud → Users → Auth Settings, enable "Allow new users to sign up" temporarily, or invite the user from the Users list.
-2. After signing in, go to **`/admin`**.
-3. You'll see a card that says *"No admin has been created yet…"* with a **"Claim first admin"** button. Click it.
-4. The page reloads showing the full admin dashboard. That account is now the Super Admin.
-5. (Optional) Turn sign-ups back off in Cloud auth settings so no one else can register.
+So any edit made in the Google Sheet (the product source) or a newly-added row will surface in Latest on the next page load.
 
-## Adding more admins later
+## Gap this plan closes
 
-From the admin dashboard's **Admins** tab, invite additional users by email — they'll appear in `user_roles` with the `admin` role.
+The current tracker only reacts to a limited set of fields. If you edit **name**, **category**, **description**, **image**, or **price/detail text** in the sheet, the fingerprint does not change and Latest does not update.
 
-## Notes
+## Plan
 
-- The old `/admin/setup` + `ADMIN_BOOTSTRAP_TOKEN` flow was replaced when we switched to the mirrored admin panel. The `ADMIN_BOOTSTRAP_TOKEN` secret is currently unused; it can stay or be deleted — your call.
-- If the "Claim first admin" button errors with *"already claimed"*, an admin row already exists — sign in as that account, or (if you've lost access) I can walk you through resetting it.
+1. **Expand the edit signal** in `signatureOf()` to include every user-visible field on `SheetProduct` (name, category, description, price, image URL, etc.), so any sheet edit — not just status/badges — moves the row to the top of Latest.
+2. **Bump `SEEN_KEY`** to `products-first-seen-v5` so existing browsers rebuild the fingerprint map cleanly with the new field set (one-time reset; visible products get re-stamped as "just seen" per the current first-sight rule).
+3. **Verify on `/products`** by toggling the Latest pill: the count should equal recently-seen + recently-edited items, and the most recently changed product should be first.
 
-## Want me to change anything?
-
-- Delete the unused `ADMIN_BOOTSTRAP_TOKEN` secret?
-- Restore a dedicated `/admin/setup` page instead of the inline button?
-
-Otherwise no code changes needed — just follow the 5 steps above.
+No schema or admin-panel changes are needed — the product catalogue is sourced from the Google Sheet, and edits there already flow through this tracker.
