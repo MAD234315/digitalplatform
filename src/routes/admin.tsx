@@ -82,7 +82,9 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
 function AdminPage() {
   const nav = useNavigate();
   const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "unauth" | "not-admin" | "ok">("loading");
+  const queryClient = useQueryClient();
+  const [status, setStatus] = useState<"loading" | "redirecting" | "not-admin" | "error" | "ok">("loading");
+  const [authError, setAuthError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -91,34 +93,45 @@ function AdminPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
-        if (alive) setStatus("unauth");
+      setStatus("loading");
+      setAuthError(null);
+      const { data, error } = await supabase.auth.getUser();
+      if (!alive) return;
+      if (error || !data.user) {
+        setStatus("redirecting");
+        nav({ to: "/admin/login", replace: true });
         return;
       }
       try {
         const role = await fetchRole();
         if (!alive) return;
         setStatus(role.isAdmin ? "ok" : "not-admin");
-      } catch {
-        if (alive) setStatus("not-admin");
+      } catch (e) {
+        if (!alive) return;
+        const msg = e instanceof Error ? e.message : String(e);
+        if (/unauthorized|authorization|jwt|session|auth/i.test(msg)) {
+          await queryClient.cancelQueries();
+          queryClient.clear();
+          await supabase.auth.signOut();
+          setStatus("redirecting");
+          nav({ to: "/admin/login", replace: true });
+          return;
+        }
+        setAuthError("Could not verify admin permissions. Please try again from the login page.");
+        setStatus("error");
       }
     })();
     return () => {
       alive = false;
     };
-  }, [fetchRole]);
+  }, [fetchRole, nav, queryClient]);
 
-  if (status === "loading")
+  if (status === "loading" || status === "redirecting")
     return (
       <PageShell>
         <Loading />
       </PageShell>
     );
-  if (status === "unauth") {
-    nav({ to: "/auth" });
-    return null;
-  }
 
   if (status === "not-admin") {
     return (
@@ -130,14 +143,19 @@ function AdminPage() {
             </div>
             <h2 className="mt-5 font-display text-3xl">Access denied</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              This area is reserved for administrators. If no admin has been created yet, use the setup page.
+              This area is reserved for administrators. Sign in with an account that has admin permissions.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <button
-                onClick={() => nav({ to: "/admin/setup" })}
+                onClick={async () => {
+                  await queryClient.cancelQueries();
+                  queryClient.clear();
+                  await supabase.auth.signOut();
+                  nav({ to: "/admin/login", replace: true });
+                }}
                 className="rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground shadow-gold"
               >
-                Go to setup
+                Admin Login
               </button>
               <button
                 onClick={() => nav({ to: "/" })}
@@ -146,6 +164,35 @@ function AdminPage() {
                 Go to home
               </button>
             </div>
+          </div>
+        </section>
+      </PageShell>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <PageShell>
+        <section className="mx-auto max-w-2xl px-5 pt-32 pb-20">
+          <div className="rounded-3xl border border-red-500/30 bg-gradient-to-b from-black/60 to-black/30 p-10 text-center backdrop-blur">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/40 bg-red-500/10 text-red-300">
+              <Lock className="h-7 w-7" />
+            </div>
+            <h2 className="mt-5 font-display text-3xl">Admin check failed</h2>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+              {authError ?? "Could not verify admin permissions."}
+            </p>
+            <button
+              onClick={async () => {
+                await queryClient.cancelQueries();
+                queryClient.clear();
+                await supabase.auth.signOut();
+                nav({ to: "/admin/login", replace: true });
+              }}
+              className="mt-6 rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground shadow-gold"
+            >
+              Admin Login
+            </button>
           </div>
         </section>
       </PageShell>
@@ -167,9 +214,11 @@ function AdminPage() {
           </div>
           <button
             onClick={async () => {
+              await queryClient.cancelQueries();
+              queryClient.clear();
               await supabase.auth.signOut();
               router.invalidate();
-              nav({ to: "/" });
+              nav({ to: "/admin/login", replace: true });
             }}
             className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border px-3 py-2 text-xs sm:px-4 sm:text-sm hover:border-amber"
           >

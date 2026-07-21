@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ShieldCheck, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
-import { claimFirstAdmin, getMyRole } from "@/lib/admin.functions";
+import { claimFirstAdmin, getAdminBootstrapStatus, getMyRole } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/setup")({
   head: () => ({
@@ -22,6 +22,7 @@ type Phase = "loading" | "unauth" | "already-admin" | "ready" | "working" | "suc
 function AdminSetupPage() {
   const nav = useNavigate();
   const claimFn = useServerFn(claimFirstAdmin);
+  const bootstrapFn = useServerFn(getAdminBootstrapStatus);
   const roleFn = useServerFn(getMyRole);
   const [phase, setPhase] = useState<Phase>("loading");
   const [message, setMessage] = useState<string | null>(null);
@@ -30,9 +31,23 @@ function AdminSetupPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const { data } = await supabase.auth.getUser();
+      try {
+        const setup = await bootstrapFn();
+        if (!alive) return;
+        if (setup.adminExists) {
+          nav({ to: "/admin/login", replace: true });
+          return;
+        }
+      } catch {
+        if (!alive) return;
+        setMessage("Could not verify admin setup status. Setup stays locked until the backend confirms zero admins.");
+        setPhase("error");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.getUser();
       if (!alive) return;
-      if (!data.user) {
+      if (error || !data.user) {
         setPhase("unauth");
         return;
       }
@@ -48,7 +63,7 @@ function AdminSetupPage() {
     return () => {
       alive = false;
     };
-  }, [roleFn]);
+  }, [bootstrapFn, roleFn, nav]);
 
   async function handleClaim() {
     setPhase("working");
@@ -63,6 +78,19 @@ function AdminSetupPage() {
     }
   }
 
+  if (phase === "loading") {
+    return (
+      <PageShell>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-amber border-t-transparent" />
+            <p className="mt-4 text-sm text-muted-foreground">Checking admin setup status…</p>
+          </div>
+        </div>
+      </PageShell>
+    );
+  }
+
   return (
     <PageShell>
       <section className="mx-auto max-w-xl px-5 pt-32 pb-20">
@@ -75,18 +103,14 @@ function AdminSetupPage() {
             Claim the first Super Admin role for this site. Available only until an admin exists.
           </p>
 
-          {phase === "loading" && (
-            <p className="mt-8 text-center text-sm text-muted-foreground">Checking status…</p>
-          )}
-
           {phase === "unauth" && (
             <div className="mt-8 rounded-xl border border-border p-5 text-center">
               <p className="text-sm text-muted-foreground">You need to sign in first.</p>
               <button
-                onClick={() => nav({ to: "/auth" })}
+                onClick={() => nav({ to: "/admin/login" })}
                 className="mt-4 rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground shadow-gold"
               >
-                Go to sign in
+                Go to Admin Login
               </button>
             </div>
           )}
@@ -140,10 +164,10 @@ function AdminSetupPage() {
                 An admin already exists. Ask an existing admin to grant you access.
               </p>
               <Link
-                to="/"
+                to="/admin/login"
                 className="mt-4 inline-block rounded-full border border-border px-5 py-2 text-sm hover:border-amber"
               >
-                Go home
+                Go to Admin Login
               </Link>
             </div>
           )}
@@ -153,10 +177,10 @@ function AdminSetupPage() {
               <AlertTriangle className="mx-auto h-6 w-6 text-red-400" />
               <p className="mt-2 text-sm">{message ?? "Could not claim admin."}</p>
               <button
-                onClick={handleClaim}
+                onClick={() => window.location.reload()}
                 className="mt-4 rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground shadow-gold"
               >
-                Try again
+                Check again
               </button>
             </div>
           )}

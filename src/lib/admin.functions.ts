@@ -188,13 +188,26 @@ async function signImages(
 
 // ============ AUTH / ROLE ============
 
+/** Public-safe bootstrap status. Returns only whether setup is still allowed. */
+export const getAdminBootstrapStatus = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { count, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "admin");
+  if (error) throw new Error("Could not verify admin setup status.");
+  const adminCount = count ?? 0;
+  return { adminExists: adminCount > 0, adminCount, setupAllowed: adminCount === 0 };
+});
+
 export const getMyRole = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase
+    const { data, error } = await context.supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", context.userId);
+    if (error) throw new Error(error.message);
     const roles = (data ?? []).map((r) => r.role);
     return { userId: context.userId, isAdmin: roles.includes("admin"), roles };
   });
@@ -203,7 +216,10 @@ export const getMyRole = createServerFn({ method: "GET" })
 export const claimFirstAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.rpc("claim_first_admin");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("claim_first_admin_for_user", {
+      _user_id: context.userId,
+    });
     if (error) throw new Error(error.message);
     return { claimed: data === true };
   });

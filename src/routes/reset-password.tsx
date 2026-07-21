@@ -112,7 +112,7 @@ function ResetPasswordPage() {
   useEffect(() => {
     if (!success) return;
     if (countdown <= 0) {
-      nav({ to: "/admin" });
+      nav({ to: "/admin/login" });
       return;
     }
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
@@ -216,7 +216,7 @@ function ResetPasswordPage() {
                 Go to admin
               </Link>
               <Link
-                to="/auth"
+                to="/admin/login"
                 className="h-12 flex-1 inline-flex items-center justify-center rounded-full border border-border bg-background font-medium"
               >
                 Sign in
@@ -319,7 +319,7 @@ function ResetPasswordPage() {
                           Request a new link
                         </button>
                         <Link
-                          to="/auth"
+                          to="/admin/login"
                           className="inline-flex h-10 items-center rounded-full border border-border bg-background px-4 text-xs font-medium hover:border-amber/60"
                         >
                           Back to sign in
