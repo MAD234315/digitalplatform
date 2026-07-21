@@ -31,6 +31,15 @@ function ResetPasswordPage() {
   const [resendErr, setResendErr] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
 
+  // Simple math captcha to block automated abuse.
+  const [captcha, setCaptcha] = useState(() => makeCaptcha());
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+
+  // Track send attempts to enforce a client-side rate limit per email.
+  const RESEND_COOLDOWN_S = 60;
+  const MAX_PER_HOUR = 3;
+  const RL_KEY = "rp_resend_attempts_v1";
+
   useEffect(() => {
     // Supabase surfaces recovery-link errors (expired/invalid) via the URL hash.
     if (typeof window !== "undefined" && window.location.hash) {
