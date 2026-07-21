@@ -74,12 +74,21 @@ function ResetPasswordPage() {
     if (typeof window !== "undefined" && window.location.hash) {
       const params = new URLSearchParams(window.location.hash.slice(1));
       const errCode = params.get("error_code") || params.get("error");
-      const desc = params.get("error_description");
+      const desc = (params.get("error_description") || "").replace(/\+/g, " ");
       if (errCode) {
-        setLinkError(
-          desc?.replace(/\+/g, " ") ||
-            "This recovery link is invalid or has expired. Request a new one below.",
-        );
+        let title = "This recovery link isn't valid";
+        let message = desc || "The link couldn't be verified. Request a fresh one below.";
+        if (/expired|otp_expired/i.test(errCode) || /expired/i.test(desc)) {
+          title = "Your reset link has expired";
+          message = "Reset links are valid for 60 minutes. Request a new one to continue.";
+        } else if (/access_denied/i.test(errCode)) {
+          title = "This link can't be used";
+          message = "It may have already been used or was opened on a different device. Request a fresh one.";
+        } else if (/invalid/i.test(errCode) || /invalid/i.test(desc)) {
+          title = "This reset link is invalid";
+          message = "The link is malformed or has been revoked. Request a new one below.";
+        }
+        setLinkError({ code: errCode, title, message });
       }
     }
     const { data } = supabase.auth.onAuthStateChange((event) => {
