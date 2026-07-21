@@ -353,17 +353,8 @@ async function loadFromSheet(): Promise<ProductsPayload> {
 }
 
 async function isSiteOnline(): Promise<boolean> {
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("app_settings")
-      .select("site_online")
-      .eq("id", 1)
-      .maybeSingle();
-    return data?.site_online ?? true;
-  } catch {
-    return true; // fail-open
-  }
+  const row = await getPublicAppSettings();
+  return row?.site_online ?? true; // fail-open
 }
 
 export const getSheetProducts = createServerFn({ method: "GET" }).handler(
