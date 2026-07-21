@@ -137,6 +137,13 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      get_public_app_settings: {
+        Args: never
+        Returns: {
+          sheet_url: string
+          site_online: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
