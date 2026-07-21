@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.auto_grant_admin_madmaxhub9() FROM PUBLIC, anon, authenticated;
