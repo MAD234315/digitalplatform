@@ -287,14 +287,60 @@ function ResetPasswordPage() {
           {!ready && (
             <div className="mt-8 border-t border-border pt-6">
               {linkError && (
-                <p className="mb-4 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
-                  {linkError}
-                </p>
+                <div
+                  role="alert"
+                  className="mb-5 rounded-xl border border-red-500/40 bg-red-500/10 p-5"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/50 bg-red-500/15">
+                      <svg viewBox="0 0 24 24" className="h-4 w-4 text-red-300" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 9v4" />
+                        <path d="M12 17h.01" />
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-red-100">{linkError.title}</p>
+                      <p className="mt-1 text-xs text-red-100/80">{linkError.message}</p>
+                      <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-red-200/60">
+                        Reference: {linkError.code}
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            document.getElementById("resend-email")?.focus();
+                            document
+                              .getElementById("resend-panel")
+                              ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                          }}
+                          className="h-10 rounded-full bg-amber px-4 text-xs font-medium text-amber-foreground shadow-gold"
+                        >
+                          Request a new link
+                        </button>
+                        <Link
+                          to="/auth"
+                          className="inline-flex h-10 items-center rounded-full border border-border bg-background px-4 text-xs font-medium hover:border-amber/60"
+                        >
+                          Back to sign in
+                        </Link>
+                        <Link
+                          to="/"
+                          className="inline-flex h-10 items-center rounded-full border border-border bg-background px-4 text-xs font-medium text-muted-foreground hover:border-amber/60 hover:text-foreground"
+                        >
+                          Go home
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-              <h2 className="text-sm font-semibold">Link expired or missing?</h2>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Enter your email and we'll send a fresh reset link.
-              </p>
+              <div id="resend-panel">
+                <h2 className="text-sm font-semibold">Link expired or missing?</h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Enter your email and we'll send a fresh reset link.
+                </p>
+              </div>
               {cooldown > 0 && (
                 <div
                   role="timer"
