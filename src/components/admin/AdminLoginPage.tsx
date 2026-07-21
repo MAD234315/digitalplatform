@@ -138,7 +138,11 @@ export function AdminLoginPage() {
       } catch {
         if (!alive) return;
         setAdminExists(true);
-        setErr("Could not verify setup status. Setup remains locked until the backend confirms zero admins.");
+        setErr({
+          title: "Backend unreachable",
+          hint: "Could not verify setup status. Setup remains locked until the backend confirms zero admins.",
+          raw: "Failed to reach getAdminBootstrapStatus server function.",
+        });
       } finally {
         if (alive) setChecking(false);
       }
