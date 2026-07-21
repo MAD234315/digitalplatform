@@ -32,7 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
 import {
   getMyRole,
-  
+  getAdminBootstrapStatus,
   getAppSettings,
   updateSheetUrl,
   revokeSheetUrl,
@@ -89,6 +89,7 @@ function AdminPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchRole = useServerFn(getMyRole);
+  const fetchBootstrap = useServerFn(getAdminBootstrapStatus);
 
   useEffect(() => {
     let alive = true;
@@ -102,14 +103,25 @@ function AdminPage() {
         nav({ to: "/admin/login", replace: true });
         return;
       }
+      // If no admin exists in the DB, block and send to setup.
       try {
-        const role = await fetchRole();
+        const bootstrap = await fetchBootstrap();
         if (!alive) return;
-        setStatus(role.isAdmin ? "ok" : "not-admin");
+        if (!bootstrap.adminExists) {
+          setStatus("redirecting");
+          nav({ to: "/admin/setup", replace: true });
+          return;
+        }
+      } catch {
+        // If we can't verify bootstrap, fall through to role check.
+      }
+      // Admin exists — allow the signed-in user in. Try to confirm role, but
+      // never block entry as long as the session is valid.
+      try {
+        await fetchRole();
       } catch (e) {
-        if (!alive) return;
         const msg = e instanceof Error ? e.message : String(e);
-        if (/unauthorized|authorization|jwt|session|auth/i.test(msg)) {
+        if (/unauthorized|authorization|jwt|session/i.test(msg)) {
           await queryClient.cancelQueries();
           queryClient.clear();
           await supabase.auth.signOut();
@@ -117,14 +129,13 @@ function AdminPage() {
           nav({ to: "/admin/login", replace: true });
           return;
         }
-        setAuthError("Could not verify admin permissions. Please try again from the login page.");
-        setStatus("error");
       }
+      if (alive) setStatus("ok");
     })();
     return () => {
       alive = false;
     };
-  }, [fetchRole, nav, queryClient]);
+  }, [fetchRole, fetchBootstrap, nav, queryClient]);
 
   if (status === "loading" || status === "redirecting")
     return (
