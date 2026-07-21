@@ -216,8 +216,55 @@ function ResetPasswordPage() {
               {busy ? "Updating…" : "Update password"}
             </button>
           </form>
+
+          {!ready && (
+            <div className="mt-8 border-t border-border pt-6">
+              {linkError && (
+                <p className="mb-4 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                  {linkError}
+                </p>
+              )}
+              <h2 className="text-sm font-semibold">Link expired or missing?</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Enter your email and we'll send a fresh reset link.
+              </p>
+              <form onSubmit={onResend} className="mt-4 space-y-3">
+                <input
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                  className="h-12 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-amber"
+                />
+                {resendErr && (
+                  <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                    {resendErr}
+                  </p>
+                )}
+                {resendMsg && (
+                  <p className="rounded-md border border-amber/40 bg-amber/10 px-3 py-2 text-sm">
+                    {resendMsg}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={resendBusy || cooldown > 0}
+                  className="h-12 w-full rounded-full border border-amber/60 bg-background font-medium text-amber disabled:opacity-60"
+                >
+                  {resendBusy
+                    ? "Sending…"
+                    : cooldown > 0
+                      ? `Resend link (${cooldown}s)`
+                      : "Resend reset link"}
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </section>
     </PageShell>
   );
 }
+
