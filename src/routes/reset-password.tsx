@@ -114,9 +114,23 @@ function ResetPasswordPage() {
     e.preventDefault();
     setResendErr(null);
     setResendMsg(null);
-    const email = resendEmail.trim();
+    const email = resendEmail.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return setResendErr("Enter a valid email address.");
+    }
+    if (Number(captchaAnswer) !== captcha.answer) {
+      setCaptcha(makeCaptcha());
+      setCaptchaAnswer("");
+      return setResendErr("Captcha answer is incorrect. Try the new one.");
+    }
+    const attempts = readAttempts(RL_KEY);
+    const forEmail = attempts.filter((a) => a.email === email);
+    if (forEmail.length >= MAX_PER_HOUR) {
+      const nextAt = Math.min(...forEmail.map((a) => a.at)) + 60 * 60 * 1000;
+      const mins = Math.max(1, Math.ceil((nextAt - Date.now()) / 60000));
+      return setResendErr(
+        `Too many requests for this email. Try again in about ${mins} minute${mins === 1 ? "" : "s"}.`,
+      );
     }
     setResendBusy(true);
     try {
@@ -124,14 +138,20 @@ function ResetPasswordPage() {
         redirectTo: window.location.origin + "/reset-password",
       });
       if (error) throw error;
+      writeAttempts(RL_KEY, [...attempts, { email, at: Date.now() }]);
       setResendMsg("If an account exists for that email, a new reset link has been sent.");
-      setCooldown(30);
+      setCooldown(RESEND_COOLDOWN_S);
+      setCaptcha(makeCaptcha());
+      setCaptchaAnswer("");
     } catch (e) {
       setResendErr(e instanceof Error ? e.message : String(e));
+      setCaptcha(makeCaptcha());
+      setCaptchaAnswer("");
     } finally {
       setResendBusy(false);
     }
   }
+
 
 
   async function onSubmit(e: React.FormEvent) {
