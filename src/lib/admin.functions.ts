@@ -1,7 +1,7 @@
 /**
  * Admin panel server functions.
  *
- * Every mutating function goes through `requireSupabaseAuth` and then
+ * Every mutating function goes through `requireBackendAuth` and then
  * re-checks the caller's role via the RLS-protected `user_roles` table —
  * we never trust the client, and we avoid the service-role client because
  * it is not available in Lovable Cloud runtime.
@@ -367,7 +367,7 @@ export const updateSheetUrl = createServerFn({ method: "POST" })
   });
 
 export const revokeSheetUrl = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
 
@@ -464,7 +464,7 @@ function mapAuditRow(r: {
 }
 
 export const listSpreadsheetAudit = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: AuditFilters | undefined) => data ?? {})
   .handler(async ({ data, context }): Promise<SpreadsheetAuditPage> => {
     await assertAdmin(context);
@@ -490,7 +490,7 @@ export const listSpreadsheetAudit = createServerFn({ method: "GET" })
   });
 
 export const exportSpreadsheetAudit = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: Omit<AuditFilters, "page" | "pageSize"> | undefined) => data ?? {})
   .handler(async ({ data, context }): Promise<SpreadsheetAuditEntry[]> => {
     await assertAdmin(context);
@@ -546,7 +546,7 @@ function parseCsvPreview(text: string, maxRows: number): string[][] {
 }
 
 export const previewSheetUrl = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) =>
     z.object({ sheetUrl: z.string().trim().min(1).max(2000) }).parse(raw),
   )
@@ -723,7 +723,7 @@ export const listPublishedProofs = createServerFn({ method: "GET" }).handler(
 
 
 export const listAllProofs = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }): Promise<ProofRecord[]> => {
     await assertAdmin(context);
     const { data, error } = await context.supabase
@@ -763,7 +763,7 @@ async function assertPathsExist(paths: string[]) {
 }
 
 export const upsertProof = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) => proofUpsertSchema.parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
@@ -817,7 +817,7 @@ export const upsertProof = createServerFn({ method: "POST" })
   });
 
 export const bulkCreateProofs = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) => bulkProofSchema.parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
@@ -853,7 +853,7 @@ export const bulkCreateProofs = createServerFn({ method: "POST" })
 
 
 export const deleteProof = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
@@ -872,7 +872,7 @@ export const deleteProof = createServerFn({ method: "POST" })
   });
 
 export const setProofPublished = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) =>
     z.object({ id: z.string().uuid(), published: z.boolean() }).parse(raw),
   )
@@ -906,7 +906,7 @@ export const getSiteStatus = createServerFn({ method: "GET" }).handler(async () 
 
 /** Admin-only: toggle the customer website between Online and Offline. */
 export const setSiteOnline = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) => z.object({ online: z.boolean() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
