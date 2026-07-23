@@ -99,5 +99,8 @@ export function reportSupabaseEnv(): void {
   else console.info(output);
 }
 
-// Run on import so it fires at server startup.
-reportSupabaseEnv();
+// Run on import so it fires at server startup — never in the browser.
+if (typeof window === "undefined") {
+  reportSupabaseEnv();
+}
+
