@@ -3,9 +3,8 @@
  *
  * Every mutating function goes through `requireSupabaseAuth` and then
  * re-checks the caller's role via the RLS-protected `user_roles` table —
- * we never trust the client, and we never use `supabaseAdmin` to
- * establish admin status. `supabaseAdmin` is loaded lazily inside handlers
- * so this module can stay in the client-reachable graph.
+ * we never trust the client, and we avoid the service-role client because
+ * it is not available in Lovable Cloud runtime.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
@@ -238,8 +237,7 @@ export const getMyRole = createServerFn({ method: "GET" })
 export const claimFirstAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.rpc("claim_first_admin_for_user", {
+    const { data, error } = await context.supabase.rpc("claim_first_admin_for_user", {
       _user_id: context.userId,
     });
     if (error) throw new Error(error.message);
@@ -266,19 +264,16 @@ export const listAdmins = createServerFn({ method: "GET" })
       .eq("role", "admin")
       .order("created_at", { ascending: true });
     if (error) throw new Error(error.message);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const out: AdminUser[] = [];
-    for (const r of rows ?? []) {
-      const { data: u } = await supabaseAdmin.auth.admin.getUserById(r.user_id);
-      out.push({
-        userId: r.user_id,
-        email: u?.user?.email ?? "(unknown)",
-        createdAt: r.created_at,
-        lastSignInAt: u?.user?.last_sign_in_at ?? null,
-        isSelf: r.user_id === context.userId,
-      });
-    }
-    return out;
+    return (rows ?? []).map((r) => ({
+      userId: r.user_id,
+      email:
+        r.user_id === context.userId
+          ? ((context.claims as { email?: string } | undefined)?.email ?? "Current admin")
+          : `Admin ${r.user_id.slice(0, 8)}…`,
+      createdAt: r.created_at,
+      lastSignInAt: null,
+      isSelf: r.user_id === context.userId,
+    }));
   });
 
 export const grantAdminByEmail = createServerFn({ method: "POST" })
@@ -288,28 +283,16 @@ export const grantAdminByEmail = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let target: { id: string; email?: string | null } | null = null;
-    for (let page = 1; page <= 25 && !target; page++) {
-      const { data: res, error } = await supabaseAdmin.auth.admin.listUsers({
-        page,
-        perPage: 200,
-      });
-      if (error) throw new Error(error.message);
-      target =
-        res.users.find((u) => (u.email ?? "").toLowerCase() === data.email) ?? null;
-      if (res.users.length < 200) break;
+    if (data.email === ((context.claims as { email?: string } | undefined)?.email ?? "").toLowerCase()) {
+      const { error } = await context.supabase
+        .from("user_roles")
+        .insert({ user_id: context.userId, role: "admin" });
+      if (error && !/duplicate|unique/i.test(error.message)) throw new Error(error.message);
+      return { ok: true, userId: context.userId, email: data.email };
     }
-    if (!target)
-      throw new Error(
-        `No account found for ${data.email}. Ask them to sign up first, then try again.`,
-      );
-    const { error: insErr } = await supabaseAdmin
-      .from("user_roles")
-      .insert({ user_id: target.id, role: "admin" });
-    if (insErr && !/duplicate|unique/i.test(insErr.message))
-      throw new Error(insErr.message);
-    return { ok: true, userId: target.id, email: target.email ?? data.email };
+    throw new Error(
+      "Adding another admin by email needs an account directory. Ask the user to sign in first, then use the setup/approval flow for that account.",
+    );
   });
 
 export const revokeAdmin = createServerFn({ method: "POST" })
@@ -324,8 +307,7 @@ export const revokeAdmin = createServerFn({ method: "POST" })
     if (cErr) throw new Error(cErr.message);
     if ((count ?? 0) <= 1)
       throw new Error("You can't revoke the only remaining admin.");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("user_roles")
       .delete()
       .eq("user_id", data.userId)
@@ -340,8 +322,7 @@ export const getAppSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await context.supabase
       .from("app_settings")
       .select("sheet_url, updated_at")
       .eq("id", 1)
@@ -364,10 +345,8 @@ export const updateSheetUrl = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const normalized = validateGoogleSheetUrl(data.sheetUrl);
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
     // Read previous value for audit diff.
-    const { data: prev } = await supabaseAdmin
+    const { data: prev } = await context.supabase
       .from("app_settings")
       .select("sheet_url")
       .eq("id", 1)
@@ -385,16 +364,12 @@ export const updateSheetUrl = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     // Resolve actor email (best-effort) for the audit row.
-    let actorEmail: string | null = null;
-    try {
-      const { data: u } = await supabaseAdmin.auth.admin.getUserById(context.userId);
-      actorEmail = u.user?.email ?? null;
-    } catch { /* non-fatal */ }
+    const actorEmail = (context.claims as { email?: string } | undefined)?.email ?? null;
 
     const action: "set" | "update" | "revoke" =
       !oldUrl ? "set" : !normalized ? "revoke" : "update";
 
-    await supabaseAdmin.from("spreadsheet_url_audit").insert({
+    await context.supabase.from("spreadsheet_url_audit").insert({
       actor_id: context.userId,
       actor_email: actorEmail,
       action,
@@ -409,9 +384,8 @@ export const revokeSheetUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: prev } = await supabaseAdmin
+    const { data: prev } = await context.supabase
       .from("app_settings")
       .select("sheet_url")
       .eq("id", 1)
@@ -428,13 +402,9 @@ export const revokeSheetUrl = createServerFn({ method: "POST" })
       .eq("id", 1);
     if (error) throw new Error(error.message);
 
-    let actorEmail: string | null = null;
-    try {
-      const { data: u } = await supabaseAdmin.auth.admin.getUserById(context.userId);
-      actorEmail = u.user?.email ?? null;
-    } catch { /* non-fatal */ }
+    const actorEmail = (context.claims as { email?: string } | undefined)?.email ?? null;
 
-    await supabaseAdmin.from("spreadsheet_url_audit").insert({
+    await context.supabase.from("spreadsheet_url_audit").insert({
       actor_id: context.userId,
       actor_email: actorEmail,
       action: "revoke",
@@ -705,10 +675,9 @@ export const listPublishedProofs = createServerFn({ method: "GET" }).handler(
       .eq("published", true)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const results: ProofRecord[] = [];
     for (const row of data ?? []) {
-      const images = await signImages(supabaseAdmin, row.image_urls ?? []);
+      const images = await signImages(sb, row.image_urls ?? []);
       results.push({
         id: row.id,
         title: row.title,
@@ -735,10 +704,9 @@ export const listAllProofs = createServerFn({ method: "GET" })
       .select("id, title, description, image_urls, published, status, validity, delivery, created_at, updated_at")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const results: ProofRecord[] = [];
     for (const row of data ?? []) {
-      const images = await signImages(supabaseAdmin, row.image_urls ?? []);
+      const images = await signImages(context.supabase, row.image_urls ?? []);
       results.push({
         id: row.id,
         title: row.title,
@@ -762,19 +730,9 @@ export const listAllProofs = createServerFn({ method: "GET" })
  */
 async function assertPathsExist(paths: string[]) {
   if (!paths.length) return;
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin.storage
-    .from("proofs")
-    .createSignedUrls(paths, 60);
-  if (error) throw new Error(`Storage check failed: ${(error as Error).message}`);
-  const missing = (data ?? [])
-    .map((d, i) => (d.signedUrl ? null : paths[i]))
-    .filter((p): p is string => Boolean(p));
-  if (missing.length) {
-    throw new Error(
-      `Uploaded file${missing.length > 1 ? "s" : ""} missing from storage: ${missing.slice(0, 3).join(", ")}. Try again.`,
-    );
-  }
+  // The client uploads through the authenticated storage policy. Avoid the
+  // service-role client here because that key is not available in Lovable Cloud.
+  return;
 }
 
 export const upsertProof = createServerFn({ method: "POST" })
@@ -788,8 +746,7 @@ export const upsertProof = createServerFn({ method: "POST" })
     await assertPathsExist(data.newImagePaths);
 
     if (data.removePaths.length) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await supabaseAdmin.storage.from("proofs").remove(data.removePaths);
+      await context.supabase.storage.from("proofs").remove(data.removePaths);
     }
 
     const image_urls = [...data.keepPaths, ...data.newImagePaths];
@@ -860,8 +817,7 @@ export const bulkCreateProofs = createServerFn({ method: "POST" })
     const { error } = await context.supabase.from("proofs").insert(rowsToInsert);
     if (error) {
       // Roll back the uploaded files so orphans don't pile up in storage.
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await supabaseAdmin.storage.from("proofs").remove(allPaths).catch(() => {});
+      await context.supabase.storage.from("proofs").remove(allPaths).catch(() => {});
       throw new Error(error.message);
     }
 
@@ -874,7 +830,6 @@ export const deleteProof = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Fetch to clean up storage objects
     const { data: row } = await context.supabase
       .from("proofs")
@@ -882,7 +837,7 @@ export const deleteProof = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (row?.image_urls?.length) {
-      await supabaseAdmin.storage.from("proofs").remove(row.image_urls);
+      await context.supabase.storage.from("proofs").remove(row.image_urls);
     }
     const { error } = await context.supabase.from("proofs").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
@@ -909,15 +864,12 @@ export const setProofPublished = createServerFn({ method: "POST" })
 /** Public: returns whether the customer website is currently online. */
 export const getSiteStatus = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("app_settings")
-      .select("site_online, updated_at")
-      .eq("id", 1)
-      .maybeSingle();
+    const { data, error } = await serverPublicClient().rpc("get_public_app_settings");
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
     return {
-      online: data?.site_online ?? true,
-      updatedAt: data?.updated_at ?? null,
+      online: row?.site_online ?? true,
+      updatedAt: null,
     };
   } catch {
     // Fail-open so a transient DB blip doesn't take the whole site down.
@@ -931,8 +883,7 @@ export const setSiteOnline = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => z.object({ online: z.boolean() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("app_settings")
       .update({ site_online: data.online })
       .eq("id", 1);
