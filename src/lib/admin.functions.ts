@@ -254,6 +254,13 @@ export type AdminUser = {
   isSelf: boolean;
 };
 
+type AdminUserRpcRow = {
+  user_id: string;
+  email: string | null;
+  role_created_at: string;
+  last_sign_in_at: string | null;
+};
+
 export const listAdmins = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminUser[]> => {
@@ -262,7 +269,7 @@ export const listAdmins = createServerFn({ method: "GET" })
       "list_admin_users_for_admin",
     );
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((r) => ({
+    return ((rows ?? []) as AdminUserRpcRow[]).map((r) => ({
       userId: r.user_id,
       email: r.email ?? "Admin account",
       createdAt: r.role_created_at,
@@ -283,7 +290,10 @@ export const grantAdminByEmail = createServerFn({ method: "POST" })
       { _email: data.email },
     );
     if (error) throw new Error(error.message);
-    const row = Array.isArray(rows) ? rows[0] : rows;
+    const row = (Array.isArray(rows) ? rows[0] : rows) as
+      | { user_id?: string; email?: string | null }
+      | null
+      | undefined;
     return { ok: true, userId: row?.user_id, email: row?.email ?? data.email };
   });
 

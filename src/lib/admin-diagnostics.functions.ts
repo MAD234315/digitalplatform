@@ -178,20 +178,18 @@ export const getAdminDiagnostics = createServerFn({ method: "GET" })
     let appSettings: { sheetUrlConfigured: boolean; siteOnline: boolean } | null = null;
 
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const [{ data: u }, cRes, sRes] = await Promise.all([
-        supabaseAdmin.auth.admin.getUserById(context.userId),
-        supabaseAdmin
+      const [cRes, sRes] = await Promise.all([
+        context.supabase
           .from("user_roles")
           .select("*", { count: "exact", head: true })
           .eq("role", "admin"),
-        supabaseAdmin
+        context.supabase
           .from("app_settings")
           .select("sheet_url, site_online")
           .eq("id", 1)
           .maybeSingle(),
       ]);
-      email = u?.user?.email ?? null;
+      email = (context.claims as { email?: string } | undefined)?.email ?? null;
       adminCount = cRes.count ?? 0;
       appSettings = sRes.data
         ? {
