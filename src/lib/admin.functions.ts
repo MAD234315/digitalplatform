@@ -590,55 +590,84 @@ export const previewSheetUrl = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<SheetPreview> => {
     await assertAdmin(context);
     const normalized = validateGoogleSheetUrl(data.sheetUrl);
-    const id = /\/d\/([a-zA-Z0-9_-]+)/.exec(normalized)?.[1] ?? "";
+    const parsedUrl = new URL(normalized);
+    const host = parsedUrl.hostname.toLowerCase();
+    const isGoogle = host === "docs.google.com";
+    const id = isGoogle ? (/\/d\/([a-zA-Z0-9_-]+)/.exec(normalized)?.[1] ?? "") : "";
 
-    // Fetch first tab as CSV (public export). Time-bound to keep the admin UI responsive.
+    // Build fetch URL: Google → CSV export; OneDrive share → shares content
+    // endpoint; SharePoint / direct .xlsx → the link itself.
+    let fetchUrl = normalized;
+    if (isGoogle) {
+      fetchUrl = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
+    } else if (host === "1drv.ms" || host === "onedrive.live.com" || host.endsWith(".onedrive.live.com")) {
+      const b64 = btoa(normalized).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      fetchUrl = `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
+    }
+
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
-    let csv = "";
+    const timer = setTimeout(() => controller.abort(), 10_000);
+    let rows: string[][] = [];
+    let sheetName = isGoogle ? "Sheet1" : "Workbook";
     try {
-      const res = await fetch(
-        `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
-        { signal: controller.signal, redirect: "follow" },
-      );
+      const res = await fetch(fetchUrl, { signal: controller.signal, redirect: "follow" });
       if (!res.ok) {
-        if (res.status === 404) throw new Error("Sheet not found. Check the URL and sharing settings.");
+        if (res.status === 404) throw new Error("Spreadsheet not found. Check the URL and sharing settings.");
         if (res.status === 401 || res.status === 403)
-          throw new Error("Access denied. Set the sheet's sharing to \"Anyone with the link – Viewer\".");
-        throw new Error(`Google Sheets returned HTTP ${res.status}.`);
+          throw new Error('Access denied. Set the file sharing to "Anyone with the link – Viewer".');
+        throw new Error(`Spreadsheet host returned HTTP ${res.status}.`);
       }
-      csv = await res.text();
+      if (isGoogle) {
+        rows = parseCsvPreview(await res.text(), 11);
+      } else {
+        const buf = await res.arrayBuffer();
+        const head = new Uint8Array(buf.slice(0, 2));
+        if (head[0] === 0x50 && head[1] === 0x4b) {
+          const XLSX = await import("xlsx");
+          const wb = XLSX.read(buf, { type: "array" });
+          sheetName = wb.SheetNames[0] || sheetName;
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const all = XLSX.utils.sheet_to_json<string[]>(ws, {
+            header: 1,
+            blankrows: false,
+            defval: "",
+          }) as string[][];
+          rows = all.slice(0, 11).map((r) => r.map((c) => String(c ?? "")));
+        } else {
+          rows = parseCsvPreview(new TextDecoder().decode(buf), 11);
+        }
+      }
     } catch (e) {
       if ((e as Error).name === "AbortError")
-        throw new Error("Timed out fetching the sheet. Try again in a moment.");
+        throw new Error("Timed out fetching the spreadsheet. Try again in a moment.");
       throw e;
     } finally {
       clearTimeout(timer);
     }
 
-    // Best-effort: read the sheet/document title from the public HTML view.
-    let sheetName = "Sheet1";
-    try {
-      const h = await fetch(`https://docs.google.com/spreadsheets/d/${id}/htmlview`, { redirect: "follow" });
-      if (h.ok) {
-        const html = await h.text();
-        const m = /<title>([^<]+)<\/title>/i.exec(html);
-        if (m) sheetName = m[1].replace(/\s*-\s*Google Sheets\s*$/i, "").trim() || sheetName;
-      }
-    } catch { /* non-fatal */ }
+    // Best-effort: read Google Sheets document title from the public HTML view.
+    if (isGoogle && id) {
+      try {
+        const h = await fetch(`https://docs.google.com/spreadsheets/d/${id}/htmlview`, { redirect: "follow" });
+        if (h.ok) {
+          const html = await h.text();
+          const m = /<title>([^<]+)<\/title>/i.exec(html);
+          if (m) sheetName = m[1].replace(/\s*-\s*Google Sheets\s*$/i, "").trim() || sheetName;
+        }
+      } catch { /* non-fatal */ }
+    }
 
-    const parsed = parseCsvPreview(csv, 11); // 1 header + 10 rows
-    if (parsed.length === 0) throw new Error("The sheet appears to be empty.");
-    const headers = parsed[0].map((h) => h.trim());
-    const rows = parsed.slice(1, 11);
+    if (rows.length === 0) throw new Error("The spreadsheet appears to be empty.");
+    const headers = rows[0].map((h) => String(h ?? "").trim());
+    const dataRows = rows.slice(1, 11);
 
     return {
       sheetName,
       spreadsheetId: id,
       normalizedUrl: normalized,
       headers,
-      rows,
-      totalRowsShown: rows.length,
+      rows: dataRows,
+      totalRowsShown: dataRows.length,
     };
   });
 
