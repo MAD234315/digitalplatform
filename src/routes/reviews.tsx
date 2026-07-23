@@ -128,9 +128,16 @@ function Reviews() {
                     <div className="text-xs text-muted-foreground">
                       {[r.location, r.date].filter(Boolean).join(" · ")}
                     </div>
-                    {r.product ? (
-                      <div className="mt-2 text-xs uppercase tracking-[0.14em] text-amber/80">{r.product}</div>
-                    ) : null}
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      {r.tenure ? (
+                        <span className="rounded-full border border-amber/30 bg-amber/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber">
+                          {r.tenure} customer
+                        </span>
+                      ) : null}
+                      {r.product ? (
+                        <span className="text-xs uppercase tracking-[0.14em] text-amber/80">{r.product}</span>
+                      ) : null}
+                    </div>
                   </div>
                 </article>
               ))}
