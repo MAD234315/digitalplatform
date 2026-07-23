@@ -1644,7 +1644,7 @@ function ReviewsSheetCard() {
             type="url"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="https://docs.google.com/spreadsheets/d/…/edit"
+            placeholder="Google Sheets URL or OneDrive / SharePoint / .xlsx link"
             className={`mt-1 h-12 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus:border-amber ${
               validationError
                 ? "border-red-500/60 focus:border-red-500"
