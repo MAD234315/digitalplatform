@@ -122,7 +122,17 @@ function Reviews() {
                   className="flex flex-col rounded-2xl border border-border bg-card/40 p-6 transition hover:border-amber/40 hover:bg-card/60"
                 >
                   <Stars n={r.rating} />
-                  <p className="mt-4 text-sm leading-relaxed text-foreground/90">&ldquo;{r.body}&rdquo;</p>
+                  {r.liked ? (
+                    <div className="mt-4 rounded-xl border-l-2 border-amber bg-gradient-to-r from-amber/10 to-transparent p-4">
+                      <p className="text-sm italic leading-relaxed text-foreground/90">
+                        <span className="mr-1 text-lg font-serif text-amber">&ldquo;</span>
+                        {r.liked}
+                      </p>
+                    </div>
+                  ) : null}
+                  <p className={`text-sm leading-relaxed text-foreground/90 ${r.liked ? "mt-4" : "mt-4"}`}>
+                    &ldquo;{r.body}&rdquo;
+                  </p>
                   <div className="mt-6 border-t border-border pt-4">
                     <div className="text-sm font-semibold">{r.name}</div>
                     <div className="text-xs text-muted-foreground">
@@ -132,13 +142,6 @@ function Reviews() {
                       <div className="mt-3">
                         <span className="rounded-full border border-amber/30 bg-amber/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber">
                           {r.tenure} customer
-                        </span>
-                      </div>
-                    ) : null}
-                    {r.liked ? (
-                      <div className="mt-3">
-                        <span className="rounded-full border border-amber/30 bg-amber/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber">
-                          Liked most: {r.liked}
                         </span>
                       </div>
                     ) : null}
