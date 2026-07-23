@@ -202,6 +202,7 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  */
 async function fetchSheetRows(): Promise<string[][]> {
   const fetchUrl = await resolveFetchUrl();
+  if (!fetchUrl) return [];
   let attempt = 0;
   // eslint-disable-next-line no-constant-condition
   while (true) {
