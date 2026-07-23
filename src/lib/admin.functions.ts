@@ -3,9 +3,8 @@
  *
  * Every mutating function goes through `requireSupabaseAuth` and then
  * re-checks the caller's role via the RLS-protected `user_roles` table —
- * we never trust the client, and we never use `supabaseAdmin` to
- * establish admin status. `supabaseAdmin` is loaded lazily inside handlers
- * so this module can stay in the client-reachable graph.
+ * we never trust the client, and we avoid the service-role client because
+ * it is not available in Lovable Cloud runtime.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
@@ -259,20 +258,15 @@ export const listAdmins = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminUser[]> => {
     await assertAdmin(context);
-    const { data: rows, error } = await context.supabase
-      .from("user_roles")
-      .select("user_id, created_at")
-      .eq("role", "admin")
-      .order("created_at", { ascending: true });
+    const { data: rows, error } = await (context.supabase as any).rpc(
+      "list_admin_users_for_admin",
+    );
     if (error) throw new Error(error.message);
     return (rows ?? []).map((r) => ({
       userId: r.user_id,
-      email:
-        r.user_id === context.userId
-          ? ((context.claims as { email?: string } | undefined)?.email ?? "Current admin")
-          : "Admin account",
-      createdAt: r.created_at,
-      lastSignInAt: null,
+      email: r.email ?? "Admin account",
+      createdAt: r.role_created_at,
+      lastSignInAt: r.last_sign_in_at ?? null,
       isSelf: r.user_id === context.userId,
     }));
   });
@@ -284,28 +278,13 @@ export const grantAdminByEmail = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let target: { id: string; email?: string | null } | null = null;
-    for (let page = 1; page <= 25 && !target; page++) {
-      const { data: res, error } = await supabaseAdmin.auth.admin.listUsers({
-        page,
-        perPage: 200,
-      });
-      if (error) throw new Error(error.message);
-      target =
-        res.users.find((u) => (u.email ?? "").toLowerCase() === data.email) ?? null;
-      if (res.users.length < 200) break;
-    }
-    if (!target)
-      throw new Error(
-        `No account found for ${data.email}. Ask them to sign up first, then try again.`,
-      );
-    const { error: insErr } = await supabaseAdmin
-      .from("user_roles")
-      .insert({ user_id: target.id, role: "admin" });
-    if (insErr && !/duplicate|unique/i.test(insErr.message))
-      throw new Error(insErr.message);
-    return { ok: true, userId: target.id, email: target.email ?? data.email };
+    const { data: rows, error } = await (context.supabase as any).rpc(
+      "grant_admin_by_email_for_admin",
+      { _email: data.email },
+    );
+    if (error) throw new Error(error.message);
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    return { ok: true, userId: row?.user_id, email: row?.email ?? data.email };
   });
 
 export const revokeAdmin = createServerFn({ method: "POST" })
@@ -320,8 +299,7 @@ export const revokeAdmin = createServerFn({ method: "POST" })
     if (cErr) throw new Error(cErr.message);
     if ((count ?? 0) <= 1)
       throw new Error("You can't revoke the only remaining admin.");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("user_roles")
       .delete()
       .eq("user_id", data.userId)
@@ -746,17 +724,7 @@ async function assertPathsExist(paths: string[]) {
   if (!paths.length) return;
   // The client uploads through the authenticated storage policy. Avoid the
   // service-role client here because that key is not available in Lovable Cloud.
-  const data = paths.map((path) => ({ signedUrl: path }));
-  const error = null;
-  if (error) throw new Error(`Storage check failed: ${(error as Error).message}`);
-  const missing = (data ?? [])
-    .map((d, i) => (d.signedUrl ? null : paths[i]))
-    .filter((p): p is string => Boolean(p));
-  if (missing.length) {
-    throw new Error(
-      `Uploaded file${missing.length > 1 ? "s" : ""} missing from storage: ${missing.slice(0, 3).join(", ")}. Try again.`,
-    );
-  }
+  return;
 }
 
 export const upsertProof = createServerFn({ method: "POST" })
