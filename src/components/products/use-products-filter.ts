@@ -83,7 +83,7 @@ function writeSeen(map: SeenMap) {
  * rolling. On the very first mount we backfill existing products with
  * timestamp 0 so we don't flag the whole catalogue as new.
  */
-export function useProductsFilter(products: SheetProduct[], categories: CategoryInfo[]) {
+export function useProductsFilter(products: SheetProduct[], categories: CategoryInfo[], sourceUrl: string = "") {
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
