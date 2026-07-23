@@ -1600,7 +1600,7 @@ function ReviewsSheetCard() {
         <div className="min-w-0">
           <h2 className="font-display text-xl sm:text-2xl">Reviews Spreadsheet</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage customer reviews from a Google Sheet. Cached for ~1 minute. Leave blank to show the built-in defaults.
+            Manage customer reviews from a Google Sheet or a Microsoft Excel workbook (OneDrive / SharePoint share, or a direct .xlsx URL). Cached for ~1 minute. Leave blank to show the built-in defaults.
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             <strong className="text-foreground/80">Required columns (row 1 headers):</strong>{" "}
