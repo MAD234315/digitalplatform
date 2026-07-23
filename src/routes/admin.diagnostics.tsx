@@ -210,10 +210,13 @@ function DiagnosticsPage() {
               </ul>
             </Section>
 
+            <DeploymentHealthSection />
+
             <Section icon={Server} title="Meta">
               <KV label="Generated" value={new Date(report.generatedAt).toLocaleString()} />
               <KV label="Origin" value={report.origin} mono />
             </Section>
+
           </div>
         )}
       </section>
