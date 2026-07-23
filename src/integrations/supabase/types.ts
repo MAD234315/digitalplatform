@@ -17,18 +17,21 @@ export type Database = {
       app_settings: {
         Row: {
           id: number
+          reviews_sheet_url: string
           sheet_url: string
           site_online: boolean
           updated_at: string
         }
         Insert: {
           id?: number
+          reviews_sheet_url?: string
           sheet_url?: string
           site_online?: boolean
           updated_at?: string
         }
         Update: {
           id?: number
+          reviews_sheet_url?: string
           sheet_url?: string
           site_online?: boolean
           updated_at?: string
@@ -147,6 +150,7 @@ export type Database = {
       get_public_app_settings: {
         Args: never
         Returns: {
+          reviews_sheet_url: string
           sheet_url: string
           site_online: boolean
         }[]
