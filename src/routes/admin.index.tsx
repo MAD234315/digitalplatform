@@ -1538,9 +1538,11 @@ function FuturePanel() {
 function ReviewsSheetCard() {
   const getSettings = useServerFn(getAppSettings);
   const saveFn = useServerFn(updateReviewsSheetUrl);
+  const qc = useQueryClient();
   const [current, setCurrent] = useState<string>("");
   const [input, setInput] = useState<string>("");
   const [busy, setBusy] = useState(false);
+
 
   useEffect(() => {
     (async () => {
@@ -1569,6 +1571,7 @@ function ReviewsSheetCard() {
       const res = await saveFn({ data: { sheetUrl: trimmed } });
       setCurrent(res.reviewsSheetUrl);
       setInput(res.reviewsSheetUrl);
+      qc.invalidateQueries({ queryKey: ["sheet-reviews"] });
       toast.success(trimmed ? "Reviews spreadsheet saved" : "Reviews spreadsheet cleared");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save");
@@ -1583,12 +1586,14 @@ function ReviewsSheetCard() {
       await saveFn({ data: { sheetUrl: "" } });
       setCurrent("");
       setInput("");
+      qc.invalidateQueries({ queryKey: ["sheet-reviews"] });
       toast.success("Reviews spreadsheet cleared — falling back to defaults");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to clear");
     } finally {
       setBusy(false);
     }
+
   }
 
   return (
