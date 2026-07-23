@@ -105,23 +105,41 @@ let cache: { at: number; payload: ReviewsPayload } | null = null;
 let inflight: Promise<ReviewsPayload> | null = null;
 
 async function loadFromSheet(): Promise<ReviewsPayload> {
-  const csvUrl = await getReviewsCsvUrl();
-  if (!csvUrl) {
+  const sourceUrl = await getReviewsSourceUrl();
+  if (!sourceUrl) {
     return { reviews: [], fetchedAt: new Date().toISOString(), configured: false };
   }
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    let text: string;
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    let rows: string[][];
     try {
-      const res = await fetch(csvUrl, { signal: controller.signal });
+      const res = await fetch(sourceUrl, { signal: controller.signal });
       if (!res.ok) throw new Error(`Sheet fetch failed (${res.status}).`);
-      text = await res.text();
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const looksXlsx =
+        /sheet|excel|officedocument|octet-stream|binary/.test(ct) ||
+        /\.xlsx(\?|$)/i.test(sourceUrl);
+      if (looksXlsx) {
+        const buf = await res.arrayBuffer();
+        // Sniff for CSV vs xlsx (PK zip magic): 0x50 0x4B
+        const head = new Uint8Array(buf.slice(0, 2));
+        if (head[0] === 0x50 && head[1] === 0x4b) {
+          const wb = XLSX.read(buf, { type: "array" });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          rows = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1, blankrows: false, defval: "" }) as string[][];
+        } else {
+          rows = parseCsv(new TextDecoder().decode(buf));
+        }
+      } else {
+        rows = parseCsv(await res.text());
+      }
     } finally {
       clearTimeout(timeout);
     }
 
-    const rows = parseCsv(text).filter((r) => r.some((c) => (c || "").trim()));
+    rows = rows.filter((r) => r.some((c) => String(c || "").trim()));
+
     if (rows.length === 0)
       return { reviews: [], fetchedAt: new Date().toISOString(), configured: true };
 
