@@ -141,14 +141,18 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
 
     const s = (v: unknown) => (v == null ? "" : String(v));
     const header = rows[0].map((h) => normalizeHeader(s(h)));
-    const idx = (keys: string[]) => header.findIndex((h) => keys.includes(h));
-    const iName = idx(["name", "customer", "customername"]);
-    const iLoc = idx(["location", "city"]);
-    const iRating = idx(["rating", "stars", "score"]);
-    const iProduct = idx(["product", "productname", "item"]);
-    const iBody = idx(["review", "body", "message", "comment", "text"]);
-    const iDate = idx(["date", "month", "reviewdate"]);
-    const iPub = idx(["published", "publish", "show", "visible", "active"]);
+    const findIdx = (exact: string[], contains: string[] = []) => {
+      let i = header.findIndex((h) => exact.includes(h));
+      if (i >= 0) return i;
+      return header.findIndex((h) => contains.some((k) => h.includes(k)));
+    };
+    const iName = findIdx(["name", "customer", "customername"], ["yourname", "name"]);
+    const iLoc = findIdx(["location", "city"], ["whereareyoufrom", "location", "city", "from"]);
+    const iRating = findIdx(["rating", "stars", "score"], ["rating", "stars", "score"]);
+    const iProduct = findIdx(["product", "productname", "item"], ["product", "service", "purchased"]);
+    const iBody = findIdx(["review", "body", "message", "comment", "text"], ["review", "feedback", "comment", "message"]);
+    const iDate = findIdx(["date", "month", "reviewdate", "timestamp"], ["timestamp", "date"]);
+    const iPub = findIdx(["published", "publish", "show", "visible", "active"], ["publish"]);
 
     const reviews: SheetReview[] = [];
     for (let r = 1; r < rows.length; r++) {
