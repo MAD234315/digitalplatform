@@ -64,8 +64,11 @@ function Reviews() {
     staleTime: 60_000,
   });
 
-  const reviews = data?.reviews.length ? data.reviews : FALLBACK_REVIEWS;
-  const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
+  const reviews = data?.reviews ?? [];
+  const hasReviews = reviews.length > 0;
+  const avg = hasReviews
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : "—";
 
   return (
     <PageShell>
@@ -73,7 +76,11 @@ function Reviews() {
         eyebrow="Customer Reviews"
         title="Trusted by thousands,"
         titleAccent="rated by real people."
-        lede={`Average rating ${avg} / 5 across verified purchases. Here's what customers say about ordering premium digital products with us on WhatsApp.`}
+        lede={
+          hasReviews
+            ? `Average rating ${avg} / 5 across verified purchases. Here's what customers say about ordering premium digital products with us on WhatsApp.`
+            : `Here's what customers say about ordering premium digital products with us on WhatsApp.`
+        }
       />
 
       <section className="border-t border-border">
@@ -83,13 +90,15 @@ function Reviews() {
               <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
                 {reviews.length} reviews
               </div>
-              <div className="mt-3 flex items-center gap-4">
-                <div className="font-display text-5xl leading-none text-headline">{avg}</div>
-                <div>
-                  <Stars n={5} />
-                  <div className="mt-1 text-xs text-muted-foreground">out of 5</div>
+              {hasReviews ? (
+                <div className="mt-3 flex items-center gap-4">
+                  <div className="font-display text-5xl leading-none text-headline">{avg}</div>
+                  <div>
+                    <Stars n={5} />
+                    <div className="mt-1 text-xs text-muted-foreground">out of 5</div>
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </div>
             <a
               href={`${CONTACT.WA_URL}?text=${encodeURIComponent(
@@ -103,28 +112,37 @@ function Reviews() {
             </a>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {reviews.map((r) => (
-              <article
-                key={r.id}
-                className="flex flex-col rounded-2xl border border-border bg-card/40 p-6 transition hover:border-amber/40 hover:bg-card/60"
-              >
-                <Stars n={r.rating} />
-                <p className="mt-4 text-sm leading-relaxed text-foreground/90">&ldquo;{r.body}&rdquo;</p>
-                <div className="mt-6 border-t border-border pt-4">
-                  <div className="text-sm font-semibold">{r.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {[r.location, r.date].filter(Boolean).join(" · ")}
+          {hasReviews ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {reviews.map((r) => (
+                <article
+                  key={r.id}
+                  className="flex flex-col rounded-2xl border border-border bg-card/40 p-6 transition hover:border-amber/40 hover:bg-card/60"
+                >
+                  <Stars n={r.rating} />
+                  <p className="mt-4 text-sm leading-relaxed text-foreground/90">&ldquo;{r.body}&rdquo;</p>
+                  <div className="mt-6 border-t border-border pt-4">
+                    <div className="text-sm font-semibold">{r.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {[r.location, r.date].filter(Boolean).join(" · ")}
+                    </div>
+                    {r.product ? (
+                      <div className="mt-2 text-xs uppercase tracking-[0.14em] text-amber/80">{r.product}</div>
+                    ) : null}
                   </div>
-                  {r.product ? (
-                    <div className="mt-2 text-xs uppercase tracking-[0.14em] text-amber/80">{r.product}</div>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
+              <div className="text-sm text-muted-foreground">
+                No reviews yet. Be the first to share your experience on WhatsApp.
+              </div>
+            </div>
+          )}
         </div>
       </section>
+
 
       <section className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 text-center">
