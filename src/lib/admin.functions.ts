@@ -43,16 +43,16 @@ async function assertAdmin(context: {
 }
 
 /**
- * Validate & normalize a Google Sheets URL. Throws Error with a user-facing
- * message when the URL is not a supported Google Sheet link.
+ * Validate & normalize a spreadsheet URL. Accepts either a Google Sheets link
+ * or a Microsoft Excel workbook (direct .xlsx, OneDrive share, or SharePoint
+ * link). Throws Error with a user-facing message when the URL isn't supported.
  *
  * Accepted:
- *  - https://docs.google.com/spreadsheets/d/{ID}/edit...
- *  - https://docs.google.com/spreadsheets/d/{ID}/view...
- *  - Any /spreadsheets/d/{ID}/... variant on docs.google.com
- *
- * Rejected: non-https, wrong host, Drive links, shortened URLs, missing ID,
- * malformed spreadsheet ID.
+ *  - https://docs.google.com/spreadsheets/d/{ID}/edit… (Google Sheets)
+ *  - https://1drv.ms/…                                  (OneDrive share)
+ *  - https://onedrive.live.com/…                        (OneDrive)
+ *  - https://*.sharepoint.com/…                         (SharePoint)
+ *  - Any https URL ending in .xlsx (direct download)
  */
 export function validateGoogleSheetUrl(raw: string): string {
   if (typeof raw !== "string") {
@@ -61,7 +61,7 @@ export function validateGoogleSheetUrl(raw: string): string {
   const input = raw.trim();
   if (!input) throw new Error("Spreadsheet URL is required.");
   if (input.length > 2000) {
-    throw new Error("That link is too long — Google Sheet URLs are under 2000 characters.");
+    throw new Error("That link is too long — spreadsheet URLs are under 2000 characters.");
   }
   if (/\s/.test(input)) {
     throw new Error("The URL contains spaces. Copy the full link directly from your browser's address bar.");
@@ -75,51 +75,55 @@ export function validateGoogleSheetUrl(raw: string): string {
   }
 
   if (parsed.protocol !== "https:") {
-    throw new Error("The link must start with https:// — copy the URL directly from Google Sheets.");
+    throw new Error("The link must start with https:// — copy the URL directly from the source.");
   }
   if (parsed.username || parsed.password) {
-    throw new Error("The URL must not contain credentials. Copy a clean link from Google Sheets.");
-  }
-  if (parsed.port) {
-    throw new Error("The URL must not include a port. Copy a clean link from Google Sheets.");
+    throw new Error("The URL must not contain credentials. Copy a clean link.");
   }
 
   const host = parsed.hostname.toLowerCase();
-  if (host !== "docs.google.com") {
-    if (host === "drive.google.com") {
-      throw new Error("This is a Google Drive link, not a Google Sheet. Open the sheet and copy the URL from the address bar.");
+
+  // Google Sheets → normalize to /edit
+  if (host === "docs.google.com") {
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    if (parts[0] !== "spreadsheets") {
+      throw new Error("This isn't a Google Sheet URL. It should look like https://docs.google.com/spreadsheets/d/…/edit");
     }
-    if (host === "sheets.google.com") {
-      throw new Error("Use the full docs.google.com/spreadsheets/d/… link, not the sheets.google.com shortcut.");
+    if (parts[1] !== "d" || !parts[2]) {
+      if (parts[1] === "u") {
+        throw new Error("This is an account-scoped link. Open the sheet, then copy the URL from the address bar (it should contain /d/…).");
+      }
+      throw new Error("The link is missing the spreadsheet ID. A valid URL contains /spreadsheets/d/{ID}/edit.");
     }
-    if (host.endsWith(".googleusercontent.com") || host.endsWith("goo.gl") || host.endsWith("g.co")) {
-      throw new Error("Shortened or export links aren't supported. Open the sheet in the browser and copy its URL.");
+    const id = parts[2];
+    if (!/^[a-zA-Z0-9_-]{20,200}$/.test(id)) {
+      throw new Error("The spreadsheet ID in this link looks invalid. Open the sheet and copy the URL again.");
     }
-    if (host.endsWith("google.com")) {
-      throw new Error("Only docs.google.com links are supported. Open the sheet and copy its URL.");
-    }
-    throw new Error("Only Google Sheets URLs (docs.google.com) are supported.");
+    return `https://docs.google.com/spreadsheets/d/${id}/edit`;
   }
 
-  // Expect /spreadsheets/d/{id}/...
-  const parts = parsed.pathname.split("/").filter(Boolean);
-  if (parts[0] !== "spreadsheets") {
-    throw new Error("This isn't a Google Sheet URL. It should look like https://docs.google.com/spreadsheets/d/…/edit");
-  }
-  if (parts[1] !== "d" || !parts[2]) {
-    if (parts[1] === "u") {
-      throw new Error("This is an account-scoped link. Open the sheet, then copy the URL from the address bar (it should contain /d/…).");
-    }
-    throw new Error("The link is missing the spreadsheet ID. A valid URL contains /spreadsheets/d/{ID}/edit.");
+  // Microsoft Excel: OneDrive / SharePoint share links, or direct .xlsx
+  const isOneDrive =
+    host === "1drv.ms" ||
+    host === "onedrive.live.com" ||
+    host.endsWith(".onedrive.live.com");
+  const isSharePoint = host.endsWith(".sharepoint.com");
+  const isDirectXlsx = /\.xlsx(\?|$)/i.test(input);
+
+  if (isOneDrive || isSharePoint || isDirectXlsx) {
+    // Preserve the link as-is (share tokens matter for OneDrive/SharePoint).
+    return input;
   }
 
-  const id = parts[2];
-  if (!/^[a-zA-Z0-9_-]{20,200}$/.test(id)) {
-    throw new Error("The spreadsheet ID in this link looks invalid. Open the sheet and copy the URL again.");
+  if (host === "drive.google.com") {
+    throw new Error("This is a Google Drive link, not a Google Sheet. Open the sheet in Sheets and copy that URL.");
   }
-
-  // Normalize to a clean /edit URL (strip query/hash, gid, tokens, etc.)
-  return `https://docs.google.com/spreadsheets/d/${id}/edit`;
+  if (host === "sheets.google.com") {
+    throw new Error("Use the full docs.google.com/spreadsheets/d/… link, not the sheets.google.com shortcut.");
+  }
+  throw new Error(
+    "Only Google Sheets (docs.google.com) or Microsoft Excel links (OneDrive, SharePoint, or a direct .xlsx URL) are supported.",
+  );
 }
 
 /**
