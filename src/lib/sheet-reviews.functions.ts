@@ -154,6 +154,10 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     const iBody = findIdx(["review", "body", "message", "comment", "text", "feedback"], ["honestreview", "reviewor", "review", "feedback", "comment", "message"]);
     const iDate = findIdx(["date", "month", "reviewdate", "timestamp"], ["timestamp", "date"]);
     const iPub = findIdx(["published", "publish", "show", "visible", "active", "publishyesno"], ["publish"]);
+    const iTenure = findIdx(
+      ["tenure", "customersince", "howlong", "yearswithus"],
+      ["howlonghaveyoubeen", "howlong", "customerof", "yearswith", "since", "tenure"],
+    );
 
     const reviews: SheetReview[] = [];
     for (let r = 1; r < rows.length; r++) {
@@ -178,6 +182,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         product: s(row[iProduct]).trim(),
         body,
         date: s(row[iDate]).trim(),
+        tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
       });
     }
 
