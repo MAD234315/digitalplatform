@@ -199,7 +199,7 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  * Classifies failures into a short set of user-safe messages instead of
  * leaking raw internals to the client.
  */
-async function fetchSheetCsv(): Promise<string> {
+async function fetchSheetRows(): Promise<string[][]> {
   const fetchUrl = await resolveFetchUrl();
   let attempt = 0;
   // eslint-disable-next-line no-constant-condition
@@ -207,14 +207,13 @@ async function fetchSheetCsv(): Promise<string> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-      const res = await fetch(csvUrl, { signal: controller.signal });
+      const res = await fetch(fetchUrl, { signal: controller.signal, redirect: "follow" });
 
       if (!res.ok) {
         const retryable = res.status === 429 || res.status === 503;
         const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"));
 
         if (retryable && attempt < MAX_RETRIES) {
-          // Backoff: honour Retry-After when given, otherwise 500ms + jitter.
           const waitMs = retryAfterMs ?? 500 + Math.floor(Math.random() * 400);
           attempt++;
           clearTimeout(timeout);
@@ -235,23 +234,46 @@ async function fetchSheetCsv(): Promise<string> {
 
       // Size-guarded read: stream the body and abort if it exceeds the cap.
       const reader = res.body?.getReader();
-      if (!reader) return await res.text();
-      const chunks: Uint8Array[] = [];
-      let total = 0;
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        total += value.byteLength;
-        if (total > RESPONSE_MAX_BYTES) {
-          controller.abort();
-          throw new SheetFetchError("Sheet response too large.", 413);
+      let bytes: Uint8Array;
+      if (!reader) {
+        bytes = new Uint8Array(await res.arrayBuffer());
+      } else {
+        const chunks: Uint8Array[] = [];
+        let total = 0;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          total += value.byteLength;
+          if (total > RESPONSE_MAX_BYTES) {
+            controller.abort();
+            throw new SheetFetchError("Sheet response too large.", 413);
+          }
+          chunks.push(value);
         }
-        chunks.push(value);
+        bytes = chunks.length === 1 ? chunks[0] : concatChunks(chunks, total);
       }
-      return new TextDecoder("utf-8").decode(
-        chunks.length === 1 ? chunks[0] : concatChunks(chunks, total),
-      );
+
+      // Detect Excel .xlsx (ZIP magic: PK\x03\x04) vs CSV/text.
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const looksXlsx =
+        (bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4b) ||
+        /sheet|excel|officedocument|spreadsheetml/.test(ct) ||
+        /\.xlsx(\?|$)/i.test(fetchUrl);
+
+      if (looksXlsx && bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4b) {
+        const XLSX = await import("xlsx");
+        const wb = XLSX.read(bytes, { type: "array" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json<unknown[]>(ws, {
+          header: 1,
+          blankrows: false,
+          defval: "",
+        }) as unknown[][];
+        return rows.map((r) => r.map((c) => (c == null ? "" : String(c))));
+      }
+
+      return parseCsv(new TextDecoder("utf-8").decode(bytes));
     } catch (e) {
       if (e instanceof Error && e.name === "AbortError") {
         throw new SheetFetchError(`Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`, 408);
@@ -262,6 +284,7 @@ async function fetchSheetCsv(): Promise<string> {
     }
   }
 }
+
 
 function concatChunks(chunks: Uint8Array[], total: number): Uint8Array {
   const out = new Uint8Array(total);
