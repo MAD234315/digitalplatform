@@ -1,37 +1,47 @@
 /**
- * Server function: load customer reviews from a public Google Sheet.
+ * Server function: load customer reviews from a public Google Sheet,
+ * a direct CSV URL, or a public Excel (.xlsx) file (OneDrive/SharePoint share).
  *
  * Sheet columns (header row required):
  *   NAME | LOCATION | RATING | PRODUCT | REVIEW | DATE | PUBLISHED
  * PUBLISHED accepts blank / TRUE / YES / 1 as "show". FALSE / NO / 0 hides the row.
  */
 import { createServerFn } from "@tanstack/react-start";
+import * as XLSX from "xlsx";
 
-const DEFAULT_REVIEWS_CSV_URL = "";
+const DEFAULT_REVIEWS_URL = "";
 
-function toCsvUrl(sheetUrl: string): string {
-  const m = /\/d\/([a-zA-Z0-9_-]+)/.exec(sheetUrl);
-  if (m) return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
-  return sheetUrl;
+function toFetchUrl(sheetUrl: string): string {
+  const url = sheetUrl.trim();
+  // Google Sheets → CSV export
+  const g = /\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/.exec(url);
+  if (g) return `https://docs.google.com/spreadsheets/d/${g[1]}/export?format=csv`;
+  // OneDrive / SharePoint share links → direct file content
+  if (/1drv\.ms\//i.test(url) || /onedrive\.live\.com\//i.test(url) || /sharepoint\.com\//i.test(url)) {
+    const b64 = btoa(url).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    return `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
+  }
+  return url;
 }
 
-async function getReviewsCsvUrl(): Promise<string> {
+async function getReviewsSourceUrl(): Promise<string> {
   try {
     const { createClient } = await import("@supabase/supabase-js");
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !key) return DEFAULT_REVIEWS_CSV_URL;
+    if (!url || !key) return DEFAULT_REVIEWS_URL;
     const sb = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
     const { data } = await sb.rpc("get_public_app_settings");
     const row = Array.isArray(data) ? data[0] : data;
     const raw = (row?.reviews_sheet_url as string | undefined) ?? "";
-    return raw ? toCsvUrl(raw) : DEFAULT_REVIEWS_CSV_URL;
+    return raw ? toFetchUrl(raw) : DEFAULT_REVIEWS_URL;
   } catch {
-    return DEFAULT_REVIEWS_CSV_URL;
+    return DEFAULT_REVIEWS_URL;
   }
 }
+
 
 export type SheetReview = {
   id: string;
@@ -95,27 +105,46 @@ let cache: { at: number; payload: ReviewsPayload } | null = null;
 let inflight: Promise<ReviewsPayload> | null = null;
 
 async function loadFromSheet(): Promise<ReviewsPayload> {
-  const csvUrl = await getReviewsCsvUrl();
-  if (!csvUrl) {
+  const sourceUrl = await getReviewsSourceUrl();
+  if (!sourceUrl) {
     return { reviews: [], fetchedAt: new Date().toISOString(), configured: false };
   }
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    let text: string;
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    let rows: string[][];
     try {
-      const res = await fetch(csvUrl, { signal: controller.signal });
+      const res = await fetch(sourceUrl, { signal: controller.signal });
       if (!res.ok) throw new Error(`Sheet fetch failed (${res.status}).`);
-      text = await res.text();
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const looksXlsx =
+        /sheet|excel|officedocument|octet-stream|binary/.test(ct) ||
+        /\.xlsx(\?|$)/i.test(sourceUrl);
+      if (looksXlsx) {
+        const buf = await res.arrayBuffer();
+        // Sniff for CSV vs xlsx (PK zip magic): 0x50 0x4B
+        const head = new Uint8Array(buf.slice(0, 2));
+        if (head[0] === 0x50 && head[1] === 0x4b) {
+          const wb = XLSX.read(buf, { type: "array" });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          rows = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1, blankrows: false, defval: "" }) as string[][];
+        } else {
+          rows = parseCsv(new TextDecoder().decode(buf));
+        }
+      } else {
+        rows = parseCsv(await res.text());
+      }
     } finally {
       clearTimeout(timeout);
     }
 
-    const rows = parseCsv(text).filter((r) => r.some((c) => (c || "").trim()));
+    rows = rows.filter((r) => r.some((c) => String(c || "").trim()));
+
     if (rows.length === 0)
       return { reviews: [], fetchedAt: new Date().toISOString(), configured: true };
 
-    const header = rows[0].map(normalizeHeader);
+    const s = (v: unknown) => (v == null ? "" : String(v));
+    const header = rows[0].map((h) => normalizeHeader(s(h)));
     const idx = (keys: string[]) => header.findIndex((h) => keys.includes(h));
     const iName = idx(["name", "customer", "customername"]);
     const iLoc = idx(["location", "city"]);
@@ -128,28 +157,29 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     const reviews: SheetReview[] = [];
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
-      const name = (row[iName] ?? "").trim();
-      const body = (row[iBody] ?? "").trim();
+      const name = s(row[iName]).trim();
+      const body = s(row[iBody]).trim();
       if (!name || !body) continue;
 
       if (iPub >= 0) {
-        const p = (row[iPub] ?? "").trim().toLowerCase();
+        const p = s(row[iPub]).trim().toLowerCase();
         if (p && /^(false|no|0|hidden|off)$/.test(p)) continue;
       }
 
-      const ratingRaw = Number((row[iRating] ?? "").trim() || "5");
+      const ratingRaw = Number(s(row[iRating]).trim() || "5");
       const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
 
       reviews.push({
         id: `r-${r}`,
         name,
-        location: (row[iLoc] ?? "").trim(),
+        location: s(row[iLoc]).trim(),
         rating,
-        product: (row[iProduct] ?? "").trim(),
+        product: s(row[iProduct]).trim(),
         body,
-        date: (row[iDate] ?? "").trim(),
+        date: s(row[iDate]).trim(),
       });
     }
+
 
     return { reviews, fetchedAt: new Date().toISOString(), configured: true };
   } catch (e) {
