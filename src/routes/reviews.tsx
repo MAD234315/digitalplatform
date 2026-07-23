@@ -154,6 +154,27 @@ function Reviews() {
                       </div>
                     </header>
 
+                    {/* Meta: location + date between header and review */}
+                    {(r.location || r.date) ? (
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border/60 px-5 py-3 text-[11px] text-muted-foreground">
+                        {r.location ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            <MapPin className="h-3 w-3 text-amber/70" strokeWidth={2} />
+                            {r.location}
+                          </span>
+                        ) : null}
+                        {r.location && r.date ? (
+                          <span className="hidden h-3 w-px bg-border sm:block" aria-hidden />
+                        ) : null}
+                        {r.date ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Calendar className="h-3 w-3 text-amber/70" strokeWidth={2} />
+                            {r.date}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : null}
+
                     {/* Body: quote */}
                     <div className="relative flex-1 px-5 py-5">
                       <Quote
@@ -168,7 +189,7 @@ function Reviews() {
 
                     {/* Highlights: liked + purchased */}
                     {(r.liked || r.product) ? (
-                      <div className="space-y-2 border-t border-border/60 px-5 py-4">
+                      <div className="space-y-2 border-t border-border/60 bg-card/30 px-5 py-4">
                         {r.liked ? (
                           <div className="flex items-start gap-2.5 text-xs leading-relaxed">
                             <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" strokeWidth={2} />
@@ -192,24 +213,6 @@ function Reviews() {
                           </div>
                         ) : null}
                       </div>
-                    ) : null}
-
-                    {/* Footer: meta */}
-                    {(r.location || r.date) ? (
-                      <footer className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border/60 bg-card/30 px-5 py-3 text-[11px] text-muted-foreground">
-                        {r.location ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <MapPin className="h-3 w-3" strokeWidth={2} />
-                            {r.location}
-                          </span>
-                        ) : null}
-                        {r.date ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3" strokeWidth={2} />
-                            {r.date}
-                          </span>
-                        ) : null}
-                      </footer>
                     ) : null}
                   </article>
                 );
