@@ -1538,9 +1538,11 @@ function FuturePanel() {
 function ReviewsSheetCard() {
   const getSettings = useServerFn(getAppSettings);
   const saveFn = useServerFn(updateReviewsSheetUrl);
+  const qc = useQueryClient();
   const [current, setCurrent] = useState<string>("");
   const [input, setInput] = useState<string>("");
   const [busy, setBusy] = useState(false);
+
 
   useEffect(() => {
     (async () => {
