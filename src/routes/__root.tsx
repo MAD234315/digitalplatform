@@ -184,9 +184,12 @@ function RootComponent() {
     });
     return () => data.subscription.unsubscribe();
   }, [queryClient]);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div key={pathname} className="animate-fade-in">
+        <Outlet />
+      </div>
     </QueryClientProvider>
   );
 }
