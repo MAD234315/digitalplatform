@@ -12,8 +12,9 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 
-const DEFAULT_SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
-const DEFAULT_CSV_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/export?format=csv`;
+// No hardcoded fallback: the catalogue source is whatever URL the admin has
+// saved in app_settings.sheet_url. If it's blank, the catalogue is empty and
+// the admin panel reflects the same "not set" state — no hidden defaults.
 
 /**
  * Turn any supported spreadsheet URL into a fetchable content URL.
