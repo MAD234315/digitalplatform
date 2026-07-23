@@ -36,13 +36,6 @@ export const Route = createFileRoute("/reviews")({
           "@context": "https://schema.org",
           "@type": "Organization",
           "@id": ORG_ID,
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: FALLBACK_AVG,
-            reviewCount: FALLBACK_REVIEWS.length,
-            bestRating: "5",
-            worstRating: "1",
-          },
         },
       ],
     }),
