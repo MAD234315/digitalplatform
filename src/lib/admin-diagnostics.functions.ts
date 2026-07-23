@@ -10,7 +10,7 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireBackendAuth } from "@/lib/lovable-cloud-auth";
 
 type EnvSpec = {
   name: string;
@@ -145,7 +145,7 @@ async function checkRoute(origin: string, path: string, label: string): Promise<
 }
 
 export const getAdminDiagnostics = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }): Promise<DiagnosticsReport> => {
     // Role check via the RLS-protected user_roles table (never trust the client).
     const { data: roleRow, error: roleErr } = await context.supabase
