@@ -128,27 +128,19 @@ function Reviews() {
                     <div className="text-xs text-muted-foreground">
                       {[r.location, r.date].filter(Boolean).join(" · ")}
                     </div>
-                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                      {r.tenure ? (
+                    {r.tenure ? (
+                      <div className="mt-3">
                         <span className="rounded-full border border-amber/30 bg-amber/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber">
                           {r.tenure} customer
                         </span>
-                      ) : null}
-                      {r.product
-                        ? r.product
-                            .split(/[,;|/]|\s+and\s+/i)
-                            .map((p) => p.trim())
-                            .filter(Boolean)
-                            .map((p, i) => (
-                              <span
-                                key={`${r.id}-p-${i}`}
-                                className="rounded-full border border-border bg-card/60 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-foreground/80"
-                              >
-                                {p}
-                              </span>
-                            ))
-                        : null}
-                    </div>
+                      </div>
+                    ) : null}
+                    {r.product ? (
+                      <div className="mt-3 text-xs leading-relaxed">
+                        <span className="uppercase tracking-[0.14em] text-muted-foreground">Purchased:</span>{" "}
+                        <span className="text-foreground/90">{r.product}</span>
+                      </div>
+                    ) : null}
                   </div>
                 </article>
               ))}
