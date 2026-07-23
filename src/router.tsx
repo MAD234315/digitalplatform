@@ -2,12 +2,15 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { DefaultErrorComponent, DefaultNotFoundComponent } from "./lib/default-error-boundaries";
+import { DefaultPendingComponent } from "./lib/default-pending";
 
 export const getRouter = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        // Retry transient failures once — many sheet/network hiccups self-heal.
+        // Show cached data instantly on revisit; refetch in background.
+        staleTime: 60_000,
+        gcTime: 30 * 60_000,
         retry: 1,
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 4000),
       },
@@ -18,9 +21,14 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    // Preload route code + data on link hover/focus so intra-site nav feels instant.
+    // Preload route code + data on hover/focus so intra-site nav feels instant.
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
+    // Show a pending fallback immediately instead of the old page appearing
+    // frozen while the new route's loader resolves.
+    defaultPendingMs: 0,
+    defaultPendingMinMs: 0,
+    defaultPendingComponent: DefaultPendingComponent,
     defaultErrorComponent: DefaultErrorComponent,
     defaultNotFoundComponent: DefaultNotFoundComponent,
   });
