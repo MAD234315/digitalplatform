@@ -284,7 +284,12 @@ function AdminPage() {
 
           <div className="min-w-0">
             {tab === "overview" && <OverviewPanel onNavigate={setTab} />}
-            {tab === "spreadsheet" && <SpreadsheetPanel />}
+            {tab === "spreadsheet" && (
+              <div className="space-y-6">
+                <SpreadsheetPanel />
+                <ReviewsSheetCard />
+              </div>
+            )}
             {tab === "proofs" && <ProofsPanel />}
             {tab === "admins" && <AdminsPanel />}
             {tab === "website" && <WebsitePanel />}
