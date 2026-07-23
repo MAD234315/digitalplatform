@@ -1533,7 +1533,164 @@ function FuturePanel() {
   );
 }
 
+// ============ REVIEWS SPREADSHEET CARD ============
+
+function ReviewsSheetCard() {
+  const getSettings = useServerFn(getAppSettings);
+  const saveFn = useServerFn(updateReviewsSheetUrl);
+  const [current, setCurrent] = useState<string>("");
+  const [input, setInput] = useState<string>("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const s = await getSettings();
+        const url = s.reviewsSheetUrl ?? "";
+        setCurrent(url);
+        setInput(url);
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Failed to load reviews sheet");
+      }
+    })();
+  }, [getSettings]);
+
+  const trimmed = input.trim();
+  const validation = trimmed ? checkGoogleSheetUrl(trimmed) : null;
+  const validationError = validation && !validation.ok ? validation.error : null;
+  const normalized = validation && validation.ok ? validation.normalized : "";
+  const isValid = !!validation && validation.ok;
+
+  async function onSave(e: React.FormEvent) {
+    e.preventDefault();
+    if (trimmed && !isValid) return;
+    setBusy(true);
+    try {
+      const res = await saveFn({ data: { sheetUrl: trimmed } });
+      setCurrent(res.reviewsSheetUrl);
+      setInput(res.reviewsSheetUrl);
+      toast.success(trimmed ? "Reviews spreadsheet saved" : "Reviews spreadsheet cleared");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onClear() {
+    setBusy(true);
+    try {
+      await saveFn({ data: { sheetUrl: "" } });
+      setCurrent("");
+      setInput("");
+      toast.success("Reviews spreadsheet cleared — falling back to defaults");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to clear");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <PremiumCard>
+      <div className="flex items-start gap-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber/40 bg-amber/10 text-amber">
+          <FileSpreadsheet className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <h2 className="font-display text-xl sm:text-2xl">Reviews Spreadsheet</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage customer reviews from a Google Sheet. Cached for ~1 minute. Leave blank to show the built-in defaults.
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            <strong className="text-foreground/80">Required columns (row 1 headers):</strong>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">NAME</code>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">LOCATION</code>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">RATING</code>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">PRODUCT</code>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">REVIEW</code>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">DATE</code>{" "}
+            <code className="rounded bg-background/60 px-1.5 py-0.5">PUBLISHED</code>
+            . <span className="text-muted-foreground/80">RATING = 1–5. PUBLISHED = TRUE/FALSE (blank = show).</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-border bg-background/60 p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Current URL</p>
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
+              current
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : "border-muted-foreground/30 bg-muted/10 text-muted-foreground"
+            }`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${current ? "bg-emerald-400" : "bg-muted-foreground/60"}`} />
+            {current ? "Active" : "Using defaults"}
+          </span>
+        </div>
+        <p className="mt-2 break-all text-sm">
+          {current || <span className="text-muted-foreground">(not set — showing built-in sample reviews)</span>}
+        </p>
+      </div>
+
+      <form onSubmit={onSave} className="mt-6 space-y-3" noValidate>
+        <label className="block">
+          <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            Reviews spreadsheet URL
+          </span>
+          <input
+            type="url"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="https://docs.google.com/spreadsheets/d/…/edit"
+            className={`mt-1 h-12 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus:border-amber ${
+              validationError
+                ? "border-red-500/60 focus:border-red-500"
+                : isValid
+                  ? "border-emerald-500/50 focus:border-emerald-400"
+                  : "border-border"
+            }`}
+          />
+          <p
+            className={`mt-1.5 min-h-[1.25rem] text-xs ${
+              validationError ? "text-red-300" : isValid ? "text-emerald-300" : "text-muted-foreground"
+            }`}
+          >
+            {validationError
+              ? validationError
+              : isValid
+                ? normalized === trimmed
+                  ? "Looks valid — link is normalized."
+                  : `Will be saved as: ${normalized}`
+                : "Publish the sheet (File → Share → Anyone with link) then paste the URL."}
+          </p>
+        </label>
+        <div className="grid gap-2 sm:flex sm:flex-wrap">
+          <button
+            type="submit"
+            disabled={busy || (trimmed !== "" && !isValid) || normalized === current}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber px-6 py-2.5 text-sm font-medium text-amber-foreground shadow-gold disabled:opacity-50 sm:w-auto"
+          >
+            <Check className="h-4 w-4" /> {busy ? "Saving…" : "Save changes"}
+          </button>
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={busy || !current}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-500/50 bg-red-500/10 px-5 py-2.5 text-sm font-medium text-red-200 transition hover:bg-red-500/20 disabled:opacity-50 sm:ml-auto sm:w-auto"
+          >
+            <Trash2 className="h-4 w-4" /> Clear URL
+          </button>
+        </div>
+      </form>
+    </PremiumCard>
+  );
+}
+
 // ============ PROOFS PANEL ============
+
 
 function ProofsPanel() {
   const listFn = useServerFn(listAllProofs);
