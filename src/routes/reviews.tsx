@@ -135,8 +135,14 @@ function Reviews() {
                         </span>
                       </div>
                     ) : null}
-                    {r.product ? (
+                    {r.liked ? (
                       <div className="mt-3 text-xs leading-relaxed">
+                        <span className="uppercase tracking-[0.14em] text-amber/80">Loved:</span>{" "}
+                        <span className="text-foreground/90">{r.liked}</span>
+                      </div>
+                    ) : null}
+                    {r.product ? (
+                      <div className="mt-2 text-xs leading-relaxed">
                         <span className="uppercase tracking-[0.14em] text-muted-foreground">Purchased:</span>{" "}
                         <span className="text-foreground/90">{r.product}</span>
                       </div>
