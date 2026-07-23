@@ -681,6 +681,8 @@ const bulkProofSchema = z.object({
     .max(100),
 });
 
+type BulkProofInput = z.infer<typeof bulkProofSchema>;
+
 export const listPublishedProofs = createServerFn({ method: "GET" }).handler(
   async (): Promise<ProofRecord[]> => {
     // Fail-soft: on deployments where Supabase env vars aren't injected
@@ -821,23 +823,24 @@ export const bulkCreateProofs = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => bulkProofSchema.parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    const payload = data as BulkProofInput;
 
     // The client uploaded every image directly to storage; each row
     // already carries its resolved paths. Confirm they exist before we
     // commit the batch so we never persist rows pointing at ghost files.
     const allPaths = Array.from(
-      new Set(data.rows.flatMap((r) => r.imagePaths)),
+      new Set<string>(payload.rows.flatMap((row) => row.imagePaths)),
     );
     await assertPathsExist(allPaths);
 
-    const rowsToInsert = data.rows.map((r) => ({
-      title: r.title,
-      description: r.description,
-      image_urls: r.imagePaths,
-      published: data.shared.published,
-      status: data.shared.status,
-      validity: data.shared.validity,
-      delivery: data.shared.delivery,
+    const rowsToInsert = payload.rows.map((row) => ({
+      title: row.title,
+      description: row.description,
+      image_urls: row.imagePaths,
+      published: payload.shared.published,
+      status: payload.shared.status,
+      validity: payload.shared.validity,
+      delivery: payload.shared.delivery,
       created_by: context.userId,
     }));
 

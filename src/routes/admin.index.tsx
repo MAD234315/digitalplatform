@@ -442,9 +442,9 @@ function OverviewPanel({ onNavigate }: { onNavigate: (t: Tab) => void }) {
   useEffect(() => {
     (async () => {
       try {
-        const [proofs, settings] = await Promise.all([listFn(), getSettings()]);
+        const [proofs, settings] = await Promise.all([listFn(), getSettings()]) as [ProofRecord[], Awaited<ReturnType<typeof getSettings>>];
         setProofCount(proofs.length);
-        setPublishedCount(proofs.filter((p) => p.published).length);
+        setPublishedCount(proofs.filter((proof: ProofRecord) => proof.published).length);
         setSheetUpdated(settings.updatedAt);
       } catch {
         // ignore
