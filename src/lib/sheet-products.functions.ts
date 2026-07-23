@@ -51,13 +51,13 @@ async function getPublicAppSettings(): Promise<{ sheet_url: string | null; site_
   }
 }
 
-async function resolveFetchUrl(): Promise<string> {
+async function resolveFetchUrl(): Promise<string | null> {
   const now = Date.now();
-  if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url;
+  if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url || null;
   const row = await getPublicAppSettings();
-  const url2 = row?.sheet_url ? toFetchUrl(row.sheet_url) : DEFAULT_CSV_URL;
+  const url2 = row?.sheet_url ? toFetchUrl(row.sheet_url) : "";
   cachedUrl = { at: now, url: url2 };
-  return url2;
+  return url2 || null;
 }
 
 export type Availability = "available" | "limited" | "out";
