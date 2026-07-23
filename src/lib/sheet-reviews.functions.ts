@@ -159,6 +159,10 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["tenure", "customersince", "howlong", "yearswithus"],
       ["howlonghaveyoubeen", "howlong", "customerof", "yearswith", "since", "tenure"],
     );
+    const iLiked = findIdx(
+      ["liked", "likedmost", "whatdidyoulikemost", "highlight"],
+      ["likedmost", "whatdidyoulike", "likeaboutdigital", "likeabout", "liked", "highlight", "favorite"],
+    );
 
     const reviews: SheetReview[] = [];
     for (let r = 1; r < rows.length; r++) {
@@ -184,6 +188,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         body,
         date: s(row[iDate]).trim(),
         tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
+        liked: iLiked >= 0 ? s(row[iLiked]).trim() : "",
       });
     }
 
