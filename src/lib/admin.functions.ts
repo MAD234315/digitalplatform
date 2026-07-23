@@ -324,14 +324,33 @@ export const getAppSettings = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const { data, error } = await context.supabase
       .from("app_settings")
-      .select("sheet_url, updated_at")
+      .select("sheet_url, reviews_sheet_url, updated_at")
       .eq("id", 1)
       .maybeSingle();
     if (error) throw new Error(error.message);
     return {
       sheetUrl: data?.sheet_url ?? "",
+      reviewsSheetUrl: (data as { reviews_sheet_url?: string } | null)?.reviews_sheet_url ?? "",
       updatedAt: data?.updated_at ?? null,
     };
+  });
+
+export const updateReviewsSheetUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) =>
+    z
+      .object({ sheetUrl: z.string().trim().max(2000) })
+      .parse(raw),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const normalized = data.sheetUrl ? validateGoogleSheetUrl(data.sheetUrl) : "";
+    const { error } = await context.supabase
+      .from("app_settings")
+      .update({ reviews_sheet_url: normalized })
+      .eq("id", 1);
+    if (error) throw new Error(error.message);
+    return { ok: true, reviewsSheetUrl: normalized };
   });
 
 export const updateSheetUrl = createServerFn({ method: "POST" })
