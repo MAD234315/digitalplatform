@@ -115,7 +115,7 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12 [&>*]:relative sm:[&>*:not(:nth-child(2n))]:after:absolute sm:[&>*:not(:nth-child(2n))]:after:top-6 sm:[&>*:not(:nth-child(2n))]:after:bottom-6 sm:[&>*:not(:nth-child(2n))]:after:-right-4 sm:[&>*:not(:nth-child(2n))]:after:w-px sm:[&>*:not(:nth-child(2n))]:after:bg-gradient-to-b sm:[&>*:not(:nth-child(2n))]:after:from-transparent sm:[&>*:not(:nth-child(2n))]:after:via-border sm:[&>*:not(:nth-child(2n))]:after:to-transparent lg:[&>*:not(:nth-child(2n))]:after:hidden lg:[&>*:not(:nth-child(3n))]:after:absolute lg:[&>*:not(:nth-child(3n))]:after:top-6 lg:[&>*:not(:nth-child(3n))]:after:bottom-6 lg:[&>*:not(:nth-child(3n))]:after:-right-5 lg:[&>*:not(:nth-child(3n))]:after:w-px lg:[&>*:not(:nth-child(3n))]:after:bg-gradient-to-b lg:[&>*:not(:nth-child(3n))]:after:from-transparent lg:[&>*:not(:nth-child(3n))]:after:via-border lg:[&>*:not(:nth-child(3n))]:after:to-transparent [&>*]:before:absolute [&>*]:before:-bottom-5 [&>*]:before:left-6 [&>*]:before:right-6 [&>*]:before:h-px [&>*]:before:bg-gradient-to-r [&>*]:before:from-transparent [&>*]:before:via-border [&>*]:before:to-transparent [&>*:last-child]:before:hidden sm:[&>*:nth-last-child(-n+2)]:before:hidden lg:[&>*:nth-last-child(-n+3)]:before:hidden">
+            <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12">
               {reviews.map((r) => {
                 const initials = r.name
                   ?.split(" ")
