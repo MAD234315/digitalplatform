@@ -768,7 +768,7 @@ function SpreadsheetPanel() {
       {confirmRevoke && (
         <ConfirmDialog
           title="Revoke spreadsheet URL?"
-          message="This clears the current Google Sheet from settings and records an audit entry. The catalogue will stop loading until a new URL is saved."
+          message="This clears the current spreadsheet URL from settings and records an audit entry. The catalogue will stop loading until a new URL is saved."
           confirmLabel="Revoke"
           destructive
           onCancel={() => setConfirmRevoke(false)}
