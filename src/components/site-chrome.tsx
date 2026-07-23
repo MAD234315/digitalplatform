@@ -16,10 +16,10 @@ const LINKS = [
   { to: "/", label: "Home" },
   { to: "/products", label: "Catalogue" },
   { to: "/proof-gallery", label: "Proofs" },
+  { to: "/reviews", label: "Reviews" },
   { to: "/about", label: "About" },
   { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
-] as const;
 
 export function SiteNav() {
   // Subscribe only to pathname so unrelated router state changes don't re-render the header.
