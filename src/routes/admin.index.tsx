@@ -38,6 +38,7 @@ import {
   revokeSheetUrl,
   previewSheetUrl,
   checkGoogleSheetUrl,
+  updateReviewsSheetUrl,
   listSpreadsheetAudit,
   exportSpreadsheetAudit,
   listAllProofs,
