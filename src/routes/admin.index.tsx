@@ -828,7 +828,7 @@ function SpreadsheetPanel() {
         </div>
       )}
 
-      <SpreadsheetAuditLog refreshKey={updatedAt ?? ""} />
+      
     </PremiumCard>
   );
 }
