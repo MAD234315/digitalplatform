@@ -654,7 +654,7 @@ function SpreadsheetPanel() {
         <div className="min-w-0">
           <h2 className="font-display text-xl sm:text-2xl">Spreadsheet Configuration</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            The catalogue is loaded from this Google Sheet. Changes take effect within about a minute.
+            The catalogue is loaded from this spreadsheet — Google Sheets or Microsoft Excel (OneDrive / SharePoint / .xlsx). Changes take effect within about a minute.
           </p>
         </div>
       </div>
