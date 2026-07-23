@@ -406,3 +406,114 @@ function EnvTable({
   );
 }
 
+type DeployHealth = {
+  ok: boolean;
+  host: string;
+  checkedAt: string;
+  env: { present: string[]; missing: string[] };
+  connectivity: {
+    reachable: boolean;
+    latencyMs: number | null;
+    error: string | null;
+    adminExists: boolean | null;
+  };
+  remediation: string[];
+};
+
+function DeploymentHealthSection() {
+  const [data, setData] = useState<DeployHealth | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const run = useCallback(async () => {
+    setLoading(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/public/health/supabase", { cache: "no-store" });
+      const json = (await res.json()) as DeployHealth;
+      setData(json);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    run();
+  }, [run]);
+
+  return (
+    <Section icon={ShieldCheck} title="Deployment health">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Live probe of <span className="font-mono">/api/public/health/supabase</span> —
+          verifies backend connectivity and env vars on this deployment host.
+        </p>
+        <button
+          type="button"
+          onClick={run}
+          disabled={loading}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs hover:bg-muted disabled:opacity-50"
+        >
+          <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+          Re-check
+        </button>
+      </div>
+      {err && (
+        <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+          {err}
+        </div>
+      )}
+      {data && (
+        <div className="space-y-2">
+          <KV label="Host" value={data.host} mono />
+          <KV
+            label="Overall"
+            value={data.ok ? "Healthy" : "Unhealthy"}
+            good={data.ok}
+            bad={!data.ok}
+          />
+          <KV
+            label="Backend reachable"
+            value={
+              data.connectivity.reachable
+                ? `Yes${data.connectivity.latencyMs !== null ? ` (${data.connectivity.latencyMs} ms)` : ""}`
+                : "No"
+            }
+            good={data.connectivity.reachable}
+            bad={!data.connectivity.reachable}
+          />
+          {data.connectivity.error && (
+            <KV label="Probe error" value={data.connectivity.error} bad />
+          )}
+          {data.env.missing.length > 0 ? (
+            <KV
+              label="Missing env vars"
+              value={data.env.missing.join(", ")}
+              bad
+              mono
+            />
+          ) : (
+            <KV label="Env vars" value="All required present" good />
+          )}
+          {data.remediation.length > 0 && (
+            <ul className="mt-2 space-y-1.5 rounded-md border border-amber/30 bg-amber/5 p-3 text-xs text-amber">
+              {data.remediation.map((r, i) => (
+                <li key={i} className="flex gap-2">
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>{r}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="pt-1 text-[11px] text-muted-foreground">
+            Checked {new Date(data.checkedAt).toLocaleString()}
+          </p>
+        </div>
+      )}
+    </Section>
+  );
+}
+
+
