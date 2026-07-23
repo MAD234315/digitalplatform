@@ -159,7 +159,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
 
       if (iPub >= 0) {
         const p = s(row[iPub]).trim().toLowerCase();
-        if (p && /^(false|no|0|hidden|off)$/.test(p)) continue;
+        if (!/^(yes|y|true|1|show|on|publish|published)$/.test(p)) continue;
       }
 
       const ratingRaw = Number(s(row[iRating]).trim() || "5");
