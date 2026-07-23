@@ -82,8 +82,8 @@ function Reviews() {
         titleAccent="rated by real people."
         lede={
           hasReviews
-            ? `Average rating ${avg} / 5 across verified purchases. Here's what customers say about ordering premium digital products with us on WhatsApp.`
-            : `Here's what customers say about ordering premium digital products with us on WhatsApp.`
+            ? `Average rating ${avg} / 5 across verified purchases. Here's what customers say about ordering premium digital products with us.`
+            : `Here's what customers say about ordering premium digital products with us.`
         }
       />
 
