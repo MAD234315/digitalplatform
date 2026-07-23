@@ -38,15 +38,13 @@ const URL_TTL = 30_000;
 
 async function getPublicAppSettings(): Promise<{ sheet_url: string | null; site_online: boolean } | null> {
   try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !key) return null;
-    const sb = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    const { serverPublicClient } = await import("@/lib/lovable-cloud-auth");
+    const sb = serverPublicClient();
     const { data } = await sb.rpc("get_public_app_settings");
     const row = Array.isArray(data) ? data[0] : data;
     return row ?? null;
-  } catch {
+  } catch (e) {
+    console.error("[getPublicAppSettings] failed:", e);
     return null;
   }
 }

@@ -26,18 +26,14 @@ function toFetchUrl(sheetUrl: string): string {
 
 async function getReviewsSourceUrl(): Promise<string> {
   try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !key) return DEFAULT_REVIEWS_URL;
-    const sb = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+    const { serverPublicClient } = await import("@/lib/lovable-cloud-auth");
+    const sb = serverPublicClient();
     const { data } = await sb.rpc("get_public_app_settings");
     const row = Array.isArray(data) ? data[0] : data;
     const raw = (row?.reviews_sheet_url as string | undefined) ?? "";
     return raw ? toFetchUrl(raw) : DEFAULT_REVIEWS_URL;
-  } catch {
+  } catch (e) {
+    console.error("[getReviewsSourceUrl] failed:", e);
     return DEFAULT_REVIEWS_URL;
   }
 }
