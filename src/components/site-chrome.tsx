@@ -20,6 +20,8 @@ const LINKS = [
   { to: "/about", label: "About" },
   { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
+] as const;
+
 
 export function SiteNav() {
   // Subscribe only to pathname so unrelated router state changes don't re-render the header.
