@@ -152,7 +152,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     const iProduct = findIdx(["product", "productname", "item"], ["product", "service", "purchased"]);
     const iBody = findIdx(["review", "body", "message", "comment", "text"], ["review", "feedback", "comment", "message"]);
     const iDate = findIdx(["date", "month", "reviewdate", "timestamp"], ["timestamp", "date"]);
-    const iPub = findIdx(["published", "publish", "show", "visible", "active"], ["publish", "display", "show"]);
+    const iPub = findIdx(["published", "publish", "show", "visible", "active"], ["publish"]);
 
     const reviews: SheetReview[] = [];
     for (let r = 1; r < rows.length; r++) {
