@@ -1,0 +1,182 @@
+/**
+ * Server function: load customer reviews from a public Google Sheet.
+ *
+ * Sheet columns (header row required):
+ *   NAME | LOCATION | RATING | PRODUCT | REVIEW | DATE | PUBLISHED
+ * PUBLISHED accepts blank / TRUE / YES / 1 as "show". FALSE / NO / 0 hides the row.
+ */
+import { createServerFn } from "@tanstack/react-start";
+
+const DEFAULT_REVIEWS_CSV_URL = "";
+
+function toCsvUrl(sheetUrl: string): string {
+  const m = /\/d\/([a-zA-Z0-9_-]+)/.exec(sheetUrl);
+  if (m) return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
+  return sheetUrl;
+}
+
+async function getReviewsCsvUrl(): Promise<string> {
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+    if (!url || !key) return DEFAULT_REVIEWS_CSV_URL;
+    const sb = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data } = await sb.rpc("get_public_app_settings");
+    const row = Array.isArray(data) ? data[0] : data;
+    const raw = (row?.reviews_sheet_url as string | undefined) ?? "";
+    return raw ? toCsvUrl(raw) : DEFAULT_REVIEWS_CSV_URL;
+  } catch {
+    return DEFAULT_REVIEWS_CSV_URL;
+  }
+}
+
+export type SheetReview = {
+  id: string;
+  name: string;
+  location: string;
+  rating: number;
+  product: string;
+  body: string;
+  date: string;
+};
+
+export type ReviewsPayload = {
+  reviews: SheetReview[];
+  fetchedAt: string;
+  configured: boolean;
+  error?: string;
+};
+
+function parseCsv(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cur = "";
+  let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else inQ = false;
+      } else cur += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ",") {
+        row.push(cur);
+        cur = "";
+      } else if (c === "\n") {
+        row.push(cur);
+        rows.push(row);
+        row = [];
+        cur = "";
+      } else if (c === "\r") {
+        /* skip */
+      } else cur += c;
+    }
+  }
+  if (cur.length || row.length) {
+    row.push(cur);
+    rows.push(row);
+  }
+  return rows;
+}
+
+function normalizeHeader(s: string): string {
+  return s.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+const CACHE_TTL_MS = 60_000;
+let cache: { at: number; payload: ReviewsPayload } | null = null;
+let inflight: Promise<ReviewsPayload> | null = null;
+
+async function loadFromSheet(): Promise<ReviewsPayload> {
+  const csvUrl = await getReviewsCsvUrl();
+  if (!csvUrl) {
+    return { reviews: [], fetchedAt: new Date().toISOString(), configured: false };
+  }
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    let text: string;
+    try {
+      const res = await fetch(csvUrl, { signal: controller.signal });
+      if (!res.ok) throw new Error(`Sheet fetch failed (${res.status}).`);
+      text = await res.text();
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    const rows = parseCsv(text).filter((r) => r.some((c) => (c || "").trim()));
+    if (rows.length === 0)
+      return { reviews: [], fetchedAt: new Date().toISOString(), configured: true };
+
+    const header = rows[0].map(normalizeHeader);
+    const idx = (keys: string[]) => header.findIndex((h) => keys.includes(h));
+    const iName = idx(["name", "customer", "customername"]);
+    const iLoc = idx(["location", "city"]);
+    const iRating = idx(["rating", "stars", "score"]);
+    const iProduct = idx(["product", "productname", "item"]);
+    const iBody = idx(["review", "body", "message", "comment", "text"]);
+    const iDate = idx(["date", "month", "reviewdate"]);
+    const iPub = idx(["published", "publish", "show", "visible", "active"]);
+
+    const reviews: SheetReview[] = [];
+    for (let r = 1; r < rows.length; r++) {
+      const row = rows[r];
+      const name = (row[iName] ?? "").trim();
+      const body = (row[iBody] ?? "").trim();
+      if (!name || !body) continue;
+
+      if (iPub >= 0) {
+        const p = (row[iPub] ?? "").trim().toLowerCase();
+        if (p && /^(false|no|0|hidden|off)$/.test(p)) continue;
+      }
+
+      const ratingRaw = Number((row[iRating] ?? "").trim() || "5");
+      const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
+
+      reviews.push({
+        id: `r-${r}`,
+        name,
+        location: (row[iLoc] ?? "").trim(),
+        rating,
+        product: (row[iProduct] ?? "").trim(),
+        body,
+        date: (row[iDate] ?? "").trim(),
+      });
+    }
+
+    return { reviews, fetchedAt: new Date().toISOString(), configured: true };
+  } catch (e) {
+    console.error("[getSheetReviews] load failed:", e);
+    return {
+      reviews: [],
+      fetchedAt: new Date().toISOString(),
+      configured: true,
+      error: e instanceof Error ? e.message : "Failed to load reviews",
+    };
+  }
+}
+
+export const getSheetReviews = createServerFn({ method: "GET" }).handler(
+  async (): Promise<ReviewsPayload> => {
+    const now = Date.now();
+    if (cache && now - cache.at < CACHE_TTL_MS) return cache.payload;
+    if (!inflight) {
+      inflight = loadFromSheet()
+        .then((payload) => {
+          if (!payload.error) cache = { at: Date.now(), payload };
+          return payload;
+        })
+        .finally(() => {
+          inflight = null;
+        });
+    }
+    return inflight;
+  },
+);
