@@ -105,9 +105,7 @@ function Reviews() {
               ) : null}
             </div>
             <a
-              href={`${CONTACT.WA_URL}?text=${encodeURIComponent(
-                "Hi Digital Platform! I'd like to share a review of my recent purchase.",
-              )}`}
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform?usp=header"
               target="_blank"
               rel="noreferrer"
               className="rounded-full border border-border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] hover:bg-card"
