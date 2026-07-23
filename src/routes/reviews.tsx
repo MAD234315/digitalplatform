@@ -116,40 +116,104 @@ function Reviews() {
 
           {hasReviews ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {reviews.map((r) => (
-                <article
-                  key={r.id}
-                  className="flex flex-col rounded-2xl border border-border bg-card/40 p-6 transition hover:border-amber/40 hover:bg-card/60"
-                >
-                  <Stars n={r.rating} />
-                  <p className="mt-4 text-sm leading-relaxed text-foreground/90">&ldquo;{r.body}&rdquo;</p>
-                  <div className="mt-6 border-t border-border pt-4">
-                    <div className="text-sm font-semibold">{r.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {[r.location, r.date].filter(Boolean).join(" · ")}
+              {reviews.map((r) => {
+                const initials = r.name
+                  ?.split(" ")
+                  .map((p) => p[0])
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase() || "?";
+                return (
+                  <article
+                    key={r.id}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card/40 transition hover:border-amber/40 hover:bg-card/60 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.25)]"
+                  >
+                    {/* Header: identity + rating */}
+                    <header className="flex items-start justify-between gap-3 border-b border-border/60 bg-card/40 px-5 py-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-amber/10 text-xs font-semibold uppercase tracking-wider text-amber">
+                          {initials}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-semibold text-foreground">{r.name}</div>
+                          {r.tenure ? (
+                            <div className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-amber/90">
+                              {r.tenure} customer
+                            </div>
+                          ) : (
+                            <div className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                              Verified buyer
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <Stars n={r.rating} />
+                        <span className="text-[10px] tabular-nums text-muted-foreground">{r.rating}.0 / 5</span>
+                      </div>
+                    </header>
+
+                    {/* Body: quote */}
+                    <div className="relative flex-1 px-5 py-5">
+                      <Quote
+                        className="absolute left-4 top-4 h-5 w-5 text-amber/20"
+                        aria-hidden
+                        strokeWidth={2}
+                      />
+                      <p className="relative pl-6 text-sm leading-relaxed text-foreground/90">
+                        {r.body}
+                      </p>
                     </div>
-                    {r.tenure ? (
-                      <div className="mt-3">
-                        <span className="rounded-full border border-amber/30 bg-amber/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber">
-                          {r.tenure} customer
-                        </span>
+
+                    {/* Highlights: liked + purchased */}
+                    {(r.liked || r.product) ? (
+                      <div className="space-y-2 border-t border-border/60 px-5 py-4">
+                        {r.liked ? (
+                          <div className="flex items-start gap-2.5 text-xs leading-relaxed">
+                            <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" strokeWidth={2} />
+                            <div className="min-w-0">
+                              <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                                Liked most
+                              </div>
+                              <div className="mt-0.5 text-foreground/90">{r.liked}</div>
+                            </div>
+                          </div>
+                        ) : null}
+                        {r.product ? (
+                          <div className="flex items-start gap-2.5 text-xs leading-relaxed">
+                            <ShoppingBag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" strokeWidth={2} />
+                            <div className="min-w-0">
+                              <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                                Purchased
+                              </div>
+                              <div className="mt-0.5 text-foreground/90">{r.product}</div>
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                     ) : null}
-                    {r.liked ? (
-                      <div className="mt-2 text-xs leading-relaxed">
-                        <span className="uppercase tracking-[0.14em] text-muted-foreground">Liked most:</span>{" "}
-                        <span className="text-foreground/90">{r.liked}</span>
-                      </div>
+
+                    {/* Footer: meta */}
+                    {(r.location || r.date) ? (
+                      <footer className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border/60 bg-card/30 px-5 py-3 text-[11px] text-muted-foreground">
+                        {r.location ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            <MapPin className="h-3 w-3" strokeWidth={2} />
+                            {r.location}
+                          </span>
+                        ) : null}
+                        {r.date ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Calendar className="h-3 w-3" strokeWidth={2} />
+                            {r.date}
+                          </span>
+                        ) : null}
+                      </footer>
                     ) : null}
-                    {r.product ? (
-                      <div className="mt-2 text-xs leading-relaxed">
-                        <span className="uppercase tracking-[0.14em] text-muted-foreground">Purchased:</span>{" "}
-                        <span className="text-foreground/90">{r.product}</span>
-                      </div>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
