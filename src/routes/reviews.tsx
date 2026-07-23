@@ -13,18 +13,8 @@ const TITLE = "Customer Reviews — Digital Platform";
 const DESC =
   "Real feedback from customers using Digital Platform for premium digital subscriptions, AI tools and software licenses.";
 
-const FALLBACK_REVIEWS: SheetReview[] = [
-  { id: "f-1", name: "Arjun M.", location: "Bengaluru", rating: 5, product: "Netflix Premium (12 months)", body: "Delivery was almost instant on WhatsApp. Working perfectly for months now — support answered every question quickly.", date: "March 2026" },
-  { id: "f-2", name: "Priya S.", location: "Mumbai", rating: 5, product: "Adobe Creative Cloud", body: "Genuine license at less than half the retail price. Onboarding instructions were clear and everything activated first try.", date: "February 2026" },
-  { id: "f-3", name: "Rahul K.", location: "Hyderabad", rating: 5, product: "ChatGPT Plus", body: "Was skeptical at first but the team walked me through the setup. Renewal was smooth and they honored the warranty.", date: "January 2026" },
-  { id: "f-4", name: "Sneha T.", location: "Pune", rating: 4, product: "Spotify Premium Family", body: "Great price, fast delivery. Small hiccup with region setup but resolved within the same day.", date: "December 2025" },
-  { id: "f-5", name: "Vikram R.", location: "Delhi", rating: 5, product: "Windows 11 Pro Key", body: "Activated instantly. This is the third product I've bought here — trust is earned and Digital Platform earned mine.", date: "November 2025" },
-  { id: "f-6", name: "Ananya D.", location: "Chennai", rating: 5, product: "Canva Pro (1 year)", body: "Legit account, no surprises, no shady sharing. Perfect for my freelance design work. Highly recommend.", date: "October 2025" },
-];
+const FALLBACK_REVIEWS: SheetReview[] = [];
 
-const FALLBACK_AVG = (
-  FALLBACK_REVIEWS.reduce((s, r) => s + r.rating, 0) / FALLBACK_REVIEWS.length
-).toFixed(1);
 
 export const Route = createFileRoute("/reviews")({
   head: () =>
