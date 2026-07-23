@@ -151,28 +151,12 @@ export type Database = {
           site_online: boolean
         }[]
       }
-      grant_admin_by_email_for_admin: {
-        Args: { _email: string }
-        Returns: {
-          email: string
-          user_id: string
-        }[]
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
-      }
-      list_admin_users_for_admin: {
-        Args: never
-        Returns: {
-          email: string
-          last_sign_in_at: string
-          role_created_at: string
-          user_id: string
-        }[]
       }
     }
     Enums: {
