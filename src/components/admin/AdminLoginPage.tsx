@@ -118,15 +118,24 @@ export function AdminLoginPage() {
     (async () => {
       setChecking(true);
       setErr(null);
+      let userResult: Awaited<ReturnType<typeof supabase.auth.getUser>> | null = null;
       try {
-        const [setup, userResult] = await Promise.all([
-          bootstrapFn(),
-          supabase.auth.getUser(),
-        ]);
+        userResult = await supabase.auth.getUser();
         if (!alive) return;
-        setAdminExists(setup.adminExists);
-        if (setup.adminExists && mode === "signup") setMode("signin");
 
+        try {
+          const setup = await bootstrapFn();
+          if (!alive) return;
+          setAdminExists(setup.adminExists);
+          if (setup.adminExists && mode === "signup") setMode("signin");
+        } catch {
+          // The deployed host can miss server-side env vars while browser auth
+          // still works. Do not block admin sign-in because setup-status is a
+          // convenience check, not part of password authentication.
+          if (alive) setAdminExists(true);
+        }
+
+        if (!alive) return;
         if (userResult.data.user) {
           try {
             const role = await roleFn();
@@ -140,8 +149,8 @@ export function AdminLoginPage() {
         setAdminExists(true);
         const anyErr = (e ?? {}) as { message?: string; code?: string; status?: number };
         setErr({
-          title: "Backend unreachable",
-          hint: "Could not verify setup status. Setup remains locked until the backend confirms zero admins.",
+          title: "Auth check failed",
+          hint: "Could not read the current browser session. Refresh the page and sign in again.",
           raw: anyErr.message ?? String(e),
           code: anyErr.code,
           status: anyErr.status,
@@ -176,8 +185,7 @@ export function AdminLoginPage() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        const setup = await bootstrapFn();
-        nav({ to: setup.adminExists ? "/admin" : "/admin/setup", replace: true });
+          nav({ to: "/admin", replace: true });
       } else if (mode === "signup") {
         const setup = await bootstrapFn();
         if (setup.adminExists) {
