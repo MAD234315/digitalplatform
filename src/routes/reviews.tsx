@@ -115,7 +115,7 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12 [&>*]:relative sm:[&>*:not(:nth-child(2n))]:after:absolute sm:[&>*:not(:nth-child(2n))]:after:top-6 sm:[&>*:not(:nth-child(2n))]:after:bottom-6 sm:[&>*:not(:nth-child(2n))]:after:-right-4 sm:[&>*:not(:nth-child(2n))]:after:w-px sm:[&>*:not(:nth-child(2n))]:after:bg-gradient-to-b sm:[&>*:not(:nth-child(2n))]:after:from-transparent sm:[&>*:not(:nth-child(2n))]:after:via-border sm:[&>*:not(:nth-child(2n))]:after:to-transparent lg:[&>*:not(:nth-child(2n))]:after:hidden lg:[&>*:not(:nth-child(3n))]:after:absolute lg:[&>*:not(:nth-child(3n))]:after:top-6 lg:[&>*:not(:nth-child(3n))]:after:bottom-6 lg:[&>*:not(:nth-child(3n))]:after:-right-5 lg:[&>*:not(:nth-child(3n))]:after:w-px lg:[&>*:not(:nth-child(3n))]:after:bg-gradient-to-b lg:[&>*:not(:nth-child(3n))]:after:from-transparent lg:[&>*:not(:nth-child(3n))]:after:via-border lg:[&>*:not(:nth-child(3n))]:after:to-transparent [&>*]:before:absolute [&>*]:before:-bottom-5 [&>*]:before:left-6 [&>*]:before:right-6 [&>*]:before:h-px [&>*]:before:bg-gradient-to-r [&>*]:before:from-transparent [&>*]:before:via-border [&>*]:before:to-transparent [&>*:last-child]:before:hidden sm:[&>*:nth-last-child(-n+2)]:before:hidden lg:[&>*:nth-last-child(-n+3)]:before:hidden">
               {reviews.map((r) => {
                 const initials = r.name
                   ?.split(" ")
@@ -127,7 +127,7 @@ function Reviews() {
                 return (
                   <article
                     key={r.id}
-                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card/40 transition hover:border-amber/40 hover:bg-card/60 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.25)]"
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/40 transition hover:border-amber/40 hover:bg-card/60 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.25)]"
                   >
                     {/* Header: identity + rating */}
                     <header className="flex items-start justify-between gap-3 border-b border-border/60 bg-card/40 px-5 py-4">
