@@ -254,13 +254,6 @@ export type AdminUser = {
   isSelf: boolean;
 };
 
-type AdminUserRpcRow = {
-  user_id: string;
-  email: string | null;
-  role_created_at: string;
-  last_sign_in_at: string | null;
-};
-
 export const listAdmins = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminUser[]> => {
