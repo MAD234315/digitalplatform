@@ -15,11 +15,21 @@ import { createServerFn } from "@tanstack/react-start";
 const DEFAULT_SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
 const DEFAULT_CSV_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/export?format=csv`;
 
-/** Turn an /edit or /view sheet URL into a CSV export URL. Falls back to the input. */
-function toCsvUrl(sheetUrl: string): string {
-  const m = /\/d\/([a-zA-Z0-9_-]+)/.exec(sheetUrl);
-  if (m) return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
-  return sheetUrl;
+/**
+ * Turn any supported spreadsheet URL into a fetchable content URL.
+ *  - Google Sheets → CSV export.
+ *  - OneDrive share (1drv.ms / onedrive.live.com) → shares content endpoint.
+ *  - SharePoint or a direct .xlsx URL → the link itself.
+ */
+function toFetchUrl(sheetUrl: string): string {
+  const url = sheetUrl.trim();
+  const g = /\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/.exec(url);
+  if (g) return `https://docs.google.com/spreadsheets/d/${g[1]}/export?format=csv`;
+  if (/1drv\.ms\//i.test(url) || /onedrive\.live\.com\//i.test(url)) {
+    const b64 = btoa(url).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    return `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
+  }
+  return url;
 }
 
 let cachedUrl: { at: number; url: string } | null = null;
@@ -40,11 +50,11 @@ async function getPublicAppSettings(): Promise<{ sheet_url: string | null; site_
   }
 }
 
-async function resolveCsvUrl(): Promise<string> {
+async function resolveFetchUrl(): Promise<string> {
   const now = Date.now();
   if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url;
   const row = await getPublicAppSettings();
-  const url2 = row?.sheet_url ? toCsvUrl(row.sheet_url) : DEFAULT_CSV_URL;
+  const url2 = row?.sheet_url ? toFetchUrl(row.sheet_url) : DEFAULT_CSV_URL;
   cachedUrl = { at: now, url: url2 };
   return url2;
 }
