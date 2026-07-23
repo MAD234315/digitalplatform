@@ -654,7 +654,7 @@ function SpreadsheetPanel() {
         <div className="min-w-0">
           <h2 className="font-display text-xl sm:text-2xl">Spreadsheet Configuration</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            The catalogue is loaded from this Google Sheet. Changes take effect within about a minute.
+            The catalogue is loaded from this spreadsheet — Google Sheets or Microsoft Excel (OneDrive / SharePoint / .xlsx). Changes take effect within about a minute.
           </p>
         </div>
       </div>
@@ -695,7 +695,7 @@ function SpreadsheetPanel() {
             type="url"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="https://docs.google.com/spreadsheets/d/…/edit"
+            placeholder="Google Sheets URL or OneDrive / SharePoint / .xlsx link"
             aria-invalid={validationError ? true : undefined}
             aria-describedby="sheet-url-hint"
             className={`mt-1 h-12 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus:border-amber ${
@@ -722,7 +722,7 @@ function SpreadsheetPanel() {
                 ? normalizedInput === trimmedInput
                   ? "Looks valid — link is normalized."
                   : `Will be saved as: ${normalizedInput}`
-                : "Paste the full Google Sheets URL — e.g. https://docs.google.com/spreadsheets/d/{ID}/edit"}
+                : "Paste a Google Sheets URL, an Excel Online (OneDrive / SharePoint) share link, or a direct .xlsx URL."}
           </p>
         </label>
         <div className="grid gap-2 sm:flex sm:flex-wrap">
@@ -768,7 +768,7 @@ function SpreadsheetPanel() {
       {confirmRevoke && (
         <ConfirmDialog
           title="Revoke spreadsheet URL?"
-          message="This clears the current Google Sheet from settings and records an audit entry. The catalogue will stop loading until a new URL is saved."
+          message="This clears the current spreadsheet URL from settings and records an audit entry. The catalogue will stop loading until a new URL is saved."
           confirmLabel="Revoke"
           destructive
           onCancel={() => setConfirmRevoke(false)}
@@ -1600,7 +1600,7 @@ function ReviewsSheetCard() {
         <div className="min-w-0">
           <h2 className="font-display text-xl sm:text-2xl">Reviews Spreadsheet</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage customer reviews from a Google Sheet. Cached for ~1 minute. Leave blank to show the built-in defaults.
+            Manage customer reviews from a Google Sheet or a Microsoft Excel workbook (OneDrive / SharePoint share, or a direct .xlsx URL). Cached for ~1 minute. Leave blank to show the built-in defaults.
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             <strong className="text-foreground/80">Required columns (row 1 headers):</strong>{" "}
@@ -1644,7 +1644,7 @@ function ReviewsSheetCard() {
             type="url"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="https://docs.google.com/spreadsheets/d/…/edit"
+            placeholder="Google Sheets URL or OneDrive / SharePoint / .xlsx link"
             className={`mt-1 h-12 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus:border-amber ${
               validationError
                 ? "border-red-500/60 focus:border-red-500"

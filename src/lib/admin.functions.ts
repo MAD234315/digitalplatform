@@ -43,16 +43,16 @@ async function assertAdmin(context: {
 }
 
 /**
- * Validate & normalize a Google Sheets URL. Throws Error with a user-facing
- * message when the URL is not a supported Google Sheet link.
+ * Validate & normalize a spreadsheet URL. Accepts either a Google Sheets link
+ * or a Microsoft Excel workbook (direct .xlsx, OneDrive share, or SharePoint
+ * link). Throws Error with a user-facing message when the URL isn't supported.
  *
  * Accepted:
- *  - https://docs.google.com/spreadsheets/d/{ID}/edit...
- *  - https://docs.google.com/spreadsheets/d/{ID}/view...
- *  - Any /spreadsheets/d/{ID}/... variant on docs.google.com
- *
- * Rejected: non-https, wrong host, Drive links, shortened URLs, missing ID,
- * malformed spreadsheet ID.
+ *  - https://docs.google.com/spreadsheets/d/{ID}/edit… (Google Sheets)
+ *  - https://1drv.ms/…                                  (OneDrive share)
+ *  - https://onedrive.live.com/…                        (OneDrive)
+ *  - https://*.sharepoint.com/…                         (SharePoint)
+ *  - Any https URL ending in .xlsx (direct download)
  */
 export function validateGoogleSheetUrl(raw: string): string {
   if (typeof raw !== "string") {
@@ -61,7 +61,7 @@ export function validateGoogleSheetUrl(raw: string): string {
   const input = raw.trim();
   if (!input) throw new Error("Spreadsheet URL is required.");
   if (input.length > 2000) {
-    throw new Error("That link is too long — Google Sheet URLs are under 2000 characters.");
+    throw new Error("That link is too long — spreadsheet URLs are under 2000 characters.");
   }
   if (/\s/.test(input)) {
     throw new Error("The URL contains spaces. Copy the full link directly from your browser's address bar.");
@@ -75,51 +75,55 @@ export function validateGoogleSheetUrl(raw: string): string {
   }
 
   if (parsed.protocol !== "https:") {
-    throw new Error("The link must start with https:// — copy the URL directly from Google Sheets.");
+    throw new Error("The link must start with https:// — copy the URL directly from the source.");
   }
   if (parsed.username || parsed.password) {
-    throw new Error("The URL must not contain credentials. Copy a clean link from Google Sheets.");
-  }
-  if (parsed.port) {
-    throw new Error("The URL must not include a port. Copy a clean link from Google Sheets.");
+    throw new Error("The URL must not contain credentials. Copy a clean link.");
   }
 
   const host = parsed.hostname.toLowerCase();
-  if (host !== "docs.google.com") {
-    if (host === "drive.google.com") {
-      throw new Error("This is a Google Drive link, not a Google Sheet. Open the sheet and copy the URL from the address bar.");
+
+  // Google Sheets → normalize to /edit
+  if (host === "docs.google.com") {
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    if (parts[0] !== "spreadsheets") {
+      throw new Error("This isn't a Google Sheet URL. It should look like https://docs.google.com/spreadsheets/d/…/edit");
     }
-    if (host === "sheets.google.com") {
-      throw new Error("Use the full docs.google.com/spreadsheets/d/… link, not the sheets.google.com shortcut.");
+    if (parts[1] !== "d" || !parts[2]) {
+      if (parts[1] === "u") {
+        throw new Error("This is an account-scoped link. Open the sheet, then copy the URL from the address bar (it should contain /d/…).");
+      }
+      throw new Error("The link is missing the spreadsheet ID. A valid URL contains /spreadsheets/d/{ID}/edit.");
     }
-    if (host.endsWith(".googleusercontent.com") || host.endsWith("goo.gl") || host.endsWith("g.co")) {
-      throw new Error("Shortened or export links aren't supported. Open the sheet in the browser and copy its URL.");
+    const id = parts[2];
+    if (!/^[a-zA-Z0-9_-]{20,200}$/.test(id)) {
+      throw new Error("The spreadsheet ID in this link looks invalid. Open the sheet and copy the URL again.");
     }
-    if (host.endsWith("google.com")) {
-      throw new Error("Only docs.google.com links are supported. Open the sheet and copy its URL.");
-    }
-    throw new Error("Only Google Sheets URLs (docs.google.com) are supported.");
+    return `https://docs.google.com/spreadsheets/d/${id}/edit`;
   }
 
-  // Expect /spreadsheets/d/{id}/...
-  const parts = parsed.pathname.split("/").filter(Boolean);
-  if (parts[0] !== "spreadsheets") {
-    throw new Error("This isn't a Google Sheet URL. It should look like https://docs.google.com/spreadsheets/d/…/edit");
-  }
-  if (parts[1] !== "d" || !parts[2]) {
-    if (parts[1] === "u") {
-      throw new Error("This is an account-scoped link. Open the sheet, then copy the URL from the address bar (it should contain /d/…).");
-    }
-    throw new Error("The link is missing the spreadsheet ID. A valid URL contains /spreadsheets/d/{ID}/edit.");
+  // Microsoft Excel: OneDrive / SharePoint share links, or direct .xlsx
+  const isOneDrive =
+    host === "1drv.ms" ||
+    host === "onedrive.live.com" ||
+    host.endsWith(".onedrive.live.com");
+  const isSharePoint = host.endsWith(".sharepoint.com");
+  const isDirectXlsx = /\.xlsx(\?|$)/i.test(input);
+
+  if (isOneDrive || isSharePoint || isDirectXlsx) {
+    // Preserve the link as-is (share tokens matter for OneDrive/SharePoint).
+    return input;
   }
 
-  const id = parts[2];
-  if (!/^[a-zA-Z0-9_-]{20,200}$/.test(id)) {
-    throw new Error("The spreadsheet ID in this link looks invalid. Open the sheet and copy the URL again.");
+  if (host === "drive.google.com") {
+    throw new Error("This is a Google Drive link, not a Google Sheet. Open the sheet in Sheets and copy that URL.");
   }
-
-  // Normalize to a clean /edit URL (strip query/hash, gid, tokens, etc.)
-  return `https://docs.google.com/spreadsheets/d/${id}/edit`;
+  if (host === "sheets.google.com") {
+    throw new Error("Use the full docs.google.com/spreadsheets/d/… link, not the sheets.google.com shortcut.");
+  }
+  throw new Error(
+    "Only Google Sheets (docs.google.com) or Microsoft Excel links (OneDrive, SharePoint, or a direct .xlsx URL) are supported.",
+  );
 }
 
 /**
@@ -586,55 +590,84 @@ export const previewSheetUrl = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<SheetPreview> => {
     await assertAdmin(context);
     const normalized = validateGoogleSheetUrl(data.sheetUrl);
-    const id = /\/d\/([a-zA-Z0-9_-]+)/.exec(normalized)?.[1] ?? "";
+    const parsedUrl = new URL(normalized);
+    const host = parsedUrl.hostname.toLowerCase();
+    const isGoogle = host === "docs.google.com";
+    const id = isGoogle ? (/\/d\/([a-zA-Z0-9_-]+)/.exec(normalized)?.[1] ?? "") : "";
 
-    // Fetch first tab as CSV (public export). Time-bound to keep the admin UI responsive.
+    // Build fetch URL: Google → CSV export; OneDrive share → shares content
+    // endpoint; SharePoint / direct .xlsx → the link itself.
+    let fetchUrl = normalized;
+    if (isGoogle) {
+      fetchUrl = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
+    } else if (host === "1drv.ms" || host === "onedrive.live.com" || host.endsWith(".onedrive.live.com")) {
+      const b64 = btoa(normalized).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      fetchUrl = `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
+    }
+
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
-    let csv = "";
+    const timer = setTimeout(() => controller.abort(), 10_000);
+    let rows: string[][] = [];
+    let sheetName = isGoogle ? "Sheet1" : "Workbook";
     try {
-      const res = await fetch(
-        `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
-        { signal: controller.signal, redirect: "follow" },
-      );
+      const res = await fetch(fetchUrl, { signal: controller.signal, redirect: "follow" });
       if (!res.ok) {
-        if (res.status === 404) throw new Error("Sheet not found. Check the URL and sharing settings.");
+        if (res.status === 404) throw new Error("Spreadsheet not found. Check the URL and sharing settings.");
         if (res.status === 401 || res.status === 403)
-          throw new Error("Access denied. Set the sheet's sharing to \"Anyone with the link – Viewer\".");
-        throw new Error(`Google Sheets returned HTTP ${res.status}.`);
+          throw new Error('Access denied. Set the file sharing to "Anyone with the link – Viewer".');
+        throw new Error(`Spreadsheet host returned HTTP ${res.status}.`);
       }
-      csv = await res.text();
+      if (isGoogle) {
+        rows = parseCsvPreview(await res.text(), 11);
+      } else {
+        const buf = await res.arrayBuffer();
+        const head = new Uint8Array(buf.slice(0, 2));
+        if (head[0] === 0x50 && head[1] === 0x4b) {
+          const XLSX = await import("xlsx");
+          const wb = XLSX.read(buf, { type: "array" });
+          sheetName = wb.SheetNames[0] || sheetName;
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const all = XLSX.utils.sheet_to_json<string[]>(ws, {
+            header: 1,
+            blankrows: false,
+            defval: "",
+          }) as string[][];
+          rows = all.slice(0, 11).map((r) => r.map((c) => String(c ?? "")));
+        } else {
+          rows = parseCsvPreview(new TextDecoder().decode(buf), 11);
+        }
+      }
     } catch (e) {
       if ((e as Error).name === "AbortError")
-        throw new Error("Timed out fetching the sheet. Try again in a moment.");
+        throw new Error("Timed out fetching the spreadsheet. Try again in a moment.");
       throw e;
     } finally {
       clearTimeout(timer);
     }
 
-    // Best-effort: read the sheet/document title from the public HTML view.
-    let sheetName = "Sheet1";
-    try {
-      const h = await fetch(`https://docs.google.com/spreadsheets/d/${id}/htmlview`, { redirect: "follow" });
-      if (h.ok) {
-        const html = await h.text();
-        const m = /<title>([^<]+)<\/title>/i.exec(html);
-        if (m) sheetName = m[1].replace(/\s*-\s*Google Sheets\s*$/i, "").trim() || sheetName;
-      }
-    } catch { /* non-fatal */ }
+    // Best-effort: read Google Sheets document title from the public HTML view.
+    if (isGoogle && id) {
+      try {
+        const h = await fetch(`https://docs.google.com/spreadsheets/d/${id}/htmlview`, { redirect: "follow" });
+        if (h.ok) {
+          const html = await h.text();
+          const m = /<title>([^<]+)<\/title>/i.exec(html);
+          if (m) sheetName = m[1].replace(/\s*-\s*Google Sheets\s*$/i, "").trim() || sheetName;
+        }
+      } catch { /* non-fatal */ }
+    }
 
-    const parsed = parseCsvPreview(csv, 11); // 1 header + 10 rows
-    if (parsed.length === 0) throw new Error("The sheet appears to be empty.");
-    const headers = parsed[0].map((h) => h.trim());
-    const rows = parsed.slice(1, 11);
+    if (rows.length === 0) throw new Error("The spreadsheet appears to be empty.");
+    const headers = rows[0].map((h) => String(h ?? "").trim());
+    const dataRows = rows.slice(1, 11);
 
     return {
       sheetName,
       spreadsheetId: id,
       normalizedUrl: normalized,
       headers,
-      rows,
-      totalRowsShown: rows.length,
+      rows: dataRows,
+      totalRowsShown: dataRows.length,
     };
   });
 

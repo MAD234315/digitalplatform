@@ -15,11 +15,21 @@ import { createServerFn } from "@tanstack/react-start";
 const DEFAULT_SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
 const DEFAULT_CSV_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/export?format=csv`;
 
-/** Turn an /edit or /view sheet URL into a CSV export URL. Falls back to the input. */
-function toCsvUrl(sheetUrl: string): string {
-  const m = /\/d\/([a-zA-Z0-9_-]+)/.exec(sheetUrl);
-  if (m) return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
-  return sheetUrl;
+/**
+ * Turn any supported spreadsheet URL into a fetchable content URL.
+ *  - Google Sheets → CSV export.
+ *  - OneDrive share (1drv.ms / onedrive.live.com) → shares content endpoint.
+ *  - SharePoint or a direct .xlsx URL → the link itself.
+ */
+function toFetchUrl(sheetUrl: string): string {
+  const url = sheetUrl.trim();
+  const g = /\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/.exec(url);
+  if (g) return `https://docs.google.com/spreadsheets/d/${g[1]}/export?format=csv`;
+  if (/1drv\.ms\//i.test(url) || /onedrive\.live\.com\//i.test(url)) {
+    const b64 = btoa(url).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    return `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
+  }
+  return url;
 }
 
 let cachedUrl: { at: number; url: string } | null = null;
@@ -40,11 +50,11 @@ async function getPublicAppSettings(): Promise<{ sheet_url: string | null; site_
   }
 }
 
-async function resolveCsvUrl(): Promise<string> {
+async function resolveFetchUrl(): Promise<string> {
   const now = Date.now();
   if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url;
   const row = await getPublicAppSettings();
-  const url2 = row?.sheet_url ? toCsvUrl(row.sheet_url) : DEFAULT_CSV_URL;
+  const url2 = row?.sheet_url ? toFetchUrl(row.sheet_url) : DEFAULT_CSV_URL;
   cachedUrl = { at: now, url: url2 };
   return url2;
 }
@@ -189,22 +199,21 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  * Classifies failures into a short set of user-safe messages instead of
  * leaking raw internals to the client.
  */
-async function fetchSheetCsv(): Promise<string> {
-  const csvUrl = await resolveCsvUrl();
+async function fetchSheetRows(): Promise<string[][]> {
+  const fetchUrl = await resolveFetchUrl();
   let attempt = 0;
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-      const res = await fetch(csvUrl, { signal: controller.signal });
+      const res = await fetch(fetchUrl, { signal: controller.signal, redirect: "follow" });
 
       if (!res.ok) {
         const retryable = res.status === 429 || res.status === 503;
         const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"));
 
         if (retryable && attempt < MAX_RETRIES) {
-          // Backoff: honour Retry-After when given, otherwise 500ms + jitter.
           const waitMs = retryAfterMs ?? 500 + Math.floor(Math.random() * 400);
           attempt++;
           clearTimeout(timeout);
@@ -225,23 +234,46 @@ async function fetchSheetCsv(): Promise<string> {
 
       // Size-guarded read: stream the body and abort if it exceeds the cap.
       const reader = res.body?.getReader();
-      if (!reader) return await res.text();
-      const chunks: Uint8Array[] = [];
-      let total = 0;
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        total += value.byteLength;
-        if (total > RESPONSE_MAX_BYTES) {
-          controller.abort();
-          throw new SheetFetchError("Sheet response too large.", 413);
+      let bytes: Uint8Array;
+      if (!reader) {
+        bytes = new Uint8Array(await res.arrayBuffer());
+      } else {
+        const chunks: Uint8Array[] = [];
+        let total = 0;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          total += value.byteLength;
+          if (total > RESPONSE_MAX_BYTES) {
+            controller.abort();
+            throw new SheetFetchError("Sheet response too large.", 413);
+          }
+          chunks.push(value);
         }
-        chunks.push(value);
+        bytes = chunks.length === 1 ? chunks[0] : concatChunks(chunks, total);
       }
-      return new TextDecoder("utf-8").decode(
-        chunks.length === 1 ? chunks[0] : concatChunks(chunks, total),
-      );
+
+      // Detect Excel .xlsx (ZIP magic: PK\x03\x04) vs CSV/text.
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const looksXlsx =
+        (bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4b) ||
+        /sheet|excel|officedocument|spreadsheetml/.test(ct) ||
+        /\.xlsx(\?|$)/i.test(fetchUrl);
+
+      if (looksXlsx && bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4b) {
+        const XLSX = await import("xlsx");
+        const wb = XLSX.read(bytes, { type: "array" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json<unknown[]>(ws, {
+          header: 1,
+          blankrows: false,
+          defval: "",
+        }) as unknown[][];
+        return rows.map((r) => r.map((c) => (c == null ? "" : String(c))));
+      }
+
+      return parseCsv(new TextDecoder("utf-8").decode(bytes));
     } catch (e) {
       if (e instanceof Error && e.name === "AbortError") {
         throw new SheetFetchError(`Sheet fetch timed out after ${FETCH_TIMEOUT_MS / 1000}s.`, 408);
@@ -252,6 +284,7 @@ async function fetchSheetCsv(): Promise<string> {
     }
   }
 }
+
 
 function concatChunks(chunks: Uint8Array[], total: number): Uint8Array {
   const out = new Uint8Array(total);
@@ -265,8 +298,7 @@ function concatChunks(chunks: Uint8Array[], total: number): Uint8Array {
 
 async function loadFromSheet(): Promise<ProductsPayload> {
   try {
-    const text = await fetchSheetCsv();
-    const rows = parseCsv(text);
+    const rows = await fetchSheetRows();
 
     const products: SheetProduct[] = [];
     let currentCategory = "General";
