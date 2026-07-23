@@ -141,12 +141,6 @@ function Reviews() {
                         <span className="text-foreground/90">{r.product}</span>
                       </div>
                     ) : null}
-                              >
-                                {p}
-                              </span>
-                            ))
-                        : null}
-                    </div>
                   </div>
                 </article>
               ))}
