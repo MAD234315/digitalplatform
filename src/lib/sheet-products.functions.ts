@@ -87,6 +87,9 @@ export type ProductsPayload = {
   rateLimited?: boolean;
   /** True when the site has been switched Offline in the admin panel. */
   maintenance?: boolean;
+  /** Stable identity of the current catalogue source (spreadsheet URL). Empty string when unset. */
+  sourceUrl?: string;
+
 };
 
 // Minimal RFC 4180 CSV row parser (handles quoted commas & escaped quotes)
