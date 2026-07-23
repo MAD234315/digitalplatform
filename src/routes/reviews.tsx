@@ -6,7 +6,7 @@ import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
-import { Star } from "lucide-react";
+import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar } from "lucide-react";
 import { getSheetReviews, type SheetReview } from "@/lib/sheet-reviews.functions";
 
 const TITLE = "Customer Reviews — Digital Platform";
