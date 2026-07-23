@@ -47,6 +47,7 @@ export type SheetReview = {
   product: string;
   body: string;
   date: string;
+  tenure: string;
 };
 
 export type ReviewsPayload = {
