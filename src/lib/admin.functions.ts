@@ -687,32 +687,44 @@ const bulkProofSchema = z.object({
 
 export const listPublishedProofs = createServerFn({ method: "GET" }).handler(
   async (): Promise<ProofRecord[]> => {
-    const sb = serverPublicClient();
-    const { data, error } = await sb
-      .from("proofs")
-      .select("id, title, description, image_urls, published, status, validity, delivery, created_at, updated_at")
-      .eq("published", true)
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    const results: ProofRecord[] = [];
-    for (const row of data ?? []) {
-      const images = await signImages(sb, row.image_urls ?? []);
-      results.push({
-        id: row.id,
-        title: row.title,
-        description: row.description ?? "",
-        images,
-        published: row.published,
-        status: (row as { status?: string }).status ?? "",
-        validity: (row as { validity?: string }).validity ?? "",
-        delivery: (row as { delivery?: string }).delivery ?? "",
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-      });
+    // Fail-soft: on deployments where Supabase env vars aren't injected
+    // (e.g. custom Worker hosts), render an empty gallery instead of a
+    // hard SSR error boundary.
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
+      return [];
     }
-    return results;
+    try {
+      const sb = serverPublicClient();
+      const { data, error } = await sb
+        .from("proofs")
+        .select("id, title, description, image_urls, published, status, validity, delivery, created_at, updated_at")
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+      if (error) throw new Error(error.message);
+      const results: ProofRecord[] = [];
+      for (const row of data ?? []) {
+        const images = await signImages(sb, row.image_urls ?? []);
+        results.push({
+          id: row.id,
+          title: row.title,
+          description: row.description ?? "",
+          images,
+          published: row.published,
+          status: (row as { status?: string }).status ?? "",
+          validity: (row as { validity?: string }).validity ?? "",
+          delivery: (row as { delivery?: string }).delivery ?? "",
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        });
+      }
+      return results;
+    } catch (err) {
+      console.error("[listPublishedProofs] failed:", err);
+      return [];
+    }
   },
 );
+
 
 export const listAllProofs = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
