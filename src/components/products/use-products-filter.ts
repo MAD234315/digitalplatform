@@ -14,7 +14,10 @@ const AVAILABILITY_RANK: Record<SheetProduct["availability"], number> = {
 };
 
 const SEEN_KEY = "products-first-seen-v5";
+const SOURCE_KEY = "products-source-v1";
 const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
+const SOURCE_GRACE_MS = 24 * 60 * 60 * 1000; // 24h grace after catalogue URL swap
+
 
 /** Stable product identity across sheet re-parses (sheet ids are positional). */
 function keyOf(p: SheetProduct): string {
