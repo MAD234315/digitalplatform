@@ -265,15 +265,20 @@ export const listAdmins = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminUser[]> => {
     await assertAdmin(context);
-    const { data: rows, error } = await (context.supabase as any).rpc(
-      "list_admin_users_for_admin",
-    );
+    const { data: rows, error } = await context.supabase
+      .from("user_roles")
+      .select("user_id, created_at")
+      .eq("role", "admin")
+      .order("created_at", { ascending: true });
     if (error) throw new Error(error.message);
-    return ((rows ?? []) as AdminUserRpcRow[]).map((r) => ({
+    return (rows ?? []).map((r) => ({
       userId: r.user_id,
-      email: r.email ?? "Admin account",
-      createdAt: r.role_created_at,
-      lastSignInAt: r.last_sign_in_at ?? null,
+      email:
+        r.user_id === context.userId
+          ? ((context.claims as { email?: string } | undefined)?.email ?? "Current admin")
+          : `Admin ${r.user_id.slice(0, 8)}…`,
+      createdAt: r.created_at,
+      lastSignInAt: null,
       isSelf: r.user_id === context.userId,
     }));
   });
@@ -285,16 +290,16 @@ export const grantAdminByEmail = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { data: rows, error } = await (context.supabase as any).rpc(
-      "grant_admin_by_email_for_admin",
-      { _email: data.email },
+    if (data.email === ((context.claims as { email?: string } | undefined)?.email ?? "").toLowerCase()) {
+      const { error } = await context.supabase
+        .from("user_roles")
+        .insert({ user_id: context.userId, role: "admin" });
+      if (error && !/duplicate|unique/i.test(error.message)) throw new Error(error.message);
+      return { ok: true, userId: context.userId, email: data.email };
+    }
+    throw new Error(
+      "Adding another admin by email needs an account directory. Ask the user to sign in first, then use the setup/approval flow for that account.",
     );
-    if (error) throw new Error(error.message);
-    const row = (Array.isArray(rows) ? rows[0] : rows) as
-      | { user_id?: string; email?: string | null }
-      | null
-      | undefined;
-    return { ok: true, userId: row?.user_id, email: row?.email ?? data.email };
   });
 
 export const revokeAdmin = createServerFn({ method: "POST" })
