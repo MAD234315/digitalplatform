@@ -143,7 +143,8 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     if (rows.length === 0)
       return { reviews: [], fetchedAt: new Date().toISOString(), configured: true };
 
-    const header = rows[0].map(normalizeHeader);
+    const s = (v: unknown) => (v == null ? "" : String(v));
+    const header = rows[0].map((h) => normalizeHeader(s(h)));
     const idx = (keys: string[]) => header.findIndex((h) => keys.includes(h));
     const iName = idx(["name", "customer", "customername"]);
     const iLoc = idx(["location", "city"]);
@@ -156,28 +157,29 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     const reviews: SheetReview[] = [];
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
-      const name = (row[iName] ?? "").trim();
-      const body = (row[iBody] ?? "").trim();
+      const name = s(row[iName]).trim();
+      const body = s(row[iBody]).trim();
       if (!name || !body) continue;
 
       if (iPub >= 0) {
-        const p = (row[iPub] ?? "").trim().toLowerCase();
+        const p = s(row[iPub]).trim().toLowerCase();
         if (p && /^(false|no|0|hidden|off)$/.test(p)) continue;
       }
 
-      const ratingRaw = Number((row[iRating] ?? "").trim() || "5");
+      const ratingRaw = Number(s(row[iRating]).trim() || "5");
       const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
 
       reviews.push({
         id: `r-${r}`,
         name,
-        location: (row[iLoc] ?? "").trim(),
+        location: s(row[iLoc]).trim(),
         rating,
-        product: (row[iProduct] ?? "").trim(),
+        product: s(row[iProduct]).trim(),
         body,
-        date: (row[iDate] ?? "").trim(),
+        date: s(row[iDate]).trim(),
       });
     }
+
 
     return { reviews, fetchedAt: new Date().toISOString(), configured: true };
   } catch (e) {
