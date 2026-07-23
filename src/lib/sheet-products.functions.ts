@@ -12,8 +12,9 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 
-const DEFAULT_SHEET_ID = "1TIUdOcKgAkx_I7ANlyDJaRRTQySDINf8NAAJfg47XlU";
-const DEFAULT_CSV_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/export?format=csv`;
+// No hardcoded fallback: the catalogue source is whatever URL the admin has
+// saved in app_settings.sheet_url. If it's blank, the catalogue is empty and
+// the admin panel reflects the same "not set" state — no hidden defaults.
 
 /**
  * Turn any supported spreadsheet URL into a fetchable content URL.
@@ -50,13 +51,13 @@ async function getPublicAppSettings(): Promise<{ sheet_url: string | null; site_
   }
 }
 
-async function resolveFetchUrl(): Promise<string> {
+async function resolveFetchUrl(): Promise<string | null> {
   const now = Date.now();
-  if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url;
+  if (cachedUrl && now - cachedUrl.at < URL_TTL) return cachedUrl.url || null;
   const row = await getPublicAppSettings();
-  const url2 = row?.sheet_url ? toFetchUrl(row.sheet_url) : DEFAULT_CSV_URL;
+  const url2 = row?.sheet_url ? toFetchUrl(row.sheet_url) : "";
   cachedUrl = { at: now, url: url2 };
-  return url2;
+  return url2 || null;
 }
 
 export type Availability = "available" | "limited" | "out";
@@ -201,6 +202,7 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  */
 async function fetchSheetRows(): Promise<string[][]> {
   const fetchUrl = await resolveFetchUrl();
+  if (!fetchUrl) return [];
   let attempt = 0;
   // eslint-disable-next-line no-constant-condition
   while (true) {
