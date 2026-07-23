@@ -298,8 +298,7 @@ function concatChunks(chunks: Uint8Array[], total: number): Uint8Array {
 
 async function loadFromSheet(): Promise<ProductsPayload> {
   try {
-    const text = await fetchSheetCsv();
-    const rows = parseCsv(text);
+    const rows = await fetchSheetRows();
 
     const products: SheetProduct[] = [];
     let currentCategory = "General";
