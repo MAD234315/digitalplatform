@@ -200,7 +200,7 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  * leaking raw internals to the client.
  */
 async function fetchSheetCsv(): Promise<string> {
-  const csvUrl = await resolveCsvUrl();
+  const fetchUrl = await resolveFetchUrl();
   let attempt = 0;
   // eslint-disable-next-line no-constant-condition
   while (true) {
