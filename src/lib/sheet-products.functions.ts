@@ -87,6 +87,9 @@ export type ProductsPayload = {
   rateLimited?: boolean;
   /** True when the site has been switched Offline in the admin panel. */
   maintenance?: boolean;
+  /** Stable identity of the current catalogue source (spreadsheet URL). Empty string when unset. */
+  sourceUrl?: string;
+
 };
 
 // Minimal RFC 4180 CSV row parser (handles quoted commas & escaped quotes)
@@ -367,7 +370,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
     for (const p of products) catMap.set(p.category, (catMap.get(p.category) || 0) + 1);
     const categories = [...catMap.entries()].map(([name, count]) => ({ name, count }));
 
-    return { categories, products, fetchedAt: new Date().toISOString() };
+    return { categories, products, fetchedAt: new Date().toISOString(), sourceUrl: (await resolveFetchUrl()) ?? "" };
   } catch (e) {
     // Log the raw error server-side so it appears in Server Logs with a stack.
     // The `error` field in the payload is what surfaces in the UI banner —

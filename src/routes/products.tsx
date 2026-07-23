@@ -160,7 +160,9 @@ function Products() {
   const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, recentlyUpdatedProducts, latestIds } = useProductsFilter(
     data.products,
     data.categories,
+    data.sourceUrl ?? "",
   );
+
   const { items: recent, track, clear } = useRecentlyViewed();
 
   // Only surface recents that still exist in the live catalogue, and skip

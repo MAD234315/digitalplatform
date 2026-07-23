@@ -14,7 +14,10 @@ const AVAILABILITY_RANK: Record<SheetProduct["availability"], number> = {
 };
 
 const SEEN_KEY = "products-first-seen-v5";
+const SOURCE_KEY = "products-source-v1";
 const LATEST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days rolling per product
+const SOURCE_GRACE_MS = 24 * 60 * 60 * 1000; // 24h grace after catalogue URL swap
+
 
 /** Stable product identity across sheet re-parses (sheet ids are positional). */
 function keyOf(p: SheetProduct): string {
@@ -80,7 +83,7 @@ function writeSeen(map: SeenMap) {
  * rolling. On the very first mount we backfill existing products with
  * timestamp 0 so we don't flag the whole catalogue as new.
  */
-export function useProductsFilter(products: SheetProduct[], categories: CategoryInfo[]) {
+export function useProductsFilter(products: SheetProduct[], categories: CategoryInfo[], sourceUrl: string = "") {
   const [active, setActive] = useState<string>("All");
   const [q, setQ] = useState("");
   const [stock, setStock] = useState<StockFilter>("all");
@@ -107,34 +110,82 @@ export function useProductsFilter(products: SheetProduct[], categories: Category
 
 
   const [seen, setSeen] = useState<SeenMap>({});
+  // Grace period end after a catalogue URL swap: during this window "Latest"
+  // is suppressed (count 0, no cards flagged). After it expires, normal 7-day
+  // stamping resumes from the moment the grace ended.
+  const [graceUntil, setGraceUntil] = useState<number>(0);
 
-  // Merge newly-appearing OR edited products into the first-seen map.
+  // Track catalogue source URL. When the admin saves a new URL, we baseline
+  // all currently-observed products (t=0, so nothing is Latest) and open a
+  // 24h grace window before any product can be counted as Latest again.
   useEffect(() => {
+    if (typeof window === "undefined") return;
     if (products.length === 0) return;
-    const existing = readSeen();
     const now = Date.now();
-    const map: SeenMap = { ...(existing ?? {}) };
-    let changed = false;
-    for (const p of products) {
-      const k = keyOf(p);
-      const sig = signatureOf(p);
-      const prev = map[k];
-      if (!prev) {
-        // Newly-observed product (first sight in this browser OR truly new
-        // in the catalogue) → stamp with `now` so it appears in Latest for
-        // the next 7 days. Same behaviour whether this is the very first
-        // visit or a subsequent one.
-        map[k] = { t: now, sig };
-        changed = true;
-      } else if (prev.sig !== sig) {
-        // Row edited in the spreadsheet → restart the 7-day window from today.
-        map[k] = { t: now, sig };
-        changed = true;
+
+    let prevSource: string | null = null;
+    let storedGrace = 0;
+    try {
+      const raw = window.localStorage.getItem(SOURCE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { url?: string; graceUntil?: number };
+        prevSource = parsed.url ?? null;
+        storedGrace = typeof parsed.graceUntil === "number" ? parsed.graceUntil : 0;
       }
+    } catch {
+      /* ignore */
     }
-    if (changed) writeSeen(map);
+
+    const sourceChanged = prevSource !== null && prevSource !== sourceUrl;
+    let map: SeenMap;
+    let nextGrace = storedGrace;
+
+    if (sourceChanged || prevSource === null) {
+      // Fresh source (first ever visit OR admin swapped the URL): baseline
+      // every product to t=0 so nothing shows in Latest, and open a 24h
+      // grace window before stamping resumes.
+      map = {};
+      for (const p of products) {
+        map[keyOf(p)] = { t: 0, sig: signatureOf(p) };
+      }
+      nextGrace = sourceChanged ? now + SOURCE_GRACE_MS : storedGrace;
+      writeSeen(map);
+      try {
+        window.localStorage.setItem(
+          SOURCE_KEY,
+          JSON.stringify({ url: sourceUrl, graceUntil: nextGrace }),
+        );
+      } catch {
+        /* ignore */
+      }
+    } else {
+      const existing = readSeen();
+      map = { ...(existing ?? {}) };
+      const inGrace = now < storedGrace;
+      let changed = false;
+      for (const p of products) {
+        const k = keyOf(p);
+        const sig = signatureOf(p);
+        const prev = map[k];
+        if (!prev) {
+          // New product: during grace, baseline to 0; after grace, stamp now
+          // so it appears in Latest for 7 days.
+          map[k] = { t: inGrace ? 0 : now, sig };
+          changed = true;
+        } else if (prev.sig !== sig) {
+          // Edited: during grace, keep baseline; after grace, restart window.
+          map[k] = { t: inGrace ? 0 : now, sig };
+          changed = true;
+        }
+      }
+      if (changed) writeSeen(map);
+    }
+
     setSeen(map);
-  }, [products]);
+    setGraceUntil(nextGrace);
+  }, [products, sourceUrl]);
+
+
 
 
   // Map of stable product key → last-observed update timestamp (0 = pre-existing
