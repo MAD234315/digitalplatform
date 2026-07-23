@@ -9,7 +9,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { hasBackendConfig, requireBackendAuth, serverPublicClient } from "@/lib/lovable-cloud-auth";
 import type { Database } from "@/integrations/supabase/types";
 
 // ---------- Shared types ----------
@@ -140,23 +140,6 @@ export function checkGoogleSheetUrl(
   }
 }
 
-function serverPublicClient() {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-  return createClient<Database>(url, key, {
-    global: {
-      fetch: (input, init) => {
-        const h = new Headers(init?.headers);
-        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`)
-          h.delete("Authorization");
-        h.set("apikey", key);
-        return fetch(input, { ...init, headers: h });
-      },
-    },
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-  });
-}
-
 const SIGNED_URL_TTL = 60 * 60; // 1h
 
 async function signImages(
@@ -194,27 +177,7 @@ async function signImages(
 /** Public-safe bootstrap status. Uses a SECURITY DEFINER RPC callable with the
  *  publishable key so this works on Lovable Cloud (no service-role key). */
 export const getAdminBootstrapStatus = createServerFn({ method: "GET" }).handler(async () => {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    throw new Error(
-      "Missing Supabase env: SUPABASE_URL and/or SUPABASE_PUBLISHABLE_KEY are not set on the server.",
-    );
-  }
-  const key = SUPABASE_PUBLISHABLE_KEY;
-  const supabasePublic = createClient<Database>(SUPABASE_URL, key, {
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    global: {
-      fetch: (input, init) => {
-        const h = new Headers(init?.headers);
-        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
-          h.delete("Authorization");
-        }
-        h.set("apikey", key);
-        return fetch(input, { ...init, headers: h });
-      },
-    },
-  });
+  const supabasePublic = serverPublicClient();
   const { data, error } = await supabasePublic.rpc("get_admin_bootstrap_status");
   if (error) {
     throw new Error(`get_admin_bootstrap_status failed: ${error.message}`);
@@ -226,7 +189,7 @@ export const getAdminBootstrapStatus = createServerFn({ method: "GET" }).handler
 });
 
 export const getMyRole = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("user_roles")
@@ -239,7 +202,7 @@ export const getMyRole = createServerFn({ method: "GET" })
 
 /** One-time bootstrap: promote yourself to admin if no admin exists yet. */
 export const claimFirstAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase.rpc("claim_first_admin_for_user", {
       _user_id: context.userId,
@@ -259,7 +222,7 @@ export type AdminUser = {
 };
 
 export const listAdmins = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }): Promise<AdminUser[]> => {
     await assertAdmin(context);
     const { data: rows, error } = await context.supabase
@@ -281,7 +244,7 @@ export const listAdmins = createServerFn({ method: "GET" })
   });
 
 export const grantAdminByEmail = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) =>
     z.object({ email: z.string().trim().toLowerCase().email().max(320) }).parse(raw),
   )
@@ -300,7 +263,7 @@ export const grantAdminByEmail = createServerFn({ method: "POST" })
   });
 
 export const revokeAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) => z.object({ userId: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
@@ -323,7 +286,7 @@ export const revokeAdmin = createServerFn({ method: "POST" })
 // ============ APP SETTINGS (spreadsheet URL) ============
 
 export const getAppSettings = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
     const { data, error } = await context.supabase
@@ -340,7 +303,7 @@ export const getAppSettings = createServerFn({ method: "GET" })
   });
 
 export const updateReviewsSheetUrl = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) =>
     z
       .object({ sheetUrl: z.string().trim().max(2000) })
@@ -358,7 +321,7 @@ export const updateReviewsSheetUrl = createServerFn({ method: "POST" })
   });
 
 export const updateSheetUrl = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((raw: unknown) =>
     z
       .object({ sheetUrl: z.string().trim().min(1, "Spreadsheet URL is required").max(2000) })
@@ -723,7 +686,7 @@ export const listPublishedProofs = createServerFn({ method: "GET" }).handler(
     // Fail-soft: on deployments where Supabase env vars aren't injected
     // (e.g. custom Worker hosts), render an empty gallery instead of a
     // hard SSR error boundary.
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
+    if (!hasBackendConfig()) {
       return [];
     }
     try {
