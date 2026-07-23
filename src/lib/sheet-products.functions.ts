@@ -370,7 +370,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
     for (const p of products) catMap.set(p.category, (catMap.get(p.category) || 0) + 1);
     const categories = [...catMap.entries()].map(([name, count]) => ({ name, count }));
 
-    return { categories, products, fetchedAt: new Date().toISOString() };
+    return { categories, products, fetchedAt: new Date().toISOString(), sourceUrl: (await resolveFetchUrl()) ?? "" };
   } catch (e) {
     // Log the raw error server-side so it appears in Server Logs with a stack.
     // The `error` field in the payload is what surfaces in the UI banner —
