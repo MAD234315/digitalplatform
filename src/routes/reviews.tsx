@@ -47,7 +47,7 @@ export const Route = createFileRoute("/reviews")({
     }),
   loader: ({ context }) => context.queryClient.ensureQueryData(reviewsQueryOptions),
   component: Reviews,
-  pendingComponent: DefaultPendingComponent,
+  pendingComponent: ReviewsSkeleton,
   pendingMs: 0,
 });
 
