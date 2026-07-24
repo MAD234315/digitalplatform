@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?inline";
 import dmSerif400Woff2 from "@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2?url";
+import instrumentSerif400Woff2 from "@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url";
+import instrumentSerif400ItalicWoff2 from "@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url";
 import firaSans400Woff2 from "@fontsource/fira-sans/files/fira-sans-latin-400-normal.woff2?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorListeners } from "../lib/client-error-listeners";
