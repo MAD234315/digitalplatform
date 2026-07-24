@@ -381,7 +381,8 @@ function Reviews() {
         }
       />
 
-      <section className="border-t border-border">
+      <section className="border-t border-border" aria-labelledby="reviews-heading">
+        <h2 id="reviews-heading" className="sr-only">Customer reviews</h2>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-12 sm:py-20 lg:py-28">
 
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
@@ -390,8 +391,12 @@ function Reviews() {
                 {reviews.length} reviews
               </div>
               {hasReviews ? (
-                <div className="mt-3 flex items-center gap-4">
-                  <div className="font-display text-5xl leading-none text-headline">{avg}</div>
+                <div
+                  className="mt-3 flex items-center gap-4"
+                  role="group"
+                  aria-label={`Average rating ${avg} out of 5`}
+                >
+                  <div className="font-display text-5xl leading-none text-headline" aria-hidden>{avg}</div>
                   <div>
                     <Stars n={5} />
                     <div className="mt-1 text-xs font-medium text-foreground/70">out of 5</div>
@@ -403,7 +408,10 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber/50 bg-gradient-to-r from-amber/15 via-amber/10 to-transparent px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
+            <div
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber/50 bg-gradient-to-r from-amber/15 via-amber/10 to-transparent px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]"
+              role="note"
+            >
               <span className="relative flex h-2 w-2" aria-hidden>
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-amber" />
@@ -415,7 +423,11 @@ function Reviews() {
           ) : null}
 
           {hasReviews ? (
-            <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
+            <ul
+              className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14 list-none p-0"
+              aria-label={`Customer reviews, page ${currentPage} of ${totalPages}`}
+            >
+
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
