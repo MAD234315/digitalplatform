@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
-import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2 } from "lucide-react";
+import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSheetReviews } from "@/lib/sheet-reviews.functions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -61,6 +61,19 @@ function Stars({ n }: { n: number }) {
     </div>
   );
 }
+
+function buildPageList(current: number, total: number): Array<number | "…"> {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: Array<number | "…"> = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) pages.push("…");
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 1) pages.push("…");
+  pages.push(total);
+  return pages;
+}
+
 
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform";
@@ -165,6 +178,26 @@ function Reviews() {
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : "—";
 
+  const PER_PAGE = 10;
+  const totalPages = Math.max(1, Math.ceil(reviews.length / PER_PAGE));
+  const [page, setPage] = useState(1);
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
+  const currentPage = Math.min(page, totalPages);
+  const pagedReviews = useMemo(
+    () => reviews.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE),
+    [reviews, currentPage],
+  );
+  const goTo = (p: number) => {
+    const next = Math.min(Math.max(1, p), totalPages);
+    setPage(next);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+
   return (
     <PageShell>
       <PageHero
@@ -212,7 +245,7 @@ function Reviews() {
 
           {hasReviews ? (
             <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12">
-              {reviews.map((r) => {
+              {pagedReviews.map((r) => {
                 const initials = r.name
                   ?.split(" ")
                   .map((p) => p[0])
@@ -314,13 +347,74 @@ function Reviews() {
                 );
               })}
             </div>
-          ) : (
+          ) : null}
+
+          {hasReviews && totalPages > 1 ? (
+            <nav
+              aria-label="Reviews pagination"
+              className="mt-12 flex flex-col items-center gap-4"
+            >
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                Page {currentPage} of {totalPages} · Showing{" "}
+                {(currentPage - 1) * PER_PAGE + 1}–
+                {Math.min(currentPage * PER_PAGE, reviews.length)} of {reviews.length}
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => goTo(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Prev</span>
+                </button>
+                {buildPageList(currentPage, totalPages).map((item, i) =>
+                  item === "…" ? (
+                    <span
+                      key={`gap-${i}`}
+                      className="px-1 text-xs text-muted-foreground select-none"
+                    >
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => goTo(item)}
+                      aria-current={item === currentPage ? "page" : undefined}
+                      className={
+                        item === currentPage
+                          ? "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-amber/60 bg-gradient-to-br from-amber/25 to-amber/10 px-3 text-sm font-bold text-amber shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--amber)_70%,transparent)]"
+                          : "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-border bg-card/40 px-3 text-sm font-semibold text-foreground/80 transition hover:border-amber/40 hover:bg-card/60 hover:text-foreground"
+                      }
+                    >
+                      {item}
+                    </button>
+                  ),
+                )}
+                <button
+                  type="button"
+                  onClick={() => goTo(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
+                  aria-label="Next page"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </nav>
+          ) : null}
+
+          {!hasReviews ? (
             <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
               <div className="text-sm text-muted-foreground">
                 No reviews yet. Be the first to share your experience on WhatsApp.
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 
