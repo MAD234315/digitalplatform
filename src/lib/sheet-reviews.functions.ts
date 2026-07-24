@@ -149,9 +149,15 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       return header.findIndex((h) => contains.some((k) => h.includes(k)));
     };
     const iName = findIdx(["name", "customer", "customername", "yourname"], ["yourname", "name"]);
-    const iLoc = findIdx(["location", "city", "whereareyoufrom"], ["whereareyoufrom", "whereyoufrom", "location", "city", "country", "from"]);
+    const iLoc = findIdx(
+      ["location", "city", "whereareyoufrom", "currentlocation", "currentlocationcitycountry"],
+      ["whereareyoufrom", "whereyoufrom", "currentlocation", "location", "city", "country"],
+    );
     const iRating = findIdx(["rating", "stars", "score", "ratingoutof5"], ["ratingoutof", "rating", "stars", "score"]);
-    const iProduct = findIdx(["product", "productname", "item"], ["productsorservices", "product", "service", "purchased"]);
+    const iProduct = findIdx(
+      ["product", "productname", "item", "productsorservicespurchased"],
+      ["productsorservices", "purchasedfromus", "purchasedfrom", "product", "service", "purchased"],
+    );
     const iBody = findIdx(["review", "body", "message", "comment", "text", "feedback"], ["honestreview", "reviewor", "review", "feedback", "comment", "message"]);
     const iDate = findIdx(["date", "month", "reviewdate", "timestamp"], ["timestamp", "date"]);
     const iPub = findIdx(["published", "publish", "show", "visible", "active", "publishyesno"], ["publish"]);
