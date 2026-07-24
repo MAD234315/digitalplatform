@@ -284,7 +284,7 @@ function ReviewsSkeleton() {
                   <div className="h-6 w-20 animate-pulse rounded-full bg-muted/50" />
                 </div>
 
-                <div className="space-y-4 border-t border-border/60 pt-5">
+                <div className="space-y-4 border-t border-border/80 pt-5">
                   <div className="space-y-2">
                     <div className="h-2 w-20 animate-pulse rounded bg-muted/50" />
                     <div className="h-3 w-full animate-pulse rounded bg-muted/30" />
@@ -386,7 +386,7 @@ function Reviews() {
 
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+              <div className="text-xs uppercase tracking-[0.22em] text-foreground/70">
                 {reviews.length} reviews
               </div>
               {hasReviews ? (
@@ -394,7 +394,7 @@ function Reviews() {
                   <div className="font-display text-5xl leading-none text-headline">{avg}</div>
                   <div>
                     <Stars n={5} />
-                    <div className="mt-1 text-xs text-muted-foreground">out of 5</div>
+                    <div className="mt-1 text-xs font-medium text-foreground/70">out of 5</div>
                   </div>
                 </div>
               ) : null}
@@ -419,7 +419,7 @@ function Reviews() {
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/90 via-card/70 to-card/50 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_80%,transparent)] ring-1 ring-border/60 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/20 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/30 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
                 >
                   {/* Top accent line */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
@@ -431,7 +431,7 @@ function Reviews() {
                     <div className="mb-5 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
-                        <span className="shrink-0 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70">
                           {r.formattedDate}
                         </span>
                       ) : null}
@@ -445,7 +445,7 @@ function Reviews() {
                     {/* Reviewer Identity */}
                     <div className="mb-5 flex flex-wrap items-center gap-3">
                       <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-gradient-to-br from-muted via-card/80 to-card text-xs font-semibold text-foreground shadow-sm shadow-amber/10"
                         aria-hidden
                       >
                         {initials(r.name)}
@@ -453,36 +453,36 @@ function Reviews() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-foreground">{r.name}</p>
                         {r.location ? (
-                          <p className="truncate text-xs text-muted-foreground">{r.location}</p>
+                          <p className="truncate text-xs font-medium text-foreground/70">{r.location}</p>
                         ) : null}
                       </div>
                       {r.tenure ? (
-                        <span className="shrink-0 rounded-full border border-amber/20 bg-amber/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber">
+                        <span className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
                           {r.tenure} customer
                         </span>
                       ) : null}
                     </div>
 
                     {/* Footer Details: Liked Most / Purchased */}
-                    <div className="space-y-4 border-t border-border/60 pt-5">
+                    <div className="space-y-4 border-t border-border/80 pt-5">
                       {r.liked ? (
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                             Liked Most
                           </span>
-                          <span className="text-sm text-foreground/90">{r.liked}</span>
+                          <span className="text-sm font-medium text-foreground">{r.liked}</span>
                         </div>
                       ) : null}
                       {r.product ? (
                         <div className="flex items-start gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/50 border border-border">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10">
                             <span className="text-[10px] text-amber">★</span>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                               Purchased
                             </span>
-                            <p className="text-sm font-medium text-foreground/90 transition group-hover:text-amber">
+                            <p className="text-sm font-semibold text-foreground transition group-hover:text-amber">
                               {r.product}
                             </p>
                           </div>
@@ -500,7 +500,7 @@ function Reviews() {
               aria-label="Reviews pagination"
               className="mt-12 flex flex-col items-center gap-4"
             >
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-foreground/70">
                 Page {currentPage} of {totalPages} · Showing{" "}
                 {(currentPage - 1) * PER_PAGE + 1}–
                 {Math.min(currentPage * PER_PAGE, reviews.length)} of {reviews.length}
@@ -582,7 +582,7 @@ function Reviews() {
               href={CONTACT.WA_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em]"
+              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-foreground"
             >
               Contact us →
             </a>
