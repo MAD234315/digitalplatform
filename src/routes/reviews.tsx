@@ -418,17 +418,16 @@ function Reviews() {
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] via-card/60 to-black/30 p-5 sm:p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] ring-1 ring-white/5 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/20 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/90 via-card/70 to-card/50 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_80%,transparent)] ring-1 ring-border/60 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/20 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
                 >
                   {/* Top accent line */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
                   {/* Decorative amber glow */}
                   <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" />
 
-
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
-                    <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+                    <div className="mb-5 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
                         <span className="shrink-0 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -438,13 +437,12 @@ function Reviews() {
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote mb-6 sm:mb-8 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
+                    <blockquote className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
-
                     {/* Reviewer Identity */}
-                    <div className="mb-5 sm:mb-6 flex flex-wrap items-center gap-3">
+                    <div className="mb-5 flex flex-wrap items-center gap-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
                         aria-hidden
@@ -464,9 +462,8 @@ function Reviews() {
                       ) : null}
                     </div>
 
-
                     {/* Footer Details: Liked Most / Purchased */}
-                    <div className="space-y-4 border-t border-border/40 pt-5">
+                    <div className="space-y-4 border-t border-border/60 pt-5">
                       {r.liked ? (
                         <div className="flex flex-col">
                           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
