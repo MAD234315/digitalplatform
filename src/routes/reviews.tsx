@@ -148,7 +148,7 @@ function LeaveReviewButton() {
       </button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="w-[98vw] sm:w-[95vw] max-w-none sm:max-w-5xl h-[95vh] sm:h-[92vh] max-h-[95vh] p-0 gap-0 overflow-hidden flex flex-col rounded-lg">
+        <DialogContent className="w-[98vw] sm:w-[95vw] max-w-none sm:max-w-5xl h-[95vh] sm:h-[92vh] max-h-[95vh] p-0 gap-0 overflow-hidden flex flex-col rounded-lg overscroll-contain">
           <DialogHeader className="px-4 sm:px-6 pt-5 pb-3 sm:pb-4 border-b border-border shrink-0 text-left">
             <DialogTitle className="font-display text-lg sm:text-2xl pr-8">Share your experience</DialogTitle>
             <DialogDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
@@ -163,7 +163,13 @@ function LeaveReviewButton() {
               </a>
             </DialogDescription>
           </DialogHeader>
-          <div className="relative flex-1 min-h-0 bg-background overflow-auto">
+          {/*
+            Single source of scroll: the iframe itself renders the Google Form
+            and handles its own scrolling. The wrapper is overflow-hidden and
+            uses overscroll-contain so scroll gestures never bubble to the
+            background page.
+          */}
+          <div className="relative flex-1 min-h-0 bg-background overflow-hidden overscroll-contain touch-pan-y">
             {!loaded ? (
               <div className="absolute inset-0 flex items-center justify-center z-10 bg-background/60">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -173,9 +179,9 @@ function LeaveReviewButton() {
               src={FORM_EMBED_URL}
               title="Leave a review"
               loading="lazy"
-              scrolling="yes"
-              className="block w-full h-full min-h-full border-0"
-              style={{ display: "block", width: "100%", height: "100%", minHeight: "100%" }}
+              scrolling="auto"
+              className="block h-full w-full border-0"
+              style={{ display: "block", width: "100%", height: "100%" }}
               onLoad={() => {
                 setLoaded(true);
                 setLoadCount((c) => {
@@ -186,6 +192,7 @@ function LeaveReviewButton() {
               }}
             />
           </div>
+
 
         </DialogContent>
       </Dialog>
