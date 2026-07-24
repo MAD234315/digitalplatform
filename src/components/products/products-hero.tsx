@@ -28,6 +28,7 @@ export function ProductsHero({
     <header className="relative border-b border-border">
       <PageHero
         size="wide"
+        compact
         eyebrow="The catalogue"
         title="Every product,"
         titleAccent="live from our shelf."
