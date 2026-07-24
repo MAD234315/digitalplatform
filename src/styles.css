@@ -1,5 +1,7 @@
 @import "tailwindcss" source(none);
 @import "@fontsource/dm-serif-display/latin-400.css";
+@import "@fontsource/instrument-serif/latin-400.css";
+@import "@fontsource/instrument-serif/latin-400-italic.css";
 @import "@fontsource/fira-sans/latin-400.css";
 @import "@fontsource/fira-sans/latin-500.css";
 @import "@fontsource/fira-sans/latin-600.css";
@@ -39,6 +41,7 @@
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+  --font-quote: var(--font-quote);
 }
 
 /* ============= DARK SITE THEME (home, about, contact) ============= */
@@ -46,6 +49,7 @@
   --radius: 0.5rem;
   --font-display: "DM Serif Display", ui-serif, Georgia, serif;
   --font-body: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-quote: "Instrument Serif", ui-serif, Georgia, serif;
 
   /* Noir & Gold */
   --background: oklch(0.14 0 0);        /* #0d0d0d */
@@ -213,6 +217,7 @@
 }
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
 @utility shadow-gold { box-shadow: var(--shadow-gold); }
+@utility font-quote { font-family: var(--font-quote); }
 
 /* subtle rise-in used on hero / section entry — GPU-composited for smoothness */
 @keyframes dp-rise {
