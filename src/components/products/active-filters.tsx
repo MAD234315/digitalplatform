@@ -62,14 +62,14 @@ export function ActiveFilters({
   if (chips.length === 0) return null;
 
   return (
-    <div className="animate-fade-in mb-5 flex flex-wrap items-center gap-2">
+    <div className="mb-5 flex flex-wrap items-center gap-2">
       <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         Active filters
       </span>
       {chips.map((c) => (
         <span
           key={c.key}
-          className="animate-scale-in inline-flex items-center gap-1.5 rounded-full border border-amber/40 bg-amber/10 pl-3 pr-1 py-1 text-xs font-medium text-foreground transition"
+          className="inline-flex items-center gap-1.5 rounded-full border border-amber/40 bg-amber/10 pl-3 pr-1 py-1 text-xs font-medium text-foreground"
         >
           <span className="max-w-[14rem] truncate">{c.label}</span>
           <button
