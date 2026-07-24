@@ -62,6 +62,62 @@ function Stars({ n }: { n: number }) {
   );
 }
 
+const FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform";
+const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
+
+function LeaveReviewButton() {
+  const [open, setOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setLoaded(false);
+          setOpen(true);
+        }}
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        ★ Leave a review
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
+            <DialogTitle className="font-display text-2xl">Share your experience</DialogTitle>
+            <DialogDescription className="flex items-center justify-between gap-3">
+              <span>Takes under a minute. Your feedback helps other customers.</span>
+              <a
+                href={FORM_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline shrink-0"
+              >
+                Open in new tab <ExternalLink className="h-3 w-3" />
+              </a>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="relative h-[70vh] bg-background">
+            {!loaded ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : null}
+            <iframe
+              src={FORM_EMBED_URL}
+              title="Leave a review"
+              className="h-full w-full"
+              onLoad={() => setLoaded(true)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 function Reviews() {
   const { data } = useQuery({
     ...reviewsQueryOptions,
