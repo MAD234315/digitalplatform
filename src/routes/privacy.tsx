@@ -18,13 +18,14 @@ function Privacy() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow={"POLICIES\n\n"}
         title="Privacy"
         titleAccent="Policy."
         lede="This page describes how Digital Platform handles the personal information you share when you contact us or place an order. It is maintained by the Digital Platform team and may be updated from time to time."
       />
       <section className="border-t border-border">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-16 space-y-10 text-muted-foreground leading-relaxed">
+        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-10 sm:py-12 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <Block title="Information we collect">
             When you contact us or place an order, we may collect your name, WhatsApp number, email address, payment reference, and the details required to deliver the specific product you ordered (for example, an account email where a license needs to be delivered).
           </Block>
