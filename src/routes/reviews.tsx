@@ -285,107 +285,70 @@ function Reviews() {
 
           {hasReviews ? (
             <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12">
-              {pagedReviews.map((r) => {
-                const initials = r.name
-                  ?.split(" ")
-                  .map((p) => p[0])
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase() || "?";
-                return (
-                  <article
-                    key={r.id}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/40 transition hover:border-amber/40 hover:bg-card/60 hover:shadow-[0_8px_30px_-12px_rgba(212,175,55,0.25)]"
-                  >
-                    {/* Header: identity + rating */}
-                    <header className="flex items-start justify-between gap-3 border-b border-border/60 bg-card/40 px-5 py-4">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-amber/10 text-xs font-semibold uppercase tracking-wider text-amber">
-                          {initials}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="truncate text-sm font-semibold text-foreground">{r.name}</div>
-                          {r.tenure ? (
-                            <div className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-amber/90">
-                              {r.tenure} customer
-                            </div>
-                          ) : (
-                            <div className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                              Verified buyer
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <Stars n={r.rating} />
-                        <span className="text-[10px] tabular-nums text-muted-foreground">{r.rating}.0 / 5</span>
-                      </div>
-                    </header>
+              {pagedReviews.map((r) => (
+                <article
+                  key={r.id}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card/50 p-6 shadow-soft transition hover:border-amber/40 hover:bg-card/60"
+                >
+                  {/* Decorative amber glow */}
+                  <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
 
-                    {/* Meta: location + date between header and review */}
-                    {(r.location || r.formattedDate) ? (
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-border/60 bg-amber/[0.03] px-5 py-3 text-[11px] text-muted-foreground">
-                        {r.location ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <MapPin className="h-3 w-3 text-amber" strokeWidth={2} />
-                            <span className="font-medium text-foreground/80">{r.location}</span>
-                          </span>
-                        ) : null}
-                        {r.location && r.formattedDate ? (
-                          <span className="h-3 w-px bg-border/80" aria-hidden />
-                        ) : null}
-                        {r.formattedDate ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3 text-amber" strokeWidth={2} />
-                            <span className="font-medium text-foreground/80">{r.formattedDate}</span>
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : null}
-
-                    {/* Body: quote */}
-                    <div className="relative flex-1 px-5 py-5">
-                      <Quote
-                        className="absolute left-4 top-4 h-5 w-5 text-amber/20"
-                        aria-hidden
-                        strokeWidth={2}
-                      />
-                      <p className="relative pl-6 text-sm leading-relaxed text-foreground/90">
-                        {r.body}
-                      </p>
+                  <div className="relative flex flex-1 flex-col">
+                    {/* Star Rating */}
+                    <div className="mb-5">
+                      <Stars n={r.rating} />
                     </div>
 
-                    {/* Highlights: liked + purchased */}
-                    {(r.liked || r.product) ? (
-                      <div className="space-y-2 border-t border-border/60 bg-card/30 px-5 py-4">
+                    {/* Main Quote */}
+                    <blockquote className="font-quote flex-1 text-xl leading-snug italic text-foreground mb-6">
+                      &ldquo;{r.body}&rdquo;
+                    </blockquote>
+
+                    {/* Reviewer Details */}
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold tracking-wide text-foreground">{r.name}</h3>
+                          {(r.location || r.formattedDate) ? (
+                            <p className="mt-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+                              {r.location}
+                              {r.location && r.formattedDate ? " • " : null}
+                              {r.formattedDate}
+                            </p>
+                          ) : null}
+                        </div>
+                        {r.tenure ? (
+                          <span className="shrink-0 rounded border border-amber/20 bg-amber/10 px-2 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber">
+                            {r.tenure}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <hr className="border-border/80" />
+
+                      {/* Summary Metadata */}
+                      <div className="space-y-2">
                         {r.liked ? (
-                          <div className="flex items-start gap-2.5 text-xs leading-relaxed">
-                            <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" strokeWidth={2} />
-                            <div className="min-w-0">
-                              <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                                Liked most
-                              </div>
-                              <div className="mt-0.5 text-foreground/90">{r.liked}</div>
-                            </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground">
+                              Liked Most
+                            </span>
+                            <span className="text-sm text-foreground/80">{r.liked}</span>
                           </div>
                         ) : null}
                         {r.product ? (
-                          <div className="flex items-start gap-2.5 text-xs leading-relaxed">
-                            <ShoppingBag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" strokeWidth={2} />
-                            <div className="min-w-0">
-                              <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                                Purchased
-                              </div>
-                              <div className="mt-0.5 text-foreground/90">{r.product}</div>
-                            </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground">
+                              Purchased
+                            </span>
+                            <span className="text-sm leading-tight italic text-foreground/80">{r.product}</span>
                           </div>
                         ) : null}
                       </div>
-                    ) : null}
-                  </article>
-                );
-              })}
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
           ) : null}
 
