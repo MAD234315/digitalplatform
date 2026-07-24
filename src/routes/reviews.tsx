@@ -319,7 +319,7 @@ function Reviews() {
                         </div>
                         {r.tenure ? (
                           <span className="shrink-0 rounded border border-amber/20 bg-amber/10 px-2 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber">
-                            {r.tenure}
+                            {r.tenure} customer
                           </span>
                         ) : null}
                       </div>
