@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
-import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2 } from "lucide-react";
+import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2, RefreshCw } from "lucide-react";
 import { getSheetReviews } from "@/lib/sheet-reviews.functions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -69,6 +69,24 @@ const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
 function LeaveReviewButton() {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [loadCount, setLoadCount] = useState(0);
+  const qc = useQueryClient();
+
+  const refreshReviews = async () => {
+    // Bypass server 60s cache + refetch client query
+    await qc.fetchQuery({
+      queryKey: ["sheet-reviews"],
+      queryFn: () => getSheetReviews({ data: { force: true } }),
+    });
+  };
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (!next) {
+      // On close, refresh so a just-submitted review can appear
+      void refreshReviews();
+    }
+  };
 
   return (
     <>
@@ -76,6 +94,7 @@ function LeaveReviewButton() {
         type="button"
         onClick={() => {
           setLoaded(false);
+          setLoadCount(0);
           setOpen(true);
         }}
         className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -83,7 +102,7 @@ function LeaveReviewButton() {
         ★ Leave a review
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden">
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
             <DialogTitle className="font-display text-2xl">Share your experience</DialogTitle>
@@ -109,12 +128,48 @@ function LeaveReviewButton() {
               src={FORM_EMBED_URL}
               title="Leave a review"
               className="h-full w-full"
-              onLoad={() => setLoaded(true)}
+              onLoad={() => {
+                setLoaded(true);
+                // Second load = form navigated to Google's "Response recorded"
+                // page after submit. Refresh reviews in the background.
+                setLoadCount((c) => {
+                  const next = c + 1;
+                  if (next >= 2) void refreshReviews();
+                  return next;
+                });
+              }}
             />
           </div>
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function RefreshReviewsButton() {
+  const qc = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          await qc.fetchQuery({
+            queryKey: ["sheet-reviews"],
+            queryFn: () => getSheetReviews({ data: { force: true } }),
+          });
+        } finally {
+          setBusy(false);
+        }
+      }}
+      className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition hover:text-foreground hover:border-[color:var(--amber)]/60 disabled:opacity-60"
+      aria-label="Refresh reviews"
+    >
+      <RefreshCw className={`h-3 w-3 ${busy ? "animate-spin" : ""}`} />
+      {busy ? "Refreshing" : "Refresh"}
+    </button>
   );
 }
 
@@ -167,9 +222,12 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
-              Latest reviews shown first
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
+                Latest reviews shown first
+              </div>
+              <RefreshReviewsButton />
             </div>
           ) : null}
 
