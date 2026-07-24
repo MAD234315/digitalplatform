@@ -89,10 +89,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
         boxShadow: "0 0 18px -4px rgba(34,197,94,0.55), 0 0 0 1px rgba(34,197,94,0.35)",
       }}
     >
-      <span className="relative inline-flex h-1.5 w-1.5">
-        <span className="absolute inset-0 rounded-full bg-white/90" style={{ animation: "ping 1.6s cubic-bezier(0,0,0.2,1) infinite" }} />
-        <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-white" />
-      </span>
+      <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
       Available Now
     </span>
   );
