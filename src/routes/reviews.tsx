@@ -106,10 +106,10 @@ function LeaveReviewButton() {
       </button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
-            <DialogTitle className="font-display text-2xl">Share your experience</DialogTitle>
-            <DialogDescription className="flex items-center justify-between gap-3">
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-full sm:max-w-3xl p-0 gap-0 overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col rounded-lg">
+          <DialogHeader className="px-4 sm:px-6 pt-5 pb-3 sm:pb-4 border-b border-border shrink-0 text-left">
+            <DialogTitle className="font-display text-lg sm:text-2xl pr-8">Share your experience</DialogTitle>
+            <DialogDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
               <span>Takes under a minute. Your feedback helps other customers.</span>
               <a
                 href={FORM_URL}
@@ -121,7 +121,7 @@ function LeaveReviewButton() {
               </a>
             </DialogDescription>
           </DialogHeader>
-          <div className="relative h-[70vh] bg-background">
+          <div className="relative flex-1 min-h-0 bg-background">
             {!loaded ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -130,11 +130,9 @@ function LeaveReviewButton() {
             <iframe
               src={FORM_EMBED_URL}
               title="Leave a review"
-              className="h-full w-full"
+              className="h-full w-full block"
               onLoad={() => {
                 setLoaded(true);
-                // Second load = form navigated to Google's "Response recorded"
-                // page after submit. Refresh reviews in the background.
                 setLoadCount((c) => {
                   const next = c + 1;
                   if (next >= 2) void refreshReviews();
