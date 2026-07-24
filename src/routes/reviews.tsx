@@ -155,7 +155,7 @@ function LeaveReviewButton() {
           // appears at the top the moment the modal closes.
           void refreshReviews();
         }}
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         ★ Leave a review
       </button>
@@ -170,7 +170,7 @@ function LeaveReviewButton() {
                 href={FORM_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline shrink-0"
+                className="inline-flex items-center gap-1 rounded-sm text-xs font-medium text-primary hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 Open in new tab <ExternalLink className="h-3 w-3" />
               </a>
@@ -419,7 +419,7 @@ function Reviews() {
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/30 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/50 hover:ring-amber/40 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] focus-within:border-amber/50 focus-within:ring-amber/40 focus-within:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
                 >
                   {/* Top accent line */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
@@ -510,7 +510,7 @@ function Reviews() {
                   type="button"
                   onClick={() => goTo(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
+                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
                   aria-label="Previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -532,8 +532,8 @@ function Reviews() {
                       aria-current={item === currentPage ? "page" : undefined}
                       className={
                         item === currentPage
-                          ? "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-amber/60 bg-gradient-to-br from-amber/25 to-amber/10 px-3 text-sm font-bold text-amber shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--amber)_70%,transparent)]"
-                          : "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-border bg-card/40 px-3 text-sm font-semibold text-foreground/80 transition hover:border-amber/40 hover:bg-card/60 hover:text-foreground"
+                          ? "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-amber/60 bg-gradient-to-br from-amber/25 to-amber/10 px-3 text-sm font-bold text-amber shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--amber)_70%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          : "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-border bg-card/40 px-3 text-sm font-semibold text-foreground/80 transition hover:border-amber/40 hover:bg-card/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       }
                     >
                       {item}
@@ -544,7 +544,7 @@ function Reviews() {
                   type="button"
                   onClick={() => goTo(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
+                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
                   aria-label="Next page"
                 >
                   <span className="hidden sm:inline">Next</span>
@@ -574,7 +574,7 @@ function Reviews() {
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/products"
-              className="rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground"
+              className="rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Browse catalogue →
             </Link>
@@ -582,7 +582,7 @@ function Reviews() {
               href={CONTACT.WA_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-foreground"
+              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Contact us →
             </a>
