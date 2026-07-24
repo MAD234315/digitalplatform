@@ -96,6 +96,7 @@ function LeaveReviewButton() {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [loadCount, setLoadCount] = useState(0);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const qc = useQueryClient();
 
   const refreshReviews = async () => {
