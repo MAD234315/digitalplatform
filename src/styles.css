@@ -411,3 +411,8 @@ input[type="search"]::-webkit-search-decoration {
     animation: none !important;
   }
 }
+
+/* Prevent horizontal layout shift when Radix Dialog locks body scroll. */
+html {
+  scrollbar-gutter: stable;
+}
