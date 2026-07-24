@@ -109,10 +109,11 @@ function Reviews() {
               href="https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform?usp=header"
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] hover:bg-card"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              Leave a review →
+              ★ Leave a review
             </a>
+
           </div>
 
           {hasReviews ? (
