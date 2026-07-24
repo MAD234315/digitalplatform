@@ -104,11 +104,13 @@ function FAQPage() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow="Frequently asked questions"
         title="Everything you need"
         titleAccent="to know before purchasing."
         lede={<>Answers to the most common questions about our digital products, subscriptions, delivery, warranty, and support. Can&apos;t find what you&apos;re looking for? Message us — we usually reply within minutes.</>}
       />
+
 
       <FilterBar
         categories={CATEGORIES}
@@ -123,7 +125,7 @@ function FAQPage() {
       />
 
       {/* Accordion list */}
-      <section id="faq-group-all" className="mx-auto max-w-5xl px-6 lg:px-10 py-14 scroll-mt-[160px] sm:scroll-mt-[180px]">
+      <section id="faq-group-all" className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 py-8 sm:py-10 scroll-mt-[160px] sm:scroll-mt-[180px]">
         <ErrorBoundary boundary="faq:list" resetKeys={[active, q]}>
           {filtered.length === 0 ? (
             <div className="py-24 text-center text-muted-foreground">
@@ -138,19 +140,20 @@ function FAQPage() {
                 .filter((g) => g.items.length > 0);
               let idx = 0;
               return (
-                <div className="space-y-14">
+                <div className="space-y-8 sm:space-y-10">
                   {groups.map((g) => (
                     <div key={g.cat} id={`faq-group-${slugifyCat(g.cat)}`} className="scroll-mt-[180px] sm:scroll-mt-[200px]">
-                      <div id={`faq-heading-${slugifyCat(g.cat)}`} className="mb-5 flex items-center gap-4 pl-4 border-l-2 border-[color:var(--amber)] scroll-mt-[180px] sm:scroll-mt-[200px]">
-                        <h2 className="font-display text-2xl sm:text-3xl leading-tight">
+                      <div id={`faq-heading-${slugifyCat(g.cat)}`} className="mb-3 flex items-center gap-3 pl-3 border-l-2 border-[color:var(--amber)] scroll-mt-[180px] sm:scroll-mt-[200px]">
+                        <h2 className="font-display text-xl sm:text-2xl leading-tight">
                           <span className="text-headline">{g.cat}</span>
                         </h2>
-                        <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                        <span className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                           {g.items.length} {g.items.length === 1 ? "question" : "questions"}
                         </span>
                         <span aria-hidden className="hidden sm:block flex-1 h-px bg-gradient-to-r from-[color:var(--amber)]/30 to-transparent" />
                       </div>
-                      <ul className="space-y-3.5">
+                      <ul className="space-y-2.5">
+
                         {g.items.map((f) => {
                           const i = idx++;
                           return (
@@ -174,33 +177,34 @@ function FAQPage() {
 
       {/* CTA */}
       <section className="border-t border-border bg-card/30">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 lg:py-28 text-center">
-          <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Still have questions?</div>
-          <h2 className="mt-4 font-display text-3xl sm:text-4xl">
+        <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 py-12 sm:py-16 text-center">
+          <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Still have questions?</div>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl">
             Can&apos;t find <em className="text-headline">the answer</em> you&apos;re looking for?
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-muted-foreground">
+          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
             Our support team is a message away — every day, limited hours.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-5 flex flex-wrap justify-center gap-2.5">
             <a
               href={`${CONTACT.WA_URL}?text=${encodeURIComponent(waPrefill)}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white"
+              className="rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-white"
               style={{ backgroundColor: "var(--whatsapp)" }}
             >
               💬 Chat on WhatsApp
             </a>
             <a
               href={`mailto:${CONTACT.EMAIL}`}
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em]"
+              className="rounded-full border border-border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em]"
             >
               📞 Email support
             </a>
           </div>
         </div>
       </section>
+
 
       
     </PageShell>
