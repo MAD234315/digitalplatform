@@ -1818,7 +1818,7 @@ function ProofsPanel() {
                   src={p.images[0].url}
                   alt=""
                   loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  className="h-full w-full object-cover"
                 />
               ) : (
                 <div className="grid h-full place-items-center text-xs text-muted-foreground">No image</div>

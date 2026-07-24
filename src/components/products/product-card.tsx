@@ -24,7 +24,7 @@ function LastUpdatedLine() {
       <span aria-hidden className="relative inline-flex h-1.5 w-1.5">
         <span
           className="absolute inset-0 rounded-full opacity-70"
-          style={{ backgroundColor: "var(--whatsapp)", animation: "ping 2s cubic-bezier(0,0,0.2,1) infinite" }}
+          style={{ backgroundColor: "var(--whatsapp)" }}
         />
         <span className="relative inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--whatsapp)" }} />
       </span>
@@ -76,10 +76,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
           boxShadow: "0 0 18px -4px rgba(244,183,64,0.5), 0 0 0 1px rgba(244,183,64,0.35)",
         }}
       >
-        <span className="relative inline-flex h-1.5 w-1.5">
-          <span className="absolute inset-0 rounded-full bg-black/70" style={{ animation: "ping 1.8s cubic-bezier(0,0,0.2,1) infinite" }} />
-          <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-black/80" />
-        </span>
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-black/80" />
         Limited Stock
       </span>
     );
@@ -92,10 +89,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
         boxShadow: "0 0 18px -4px rgba(34,197,94,0.55), 0 0 0 1px rgba(34,197,94,0.35)",
       }}
     >
-      <span className="relative inline-flex h-1.5 w-1.5">
-        <span className="absolute inset-0 rounded-full bg-white/90" style={{ animation: "ping 1.6s cubic-bezier(0,0,0.2,1) infinite" }} />
-        <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-white" />
-      </span>
+      <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
       Available Now
     </span>
   );
@@ -265,7 +259,7 @@ export const ProductCard = memo(function ProductCard({
             rel="noreferrer"
             onClick={() => onView?.(p)}
             aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-            className="group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            className="group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-colors"
             style={{
               background: "linear-gradient(135deg, #25d366 0%, #128c7e 100%)",
               boxShadow: "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)",

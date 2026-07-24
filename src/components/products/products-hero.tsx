@@ -171,7 +171,7 @@ function LiveStatusCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-6 sm:p-7 shadow-soft backdrop-blur-xl animate-fade-in"
+      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-6 sm:p-7 shadow-soft backdrop-blur-xl"
       aria-busy={isRefreshing}
       style={{
         backgroundImage:
@@ -253,7 +253,7 @@ function LiveStatusCard({
           className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
         >
           <div
-            className="h-full rounded-full transition-[width] duration-1000 ease-out"
+            className="h-full rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${barFilled ? inStockPct : 0}%`,
               background:

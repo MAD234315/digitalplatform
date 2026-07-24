@@ -187,7 +187,7 @@ function RootComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <QueryClientProvider client={queryClient}>
-      <div key={pathname} className="animate-fade-in">
+      <div key={pathname}>
         <Outlet />
       </div>
     </QueryClientProvider>

@@ -171,7 +171,7 @@ function ProofCard({ proof, onOpen }: { proof: ProofRecord; onOpen: () => void }
   const d = new Date(proof.createdAt);
   const [loaded, setLoaded] = useState(false);
   return (
-    <article className="group animate-[fadeIn_0.4s_ease-out_both] overflow-hidden rounded-2xl border border-amber/20 bg-card/70 shadow-sm transition hover:-translate-y-0.5 hover:border-amber/60 hover:shadow-gold">
+    <article className="group overflow-hidden rounded-2xl border border-amber/20 bg-card/70 shadow-sm transition-colors hover:border-amber/60 hover:shadow-gold">
       <button
         type="button"
         onClick={onOpen}
@@ -189,7 +189,7 @@ function ProofCard({ proof, onOpen }: { proof: ProofRecord; onOpen: () => void }
             decoding="async"
             draggable={false}
             onLoad={() => setLoaded(true)}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+            className="h-full w-full object-cover"
           />
         ) : (
           <div className="grid h-full place-items-center text-xs text-muted-foreground">No image</div>

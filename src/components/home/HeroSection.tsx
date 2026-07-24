@@ -36,13 +36,13 @@ function HeroContent() {
   return (
     <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-28 sm:pt-36 lg:pt-44 pb-16 sm:pb-20 lg:pb-24 text-center">
 
-      <div className="animate-rise">
+      <div>
         <LiveBadge>TRUSTED MARKETPLACE · SINCE 2020</LiveBadge>
       </div>
 
       <h1
         id="hero-heading"
-        className="animate-rise delay-1 mt-8 font-display text-balance text-[38px] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl"
+        className="mt-8 font-display text-balance text-[38px] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl"
       >
         Digital products
         <br className="hidden sm:block" />
@@ -52,20 +52,20 @@ function HeroContent() {
         <em className="italic text-headline">at prices that make sense.</em>
       </h1>
 
-      <p className="animate-rise delay-2 mx-auto mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">
+      <p className="mx-auto mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">
         Explore premium subscriptions, AI tools, software licenses, gift cards and productivity
         solutions — all in one place. Catalogue refreshed daily, prices kept honest, support that
         actually replies.
       </p>
 
-      <div className="animate-rise delay-3 mt-10 flex flex-col sm:flex-row justify-center gap-3">
+      <div className="mt-10 flex flex-col sm:flex-row justify-center gap-3">
         <CtaRouterLink to="/products">ENTER CATALOGUE</CtaRouterLink>
         <CtaRouterLink to="/contact" variant="outline">
           CONTACT US
         </CtaRouterLink>
       </div>
 
-      <div className="animate-rise delay-4">
+      <div>
         <ErrorBoundary boundary="home:hero-stats" fallback={<StatsRailStatic />}>
           <StatsRail />
         </ErrorBoundary>

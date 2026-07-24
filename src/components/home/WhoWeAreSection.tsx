@@ -13,7 +13,7 @@ export function WhoWeAreSection() {
             <Eyebrow>Who we are</Eyebrow>
             <div
               aria-hidden
-              className="mt-8 inline-flex h-16 w-16 items-center justify-center rounded-md font-display text-3xl transition-transform duration-500 hover:rotate-6 hover:scale-105"
+              className="mt-8 inline-flex h-16 w-16 items-center justify-center rounded-md font-display text-3xl"
               style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
             >
               D

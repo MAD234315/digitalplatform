@@ -343,7 +343,7 @@ export function ProductsFilterBar({
 
           {showList && (
             <div
-              className="animate-fade-in absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-border/70 bg-popover/85 text-popover-foreground shadow-2xl ring-1 ring-black/10 backdrop-blur-xl supports-[backdrop-filter]:bg-popover/70"
+              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-border/70 bg-popover/85 text-popover-foreground shadow-2xl ring-1 ring-black/10 backdrop-blur-xl supports-[backdrop-filter]:bg-popover/70"
             >
               <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 pt-3 pb-2 bg-inherit backdrop-blur-xl">
                 <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">

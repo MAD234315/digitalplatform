@@ -63,7 +63,7 @@ export function FilterBar<T extends string>({
                 {isActive && (
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute left-1/2 -bottom-[7px] h-[3px] w-8 -translate-x-1/2 rounded-full animate-[fade-in_240ms_ease-out]"
+                    className="pointer-events-none absolute left-1/2 -bottom-[7px] h-[3px] w-8 -translate-x-1/2 rounded-full"
                     style={{ backgroundColor: "var(--amber)" }}
                   />
                 )}
