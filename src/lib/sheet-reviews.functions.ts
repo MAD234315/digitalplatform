@@ -217,6 +217,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
       const rawDate = iDate >= 0 ? s(row[iDate]).trim() : "";
 
+      const when = parseWhen(rawDate);
       reviews.push({
         id: `r-${r}`,
         name,
@@ -225,10 +226,11 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         product: s(row[iProduct]).trim(),
         body,
         date: rawDate,
+        formattedDate: Number.isFinite(when) ? formatReadableDate(when) : rawDate,
         tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
         liked: iLiked >= 0 ? s(row[iLiked]).trim() : "",
         _row: r,
-        _when: parseWhen(rawDate),
+        _when: when,
       });
     }
 
