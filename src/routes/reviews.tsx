@@ -396,13 +396,12 @@ function Reviews() {
           ) : null}
 
           {!hasReviews ? (
-          ) : (
             <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
               <div className="text-sm text-muted-foreground">
                 No reviews yet. Be the first to share your experience on WhatsApp.
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 
