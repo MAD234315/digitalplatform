@@ -164,7 +164,25 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["likedmost", "whatdidyoulike", "likeaboutdigital", "likeabout", "liked", "highlight", "favorite"],
     );
 
-    const reviews: SheetReview[] = [];
+    const parseWhen = (v: string): number => {
+      const t = v.trim();
+      if (!t) return -Infinity;
+      // Native parse first (handles ISO + US m/d/y hh:mm:ss — Google Forms default)
+      const n = Date.parse(t);
+      if (Number.isFinite(n)) return n;
+      // dd/mm/yyyy [hh:mm[:ss]] fallback
+      const m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if (m) {
+        const [, d, mo, y, hh = "0", mm = "0", ss = "0"] = m;
+        const year = Number(y) < 100 ? 2000 + Number(y) : Number(y);
+        const dt = new Date(year, Number(mo) - 1, Number(d), Number(hh), Number(mm), Number(ss));
+        const ms = dt.getTime();
+        if (Number.isFinite(ms)) return ms;
+      }
+      return -Infinity;
+    };
+
+    const reviews: (SheetReview & { _row: number; _when: number })[] = [];
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
       const name = s(row[iName]).trim();
@@ -178,6 +196,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
 
       const ratingRaw = Number(s(row[iRating]).trim() || "5");
       const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
+      const rawDate = iDate >= 0 ? s(row[iDate]).trim() : "";
 
       reviews.push({
         id: `r-${r}`,
@@ -186,22 +205,19 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         rating,
         product: s(row[iProduct]).trim(),
         body,
-        date: s(row[iDate]).trim(),
+        date: rawDate,
         tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
         liked: iLiked >= 0 ? s(row[iLiked]).trim() : "",
+        _row: r,
+        _when: parseWhen(rawDate),
       });
     }
 
-    // Newest first: parse date/timestamp; unparseable go last, preserving sheet order
-    reviews.sort((a, b) => {
-      const ta = Date.parse(a.date);
-      const tb = Date.parse(b.date);
-      const va = Number.isFinite(ta) ? ta : -Infinity;
-      const vb = Number.isFinite(tb) ? tb : -Infinity;
-      return vb - va;
-    });
+    // Newest first: parsed date desc, then sheet row desc (later submissions last)
+    reviews.sort((a, b) => (b._when - a._when) || (b._row - a._row));
+    const clean: SheetReview[] = reviews.map(({ _row, _when, ...rest }) => rest);
 
-    return { reviews, fetchedAt: new Date().toISOString(), configured: true };
+    return { reviews: clean, fetchedAt: new Date().toISOString(), configured: true };
   } catch (e) {
     console.error("[getSheetReviews] load failed:", e);
     return {
