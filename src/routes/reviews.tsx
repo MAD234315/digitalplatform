@@ -334,6 +334,68 @@ function Reviews() {
                 );
               })}
             </div>
+          ) : null}
+
+          {hasReviews && totalPages > 1 ? (
+            <nav
+              aria-label="Reviews pagination"
+              className="mt-12 flex flex-col items-center gap-4"
+            >
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                Page {currentPage} of {totalPages} · Showing{" "}
+                {(currentPage - 1) * PER_PAGE + 1}–
+                {Math.min(currentPage * PER_PAGE, reviews.length)} of {reviews.length}
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => goTo(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Prev</span>
+                </button>
+                {buildPageList(currentPage, totalPages).map((item, i) =>
+                  item === "…" ? (
+                    <span
+                      key={`gap-${i}`}
+                      className="px-1 text-xs text-muted-foreground select-none"
+                    >
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => goTo(item)}
+                      aria-current={item === currentPage ? "page" : undefined}
+                      className={
+                        item === currentPage
+                          ? "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-amber/60 bg-gradient-to-br from-amber/25 to-amber/10 px-3 text-sm font-bold text-amber shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--amber)_70%,transparent)]"
+                          : "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-border bg-card/40 px-3 text-sm font-semibold text-foreground/80 transition hover:border-amber/40 hover:bg-card/60 hover:text-foreground"
+                      }
+                    >
+                      {item}
+                    </button>
+                  ),
+                )}
+                <button
+                  type="button"
+                  onClick={() => goTo(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
+                  aria-label="Next page"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </nav>
+          ) : null}
+
+          {!hasReviews ? (
           ) : (
             <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
               <div className="text-sm text-muted-foreground">
