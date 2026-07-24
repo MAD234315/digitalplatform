@@ -56,8 +56,8 @@ export function CategoriesSection() {
         }}
       />
 
-      <div className="relative mx-auto max-w-6xl px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
-        <div className="grid min-w-0 gap-8 lg:grid-cols-12 lg:gap-10">
+      <div className="relative mx-auto max-w-6xl px-5 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-14">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-12 lg:gap-8">
           <Reveal className="min-w-0 lg:col-span-4">
             <div className="flex min-w-0 flex-col items-start">
 
@@ -75,7 +75,7 @@ export function CategoriesSection() {
             </div>
             <h2
               id="cat-heading"
-              className="mt-4 font-display text-3xl sm:text-4xl leading-[1.1] tracking-tight"
+              className="mt-3 font-display text-2xl sm:text-3xl leading-[1.1] tracking-tight"
             >
               Twelve worlds,{" "}
               <span
@@ -90,7 +90,7 @@ export function CategoriesSection() {
                 one shelf.
               </span>
             </h2>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
               A wide range of{" "}
               <span className="font-medium text-amber/90">digital products</span>{" "}
               across categories — catalogue{" "}

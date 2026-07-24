@@ -253,7 +253,7 @@ function Products() {
 
 
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 lg:py-16">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10">
         {data.rateLimited && data.products.length > 0 && (
           <div className="mb-6 rounded-xl border border-amber/40 bg-amber/10 p-4 text-sm">
             Showing cached catalogue — the live sheet is temporarily rate-limited. Fresh data will resume automatically.
@@ -355,7 +355,7 @@ function Products() {
           </ErrorBoundary>
         )}
 
-        <p className="mt-16 text-center text-xs text-muted-foreground">
+        <p className="mt-10 text-center text-xs text-muted-foreground">
           Prices depend on stock &amp; demand — <span className="font-medium text-foreground">contact admin for detailed info.</span>
         </p>
       </div>

@@ -37,11 +37,12 @@ function ProofGalleryPage() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow="Trust & transparency"
         title="Proof Gallery"
         lede="Verified screenshots of orders delivered, customer chats and delivery confirmations."
       />
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24 proof-protect">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-12 sm:pb-16 proof-protect">
         <Suspense fallback={<GallerySkeleton />}>
           <Gallery />
         </Suspense>
@@ -128,7 +129,7 @@ function Gallery() {
 
   if (proofs.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
+      <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
         No proofs published yet. Check back soon.
       </div>
     );
