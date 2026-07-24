@@ -419,7 +419,7 @@ function Reviews() {
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/30 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/50 hover:ring-amber/40 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] focus-within:border-amber/50 focus-within:ring-amber/40 focus-within:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
                 >
                   {/* Top accent line */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
