@@ -199,10 +199,14 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber/50 bg-gradient-to-r from-amber/15 via-amber/10 to-transparent px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
+              <span className="relative flex h-2 w-2" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-amber" />
+              </span>
               Latest reviews shown first
             </div>
+
 
           ) : null}
 
