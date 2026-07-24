@@ -220,10 +220,10 @@ function ReviewsSkeleton() {
       <section className="relative overflow-hidden border-b border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-20 sm:py-28 lg:py-36">
           <div className="max-w-3xl">
-            <div className="mb-5 h-4 w-32 animate-pulse rounded-full bg-white/10" />
-            <div className="mb-4 h-10 sm:h-12 w-3/4 animate-pulse rounded-lg bg-white/10" />
-            <div className="mb-3 h-4 w-full animate-pulse rounded bg-white/5" />
-            <div className="h-4 w-2/3 animate-pulse rounded bg-white/5" />
+            <div className="mb-5 h-4 w-32 animate-pulse rounded-full bg-muted/50" />
+            <div className="mb-4 h-10 sm:h-12 w-3/4 animate-pulse rounded-lg bg-muted/50" />
+            <div className="mb-3 h-4 w-full animate-pulse rounded bg-muted/30" />
+            <div className="h-4 w-2/3 animate-pulse rounded bg-muted/30" />
           </div>
         </div>
       </section>
@@ -233,67 +233,67 @@ function ReviewsSkeleton() {
           {/* Header skeleton */}
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div className="space-y-3">
-              <div className="h-3 w-24 animate-pulse rounded bg-white/10" />
+              <div className="h-3 w-24 animate-pulse rounded bg-muted/50" />
               <div className="flex items-center gap-4">
-                <div className="h-14 w-20 animate-pulse rounded-lg bg-white/10" />
+                <div className="h-14 w-20 animate-pulse rounded-lg bg-muted/50" />
                 <div className="space-y-2">
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="h-4 w-4 rounded bg-white/10" />
+                      <div key={i} className="h-4 w-4 rounded bg-muted/50" />
                     ))}
                   </div>
-                  <div className="h-2.5 w-16 animate-pulse rounded bg-white/5" />
+                  <div className="h-2.5 w-16 animate-pulse rounded bg-muted/30" />
                 </div>
               </div>
             </div>
-            <div className="h-11 w-40 animate-pulse rounded-full bg-white/10" />
+            <div className="h-11 w-40 animate-pulse rounded-full bg-muted/50" />
           </div>
 
           {/* "Latest reviews" badge skeleton */}
-          <div className="mb-6 h-7 w-56 animate-pulse rounded-full bg-white/10" />
+          <div className="mb-6 h-7 w-56 animate-pulse rounded-full bg-muted/50" />
 
           {/* Skeleton card grid */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 sm:gap-y-10 lg:gap-x-10 lg:gap-y-14">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-card/30 p-5 sm:p-6"
+                className="relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card/40 p-6"
               >
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
-                <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-border" />
+                <div className="mb-5 flex items-center justify-between gap-3">
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, j) => (
-                      <div key={j} className="h-4 w-4 rounded bg-white/10" />
+                      <div key={j} className="h-4 w-4 rounded bg-muted/50" />
                     ))}
                   </div>
-                  <div className="h-2.5 w-20 animate-pulse rounded bg-white/10" />
+                  <div className="h-2.5 w-20 animate-pulse rounded bg-muted/50" />
                 </div>
 
-                <div className="mb-6 sm:mb-8 flex-1 space-y-3">
-                  <div className="h-5 sm:h-6 w-full animate-pulse rounded bg-white/10" />
-                  <div className="h-5 sm:h-6 w-5/6 animate-pulse rounded bg-white/10" />
-                  <div className="h-5 sm:h-6 w-4/6 animate-pulse rounded bg-white/5" />
+                <div className="mb-6 flex-1 space-y-3">
+                  <div className="h-5 sm:h-6 w-full animate-pulse rounded bg-muted/50" />
+                  <div className="h-5 sm:h-6 w-5/6 animate-pulse rounded bg-muted/50" />
+                  <div className="h-5 sm:h-6 w-4/6 animate-pulse rounded bg-muted/30" />
                 </div>
 
-                <div className="mb-5 sm:mb-6 flex flex-wrap items-center gap-3">
-                  <div className="h-10 w-10 animate-pulse rounded-full bg-white/10" />
+                <div className="mb-5 flex flex-wrap items-center gap-3">
+                  <div className="h-10 w-10 animate-pulse rounded-full bg-muted/50" />
                   <div className="min-w-0 flex-1 space-y-2">
-                    <div className="h-3 w-28 animate-pulse rounded bg-white/10" />
-                    <div className="h-2.5 w-20 animate-pulse rounded bg-white/5" />
+                    <div className="h-3 w-28 animate-pulse rounded bg-muted/50" />
+                    <div className="h-2.5 w-20 animate-pulse rounded bg-muted/30" />
                   </div>
-                  <div className="h-6 w-20 animate-pulse rounded-full bg-white/10" />
+                  <div className="h-6 w-20 animate-pulse rounded-full bg-muted/50" />
                 </div>
 
-                <div className="space-y-4 border-t border-border/40 pt-5">
+                <div className="space-y-4 border-t border-border/60 pt-5">
                   <div className="space-y-2">
-                    <div className="h-2 w-20 animate-pulse rounded bg-white/10" />
-                    <div className="h-3 w-full animate-pulse rounded bg-white/5" />
+                    <div className="h-2 w-20 animate-pulse rounded bg-muted/50" />
+                    <div className="h-3 w-full animate-pulse rounded bg-muted/30" />
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="h-8 w-8 animate-pulse rounded bg-white/10" />
+                    <div className="h-8 w-8 animate-pulse rounded bg-muted/50" />
                     <div className="min-w-0 flex-1 space-y-2">
-                      <div className="h-2 w-20 animate-pulse rounded bg-white/10" />
-                      <div className="h-3 w-3/4 animate-pulse rounded bg-white/5" />
+                      <div className="h-2 w-20 animate-pulse rounded bg-muted/50" />
+                      <div className="h-3 w-3/4 animate-pulse rounded bg-muted/30" />
                     </div>
                   </div>
                 </div>
@@ -303,12 +303,12 @@ function ReviewsSkeleton() {
 
           {/* Pagination skeleton */}
           <div className="mt-12 flex flex-col items-center gap-4">
-            <div className="h-3 w-48 animate-pulse rounded bg-white/10" />
+            <div className="h-3 w-48 animate-pulse rounded bg-muted/50" />
             <div className="flex flex-wrap items-center justify-center gap-2">
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-10 w-10 animate-pulse rounded-full bg-white/10"
+                  className="h-10 w-10 animate-pulse rounded-full bg-muted/50"
                 />
               ))}
             </div>
@@ -319,17 +319,18 @@ function ReviewsSkeleton() {
       {/* CTA skeleton */}
       <section className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 text-center">
-          <div className="mx-auto mb-4 h-3 w-24 animate-pulse rounded bg-white/10" />
-          <div className="mx-auto mb-8 h-10 w-3/4 max-w-xl animate-pulse rounded-lg bg-white/10" />
+          <div className="mx-auto mb-4 h-3 w-24 animate-pulse rounded bg-muted/50" />
+          <div className="mx-auto mb-8 h-10 w-3/4 max-w-xl animate-pulse rounded-lg bg-muted/50" />
           <div className="flex flex-wrap justify-center gap-3">
-            <div className="h-11 w-44 animate-pulse rounded-full bg-white/10" />
-            <div className="h-11 w-44 animate-pulse rounded-full bg-white/10" />
+            <div className="h-11 w-44 animate-pulse rounded-full bg-muted/50" />
+            <div className="h-11 w-44 animate-pulse rounded-full bg-muted/50" />
           </div>
         </div>
       </section>
     </PageShell>
   );
 }
+
 
 
 function Reviews() {
@@ -418,17 +419,16 @@ function Reviews() {
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] via-card/60 to-black/30 p-5 sm:p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] ring-1 ring-white/5 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/20 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/90 via-card/70 to-card/50 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_80%,transparent)] ring-1 ring-border/60 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/20 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
                 >
                   {/* Top accent line */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
                   {/* Decorative amber glow */}
                   <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" />
 
-
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
-                    <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+                    <div className="mb-5 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
                         <span className="shrink-0 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -438,13 +438,12 @@ function Reviews() {
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote mb-6 sm:mb-8 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
+                    <blockquote className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
-
                     {/* Reviewer Identity */}
-                    <div className="mb-5 sm:mb-6 flex flex-wrap items-center gap-3">
+                    <div className="mb-5 flex flex-wrap items-center gap-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
                         aria-hidden
@@ -464,9 +463,8 @@ function Reviews() {
                       ) : null}
                     </div>
 
-
                     {/* Footer Details: Liked Most / Purchased */}
-                    <div className="space-y-4 border-t border-border/40 pt-5">
+                    <div className="space-y-4 border-t border-border/60 pt-5">
                       {r.liked ? (
                         <div className="flex flex-col">
                           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
