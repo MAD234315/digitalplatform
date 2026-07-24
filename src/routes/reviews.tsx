@@ -264,7 +264,7 @@ function ReviewsSkeleton() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="relative flex flex-col overflow-hidden border border-border bg-card p-8 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                className="relative flex flex-col overflow-hidden border border-border bg-card p-5 sm:p-6 shadow-[0_14px_36px_rgba(0,0,0,0.45)]"
               >
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-border" />
                 <div className="mb-5 flex items-center justify-between gap-3">
