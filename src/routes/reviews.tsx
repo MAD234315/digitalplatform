@@ -431,7 +431,7 @@ function Reviews() {
                     <div className="mb-5 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
-                        <span className="shrink-0 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70">
                           {r.formattedDate}
                         </span>
                       ) : null}
@@ -445,7 +445,7 @@ function Reviews() {
                     {/* Reviewer Identity */}
                     <div className="mb-5 flex flex-wrap items-center gap-3">
                       <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-gradient-to-br from-muted via-card/80 to-card text-xs font-semibold text-foreground shadow-sm shadow-amber/10"
                         aria-hidden
                       >
                         {initials(r.name)}
@@ -453,36 +453,36 @@ function Reviews() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-foreground">{r.name}</p>
                         {r.location ? (
-                          <p className="truncate text-xs text-muted-foreground">{r.location}</p>
+                          <p className="truncate text-xs font-medium text-foreground/70">{r.location}</p>
                         ) : null}
                       </div>
                       {r.tenure ? (
-                        <span className="shrink-0 rounded-full border border-amber/20 bg-amber/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber">
+                        <span className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
                           {r.tenure} customer
                         </span>
                       ) : null}
                     </div>
 
                     {/* Footer Details: Liked Most / Purchased */}
-                    <div className="space-y-4 border-t border-border/60 pt-5">
+                    <div className="space-y-4 border-t border-border/80 pt-5">
                       {r.liked ? (
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                             Liked Most
                           </span>
-                          <span className="text-sm text-foreground/90">{r.liked}</span>
+                          <span className="text-sm font-medium text-foreground">{r.liked}</span>
                         </div>
                       ) : null}
                       {r.product ? (
                         <div className="flex items-start gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/50 border border-border">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10">
                             <span className="text-[10px] text-amber">★</span>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                               Purchased
                             </span>
-                            <p className="text-sm font-medium text-foreground/90 transition group-hover:text-amber">
+                            <p className="text-sm font-semibold text-foreground transition group-hover:text-amber">
                               {r.product}
                             </p>
                           </div>
