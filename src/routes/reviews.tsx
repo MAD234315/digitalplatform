@@ -264,7 +264,7 @@ function ReviewsSkeleton() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card/40 p-6"
+                className="relative flex flex-col overflow-hidden border border-border bg-card p-8 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
               >
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-border" />
                 <div className="mb-5 flex items-center justify-between gap-3">
@@ -459,20 +459,26 @@ function Reviews() {
                 <li key={r.id} className="contents">
                 <article
                   aria-label={`Review by ${r.name}${r.location ? `, ${r.location}` : ""}, rated ${r.rating} out of 5${r.product ? `, for ${r.product}` : ""}`}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/50 hover:ring-amber/40 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] focus-within:border-amber/50 focus-within:ring-amber/40 focus-within:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
+                  className="group relative flex flex-col overflow-hidden border border-border bg-card p-8 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500 hover:border-amber/50 hover:shadow-[0_28px_60px_-10px_color-mix(in_oklab,var(--amber)_25%,rgba(0,0,0,0.6))] focus-within:border-amber/50"
                 >
-                  {/* Top accent line */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" aria-hidden />
-                  {/* Decorative amber glow */}
-                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" aria-hidden />
+                  {/* Regal corner glow */}
+                  <div
+                    className="pointer-events-none absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-amber/10 to-transparent"
+                    aria-hidden
+                  />
+                  {/* Top hairline on hover */}
+                  <div
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    aria-hidden
+                  />
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
-                    <div className="mb-5 flex items-center justify-between gap-3">
+                    <div className="mb-6 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
                         <span
-                          className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70"
+                          className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber"
                           aria-label={`Reviewed on ${r.formattedDate}`}
                         >
                           {r.formattedDate}
@@ -482,28 +488,56 @@ function Reviews() {
 
                     {/* Main Quote */}
                     <blockquote
-                      className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground"
+                      className="mb-8 flex-1 text-lg leading-relaxed italic text-foreground/90"
                       aria-label="Review quote"
                     >
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
-                    {/* Reviewer Identity */}
-                    <div className="mb-5 flex flex-wrap items-center gap-3">
+                    {/* Liked Most / Purchased */}
+                    {(r.liked || r.product) ? (
+                      <dl className="mb-6 space-y-3">
+                        {r.liked ? (
+                          <div>
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber/80">
+                              Liked Most
+                            </dt>
+                            <dd className="mt-1 text-sm text-foreground/80">{r.liked}</dd>
+                          </div>
+                        ) : null}
+                        {r.product ? (
+                          <div>
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber/80">
+                              Purchased
+                            </dt>
+                            <dd className="mt-1 text-sm font-semibold text-foreground transition group-hover:text-amber">
+                              {r.product}
+                            </dd>
+                          </div>
+                        ) : null}
+                      </dl>
+                    ) : null}
+
+                    {/* Author Section */}
+                    <div className="flex items-center gap-4 border-t border-border pt-6">
                       <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-gradient-to-br from-muted via-card/80 to-card text-xs font-semibold text-foreground shadow-sm shadow-amber/10"
+                        className="h-12 w-12 shrink-0 rounded-full bg-gradient-to-tr from-amber to-muted p-[1px]"
                         role="img"
                         aria-label={`Avatar for ${r.name}`}
                       >
-                        <span aria-hidden>{initials(r.name)}</span>
+                        <div className="flex h-full w-full items-center justify-center rounded-full bg-card">
+                          <span className="text-sm font-bold text-amber" aria-hidden>
+                            {initials(r.name)}
+                          </span>
+                        </div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground">
+                        <h4 className="truncate text-base font-bold tracking-tight text-foreground">
                           <span className="sr-only">Reviewer: </span>
                           {r.name}
-                        </p>
+                        </h4>
                         {r.location ? (
-                          <p className="truncate text-xs font-medium text-foreground/70">
+                          <p className="truncate text-xs font-medium uppercase tracking-[0.2em] text-amber">
                             <span className="sr-only">Location: </span>
                             {r.location}
                           </p>
@@ -511,43 +545,13 @@ function Reviews() {
                       </div>
                       {r.tenure ? (
                         <span
-                          className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]"
+                          className="shrink-0 border border-amber/40 bg-amber/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-amber"
                           aria-label={`Customer for ${r.tenure}`}
                         >
-                          {r.tenure} customer
+                          {r.tenure}
                         </span>
                       ) : null}
                     </div>
-
-                    {/* Footer Details: Liked Most / Purchased */}
-                    <dl className="space-y-4 border-t border-border/80 pt-5">
-                      {r.liked ? (
-                        <div className="flex flex-col">
-                          <dt className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
-                            Liked Most
-                          </dt>
-                          <dd className="text-sm font-medium text-foreground">{r.liked}</dd>
-                        </div>
-                      ) : null}
-                      {r.product ? (
-                        <div className="flex items-start gap-2">
-                          <div
-                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10"
-                            aria-hidden
-                          >
-                            <span className="text-[10px] text-amber">★</span>
-                          </div>
-                          <div className="min-w-0">
-                            <dt className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
-                              Purchased
-                            </dt>
-                            <dd className="text-sm font-semibold text-foreground transition group-hover:text-amber">
-                              {r.product}
-                            </dd>
-                          </div>
-                        </div>
-                      ) : null}
-                    </dl>
                   </div>
                 </article>
                 </li>
