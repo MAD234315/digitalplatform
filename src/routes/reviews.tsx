@@ -46,6 +46,8 @@ export const Route = createFileRoute("/reviews")({
     }),
   loader: ({ context }) => context.queryClient.ensureQueryData(reviewsQueryOptions),
   component: Reviews,
+  pendingComponent: DefaultPendingComponent,
+  pendingMs: 0,
 });
 
 function Stars({ n }: { n: number }) {
