@@ -54,15 +54,15 @@ function Stat({
   return (
     <div className="text-center">
       <div
-        className="font-display text-3xl sm:text-5xl lg:text-6xl leading-none tracking-tight"
+        className="font-display text-4xl sm:text-6xl lg:text-7xl leading-none tracking-tight"
         style={{ color: "var(--amber)" }}
       >
         {display}
         <span>{suffix}</span>
       </div>
-      <div className="mt-2 text-sm sm:text-base text-foreground font-medium">{label}</div>
+      <div className="mt-3 text-base sm:text-lg text-foreground font-medium">{label}</div>
       {sublabel ? (
-        <div className="mt-1 text-xs sm:text-sm text-muted-foreground">{sublabel}</div>
+        <div className="mt-1 text-sm text-muted-foreground">{sublabel}</div>
       ) : null}
     </div>
   );
@@ -97,7 +97,7 @@ export function StatsCounterSection() {
     <section aria-labelledby="stats-heading" className="cv-auto border-t border-border">
       <div
         ref={ref}
-        className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-14 lg:py-16"
+        className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24"
       >
         <h2 id="stats-heading" className="sr-only">
           Our numbers
@@ -122,7 +122,7 @@ export function StatsCounterSection() {
           </div>
         </Reveal>
         <Reveal>
-          <p className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="mt-10 sm:mt-12 text-center text-sm sm:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Trusted by customers across the{" "}
             <span className="text-foreground font-medium">
               USA, UK, Canada, UAE, Kuwait, Malaysia, Singapore, Australia, Ireland&nbsp;

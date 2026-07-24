@@ -6,14 +6,14 @@ import { REASONS, type Reason } from "./data";
 export function ReasonsSection() {
   return (
     <section aria-labelledby="why-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-14 lg:py-16">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
         <Reveal className="max-w-3xl">
           <Eyebrow>Why choose us</Eyebrow>
-          <h2 id="why-heading" className="mt-3 font-display text-2xl sm:text-3xl">
+          <h2 id="why-heading" className="mt-4 font-display text-3xl sm:text-4xl">
             Six reasons the return <em className="italic text-headline">customers come back.</em>
           </h2>
         </Reveal>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {REASONS.map((r, i) => (
             <Reveal key={r.n} delay={Math.min(i * 70, 350)}>
               <TiltCard className="h-full">
@@ -29,7 +29,7 @@ export function ReasonsSection() {
 
 function ReasonCard({ reason }: { reason: Reason }) {
   return (
-    <article className="group relative h-full overflow-hidden rounded-sm border border-border bg-card/40 p-5 hover-glow hover:border-amber/40 hover:bg-card/70">
+    <article className="group relative h-full overflow-hidden rounded-sm border border-border bg-card/40 p-6 hover-glow hover:border-amber/40 hover:bg-card/70">
       <span
         aria-hidden
         className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-500 group-hover:opacity-100"
@@ -39,8 +39,8 @@ function ReasonCard({ reason }: { reason: Reason }) {
         }}
       />
       <AccentTile className="relative">{reason.n}</AccentTile>
-      <h3 className="relative mt-4 font-display text-lg sm:text-xl">{reason.title}</h3>
-      <p className="relative mt-2 text-sm text-muted-foreground leading-relaxed">{reason.body}</p>
+      <h3 className="relative mt-5 font-display text-2xl">{reason.title}</h3>
+      <p className="relative mt-3 text-sm text-muted-foreground leading-relaxed">{reason.body}</p>
     </article>
   );
 }

@@ -7,8 +7,8 @@ import { Reveal } from "@/components/reveal";
 export function WhoWeAreSection() {
   return (
     <section aria-labelledby="who-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-14 lg:py-16">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-10">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
           <Reveal className="lg:col-span-4">
             <Eyebrow>Who we are</Eyebrow>
             <div
@@ -20,21 +20,21 @@ export function WhoWeAreSection() {
             </div>
           </Reveal>
           <Reveal className="lg:col-span-8" delay={120}>
-            <h2 id="who-heading" className="font-display text-2xl sm:text-3xl">
+            <h2 id="who-heading" className="font-display text-3xl sm:text-4xl">
               A trusted marketplace for <em className="italic text-headline">premium digital tools.</em>
             </h2>
-            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+            <p className="mt-6 text-muted-foreground leading-relaxed">
               Digital Platform is a trusted marketplace for premium digital products and AI tools.
               Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
               productivity software, creative tools and digital services — at affordable prices.
             </p>
-            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+            <p className="mt-4 text-muted-foreground leading-relaxed">
               Our mission is simple: make premium digital services more accessible while delivering
               reliable customer support and a smooth buying experience.
             </p>
 
             <div
-              className="mission-card mt-6 rounded-sm border bg-card/60 p-5 sm:p-6"
+              className="mission-card mt-10 rounded-sm border bg-card/60 p-6 sm:p-8"
               style={{
                 borderColor: "color-mix(in oklab, var(--amber) 40%, transparent)",
                 boxShadow: "0 0 0 1px color-mix(in oklab, var(--amber) 0%, transparent), 0 0 0 0 transparent",
@@ -64,14 +64,14 @@ export function WhoWeAreSection() {
               </div>
 
 
-              <p className="mt-3 font-display text-xl sm:text-2xl leading-snug">
+              <p className="mt-3 font-display text-2xl sm:text-3xl leading-snug">
 
                 Help normal people, creators, students, professionals, developers and businesses access
                 the digital tools they need — without paying unnecessary prices.
               </p>
               <Link
                 to="/products"
-                className="group mt-5 inline-flex items-center gap-2 rounded-sm px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] border transition-all duration-300 hover:brightness-110 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="group mt-7 inline-flex items-center gap-2 rounded-sm px-5 py-2.5 text-sm font-medium border transition-all duration-300 hover:brightness-110 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 style={{
                   backgroundColor: "var(--amber)",
                   color: "var(--amber-foreground)",
