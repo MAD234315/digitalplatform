@@ -165,6 +165,26 @@ function Reviews() {
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : "—";
 
+  const PER_PAGE = 10;
+  const totalPages = Math.max(1, Math.ceil(reviews.length / PER_PAGE));
+  const [page, setPage] = useState(1);
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
+  const currentPage = Math.min(page, totalPages);
+  const pagedReviews = useMemo(
+    () => reviews.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE),
+    [reviews, currentPage],
+  );
+  const goTo = (p: number) => {
+    const next = Math.min(Math.max(1, p), totalPages);
+    setPage(next);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+
   return (
     <PageShell>
       <PageHero
