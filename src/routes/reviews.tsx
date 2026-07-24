@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
