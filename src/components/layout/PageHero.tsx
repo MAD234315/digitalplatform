@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
  *
  * `size="wide"` widens the container to `max-w-7xl` for the products page;
  * default `narrow` matches the max-w-5xl editorial pages.
+ * `compact` reduces padding and type sizes for denser pages.
  */
 export function PageHero({
   eyebrow,
@@ -18,6 +19,7 @@ export function PageHero({
   lede,
   size = "narrow",
   aside,
+  compact,
 }: {
   eyebrow: string;
   title: ReactNode;
@@ -25,9 +27,13 @@ export function PageHero({
   lede?: ReactNode;
   size?: "narrow" | "wide";
   aside?: ReactNode;
+  compact?: boolean;
 }) {
-  const wrap =
-    size === "wide"
+  const wrap = compact
+    ? size === "wide"
+      ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-20 sm:pt-24 pb-8 sm:pb-10"
+      : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-20 pb-8 sm:pt-24 sm:pb-10 lg:pt-28 lg:pb-12"
+    : size === "wide"
       ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-28 sm:pt-32 pb-10 sm:pb-12"
       : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-28 pb-12 sm:pt-36 sm:pb-14 lg:pt-44 lg:pb-20";
 
@@ -37,12 +43,12 @@ export function PageHero({
         {aside ? (
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end">
             <div className="lg:col-span-8">
-              <HeroCopy eyebrow={eyebrow} title={title} titleAccent={titleAccent} lede={lede} />
+              <HeroCopy eyebrow={eyebrow} title={title} titleAccent={titleAccent} lede={lede} compact={compact} />
             </div>
             <div className="lg:col-span-4">{aside}</div>
           </div>
         ) : (
-          <HeroCopy eyebrow={eyebrow} title={title} titleAccent={titleAccent} lede={lede} />
+          <HeroCopy eyebrow={eyebrow} title={title} titleAccent={titleAccent} lede={lede} compact={compact} />
         )}
       </div>
     </section>
@@ -54,16 +60,18 @@ function HeroCopy({
   title,
   titleAccent,
   lede,
+  compact,
 }: {
   eyebrow: string;
   title: ReactNode;
   titleAccent?: ReactNode;
   lede?: ReactNode;
+  compact?: boolean;
 }) {
   return (
     <>
       <div className="text-xs uppercase tracking-[0.28em] text-muted-foreground whitespace-pre-wrap">{eyebrow}</div>
-      <h1 className="mt-6 font-display text-balance text-4xl sm:text-6xl lg:text-7xl leading-[1.02] sm:leading-[0.98]">
+      <h1 className={`mt-4 font-display text-balance leading-[1.02] sm:leading-[0.98] ${compact ? "text-3xl sm:text-4xl lg:text-5xl" : "text-4xl sm:text-6xl lg:text-7xl"}`}>
         {title}
         {titleAccent && (
           <>
@@ -73,7 +81,7 @@ function HeroCopy({
         )}
       </h1>
       {lede && (
-        <p className="mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">{lede}</p>
+        <p className={`max-w-2xl text-pretty text-muted-foreground leading-relaxed ${compact ? "mt-4 text-sm sm:text-base" : "mt-6 sm:mt-8 text-base sm:text-lg"}`}>{lede}</p>
       )}
     </>
   );
