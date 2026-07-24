@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
-import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar } from "lucide-react";
+import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2 } from "lucide-react";
 import { getSheetReviews } from "@/lib/sheet-reviews.functions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const TITLE = "Customer Reviews — Digital Platform";
 const DESC =
