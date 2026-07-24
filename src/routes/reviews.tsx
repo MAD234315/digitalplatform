@@ -260,45 +260,45 @@ function ReviewsSkeleton() {
           <div className="mb-6 h-7 w-56 animate-pulse rounded-full bg-muted/50" />
 
           {/* Skeleton card grid */}
-          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="relative flex flex-col overflow-hidden border border-border bg-card p-5 sm:p-6 shadow-[0_14px_36px_rgba(0,0,0,0.45)]"
+                className="relative flex flex-col overflow-hidden border border-border bg-card p-4 sm:p-5 shadow-[0_14px_36px_rgba(0,0,0,0.45)]"
               >
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-border" />
-                <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, j) => (
-                      <div key={j} className="h-4 w-4 rounded bg-muted/50" />
+                      <div key={j} className="h-3.5 w-3.5 rounded bg-muted/50" />
                     ))}
                   </div>
                   <div className="h-2.5 w-20 animate-pulse rounded bg-muted/50" />
                 </div>
 
-                <div className="mb-6 flex-1 space-y-3">
-                  <div className="h-5 sm:h-6 w-full animate-pulse rounded bg-muted/50" />
-                  <div className="h-5 sm:h-6 w-5/6 animate-pulse rounded bg-muted/50" />
-                  <div className="h-5 sm:h-6 w-4/6 animate-pulse rounded bg-muted/30" />
+                <div className="mb-4 flex-1 space-y-2.5">
+                  <div className="h-4 sm:h-[18px] w-full animate-pulse rounded bg-muted/50" />
+                  <div className="h-4 sm:h-[18px] w-5/6 animate-pulse rounded bg-muted/50" />
+                  <div className="h-4 sm:h-[18px] w-4/6 animate-pulse rounded bg-muted/30" />
                 </div>
 
-                <div className="mb-5 flex flex-wrap items-center gap-3">
-                  <div className="h-10 w-10 animate-pulse rounded-full bg-muted/50" />
-                  <div className="min-w-0 flex-1 space-y-2">
+                <div className="mb-3 flex flex-wrap items-center gap-2.5">
+                  <div className="h-8 w-8 animate-pulse rounded-full bg-muted/50" />
+                  <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="h-3 w-28 animate-pulse rounded bg-muted/50" />
                     <div className="h-2.5 w-20 animate-pulse rounded bg-muted/30" />
                   </div>
-                  <div className="h-6 w-20 animate-pulse rounded-full bg-muted/50" />
+                  <div className="h-5 w-20 animate-pulse rounded-full bg-muted/50" />
                 </div>
 
-                <div className="space-y-4 border-t border-border/80 pt-5">
-                  <div className="space-y-2">
+                <div className="space-y-3 border-t border-border/80 pt-3">
+                  <div className="space-y-1.5">
                     <div className="h-2 w-20 animate-pulse rounded bg-muted/50" />
                     <div className="h-3 w-full animate-pulse rounded bg-muted/30" />
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="h-8 w-8 animate-pulse rounded bg-muted/50" />
-                    <div className="min-w-0 flex-1 space-y-2">
+                    <div className="h-7 w-7 animate-pulse rounded bg-muted/50" />
+                    <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="h-2 w-20 animate-pulse rounded bg-muted/50" />
                       <div className="h-3 w-3/4 animate-pulse rounded bg-muted/30" />
                     </div>
