@@ -1,19 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
 import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar } from "lucide-react";
-import { getSheetReviews, type SheetReview } from "@/lib/sheet-reviews.functions";
+import { getSheetReviews } from "@/lib/sheet-reviews.functions";
 
 const TITLE = "Customer Reviews — Digital Platform";
 const DESC =
   "Real feedback from customers using Digital Platform for premium digital subscriptions, AI tools and software licenses.";
 
-const FALLBACK_REVIEWS: SheetReview[] = [];
+const reviewsQueryOptions = queryOptions({
+  queryKey: ["sheet-reviews"],
+  queryFn: () => getSheetReviews(),
+  staleTime: 60_000,
+});
 
 
 export const Route = createFileRoute("/reviews")({
@@ -39,6 +42,7 @@ export const Route = createFileRoute("/reviews")({
         },
       ],
     }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(reviewsQueryOptions),
   component: Reviews,
 });
 
@@ -57,11 +61,8 @@ function Stars({ n }: { n: number }) {
 }
 
 function Reviews() {
-  const fetchReviews = useServerFn(getSheetReviews);
   const { data } = useQuery({
-    queryKey: ["sheet-reviews"],
-    queryFn: () => fetchReviews(),
-    staleTime: 60_000,
+    ...reviewsQueryOptions,
     refetchInterval: 120_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
