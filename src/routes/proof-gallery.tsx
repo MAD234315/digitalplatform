@@ -189,7 +189,7 @@ function ProofCard({ proof, onOpen }: { proof: ProofRecord; onOpen: () => void }
             decoding="async"
             draggable={false}
             onLoad={() => setLoaded(true)}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+            className="h-full w-full object-cover"
           />
         ) : (
           <div className="grid h-full place-items-center text-xs text-muted-foreground">No image</div>
