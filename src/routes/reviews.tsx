@@ -366,13 +366,32 @@ function Reviews() {
     () => reviews.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE),
     [reviews, currentPage],
   );
+  const listRef = useRef<HTMLUListElement>(null);
+  const pendingFocusRef = useRef(false);
   const goTo = (p: number) => {
     const next = Math.min(Math.max(1, p), totalPages);
+    const changed = next !== currentPage;
     setPage(next);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    // After the new page renders, move keyboard focus to the top of the
+    // reviews list so screen-reader / keyboard users land on the fresh
+    // content instead of a pagination button that may have shifted.
+    if (changed) pendingFocusRef.current = true;
   };
+
+  useEffect(() => {
+    if (!pendingFocusRef.current) return;
+    pendingFocusRef.current = false;
+    const node = listRef.current;
+    if (!node) return;
+    // tabindex=-1 lets us programmatically focus a non-interactive element
+    // without adding it to the tab order.
+    node.setAttribute("tabindex", "-1");
+    node.focus({ preventScroll: false });
+  }, [currentPage]);
+
 
 
   return (
