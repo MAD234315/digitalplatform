@@ -18,13 +18,14 @@ function Terms() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow={"POLICIES\n\n"}
         title="Terms &amp;"
         titleAccent="Conditions."
         lede="By using Digital Platform or placing an order, you agree to the terms below. This page is maintained by the Digital Platform team and may be updated from time to time."
       />
       <section className="border-t border-border">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-16 space-y-10 text-muted-foreground leading-relaxed">
+        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-10 sm:py-12 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <Block title="Our products">
             Digital Platform is a marketplace for premium digital products, subscriptions, licenses, and gift cards. Products, plans, availability, and pricing may change based on stock and various conditions.
           </Block>
@@ -58,8 +59,8 @@ function Terms() {
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="font-display text-2xl text-foreground">{title}</h2>
-      <p className="mt-3">{children}</p>
+      <h2 className="font-display text-lg sm:text-xl text-foreground">{title}</h2>
+      <p className="mt-2">{children}</p>
     </div>
   );
 }

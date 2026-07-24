@@ -34,7 +34,7 @@ export function HeroSection() {
 
 function HeroContent() {
   return (
-    <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-28 sm:pt-36 lg:pt-44 pb-16 sm:pb-20 lg:pb-24 text-center">
+    <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-20 sm:pt-24 lg:pt-28 pb-10 sm:pb-14 lg:pb-16 text-center">
 
       <div>
         <LiveBadge>TRUSTED MARKETPLACE · SINCE 2020</LiveBadge>
@@ -42,7 +42,7 @@ function HeroContent() {
 
       <h1
         id="hero-heading"
-        className="mt-8 font-display text-balance text-[38px] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl"
+        className="mt-5 font-display text-balance text-[32px] leading-[1.0] sm:text-4xl md:text-5xl lg:text-6xl"
       >
         Digital products
         <br className="hidden sm:block" />
@@ -52,13 +52,13 @@ function HeroContent() {
         <em className="italic text-headline">at prices that make sense.</em>
       </h1>
 
-      <p className="mx-auto mt-6 sm:mt-8 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">
+      <p className="mx-auto mt-4 sm:mt-5 max-w-2xl text-pretty text-sm sm:text-base text-muted-foreground leading-relaxed">
         Explore premium subscriptions, AI tools, software licenses, gift cards and productivity
         solutions — all in one place. Catalogue refreshed daily, prices kept honest, support that
         actually replies.
       </p>
 
-      <div className="mt-10 flex flex-col sm:flex-row justify-center gap-3">
+      <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
         <CtaRouterLink to="/products">ENTER CATALOGUE</CtaRouterLink>
         <CtaRouterLink to="/contact" variant="outline">
           CONTACT US
@@ -112,14 +112,14 @@ function HeroFallback() {
  */
 function StatsRail() {
   return (
-    <dl className="mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-sm border border-border bg-border overflow-hidden max-w-4xl mx-auto">
+    <dl className="mt-10 sm:mt-12 grid grid-cols-2 md:grid-cols-4 gap-px rounded-sm border border-border bg-border overflow-hidden max-w-4xl mx-auto">
       {STATS.map((s) => (
         <div
           key={s.label}
-          className="group bg-background/60 p-5 sm:p-6 text-left transition-colors duration-300 hover:bg-background/90"
+          className="group bg-background/60 p-4 sm:p-5 text-left transition-colors duration-300 hover:bg-background/90"
         >
           <dt className="text-[10px] uppercase tracking-[0.20em] text-muted-foreground">{s.label}</dt>
-          <dd className="mt-2 font-display text-3xl sm:text-4xl text-foreground transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:text-amber">
+          <dd className="mt-1.5 font-display text-2xl sm:text-3xl text-foreground transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:text-amber">
             <CountUp value={s.value} />
           </dd>
         </div>
@@ -131,11 +131,11 @@ function StatsRail() {
 /** Motion-free stats rail — final numbers only, no CountUp animation. */
 function StatsRailStatic() {
   return (
-    <dl className="mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-sm border border-border bg-border overflow-hidden max-w-4xl mx-auto">
+    <dl className="mt-10 sm:mt-12 grid grid-cols-2 md:grid-cols-4 gap-px rounded-sm border border-border bg-border overflow-hidden max-w-4xl mx-auto">
       {STATS.map((s) => (
-        <div key={s.label} className="bg-background/60 p-5 sm:p-6 text-left">
+        <div key={s.label} className="bg-background/60 p-4 sm:p-5 text-left">
           <dt className="text-[10px] uppercase tracking-[0.20em] text-muted-foreground">{s.label}</dt>
-          <dd className="mt-2 font-display text-3xl sm:text-4xl text-foreground">{s.value}</dd>
+          <dd className="mt-1.5 font-display text-2xl sm:text-3xl text-foreground">{s.value}</dd>
         </div>
       ))}
     </dl>

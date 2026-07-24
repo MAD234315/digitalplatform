@@ -18,13 +18,14 @@ function Refund() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow={"POLICIES\n\n"}
         title="Refund"
         titleAccent="Policy."
         lede="Because we sell digital products, refunds are handled case by case. This page explains how we approach refunds and replacements, and how to raise a concern. Maintained by the Digital Platform team."
       />
       <section className="border-t border-border">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-16 space-y-10 text-muted-foreground leading-relaxed">
+        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-10 sm:py-12 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <Block title="Before you buy">
             Please read the product details carefully — including plan, validity, device support, and warranty — before placing an order. If anything is unclear, message us and we'll help you choose.
           </Block>
@@ -55,8 +56,8 @@ function Refund() {
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="font-display text-2xl text-foreground">{title}</h2>
-      <p className="mt-3">{children}</p>
+      <h2 className="font-display text-lg sm:text-xl text-foreground">{title}</h2>
+      <p className="mt-2">{children}</p>
     </div>
   );
 }

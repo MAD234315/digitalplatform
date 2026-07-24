@@ -21,16 +21,17 @@ function ProductRequest() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow="Product request"
         title="Can't find it?"
         titleAccent="Just ask."
         lede="Tell us what you're looking for — a subscription, an AI tool, a software license, a gift card. We'll check availability, source it if we can, and reply with pricing."
       />
       <section className="border-t border-border">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-16 space-y-12">
-          <div className="rounded-2xl border border-border bg-card p-8">
-            <h2 className="font-display text-2xl">What to include</h2>
-            <ul className="mt-6 space-y-3 text-muted-foreground leading-relaxed">
+        <div className="mx-auto max-w-3xl px-6 lg:px-10 py-10 sm:py-12 space-y-8">
+          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+            <h2 className="font-display text-lg sm:text-xl">What to include</h2>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground leading-relaxed">
               <li>• The exact product or service name</li>
               <li>• The plan, edition, or tier you want</li>
               <li>• Duration (monthly, yearly, lifetime)</li>
@@ -44,14 +45,14 @@ function ProductRequest() {
               href={`${CONTACT.WA_URL}?text=${encodeURIComponent(waPrefill)}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white"
+              className="rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-white"
               style={{ backgroundColor: "var(--whatsapp)" }}
             >
               💬 Send request on WhatsApp
             </a>
             <a
               href={`mailto:${CONTACT.EMAIL}?subject=${encodeURIComponent("Product request")}&body=${encodeURIComponent(waPrefill)}`}
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em]"
+              className="rounded-full border border-border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em]"
             >
               📧 Email us instead
             </a>

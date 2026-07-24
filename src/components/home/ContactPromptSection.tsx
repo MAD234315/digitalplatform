@@ -7,16 +7,16 @@ const INTENTS = ["Suggestion", "Feedback", "Collaboration"] as const;
 export function ContactPromptSection() {
   return (
     <section aria-labelledby="contact-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-14 lg:py-16">
         <Reveal>
           <Eyebrow>Get in touch</Eyebrow>
-          <h2 id="contact-heading" className="mt-4 font-display text-3xl sm:text-4xl">
+          <h2 id="contact-heading" className="mt-3 font-display text-2xl sm:text-3xl">
             Suggestions, feedback <em className="italic text-headline">&amp; collabs.</em>
           </h2>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
+          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
             Ideas for products to add, feedback on your experience, or a partnership pitch — we read every message.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             {INTENTS.map((t, i) => (
               <a
                 key={t}
@@ -40,15 +40,15 @@ export function ContactPromptSection() {
 
 function FinalCta() {
   return (
-    <div className="mt-14 rounded-sm border border-border bg-hero p-8 sm:p-10 lg:p-14">
+    <div className="mt-10 rounded-sm border border-border bg-hero p-6 sm:p-8 lg:p-10">
       <Eyebrow>Ready when you are</Eyebrow>
-      <h3 className="mt-4 font-display text-3xl sm:text-4xl lg:text-5xl max-w-2xl">
+      <h3 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl max-w-2xl">
         Ready to upgrade your <em className="italic text-headline">digital experience?</em>
       </h3>
-      <p className="mt-4 max-w-xl text-muted-foreground">
+      <p className="mt-3 max-w-xl text-sm text-muted-foreground">
         Explore our collection of premium AI tools, software, subscriptions and digital products.
       </p>
-      <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
+      <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
         <CtaRouterLink to="/products" size="md">Browse products</CtaRouterLink>
         <CtaLink href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I'd like to upgrade my digital experience — tell me more about your products.")}`} target="_blank" rel="noreferrer" variant="outline" size="md">
           WhatsApp us
