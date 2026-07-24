@@ -262,7 +262,8 @@ function Reviews() {
       />
 
       <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 lg:px-10 py-20 lg:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-12 sm:py-20 lg:py-28">
+
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
@@ -294,33 +295,34 @@ function Reviews() {
           ) : null}
 
           {hasReviews ? (
-            <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
+            <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-card/40 p-6 shadow-2xl backdrop-blur-sm transition hover:border-amber/30 hover:bg-card/50"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border/70 bg-card/60 p-5 sm:p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)] ring-1 ring-black/5 backdrop-blur-sm transition hover:border-amber/30 hover:bg-card/70 sm:shadow-2xl"
                 >
                   {/* Decorative amber glow */}
-                  <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
+                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
-                    <div className="mb-6 flex items-center justify-between">
+                    <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
-                        <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                        <span className="shrink-0 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
                           {r.formattedDate}
                         </span>
                       ) : null}
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote mb-8 flex-1 text-2xl leading-tight italic text-foreground">
+                    <blockquote className="font-quote mb-6 sm:mb-8 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
+
                     {/* Reviewer Identity */}
-                    <div className="mb-6 flex items-center gap-3">
+                    <div className="mb-5 sm:mb-6 flex flex-wrap items-center gap-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
                         aria-hidden
@@ -328,9 +330,9 @@ function Reviews() {
                         {initials(r.name)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-foreground">{r.name}</p>
+                        <p className="truncate text-sm font-semibold text-foreground">{r.name}</p>
                         {r.location ? (
-                          <p className="text-xs text-muted-foreground">{r.location}</p>
+                          <p className="truncate text-xs text-muted-foreground">{r.location}</p>
                         ) : null}
                       </div>
                       {r.tenure ? (
@@ -339,6 +341,7 @@ function Reviews() {
                         </span>
                       ) : null}
                     </div>
+
 
                     {/* Footer Details: Liked Most / Purchased */}
                     <div className="space-y-4 border-t border-border/40 pt-5">
