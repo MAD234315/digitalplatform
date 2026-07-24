@@ -253,7 +253,7 @@ function LiveStatusCard({
           className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
         >
           <div
-            className="h-full rounded-full transition-[width] duration-1000 ease-out"
+            className="h-full rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${barFilled ? inStockPct : 0}%`,
               background:
