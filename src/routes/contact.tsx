@@ -37,23 +37,25 @@ function Contact() {
   return (
     <PageShell>
       <PageHero
+        compact
         eyebrow="Contact"
         title={<>Let&apos;s <em className="text-headline">talk.</em></>}
         lede="The fastest way to reach us is WhatsApp — we typically reply at earliest with live pricing and stock updates."
       />
 
+
       <section className="border-t border-border">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 grid gap-6 md:grid-cols-2">
-          <div className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
-            <div className="text-xs uppercase tracking-[0.22em] text-amber">Preferred</div>
-            <h2 className="mt-3 font-display text-3xl">WhatsApp</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+        <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 grid gap-4 sm:gap-5 md:grid-cols-2">
+          <div className="group rounded-2xl border border-border bg-card p-5 sm:p-6 hover:border-amber transition">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-amber">Preferred</div>
+            <h2 className="mt-2 font-display text-2xl">WhatsApp</h2>
+            <p className="mt-1.5 text-xs text-muted-foreground">
               Send a message with the product you&apos;re interested in.
             </p>
-            <div className="mt-6 flex items-center gap-3 flex-wrap">
+            <div className="mt-4 flex items-center gap-2.5 flex-wrap">
               <a
                 href="tel:+919652191369"
-                className="font-display text-xl hover:text-amber transition-colors"
+                className="font-display text-lg hover:text-amber transition-colors"
               >
                 +91 96521 91369
               </a>
@@ -71,36 +73,36 @@ function Contact() {
               href={`${CONTACT.WA_URL}?text=${encodeURIComponent("Hi Digital Platform! I'd like to know more about your products and pricing.")}`}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex"
+              className="mt-4 text-xs text-amber group-hover:translate-x-1 transition inline-flex"
             >
               Open WhatsApp →
             </a>
           </div>
-          <div className="group rounded-2xl border border-border bg-card p-8 hover:border-amber transition">
-            <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Email</div>
-            <h2 className="mt-3 font-display text-3xl">Mail</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="group rounded-2xl border border-border bg-card p-5 sm:p-6 hover:border-amber transition">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Email</div>
+            <h2 className="mt-2 font-display text-2xl">Mail</h2>
+            <p className="mt-1.5 text-xs text-muted-foreground">
               Suggestions, feedback, or collabs? Drop us a line.
             </p>
-            <div className="mt-6 flex items-center gap-3 flex-wrap">
-              <a href={`mailto:${CONTACT.EMAIL}`} className="font-display text-lg break-all hover:text-amber transition-colors">{CONTACT.EMAIL}</a>
+            <div className="mt-4 flex items-center gap-2.5 flex-wrap">
+              <a href={`mailto:${CONTACT.EMAIL}`} className="font-display text-base break-all hover:text-amber transition-colors">{CONTACT.EMAIL}</a>
               <CopyEmailButton email={CONTACT.EMAIL} />
             </div>
-            <a href={`mailto:${CONTACT.EMAIL}`} className="mt-6 text-sm text-amber group-hover:translate-x-1 transition inline-flex">Send email →</a>
+            <a href={`mailto:${CONTACT.EMAIL}`} className="mt-4 text-xs text-amber group-hover:translate-x-1 transition inline-flex">Send email →</a>
           </div>
         </div>
       </section>
 
       <section className="border-t border-border">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 grid lg:grid-cols-12 gap-12">
+        <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 grid lg:grid-cols-12 gap-6 lg:gap-8">
           <div className="lg:col-span-5">
-            <h2 className="font-display text-4xl">
+            <h2 className="font-display text-2xl sm:text-3xl">
               Contact <em className="text-headline">admin</em>
             </h2>
-            <p className="mt-4 text-muted-foreground text-sm leading-relaxed">
+            <p className="mt-3 text-muted-foreground text-xs leading-relaxed">
               For the fastest reply, include these details in your message:
             </p>
-            <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
+            <ul className="mt-4 space-y-1.5 text-xs text-muted-foreground">
               <li>• Your Full Name</li>
               <li>•&nbsp;Product or Service You&apos;re Interested In</li>
               <li>• Referral Details (if applicable)</li>
@@ -108,20 +110,20 @@ function Contact() {
             </ul>
           </div>
           <div className="lg:col-span-7">
-            <div className="rounded-2xl border border-border bg-card p-8">
-              <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Support hours</div>
-              <p className="mt-3 font-display text-2xl">Every day, limited hours.</p>
-              <p className="mt-3 text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+              <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Support hours</div>
+              <p className="mt-2 font-display text-xl">Every day, limited hours.</p>
+              <p className="mt-2 text-xs text-muted-foreground">
                 Messages sent outside these hours get a reply first thing next morning.
               </p>
-              <ul className="mt-6 space-y-2.5 text-sm">
+              <ul className="mt-4 space-y-2 text-xs">
                 {[
                   "Live pricing on any listed product",
                   "Stock check before you order",
                   "Post-purchase support & warranty",
                   "Requests for products not in the catalogue",
                 ].map((x) => (
-                  <li key={x} className="flex items-start gap-3">
+                  <li key={x} className="flex items-start gap-2.5">
                     <span className="text-amber">✓</span>{x}
                   </li>
                 ))}
@@ -130,7 +132,7 @@ function Contact() {
                 href={`${CONTACT.WA_URL}?text=Hi%2C%20I%27d%20like%20live%20pricing%20on%3A`}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-8 inline-flex rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground"
+                className="mt-6 inline-flex rounded-full bg-amber px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-amber-foreground"
               >
                 Send via WhatsApp
               </a>
@@ -138,6 +140,7 @@ function Contact() {
           </div>
         </div>
       </section>
+
     </PageShell>
   );
 }
