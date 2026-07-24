@@ -41,6 +41,7 @@
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+  --font-quote: var(--font-quote);
 }
 
 /* ============= DARK SITE THEME (home, about, contact) ============= */
