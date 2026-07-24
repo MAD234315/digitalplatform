@@ -302,10 +302,13 @@ function Reviews() {
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border/70 bg-card/60 p-5 sm:p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)] ring-1 ring-black/5 backdrop-blur-sm transition hover:border-amber/30 hover:bg-card/70 sm:shadow-2xl"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] via-card/60 to-black/30 p-5 sm:p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] ring-1 ring-white/5 backdrop-blur-xl transition hover:border-amber/40 hover:ring-amber/20 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_25%,transparent)]"
                 >
+                  {/* Top accent line */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
                   {/* Decorative amber glow */}
-                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
+                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" />
+
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
