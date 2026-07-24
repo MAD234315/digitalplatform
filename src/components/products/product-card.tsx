@@ -259,7 +259,7 @@ export const ProductCard = memo(function ProductCard({
             rel="noreferrer"
             onClick={() => onView?.(p)}
             aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-            className="group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            className="group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-colors"
             style={{
               background: "linear-gradient(135deg, #25d366 0%, #128c7e 100%)",
               boxShadow: "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)",
