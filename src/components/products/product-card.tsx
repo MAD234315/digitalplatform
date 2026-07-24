@@ -24,7 +24,7 @@ function LastUpdatedLine() {
       <span aria-hidden className="relative inline-flex h-1.5 w-1.5">
         <span
           className="absolute inset-0 rounded-full opacity-70"
-          style={{ backgroundColor: "var(--whatsapp)", animation: "ping 2s cubic-bezier(0,0,0.2,1) infinite" }}
+          style={{ backgroundColor: "var(--whatsapp)" }}
         />
         <span className="relative inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--whatsapp)" }} />
       </span>
