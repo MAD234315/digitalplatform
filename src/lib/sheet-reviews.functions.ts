@@ -192,6 +192,14 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       });
     }
 
+    // Newest first: parse date/timestamp; unparseable go last, preserving sheet order
+    reviews.sort((a, b) => {
+      const ta = Date.parse(a.date);
+      const tb = Date.parse(b.date);
+      const va = Number.isFinite(ta) ? ta : -Infinity;
+      const vb = Number.isFinite(tb) ? tb : -Infinity;
+      return vb - va;
+    });
 
     return { reviews, fetchedAt: new Date().toISOString(), configured: true };
   } catch (e) {
