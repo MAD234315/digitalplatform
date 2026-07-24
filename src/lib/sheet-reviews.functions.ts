@@ -47,6 +47,7 @@ export type SheetReview = {
   product: string;
   body: string;
   date: string;
+  formattedDate: string;
   tenure: string;
   liked: string;
 };
