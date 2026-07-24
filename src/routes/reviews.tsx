@@ -262,7 +262,8 @@ function Reviews() {
       />
 
       <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 lg:px-10 py-20 lg:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-12 sm:py-20 lg:py-28">
+
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
