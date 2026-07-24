@@ -229,10 +229,16 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
   }
 }
 
-export const getSheetReviews = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ReviewsPayload> => {
+export const getSheetReviews = createServerFn({ method: "GET" })
+  .inputValidator((input?: { force?: boolean }) => ({ force: !!input?.force }))
+  .handler(async ({ data }): Promise<ReviewsPayload> => {
     const now = Date.now();
-    if (cache && now - cache.at < CACHE_TTL_MS) return cache.payload;
+    if (data.force) {
+      cache = null;
+      inflight = null;
+    } else if (cache && now - cache.at < CACHE_TTL_MS) {
+      return cache.payload;
+    }
     if (!inflight) {
       inflight = loadFromSheet()
         .then((payload) => {
@@ -244,5 +250,5 @@ export const getSheetReviews = createServerFn({ method: "GET" }).handler(
         });
     }
     return inflight;
-  },
-);
+  });
+
