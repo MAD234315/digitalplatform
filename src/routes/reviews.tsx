@@ -152,6 +152,7 @@ function LeaveReviewButton() {
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => {
           setLoaded(false);
