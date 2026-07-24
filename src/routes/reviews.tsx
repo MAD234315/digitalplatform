@@ -9,6 +9,7 @@ import { buildRouteHead } from "@/lib/seo";
 import { Star, ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSheetReviews } from "@/lib/sheet-reviews.functions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DefaultPendingComponent } from "@/lib/default-pending";
 
 const TITLE = "Customer Reviews — Digital Platform";
 const DESC =
@@ -46,6 +47,8 @@ export const Route = createFileRoute("/reviews")({
     }),
   loader: ({ context }) => context.queryClient.ensureQueryData(reviewsQueryOptions),
   component: Reviews,
+  pendingComponent: DefaultPendingComponent,
+  pendingMs: 0,
 });
 
 function Stars({ n }: { n: number }) {
