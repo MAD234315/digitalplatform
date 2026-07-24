@@ -76,10 +76,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
           boxShadow: "0 0 18px -4px rgba(244,183,64,0.5), 0 0 0 1px rgba(244,183,64,0.35)",
         }}
       >
-        <span className="relative inline-flex h-1.5 w-1.5">
-          <span className="absolute inset-0 rounded-full bg-black/70" style={{ animation: "ping 1.8s cubic-bezier(0,0,0.2,1) infinite" }} />
-          <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-black/80" />
-        </span>
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-black/80" />
         Limited Stock
       </span>
     );
