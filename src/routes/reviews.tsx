@@ -558,9 +558,9 @@ function Reviews() {
                       {r.tenure ? (
                         <span
                           className="shrink-0 border border-amber/40 bg-amber/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber"
-                          aria-label={`Customer for ${r.tenure}`}
+                          aria-label={`${formatTenure(r.tenure)}`}
                         >
-                          {r.tenure}
+                          {formatTenure(r.tenure)}
                         </span>
                       ) : null}
                     </div>
