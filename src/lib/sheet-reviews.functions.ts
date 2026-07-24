@@ -98,7 +98,7 @@ function normalizeHeader(s: string): string {
   return s.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-const CACHE_TTL_MS = 60_000;
+const CACHE_TTL_MS = 10_000;
 let cache: { at: number; payload: ReviewsPayload } | null = null;
 let inflight: Promise<ReviewsPayload> | null = null;
 
