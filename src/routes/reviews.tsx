@@ -545,9 +545,9 @@ function Reviews() {
                   onClick={() => goTo(currentPage - 1)}
                   disabled={currentPage === 1}
                   className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
-                  aria-label="Previous page"
+                  aria-label={`Go to previous page (page ${Math.max(1, currentPage - 1)} of ${totalPages})`}
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4" aria-hidden />
                   <span className="hidden sm:inline">Prev</span>
                 </button>
                 {buildPageList(currentPage, totalPages).map((item, i) =>
@@ -555,6 +555,7 @@ function Reviews() {
                     <span
                       key={`gap-${i}`}
                       className="px-1 text-xs text-muted-foreground select-none"
+                      aria-hidden
                     >
                       …
                     </span>
@@ -564,6 +565,11 @@ function Reviews() {
                       type="button"
                       onClick={() => goTo(item)}
                       aria-current={item === currentPage ? "page" : undefined}
+                      aria-label={
+                        item === currentPage
+                          ? `Current page, page ${item} of ${totalPages}`
+                          : `Go to page ${item} of ${totalPages}`
+                      }
                       className={
                         item === currentPage
                           ? "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-amber/60 bg-gradient-to-br from-amber/25 to-amber/10 px-3 text-sm font-bold text-amber shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--amber)_70%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -579,11 +585,12 @@ function Reviews() {
                   onClick={() => goTo(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
-                  aria-label="Next page"
+                  aria-label={`Go to next page (page ${Math.min(totalPages, currentPage + 1)} of ${totalPages})`}
                 >
                   <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" aria-hidden />
                 </button>
+
               </div>
             </nav>
           ) : null}
