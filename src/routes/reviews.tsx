@@ -308,7 +308,7 @@ function Reviews() {
                     <div className="flex flex-col gap-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="font-semibold tracking-wide text-foreground">{r.name}</div>
+                          <div className="font-sans font-semibold tracking-wide text-foreground">{r.name}</div>
                           {(r.location || r.formattedDate) ? (
                             <p className="mt-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
                               {r.location}
