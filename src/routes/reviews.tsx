@@ -222,9 +222,12 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
-              Latest reviews shown first
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
+                Latest reviews shown first
+              </div>
+              <RefreshReviewsButton />
             </div>
           ) : null}
 
