@@ -29,6 +29,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
+import { Route as ApiPublicRevalidateReviewsRouteImport } from './routes/api/public/revalidate-reviews'
 import { Route as ApiPublicHealthSupabaseRouteImport } from './routes/api/public/health.supabase'
 
 const TermsRoute = TermsRouteImport.update({
@@ -131,6 +132,12 @@ const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
   path: '/diagnostics',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicRevalidateReviewsRoute =
+  ApiPublicRevalidateReviewsRouteImport.update({
+    id: '/api/public/revalidate-reviews',
+    path: '/api/public/revalidate-reviews',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHealthSupabaseRoute = ApiPublicHealthSupabaseRouteImport.update({
   id: '/api/public/health/supabase',
   path: '/api/public/health/supabase',
@@ -158,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
 export interface FileRoutesByTo {
@@ -180,6 +188,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
 export interface FileRoutesById {
@@ -204,6 +213,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
 export interface FileRouteTypes {
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/admin/'
+    | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/admin'
+    | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   id:
     | '__root__'
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/admin/'
+    | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   fileRoutesById: FileRoutesById
 }
@@ -294,6 +307,7 @@ export interface RootRouteChildren {
   SetupRoute: typeof SetupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicRevalidateReviewsRoute: typeof ApiPublicRevalidateReviewsRoute
   ApiPublicHealthSupabaseRoute: typeof ApiPublicHealthSupabaseRoute
 }
 
@@ -439,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDiagnosticsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/revalidate-reviews': {
+      id: '/api/public/revalidate-reviews'
+      path: '/api/public/revalidate-reviews'
+      fullPath: '/api/public/revalidate-reviews'
+      preLoaderRoute: typeof ApiPublicRevalidateReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/health/supabase': {
       id: '/api/public/health/supabase'
       path: '/api/public/health/supabase'
@@ -482,6 +503,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetupRoute: SetupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ApiPublicRevalidateReviewsRoute: ApiPublicRevalidateReviewsRoute,
   ApiPublicHealthSupabaseRoute: ApiPublicHealthSupabaseRoute,
 }
 export const routeTree = rootRouteImport
