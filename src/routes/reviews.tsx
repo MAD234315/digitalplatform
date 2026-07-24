@@ -260,7 +260,7 @@ function ReviewsSkeleton() {
           <div className="mb-6 h-7 w-56 animate-pulse rounded-full bg-muted/50" />
 
           {/* Skeleton card grid */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 sm:gap-y-10 lg:gap-x-10 lg:gap-y-14">
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
