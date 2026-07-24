@@ -294,67 +294,77 @@ function Reviews() {
           ) : null}
 
           {hasReviews ? (
-            <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12">
+            <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card/50 p-6 shadow-soft transition hover:border-amber/40 hover:bg-card/60"
+                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-card/40 p-6 shadow-2xl backdrop-blur-sm transition hover:border-amber/30 hover:bg-card/50"
                 >
                   {/* Decorative amber glow */}
                   <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
 
                   <div className="relative flex flex-1 flex-col">
-                    {/* Star Rating */}
-                    <div className="mb-5">
+                    {/* Header: Rating + Date */}
+                    <div className="mb-6 flex items-center justify-between">
                       <Stars n={r.rating} />
+                      {r.formattedDate ? (
+                        <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                          {r.formattedDate}
+                        </span>
+                      ) : null}
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote flex-1 text-xl leading-snug italic text-foreground mb-6">
+                    <blockquote className="font-quote mb-8 flex-1 text-2xl leading-tight italic text-foreground">
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
-                    {/* Reviewer Details */}
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="font-semibold tracking-wide text-foreground" style={{ fontFamily: "var(--font-body)" }}>{r.name}</div>
-                          {(r.location || r.formattedDate) ? (
-                            <p className="mt-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
-                              {r.location}
-                              {r.location && r.formattedDate ? " • " : null}
-                              {r.formattedDate}
-                            </p>
-                          ) : null}
-                        </div>
-                        {r.tenure ? (
-                          <span className="shrink-0 rounded border border-amber/20 bg-amber/10 px-2 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber">
-                            {r.tenure} customer
-                          </span>
+                    {/* Reviewer Identity */}
+                    <div className="mb-6 flex items-center gap-3">
+                      <div
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
+                        aria-hidden
+                      >
+                        {initials(r.name)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-foreground">{r.name}</p>
+                        {r.location ? (
+                          <p className="text-xs text-muted-foreground">{r.location}</p>
                         ) : null}
                       </div>
+                      {r.tenure ? (
+                        <span className="shrink-0 rounded-full border border-amber/20 bg-amber/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber">
+                          {r.tenure} customer
+                        </span>
+                      ) : null}
+                    </div>
 
-                      <hr className="border-border/80" />
-
-                      {/* Summary Metadata */}
-                      <div className="space-y-2">
-                        {r.liked ? (
-                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground">
-                              Liked Most
-                            </span>
-                            <span className="text-sm text-foreground/80">{r.liked}</span>
+                    {/* Footer Details: Liked Most / Purchased */}
+                    <div className="space-y-4 border-t border-border/40 pt-5">
+                      {r.liked ? (
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                            Liked Most
+                          </span>
+                          <span className="text-sm text-foreground/90">{r.liked}</span>
+                        </div>
+                      ) : null}
+                      {r.product ? (
+                        <div className="flex items-start gap-2">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/50 border border-border">
+                            <span className="text-[10px] text-amber">★</span>
                           </div>
-                        ) : null}
-                        {r.product ? (
-                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                               Purchased
                             </span>
-                            <span className="text-sm leading-tight italic text-foreground/80">{r.product}</span>
+                            <p className="text-sm font-medium text-foreground/90 transition group-hover:text-amber">
+                              {r.product}
+                            </p>
                           </div>
-                        ) : null}
-                      </div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </article>
