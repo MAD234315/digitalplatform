@@ -451,7 +451,7 @@ function Reviews() {
           {hasReviews ? (
             <ul
               ref={listRef}
-              className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 list-none p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-lg"
+              className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5 list-none p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-lg"
               aria-label={`Customer reviews, page ${currentPage} of ${totalPages}`}
             >
 
@@ -459,10 +459,10 @@ function Reviews() {
                 <li key={r.id} className="contents">
                 <article
                   aria-label={`Review by ${r.name}${r.location ? `, ${r.location}` : ""}, rated ${r.rating} out of 5${r.product ? `, for ${r.product}` : ""}`}
-                  className="group relative flex flex-col overflow-hidden border border-border bg-card p-5 sm:p-6 shadow-[0_14px_36px_rgba(0,0,0,0.45)] transition-all duration-500 hover:border-amber/50 hover:shadow-[0_20px_44px_-10px_color-mix(in_oklab,var(--amber)_25%,rgba(0,0,0,0.55))] focus-within:border-amber/50"
+                  className="group relative flex flex-col overflow-hidden border border-border bg-card p-4 sm:p-5 shadow-[0_14px_36px_rgba(0,0,0,0.45)] transition-all duration-500 hover:border-amber/50 hover:shadow-[0_20px_44px_-10px_color-mix(in_oklab,var(--amber)_25%,rgba(0,0,0,0.55))] focus-within:border-amber/50"
                 >
                   <div
-                    className="pointer-events-none absolute top-0 right-0 h-16 w-16 bg-gradient-to-bl from-amber/10 to-transparent"
+                    className="pointer-events-none absolute top-0 right-0 h-12 w-12 bg-gradient-to-bl from-amber/10 to-transparent"
                     aria-hidden
                   />
                   <div
@@ -472,7 +472,7 @@ function Reviews() {
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
-                    <div className="mb-3 flex items-center justify-between gap-3">
+                    <div className="mb-2 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
                         <span
@@ -486,7 +486,7 @@ function Reviews() {
 
                     {/* Main Quote */}
                     <blockquote
-                      className="mb-4 flex-1 text-[15px] leading-relaxed italic text-foreground/90"
+                      className="mb-3 flex-1 text-sm leading-relaxed italic text-foreground/90"
                       aria-label="Review quote"
                     >
                       &ldquo;{r.body}&rdquo;
@@ -494,21 +494,21 @@ function Reviews() {
 
                     {/* Liked Most / Purchased */}
                     {(r.liked || r.product) ? (
-                      <dl className="mb-4 space-y-2">
+                      <dl className="mb-3 space-y-1.5">
                         {r.liked ? (
                           <div>
-                            <dt className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber/80">
+                            <dt className="text-[9px] font-bold uppercase tracking-[0.18em] text-amber/80">
                               Liked Most
                             </dt>
-                            <dd className="mt-0.5 text-[13px] text-foreground/80">{r.liked}</dd>
+                            <dd className="mt-0.5 text-xs text-foreground/80">{r.liked}</dd>
                           </div>
                         ) : null}
                         {r.product ? (
                           <div>
-                            <dt className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber/80">
+                            <dt className="text-[9px] font-bold uppercase tracking-[0.18em] text-amber/80">
                               Purchased
                             </dt>
-                            <dd className="mt-0.5 text-[13px] font-semibold text-foreground transition group-hover:text-amber">
+                            <dd className="mt-0.5 text-xs font-semibold text-foreground transition group-hover:text-amber">
                               {r.product}
                             </dd>
                           </div>
@@ -517,14 +517,14 @@ function Reviews() {
                     ) : null}
 
                     {/* Author Section */}
-                    <div className="flex items-center gap-3 border-t border-border pt-4">
+                    <div className="flex items-center gap-2.5 border-t border-border pt-3">
                       <div
-                        className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-tr from-amber to-muted p-[1px]"
+                        className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-tr from-amber to-muted p-[1px]"
                         role="img"
                         aria-label={`Avatar for ${r.name}`}
                       >
                         <div className="flex h-full w-full items-center justify-center rounded-full bg-card">
-                          <span className="text-[11px] font-bold text-amber" aria-hidden>
+                          <span className="text-[10px] font-bold text-amber" aria-hidden>
                             {initials(r.name)}
                           </span>
                         </div>
@@ -543,7 +543,7 @@ function Reviews() {
                       </div>
                       {r.tenure ? (
                         <span
-                          className="shrink-0 border border-amber/40 bg-amber/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber"
+                          className="shrink-0 border border-amber/40 bg-amber/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber"
                           aria-label={`Customer for ${r.tenure}`}
                         >
                           {r.tenure}
