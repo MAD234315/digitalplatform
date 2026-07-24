@@ -61,11 +61,8 @@ function Stars({ n }: { n: number }) {
 }
 
 function Reviews() {
-  const fetchReviews = useServerFn(getSheetReviews);
   const { data } = useQuery({
-    queryKey: ["sheet-reviews"],
-    queryFn: () => fetchReviews(),
-    staleTime: 60_000,
+    ...reviewsQueryOptions,
     refetchInterval: 120_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
