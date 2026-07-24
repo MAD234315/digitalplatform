@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CONTACT } from "@/components/site-chrome";
 import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
@@ -96,6 +96,7 @@ function LeaveReviewButton() {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [loadCount, setLoadCount] = useState(0);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const qc = useQueryClient();
 
   const refreshReviews = async () => {
@@ -139,6 +140,11 @@ function LeaveReviewButton() {
     if (!next) {
       // On close, refresh so a just-submitted review can appear
       void refreshReviews();
+      // Return keyboard focus to the trigger button that opened the dialog.
+      // Radix normally handles this, but we run it on the next frame as a
+      // guarantee — especially after an iframe form submission that may
+      // have stolen focus.
+      requestAnimationFrame(() => triggerRef.current?.focus());
     }
   };
 
@@ -146,6 +152,7 @@ function LeaveReviewButton() {
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => {
           setLoaded(false);
@@ -359,13 +366,32 @@ function Reviews() {
     () => reviews.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE),
     [reviews, currentPage],
   );
+  const listRef = useRef<HTMLUListElement>(null);
+  const pendingFocusRef = useRef(false);
   const goTo = (p: number) => {
     const next = Math.min(Math.max(1, p), totalPages);
+    const changed = next !== currentPage;
     setPage(next);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    // After the new page renders, move keyboard focus to the top of the
+    // reviews list so screen-reader / keyboard users land on the fresh
+    // content instead of a pagination button that may have shifted.
+    if (changed) pendingFocusRef.current = true;
   };
+
+  useEffect(() => {
+    if (!pendingFocusRef.current) return;
+    pendingFocusRef.current = false;
+    const node = listRef.current;
+    if (!node) return;
+    // tabindex=-1 lets us programmatically focus a non-interactive element
+    // without adding it to the tab order.
+    node.setAttribute("tabindex", "-1");
+    node.focus({ preventScroll: false });
+  }, [currentPage]);
+
 
 
   return (
@@ -424,7 +450,8 @@ function Reviews() {
 
           {hasReviews ? (
             <ul
-              className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14 list-none p-0"
+              ref={listRef}
+              className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14 list-none p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-lg"
               aria-label={`Customer reviews, page ${currentPage} of ${totalPages}`}
             >
 
