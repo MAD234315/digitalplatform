@@ -42,6 +42,7 @@ export const Route = createFileRoute("/reviews")({
         },
       ],
     }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(reviewsQueryOptions),
   component: Reviews,
 });
 
