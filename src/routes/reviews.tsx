@@ -324,7 +324,7 @@ function Reviews() {
                     </header>
 
                     {/* Meta: location + date between header and review */}
-                    {(r.location || r.date) ? (
+                    {(r.location || r.formattedDate) ? (
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-border/60 bg-amber/[0.03] px-5 py-3 text-[11px] text-muted-foreground">
                         {r.location ? (
                           <span className="inline-flex items-center gap-1.5">
@@ -332,13 +332,13 @@ function Reviews() {
                             <span className="font-medium text-foreground/80">{r.location}</span>
                           </span>
                         ) : null}
-                        {r.location && r.date ? (
+                        {r.location && r.formattedDate ? (
                           <span className="h-3 w-px bg-border/80" aria-hidden />
                         ) : null}
-                        {r.date ? (
+                        {r.formattedDate ? (
                           <span className="inline-flex items-center gap-1.5">
                             <Calendar className="h-3 w-3 text-amber" strokeWidth={2} />
-                            <span className="font-medium text-foreground/80">{r.date}</span>
+                            <span className="font-medium text-foreground/80">{r.formattedDate}</span>
                           </span>
                         ) : null}
                       </div>

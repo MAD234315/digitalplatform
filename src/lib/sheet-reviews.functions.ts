@@ -47,6 +47,7 @@ export type SheetReview = {
   product: string;
   body: string;
   date: string;
+  formattedDate: string;
   tenure: string;
   liked: string;
 };
@@ -170,6 +171,18 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["likedmost", "whatdidyoulike", "likeaboutdigital", "likeabout", "liked", "highlight", "favorite"],
     );
 
+    const formatReadableDate = (ts: number): string => {
+      const d = new Date(ts);
+      const day = d.getDate();
+      const month = d.toLocaleString("en-GB", { month: "short" });
+      const year = d.getFullYear();
+      let hours = d.getHours();
+      const minutes = d.getMinutes().toString().padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+      return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+    };
+
     const parseWhen = (v: string): number => {
       const t = v.trim();
       if (!t) return -Infinity;
@@ -204,6 +217,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
       const rawDate = iDate >= 0 ? s(row[iDate]).trim() : "";
 
+      const when = parseWhen(rawDate);
       reviews.push({
         id: `r-${r}`,
         name,
@@ -212,10 +226,11 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         product: s(row[iProduct]).trim(),
         body,
         date: rawDate,
+        formattedDate: Number.isFinite(when) ? formatReadableDate(when) : rawDate,
         tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
         liked: iLiked >= 0 ? s(row[iLiked]).trim() : "",
         _row: r,
-        _when: parseWhen(rawDate),
+        _when: when,
       });
     }
 
