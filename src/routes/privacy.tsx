@@ -60,8 +60,8 @@ function Privacy() {
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="font-display text-2xl text-foreground">{title}</h2>
-      <p className="mt-3">{children}</p>
+      <h2 className="font-display text-lg sm:text-xl text-foreground">{title}</h2>
+      <p className="mt-2">{children}</p>
     </div>
   );
 }
