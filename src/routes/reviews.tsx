@@ -284,7 +284,7 @@ function ReviewsSkeleton() {
                   <div className="h-6 w-20 animate-pulse rounded-full bg-muted/50" />
                 </div>
 
-                <div className="space-y-4 border-t border-border/60 pt-5">
+                <div className="space-y-4 border-t border-border/80 pt-5">
                   <div className="space-y-2">
                     <div className="h-2 w-20 animate-pulse rounded bg-muted/50" />
                     <div className="h-3 w-full animate-pulse rounded bg-muted/30" />
@@ -386,7 +386,7 @@ function Reviews() {
 
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+              <div className="text-xs uppercase tracking-[0.22em] text-foreground/70">
                 {reviews.length} reviews
               </div>
               {hasReviews ? (
@@ -394,7 +394,7 @@ function Reviews() {
                   <div className="font-display text-5xl leading-none text-headline">{avg}</div>
                   <div>
                     <Stars n={5} />
-                    <div className="mt-1 text-xs text-muted-foreground">out of 5</div>
+                    <div className="mt-1 text-xs font-medium text-foreground/70">out of 5</div>
                   </div>
                 </div>
               ) : null}
@@ -500,7 +500,7 @@ function Reviews() {
               aria-label="Reviews pagination"
               className="mt-12 flex flex-col items-center gap-4"
             >
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-foreground/70">
                 Page {currentPage} of {totalPages} · Showing{" "}
                 {(currentPage - 1) * PER_PAGE + 1}–
                 {Math.min(currentPage * PER_PAGE, reviews.length)} of {reviews.length}
@@ -582,7 +582,7 @@ function Reviews() {
               href={CONTACT.WA_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em]"
+              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-foreground"
             >
               Contact us →
             </a>
