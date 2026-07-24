@@ -295,30 +295,31 @@ function Reviews() {
           ) : null}
 
           {hasReviews ? (
-            <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
+            <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
               {pagedReviews.map((r) => (
                 <article
                   key={r.id}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-card/40 p-6 shadow-2xl backdrop-blur-sm transition hover:border-amber/30 hover:bg-card/50"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border/70 bg-card/60 p-5 sm:p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)] ring-1 ring-black/5 backdrop-blur-sm transition hover:border-amber/30 hover:bg-card/70 sm:shadow-2xl"
                 >
                   {/* Decorative amber glow */}
-                  <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
+                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/20" />
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
-                    <div className="mb-6 flex items-center justify-between">
+                    <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
-                        <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                        <span className="shrink-0 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
                           {r.formattedDate}
                         </span>
                       ) : null}
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote mb-8 flex-1 text-2xl leading-tight italic text-foreground">
+                    <blockquote className="font-quote mb-6 sm:mb-8 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
+
 
                     {/* Reviewer Identity */}
                     <div className="mb-6 flex items-center gap-3">
