@@ -140,6 +140,11 @@ function LeaveReviewButton() {
     if (!next) {
       // On close, refresh so a just-submitted review can appear
       void refreshReviews();
+      // Return keyboard focus to the trigger button that opened the dialog.
+      // Radix normally handles this, but we run it on the next frame as a
+      // guarantee — especially after an iframe form submission that may
+      // have stolen focus.
+      requestAnimationFrame(() => triggerRef.current?.focus());
     }
   };
 
