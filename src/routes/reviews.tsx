@@ -6,7 +6,7 @@ import { ORG_ID, SITE_URL } from "@/lib/site-config";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { buildRouteHead } from "@/lib/seo";
-import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2, RefreshCw } from "lucide-react";
+import { Star, Quote, Heart, ShoppingBag, MapPin, Calendar, ExternalLink, Loader2 } from "lucide-react";
 import { getSheetReviews } from "@/lib/sheet-reviews.functions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -149,32 +149,8 @@ function LeaveReviewButton() {
   );
 }
 
-function RefreshReviewsButton() {
-  const qc = useQueryClient();
-  const [busy, setBusy] = useState(false);
-  return (
-    <button
-      type="button"
-      disabled={busy}
-      onClick={async () => {
-        setBusy(true);
-        try {
-          await qc.fetchQuery({
-            queryKey: ["sheet-reviews"],
-            queryFn: () => getSheetReviews({ data: { force: true } }),
-          });
-        } finally {
-          setBusy(false);
-        }
-      }}
-      className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition hover:text-foreground hover:border-[color:var(--amber)]/60 disabled:opacity-60"
-      aria-label="Refresh reviews"
-    >
-      <RefreshCw className={`h-3 w-3 ${busy ? "animate-spin" : ""}`} />
-      {busy ? "Refreshing" : "Refresh"}
-    </button>
-  );
-}
+
+
 
 function Reviews() {
   const { data } = useQuery({
@@ -225,13 +201,11 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
-                Latest reviews shown first
-              </div>
-              <RefreshReviewsButton />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--amber)]" />
+              Latest reviews shown first
             </div>
+
           ) : null}
 
           {hasReviews ? (
