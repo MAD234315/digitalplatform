@@ -107,15 +107,7 @@ function Reviews() {
                 </div>
               ) : null}
             </div>
-            <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform?usp=header"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              ★ Leave a review
-            </a>
-
+            <LeaveReviewButton />
           </div>
 
           {hasReviews ? (
