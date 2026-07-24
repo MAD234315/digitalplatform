@@ -134,16 +134,19 @@ function LeaveReviewButton() {
               </a>
             </DialogDescription>
           </DialogHeader>
-          <div className="relative flex-1 min-h-0 bg-background">
+          <div className="relative flex-1 min-h-0 bg-background overflow-auto">
             {!loaded ? (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center z-10 bg-background/60">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : null}
             <iframe
               src={FORM_EMBED_URL}
               title="Leave a review"
-              className="h-full w-full block"
+              loading="lazy"
+              scrolling="yes"
+              className="block w-full h-full min-h-full border-0"
+              style={{ display: "block", width: "100%", height: "100%", minHeight: "100%" }}
               onLoad={() => {
                 setLoaded(true);
                 setLoadCount((c) => {
@@ -154,6 +157,7 @@ function LeaveReviewButton() {
               }}
             />
           </div>
+
         </DialogContent>
       </Dialog>
     </>
