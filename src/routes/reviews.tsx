@@ -96,6 +96,9 @@ function LeaveReviewButton() {
           setLoaded(false);
           setLoadCount(0);
           setOpen(true);
+          // Force a fresh, cache-busted fetch so the newly submitted review
+          // appears at the top the moment the modal closes.
+          void refreshReviews();
         }}
         className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/40 transition hover:brightness-110 hover:shadow-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
