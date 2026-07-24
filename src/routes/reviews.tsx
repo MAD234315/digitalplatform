@@ -322,7 +322,7 @@ function Reviews() {
 
 
                     {/* Reviewer Identity */}
-                    <div className="mb-6 flex items-center gap-3">
+                    <div className="mb-5 sm:mb-6 flex flex-wrap items-center gap-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted to-card text-xs font-semibold text-foreground"
                         aria-hidden
@@ -330,9 +330,9 @@ function Reviews() {
                         {initials(r.name)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-foreground">{r.name}</p>
+                        <p className="truncate text-sm font-semibold text-foreground">{r.name}</p>
                         {r.location ? (
-                          <p className="text-xs text-muted-foreground">{r.location}</p>
+                          <p className="truncate text-xs text-muted-foreground">{r.location}</p>
                         ) : null}
                       </div>
                       {r.tenure ? (
@@ -341,6 +341,7 @@ function Reviews() {
                         </span>
                       ) : null}
                     </div>
+
 
                     {/* Footer Details: Liked Most / Purchased */}
                     <div className="space-y-4 border-t border-border/40 pt-5">
