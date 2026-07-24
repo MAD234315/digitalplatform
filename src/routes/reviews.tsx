@@ -451,7 +451,7 @@ function Reviews() {
           {hasReviews ? (
             <ul
               ref={listRef}
-              className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14 list-none p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-lg"
+              className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 list-none p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-lg"
               aria-label={`Customer reviews, page ${currentPage} of ${totalPages}`}
             >
 
