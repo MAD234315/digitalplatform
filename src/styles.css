@@ -217,6 +217,7 @@
 }
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
 @utility shadow-gold { box-shadow: var(--shadow-gold); }
+@utility font-quote { font-family: var(--font-quote); }
 
 /* subtle rise-in used on hero / section entry — GPU-composited for smoothness */
 @keyframes dp-rise {
