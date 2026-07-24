@@ -88,6 +88,20 @@ function initials(name: string) {
 }
 
 
+function formatTenure(tenure: string): string {
+  if (!tenure) return "";
+  const t = tenure.trim().toLowerCase();
+  const num = t.match(/(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)?/i);
+  if (num) {
+    const years = parseFloat(num[1]);
+    if (years >= 5) return "5+ years customer";
+    const suffix = years === 1 ? "year" : "years";
+    return `${years} ${suffix} customer`;
+  }
+  if (/5\+/.test(t) || /five\+?/.test(t)) return "5+ years customer";
+  return `${tenure} customer`;
+}
+
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform";
 const FORM_EMBED_URL = `${FORM_URL}?embedded=true`;
