@@ -232,7 +232,7 @@ function Reviews() {
 
           {hasReviews ? (
             <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-12">
-              {reviews.map((r) => {
+              {pagedReviews.map((r) => {
                 const initials = r.name
                   ?.split(" ")
                   .map((p) => p[0])
