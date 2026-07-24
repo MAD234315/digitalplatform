@@ -381,7 +381,8 @@ function Reviews() {
         }
       />
 
-      <section className="border-t border-border">
+      <section className="border-t border-border" aria-labelledby="reviews-heading">
+        <h2 id="reviews-heading" className="sr-only">Customer reviews</h2>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-12 sm:py-20 lg:py-28">
 
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
@@ -390,8 +391,12 @@ function Reviews() {
                 {reviews.length} reviews
               </div>
               {hasReviews ? (
-                <div className="mt-3 flex items-center gap-4">
-                  <div className="font-display text-5xl leading-none text-headline">{avg}</div>
+                <div
+                  className="mt-3 flex items-center gap-4"
+                  role="group"
+                  aria-label={`Average rating ${avg} out of 5`}
+                >
+                  <div className="font-display text-5xl leading-none text-headline" aria-hidden>{avg}</div>
                   <div>
                     <Stars n={5} />
                     <div className="mt-1 text-xs font-medium text-foreground/70">out of 5</div>
@@ -403,7 +408,10 @@ function Reviews() {
           </div>
 
           {hasReviews ? (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber/50 bg-gradient-to-r from-amber/15 via-amber/10 to-transparent px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
+            <div
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber/50 bg-gradient-to-r from-amber/15 via-amber/10 to-transparent px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]"
+              role="note"
+            >
               <span className="relative flex h-2 w-2" aria-hidden>
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-amber" />
@@ -415,30 +423,41 @@ function Reviews() {
           ) : null}
 
           {hasReviews ? (
-            <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
+            <ul
+              className="grid gap-6 sm:gap-8 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14 list-none p-0"
+              aria-label={`Customer reviews, page ${currentPage} of ${totalPages}`}
+            >
+
               {pagedReviews.map((r) => (
+                <li key={r.id} className="contents">
                 <article
-                  key={r.id}
+                  aria-label={`Review by ${r.name}${r.location ? `, ${r.location}` : ""}, rated ${r.rating} out of 5${r.product ? `, for ${r.product}` : ""}`}
                   className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/50 hover:ring-amber/40 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] focus-within:border-amber/50 focus-within:ring-amber/40 focus-within:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
                 >
                   {/* Top accent line */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" aria-hidden />
                   {/* Decorative amber glow */}
-                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" />
+                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" aria-hidden />
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
                     <div className="mb-5 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
-                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70">
+                        <span
+                          className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70"
+                          aria-label={`Reviewed on ${r.formattedDate}`}
+                        >
                           {r.formattedDate}
                         </span>
                       ) : null}
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
+                    <blockquote
+                      className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground"
+                      aria-label="Review quote"
+                    >
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
@@ -446,54 +465,69 @@ function Reviews() {
                     <div className="mb-5 flex flex-wrap items-center gap-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-gradient-to-br from-muted via-card/80 to-card text-xs font-semibold text-foreground shadow-sm shadow-amber/10"
-                        aria-hidden
+                        role="img"
+                        aria-label={`Avatar for ${r.name}`}
                       >
-                        {initials(r.name)}
+                        <span aria-hidden>{initials(r.name)}</span>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground">{r.name}</p>
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          <span className="sr-only">Reviewer: </span>
+                          {r.name}
+                        </p>
                         {r.location ? (
-                          <p className="truncate text-xs font-medium text-foreground/70">{r.location}</p>
+                          <p className="truncate text-xs font-medium text-foreground/70">
+                            <span className="sr-only">Location: </span>
+                            {r.location}
+                          </p>
                         ) : null}
                       </div>
                       {r.tenure ? (
-                        <span className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
+                        <span
+                          className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]"
+                          aria-label={`Customer for ${r.tenure}`}
+                        >
                           {r.tenure} customer
                         </span>
                       ) : null}
                     </div>
 
                     {/* Footer Details: Liked Most / Purchased */}
-                    <div className="space-y-4 border-t border-border/80 pt-5">
+                    <dl className="space-y-4 border-t border-border/80 pt-5">
                       {r.liked ? (
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
+                          <dt className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                             Liked Most
-                          </span>
-                          <span className="text-sm font-medium text-foreground">{r.liked}</span>
+                          </dt>
+                          <dd className="text-sm font-medium text-foreground">{r.liked}</dd>
                         </div>
                       ) : null}
                       {r.product ? (
                         <div className="flex items-start gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10">
+                          <div
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10"
+                            aria-hidden
+                          >
                             <span className="text-[10px] text-amber">★</span>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
+                            <dt className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                               Purchased
-                            </span>
-                            <p className="text-sm font-semibold text-foreground transition group-hover:text-amber">
+                            </dt>
+                            <dd className="text-sm font-semibold text-foreground transition group-hover:text-amber">
                               {r.product}
-                            </p>
+                            </dd>
                           </div>
                         </div>
                       ) : null}
-                    </div>
+                    </dl>
                   </div>
                 </article>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : null}
+
 
           {hasReviews && totalPages > 1 ? (
             <nav
@@ -511,9 +545,9 @@ function Reviews() {
                   onClick={() => goTo(currentPage - 1)}
                   disabled={currentPage === 1}
                   className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
-                  aria-label="Previous page"
+                  aria-label={`Go to previous page (page ${Math.max(1, currentPage - 1)} of ${totalPages})`}
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4" aria-hidden />
                   <span className="hidden sm:inline">Prev</span>
                 </button>
                 {buildPageList(currentPage, totalPages).map((item, i) =>
@@ -521,6 +555,7 @@ function Reviews() {
                     <span
                       key={`gap-${i}`}
                       className="px-1 text-xs text-muted-foreground select-none"
+                      aria-hidden
                     >
                       …
                     </span>
@@ -530,6 +565,11 @@ function Reviews() {
                       type="button"
                       onClick={() => goTo(item)}
                       aria-current={item === currentPage ? "page" : undefined}
+                      aria-label={
+                        item === currentPage
+                          ? `Current page, page ${item} of ${totalPages}`
+                          : `Go to page ${item} of ${totalPages}`
+                      }
                       className={
                         item === currentPage
                           ? "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-amber/60 bg-gradient-to-br from-amber/25 to-amber/10 px-3 text-sm font-bold text-amber shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--amber)_70%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -545,11 +585,12 @@ function Reviews() {
                   onClick={() => goTo(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-border bg-card/40 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card/40"
-                  aria-label="Next page"
+                  aria-label={`Go to next page (page ${Math.min(totalPages, currentPage + 1)} of ${totalPages})`}
                 >
                   <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" aria-hidden />
                 </button>
+
               </div>
             </nav>
           ) : null}
@@ -565,15 +606,16 @@ function Reviews() {
       </section>
 
 
-      <section className="border-t border-border bg-card/30">
+      <section className="border-t border-border bg-card/30" aria-labelledby="reviews-cta-heading">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 text-center">
           <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Your turn</div>
-          <h2 className="mt-4 font-display text-3xl sm:text-4xl">
+          <h2 id="reviews-cta-heading" className="mt-4 font-display text-3xl sm:text-4xl">
             Ready to order? <em className="text-headline">Ping us on WhatsApp.</em>
           </h2>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3" role="group" aria-label="Next steps">
             <Link
               to="/products"
+              aria-label="Browse the product catalogue"
               className="rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Browse catalogue →
@@ -582,6 +624,7 @@ function Reviews() {
               href={CONTACT.WA_URL}
               target="_blank"
               rel="noreferrer"
+              aria-label="Contact us on WhatsApp (opens in a new tab)"
               className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Contact us →
@@ -589,6 +632,7 @@ function Reviews() {
           </div>
         </div>
       </section>
+
     </PageShell>
   );
 }
