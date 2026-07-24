@@ -229,13 +229,17 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
   }
 }
 
+export function revalidateReviewsCache() {
+  cache = null;
+  inflight = null;
+}
+
 export const getSheetReviews = createServerFn({ method: "GET" })
   .inputValidator((input?: { force?: boolean }) => ({ force: !!input?.force }))
   .handler(async ({ data }): Promise<ReviewsPayload> => {
     const now = Date.now();
     if (data.force) {
-      cache = null;
-      inflight = null;
+      revalidateReviewsCache();
     } else if (cache && now - cache.at < CACHE_TTL_MS) {
       return cache.payload;
     }
@@ -251,4 +255,10 @@ export const getSheetReviews = createServerFn({ method: "GET" })
     }
     return inflight;
   });
+
+export const revalidateReviews = createServerFn({ method: "POST" }).handler(async () => {
+  revalidateReviewsCache();
+  return { ok: true, revalidatedAt: new Date().toISOString() };
+});
+
 
