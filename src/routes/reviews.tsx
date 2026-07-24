@@ -57,7 +57,7 @@ function Stars({ n }: { n: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={`h-4 w-4 ${i < n ? "fill-amber text-amber" : "text-muted-foreground/30"}`}
+          className={`h-3.5 w-3.5 ${i < n ? "fill-amber text-amber" : "text-muted-foreground/30"}`}
           strokeWidth={1.5}
         />
       ))}
