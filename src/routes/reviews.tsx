@@ -606,15 +606,16 @@ function Reviews() {
       </section>
 
 
-      <section className="border-t border-border bg-card/30">
+      <section className="border-t border-border bg-card/30" aria-labelledby="reviews-cta-heading">
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-20 text-center">
           <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Your turn</div>
-          <h2 className="mt-4 font-display text-3xl sm:text-4xl">
+          <h2 id="reviews-cta-heading" className="mt-4 font-display text-3xl sm:text-4xl">
             Ready to order? <em className="text-headline">Ping us on WhatsApp.</em>
           </h2>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3" role="group" aria-label="Next steps">
             <Link
               to="/products"
+              aria-label="Browse the product catalogue"
               className="rounded-full bg-amber px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-amber-foreground transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Browse catalogue →
@@ -623,6 +624,7 @@ function Reviews() {
               href={CONTACT.WA_URL}
               target="_blank"
               rel="noreferrer"
+              aria-label="Contact us on WhatsApp (opens in a new tab)"
               className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-foreground transition hover:border-amber/50 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Contact us →
@@ -630,6 +632,7 @@ function Reviews() {
           </div>
         </div>
       </section>
+
     </PageShell>
   );
 }
