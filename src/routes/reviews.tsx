@@ -429,28 +429,35 @@ function Reviews() {
             >
 
               {pagedReviews.map((r) => (
+                <li key={r.id} className="contents">
                 <article
-                  key={r.id}
+                  aria-label={`Review by ${r.name}${r.location ? `, ${r.location}` : ""}, rated ${r.rating} out of 5${r.product ? `, for ${r.product}` : ""}`}
                   className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-6 shadow-[0_20px_50px_-20px_color-mix(in_oklab,var(--background)_85%,transparent)] ring-1 ring-border/80 backdrop-blur-xl transition hover:border-amber/50 hover:ring-amber/40 hover:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] focus-within:border-amber/50 focus-within:ring-amber/40 focus-within:shadow-[0_25px_60px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)]"
                 >
                   {/* Top accent line */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber/40 to-transparent" aria-hidden />
                   {/* Decorative amber glow */}
-                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" />
+                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-amber/10 blur-3xl transition-all duration-700 group-hover:bg-amber/25" aria-hidden />
 
                   <div className="relative flex flex-1 flex-col">
                     {/* Header: Rating + Date */}
                     <div className="mb-5 flex items-center justify-between gap-3">
                       <Stars n={r.rating} />
                       {r.formattedDate ? (
-                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70">
+                        <span
+                          className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-foreground/70"
+                          aria-label={`Reviewed on ${r.formattedDate}`}
+                        >
                           {r.formattedDate}
                         </span>
                       ) : null}
                     </div>
 
                     {/* Main Quote */}
-                    <blockquote className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground">
+                    <blockquote
+                      className="font-quote mb-6 flex-1 text-xl sm:text-2xl leading-snug sm:leading-tight italic text-foreground"
+                      aria-label="Review quote"
+                    >
                       &ldquo;{r.body}&rdquo;
                     </blockquote>
 
@@ -458,54 +465,69 @@ function Reviews() {
                     <div className="mb-5 flex flex-wrap items-center gap-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber/30 bg-gradient-to-br from-muted via-card/80 to-card text-xs font-semibold text-foreground shadow-sm shadow-amber/10"
-                        aria-hidden
+                        role="img"
+                        aria-label={`Avatar for ${r.name}`}
                       >
-                        {initials(r.name)}
+                        <span aria-hidden>{initials(r.name)}</span>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground">{r.name}</p>
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          <span className="sr-only">Reviewer: </span>
+                          {r.name}
+                        </p>
                         {r.location ? (
-                          <p className="truncate text-xs font-medium text-foreground/70">{r.location}</p>
+                          <p className="truncate text-xs font-medium text-foreground/70">
+                            <span className="sr-only">Location: </span>
+                            {r.location}
+                          </p>
                         ) : null}
                       </div>
                       {r.tenure ? (
-                        <span className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]">
+                        <span
+                          className="shrink-0 rounded-full border border-amber/30 bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-tighter text-amber shadow-[0_0_12px_-4px_color-mix(in_oklab,var(--amber)_60%,transparent)]"
+                          aria-label={`Customer for ${r.tenure}`}
+                        >
                           {r.tenure} customer
                         </span>
                       ) : null}
                     </div>
 
                     {/* Footer Details: Liked Most / Purchased */}
-                    <div className="space-y-4 border-t border-border/80 pt-5">
+                    <dl className="space-y-4 border-t border-border/80 pt-5">
                       {r.liked ? (
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
+                          <dt className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                             Liked Most
-                          </span>
-                          <span className="text-sm font-medium text-foreground">{r.liked}</span>
+                          </dt>
+                          <dd className="text-sm font-medium text-foreground">{r.liked}</dd>
                         </div>
                       ) : null}
                       {r.product ? (
                         <div className="flex items-start gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10">
+                          <div
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted/70 border border-amber/30 shadow-sm shadow-amber/10"
+                            aria-hidden
+                          >
                             <span className="text-[10px] text-amber">★</span>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
+                            <dt className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
                               Purchased
-                            </span>
-                            <p className="text-sm font-semibold text-foreground transition group-hover:text-amber">
+                            </dt>
+                            <dd className="text-sm font-semibold text-foreground transition group-hover:text-amber">
                               {r.product}
-                            </p>
+                            </dd>
                           </div>
                         </div>
                       ) : null}
-                    </div>
+                    </dl>
                   </div>
                 </article>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : null}
+
 
           {hasReviews && totalPages > 1 ? (
             <nav
