@@ -148,7 +148,7 @@ function LeaveReviewButton() {
       </button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="w-[98vw] sm:w-[95vw] max-w-none sm:max-w-5xl h-[95vh] sm:h-[92vh] max-h-[95vh] p-0 gap-0 overflow-hidden flex flex-col rounded-lg overscroll-contain">
+        <DialogContent className="w-[98vw] sm:w-[95vw] max-w-none sm:max-w-5xl h-[95dvh] sm:h-[92dvh] max-h-[95dvh] p-0 gap-0 overflow-hidden flex flex-col rounded-lg overscroll-contain">
           <DialogHeader className="px-4 sm:px-6 pt-5 pb-3 sm:pb-4 border-b border-border shrink-0 text-left">
             <DialogTitle className="font-display text-lg sm:text-2xl pr-8">Share your experience</DialogTitle>
             <DialogDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
