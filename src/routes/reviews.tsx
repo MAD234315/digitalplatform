@@ -72,6 +72,8 @@ function buildPageList(current: number, total: number): Array<number | "…"> {
   if (end < total - 1) pages.push("…");
   pages.push(total);
   return pages;
+}
+
 
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfQQ8ECl5BwzqyRdBZisxJ9nBsZVjrBipSdWMwxGny8DCns5Q/viewform";
