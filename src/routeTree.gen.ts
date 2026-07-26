@@ -30,6 +30,7 @@ import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
 import { Route as ApiPublicRevalidateReviewsRouteImport } from './routes/api/public/revalidate-reviews'
+import { Route as ApiPublicDbgReviewsRouteImport } from './routes/api/public/dbg-reviews'
 import { Route as ApiPublicHealthSupabaseRouteImport } from './routes/api/public/health.supabase'
 
 const TermsRoute = TermsRouteImport.update({
@@ -138,6 +139,11 @@ const ApiPublicRevalidateReviewsRoute =
     path: '/api/public/revalidate-reviews',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicDbgReviewsRoute = ApiPublicDbgReviewsRouteImport.update({
+  id: '/api/public/dbg-reviews',
+  path: '/api/public/dbg-reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHealthSupabaseRoute = ApiPublicHealthSupabaseRouteImport.update({
   id: '/api/public/health/supabase',
   path: '/api/public/health/supabase',
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/dbg-reviews': typeof ApiPublicDbgReviewsRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/dbg-reviews': typeof ApiPublicDbgReviewsRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/dbg-reviews': typeof ApiPublicDbgReviewsRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/admin/'
+    | '/api/public/dbg-reviews'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   fileRoutesByTo: FileRoutesByTo
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/admin'
+    | '/api/public/dbg-reviews'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   id:
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/admin/'
+    | '/api/public/dbg-reviews'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   fileRoutesById: FileRoutesById
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   SetupRoute: typeof SetupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicDbgReviewsRoute: typeof ApiPublicDbgReviewsRoute
   ApiPublicRevalidateReviewsRoute: typeof ApiPublicRevalidateReviewsRoute
   ApiPublicHealthSupabaseRoute: typeof ApiPublicHealthSupabaseRoute
 }
@@ -460,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRevalidateReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/dbg-reviews': {
+      id: '/api/public/dbg-reviews'
+      path: '/api/public/dbg-reviews'
+      fullPath: '/api/public/dbg-reviews'
+      preLoaderRoute: typeof ApiPublicDbgReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/health/supabase': {
       id: '/api/public/health/supabase'
       path: '/api/public/health/supabase'
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetupRoute: SetupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ApiPublicDbgReviewsRoute: ApiPublicDbgReviewsRoute,
   ApiPublicRevalidateReviewsRoute: ApiPublicRevalidateReviewsRoute,
   ApiPublicHealthSupabaseRoute: ApiPublicHealthSupabaseRoute,
 }
