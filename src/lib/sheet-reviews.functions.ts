@@ -159,7 +159,11 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["location", "city", "whereareyoufrom", "currentlocation", "currentlocationcitycountry"],
       ["whereareyoufrom", "whereyoufrom", "currentlocation", "location", "city", "country"],
     );
-    const iRating = findIdx(["rating", "stars", "score", "ratingoutof5"], ["ratingoutof", "rating", "stars", "score"]);
+    const iRating = findIdx(
+      ["rating", "stars", "score", "ratingoutof5"],
+      ["ratingoutof", "rating", "rateyouroverall", "rateyourexperience", "howwouldyourate", "stars", "score"],
+    );
+
     const iProduct = findIdx(
       ["product", "productname", "item", "productsorservicespurchased"],
       ["productsorservices", "purchasedfromus", "purchasedfrom", "product", "service", "purchased"],
