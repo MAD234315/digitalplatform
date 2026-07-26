@@ -188,6 +188,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     };
 
 
+    console.log('[dbg] header', JSON.stringify(header), 'likedIdxs', JSON.stringify(likedIdxs));
     const formatReadableDate = (ts: number): string => {
       const d = new Date(ts);
       const day = d.getDate();
