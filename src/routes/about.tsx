@@ -37,7 +37,7 @@ function About() {
         compact
         eyebrow="About us"
         title="One Person,"
-        titleAccent="a big shelf."
+        titleAccent="Countless possibilities"
         lede="Digital Platform is a trusted marketplace for premium digital products and AI tools. Since 2020, we've helped thousands of customers access high-quality subscriptions, productivity software, creative tools and digital services at affordable prices."
       />
 
