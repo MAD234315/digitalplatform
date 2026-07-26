@@ -4,7 +4,8 @@
  *
  * Sheet columns (header row required):
  *   NAME | LOCATION | RATING | PRODUCT | REVIEW | DATE | PUBLISHED
- * PUBLISHED accepts blank / TRUE / YES / 1 as "show". FALSE / NO / 0 hides the row.
+ * Approval is manual: a row is shown ONLY when PUBLISHED is YES / TRUE / 1 / SHOW.
+ * Blank, NO, FALSE, 0 — or a missing PUBLISHED column — hides the row.
  */
 import { createServerFn } from "@tanstack/react-start";
 import * as XLSX from "xlsx";
@@ -242,10 +243,10 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       const body = s(row[iBody]).trim();
       if (!name || !body) continue;
 
-      if (iPub >= 0) {
-        const p = s(row[iPub]).trim().toLowerCase();
-        if (!/^(yes|y|true|1|show|on|publish|published)$/.test(p)) continue;
-      }
+      // Manual approval: every review must be explicitly approved in the sheet.
+      if (iPub < 0) continue;
+      const p = s(row[iPub]).trim().toLowerCase();
+      if (!/^(yes|y|true|1|show|on|publish|published|approved)$/.test(p)) continue;
 
       const ratingRaw = Number(s(row[iRating]).trim() || "5");
       const rating = Math.max(1, Math.min(5, Number.isFinite(ratingRaw) ? Math.round(ratingRaw) : 5));
