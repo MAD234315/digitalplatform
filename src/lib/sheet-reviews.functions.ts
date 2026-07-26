@@ -4,7 +4,8 @@
  *
  * Sheet columns (header row required):
  *   NAME | LOCATION | RATING | PRODUCT | REVIEW | DATE | PUBLISHED
- * PUBLISHED accepts blank / TRUE / YES / 1 as "show". FALSE / NO / 0 hides the row.
+ * Approval is manual: a row is shown ONLY when PUBLISHED is YES / TRUE / 1 / SHOW.
+ * Blank, NO, FALSE, 0 — or a missing PUBLISHED column — hides the row.
  */
 import { createServerFn } from "@tanstack/react-start";
 import * as XLSX from "xlsx";
