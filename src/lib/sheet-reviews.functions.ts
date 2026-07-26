@@ -172,11 +172,24 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["howlonghaveyoubeen", "howlong", "customerof", "yearswith", "since", "tenure"],
     );
     // Google Forms can end up with several "What did you like most…" columns
-    // (question edited/duplicated). Read them all and use the first real answer.
+    // (question edited/duplicated), and a renamed header can degrade to a
+    // generic "Column 6" / blank label. Collect every candidate column.
     const likedIdxs = findAllIdx(
       ["liked", "likedmost", "whatdidyoulikemost", "highlight"],
       ["likedmost", "whatdidyoulike", "likeabout", "liked", "highlight", "favorite"],
     );
+    // Fallback: the column right after the rating, when its header is generic
+    // ("Column 6", unnamed) and it isn't already mapped to another field.
+    const mapped = new Set([iName, iLoc, iRating, iProduct, iBody, iDate, iPub, iTenure, ...likedIdxs]);
+    const after = iRating >= 0 ? iRating + 1 : -1;
+    if (
+      after > 0 &&
+      after < header.length &&
+      !mapped.has(after) &&
+      /^(|column\d*|untitled\d*)$/.test(header[after])
+    ) {
+      likedIdxs.push(after);
+    }
     const pickLiked = (row: string[]): string => {
       for (const i of likedIdxs) {
         const v = s(row[i]).trim();
@@ -188,7 +201,6 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     };
 
 
-    console.log('[dbg] header', JSON.stringify(header), 'likedIdxs', JSON.stringify(likedIdxs));
     const formatReadableDate = (ts: number): string => {
       const d = new Date(ts);
       const day = d.getDate();
