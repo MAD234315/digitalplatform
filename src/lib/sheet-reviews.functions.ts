@@ -171,10 +171,22 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["tenure", "customersince", "howlong", "yearswithus"],
       ["howlonghaveyoubeen", "howlong", "customerof", "yearswith", "since", "tenure"],
     );
-    const iLiked = findIdx(
+    // Google Forms can end up with several "What did you like most…" columns
+    // (question edited/duplicated). Read them all and use the first real answer.
+    const likedIdxs = findAllIdx(
       ["liked", "likedmost", "whatdidyoulikemost", "highlight"],
-      ["likedmost", "whatdidyoulike", "likeaboutdigital", "likeabout", "liked", "highlight", "favorite"],
+      ["likedmost", "whatdidyoulike", "likeabout", "liked", "highlight", "favorite"],
     );
+    const pickLiked = (row: string[]): string => {
+      for (const i of likedIdxs) {
+        const v = s(row[i]).trim();
+        // Skip consent-style answers that can land in a mis-mapped duplicate column
+        if (!v || /^(yes|no|y|n|na|n\/a|\.|-)$/i.test(v)) continue;
+        return v;
+      }
+      return "";
+    };
+
 
     const formatReadableDate = (ts: number): string => {
       const d = new Date(ts);
