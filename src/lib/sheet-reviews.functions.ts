@@ -245,7 +245,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         date: rawDate,
         formattedDate: Number.isFinite(when) ? formatReadableDate(when) : rawDate,
         tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
-        liked: iLiked >= 0 ? s(row[iLiked]).trim() : "",
+        liked: pickLiked(row),
         _row: r,
         _when: when,
       });
