@@ -149,6 +149,11 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       if (i >= 0) return i;
       return header.findIndex((h) => contains.some((k) => h.includes(k)));
     };
+    const findAllIdx = (exact: string[], contains: string[] = []) =>
+      header
+        .map((h, i) => (exact.includes(h) || contains.some((k) => h.includes(k)) ? i : -1))
+        .filter((i) => i >= 0);
+
     const iName = findIdx(["name", "customer", "customername", "yourname"], ["yourname", "name"]);
     const iLoc = findIdx(
       ["location", "city", "whereareyoufrom", "currentlocation", "currentlocationcitycountry"],
@@ -166,10 +171,22 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       ["tenure", "customersince", "howlong", "yearswithus"],
       ["howlonghaveyoubeen", "howlong", "customerof", "yearswith", "since", "tenure"],
     );
-    const iLiked = findIdx(
+    // Google Forms can end up with several "What did you like most…" columns
+    // (question edited/duplicated). Read them all and use the first real answer.
+    const likedIdxs = findAllIdx(
       ["liked", "likedmost", "whatdidyoulikemost", "highlight"],
-      ["likedmost", "whatdidyoulike", "likeaboutdigital", "likeabout", "liked", "highlight", "favorite"],
+      ["likedmost", "whatdidyoulike", "likeabout", "liked", "highlight", "favorite"],
     );
+    const pickLiked = (row: string[]): string => {
+      for (const i of likedIdxs) {
+        const v = s(row[i]).trim();
+        // Skip consent-style answers that can land in a mis-mapped duplicate column
+        if (!v || /^(yes|no|y|n|na|n\/a|\.|-)$/i.test(v)) continue;
+        return v;
+      }
+      return "";
+    };
+
 
     const formatReadableDate = (ts: number): string => {
       const d = new Date(ts);
@@ -228,7 +245,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         date: rawDate,
         formattedDate: Number.isFinite(when) ? formatReadableDate(when) : rawDate,
         tenure: iTenure >= 0 ? s(row[iTenure]).trim() : "",
-        liked: iLiked >= 0 ? s(row[iLiked]).trim() : "",
+        liked: pickLiked(row),
         _row: r,
         _when: when,
       });
