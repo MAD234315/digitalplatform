@@ -24,7 +24,7 @@ export function WhoWeAreSection() {
               A trusted marketplace for <em className="italic text-headline">premium digital tools.</em>
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">
-              Digital Platform is a trusted marketplace for premium digital products and AI tools.
+              Digital Platform (𝙋𝙍𝙊 𝙎𝙌𝙐𝘼𝘿) is a trusted marketplace for premium digital products and AI tools.
               Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
               productivity software, creative tools and digital services — at affordable prices.
             </p>
