@@ -149,6 +149,11 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
       if (i >= 0) return i;
       return header.findIndex((h) => contains.some((k) => h.includes(k)));
     };
+    const findAllIdx = (exact: string[], contains: string[] = []) =>
+      header
+        .map((h, i) => (exact.includes(h) || contains.some((k) => h.includes(k)) ? i : -1))
+        .filter((i) => i >= 0);
+
     const iName = findIdx(["name", "customer", "customername", "yourname"], ["yourname", "name"]);
     const iLoc = findIdx(
       ["location", "city", "whereareyoufrom", "currentlocation", "currentlocationcitycountry"],
