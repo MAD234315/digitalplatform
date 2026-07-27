@@ -88,8 +88,10 @@ function ChatThreadPage() {
   const [threads, setThreads] = useState<ChatThreadSummary[]>([]);
   const [initial, setInitial] = useState<UIMessage[] | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => setVisitorId(getVisitorId()), []);
+
 
   const refreshThreads = useCallback(async (vid: string) => {
     if (!vid) return;
