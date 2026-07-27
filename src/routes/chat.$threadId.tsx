@@ -132,7 +132,7 @@ function ChatThreadPage() {
 
   return (
     <ChatFrame>
-      <div className="relative flex h-[min(600px,calc(100dvh-120px))] w-full min-w-0 max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card shadow-gold-lg">
+      <div className="relative flex h-[min(600px,calc(100dvh-104px))] min-h-[420px] w-full min-w-0 max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card shadow-gold-lg">
         <ThreadList
           threads={threads}
           activeId={threadId}
@@ -330,10 +330,10 @@ function ChatWindow({
   const hasMessages = messages.length > 0;
 
   return (
-    <main className="relative flex min-w-0 flex-1 flex-col bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-950/10 via-transparent to-transparent">
+    <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-950/10 via-transparent to-transparent">
 
       {/* Header */}
-      <header className="flex shrink-0 items-center justify-between px-4 py-4 sm:px-8 sm:py-6">
+      <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-4 py-3 sm:px-8 sm:py-5">
         <div className="flex items-center gap-3">
           <div className="relative">
             <span className="size-2.5 rounded-full bg-amber shadow-[0_0_10px_rgba(245,158,11,0.6)]" aria-hidden />
@@ -355,8 +355,8 @@ function ChatWindow({
 
       {/* Empty state hero */}
       {!hasMessages && (
-        <div className="flex flex-1 flex-col items-center justify-center px-4 pb-4 text-center sm:px-8 lg:px-24">
-          <div className="mb-6 max-w-full sm:mb-10">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-2 text-center [-webkit-overflow-scrolling:touch] sm:px-8 lg:px-24">
+          <div className="mb-4 max-w-full sm:mb-8">
             <h1 className="max-w-full break-words font-display text-3xl font-normal text-foreground sm:text-5xl lg:text-6xl">
               Ask us <span className="italic text-amber">anything.</span>
             </h1>
@@ -384,7 +384,7 @@ function ChatWindow({
 
       {/* Messages */}
       {hasMessages && (
-        <Conversation className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-8 [-webkit-overflow-scrolling:touch] [contain:layout_paint]">
+        <Conversation className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 sm:px-8 [-webkit-overflow-scrolling:touch] [contain:layout_paint]">
           <ConversationContent className="gap-4 py-4">
             {messages.map((message) => (
               <Message key={message.id} from={message.role}>
@@ -451,7 +451,7 @@ function ChatWindow({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about a product, price, delivery or warranty…"
-                className="min-h-[60px] border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:ring-0"
+                className="min-h-[44px] border-0 sm:min-h-[56px] bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:ring-0"
               />
               <PromptInputFooter className="justify-end pt-1">
                 <PromptInputSubmit
