@@ -7,7 +7,7 @@ const INTENTS = ["Suggestion", "Feedback", "Collaboration"] as const;
 export function ContactPromptSection() {
   return (
     <section aria-labelledby="contact-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-14 lg:py-16">
         <Reveal>
           <Eyebrow>Get in touch</Eyebrow>
           <h2 id="contact-heading" className="mt-4 font-display text-3xl sm:text-4xl">
@@ -40,7 +40,7 @@ export function ContactPromptSection() {
 
 function FinalCta() {
   return (
-    <div className="mt-14 rounded-sm border border-border bg-hero p-8 sm:p-10 lg:p-14">
+    <div className="mt-10 rounded-sm border border-border bg-hero p-6 sm:p-8 lg:p-10">
       <Eyebrow>Ready when you are</Eyebrow>
       <h3 className="mt-4 font-display text-3xl sm:text-4xl lg:text-5xl max-w-2xl">
         Ready to upgrade your <em className="italic text-headline">digital experience?</em>
