@@ -28,6 +28,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ChatThreadIdRouteImport } from './routes/chat.$threadId'
+import { Route as ApiTestChatRouteImport } from './routes/api/test-chat'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -131,6 +132,11 @@ const ChatThreadIdRoute = ChatThreadIdRouteImport.update({
   path: '/chat/$threadId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTestChatRoute = ApiTestChatRouteImport.update({
+  id: '/api/test-chat',
+  path: '/api/test-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/test-chat': typeof ApiTestChatRoute
   '/chat/$threadId': typeof ChatThreadIdRoute
   '/admin/': typeof AdminIndexRoute
   '/chat/': typeof ChatIndexRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/test-chat': typeof ApiTestChatRoute
   '/chat/$threadId': typeof ChatThreadIdRoute
   '/admin': typeof AdminIndexRoute
   '/chat': typeof ChatIndexRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/test-chat': typeof ApiTestChatRoute
   '/chat/$threadId': typeof ChatThreadIdRoute
   '/admin/': typeof AdminIndexRoute
   '/chat/': typeof ChatIndexRoute
@@ -275,6 +284,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/api/chat'
+    | '/api/test-chat'
     | '/chat/$threadId'
     | '/admin/'
     | '/chat/'
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/api/chat'
+    | '/api/test-chat'
     | '/chat/$threadId'
     | '/admin'
     | '/chat'
@@ -330,6 +341,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/setup'
     | '/api/chat'
+    | '/api/test-chat'
     | '/chat/$threadId'
     | '/admin/'
     | '/chat/'
@@ -356,6 +368,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiTestChatRoute: typeof ApiTestChatRoute
   ChatThreadIdRoute: typeof ChatThreadIdRoute
   ChatIndexRoute: typeof ChatIndexRoute
   ApiPublicRevalidateReviewsRoute: typeof ApiPublicRevalidateReviewsRoute
@@ -498,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatThreadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/test-chat': {
+      id: '/api/test-chat'
+      path: '/api/test-chat'
+      fullPath: '/api/test-chat'
+      preLoaderRoute: typeof ApiTestChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -584,6 +604,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiTestChatRoute: ApiTestChatRoute,
   ChatThreadIdRoute: ChatThreadIdRoute,
   ChatIndexRoute: ChatIndexRoute,
   ApiPublicRevalidateReviewsRoute: ApiPublicRevalidateReviewsRoute,
@@ -593,3 +614,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
