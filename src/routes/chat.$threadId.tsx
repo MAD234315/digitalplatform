@@ -3,7 +3,8 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, History, Plus, User } from "lucide-react";
+import { Bot, History, Plus, User, WifiOff } from "lucide-react";
+
 
 import { getSheetProducts } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";

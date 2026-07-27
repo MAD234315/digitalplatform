@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { ChatFrame, CHAT_DESC, CHAT_TITLE, CHAT_URL } from "@/components/chat/chat-frame";
+
 import { getVisitorId } from "@/lib/chat-visitor";
 import { createChatThread, listChatThreads } from "@/lib/chat-threads.functions";
 
