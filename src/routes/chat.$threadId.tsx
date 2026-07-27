@@ -144,6 +144,7 @@ function ChatThreadPage() {
 
   const removeThread = async (id: string) => {
     if (!visitorId) return;
+    setThreads((prev) => prev.filter((t) => t.id !== id));
     await deleteChatThread({ data: { visitorId, threadId: id } });
     const remaining = await listChatThreads({ data: { visitorId } });
     setThreads(remaining);
@@ -151,7 +152,19 @@ function ChatThreadPage() {
       const next = remaining[0]?.id ?? (await createChatThread({ data: { visitorId } })).id;
       void navigate({ to: "/chat/$threadId", params: { threadId: next }, replace: true });
     }
+    setHistoryOpen(true);
   };
+
+  const removeAllThreads = async () => {
+    if (!visitorId) return;
+    setThreads([]);
+    await deleteAllChatThreads({ data: { visitorId } });
+    const { id } = await createChatThread({ data: { visitorId } });
+    await refreshThreads(visitorId);
+    void navigate({ to: "/chat/$threadId", params: { threadId: id }, replace: true });
+    setHistoryOpen(true);
+  };
+
 
   const rename = async (id: string, title: string) => {
     if (!visitorId) return;
