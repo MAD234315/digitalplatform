@@ -6,6 +6,7 @@ import { StatsCounterSection } from "@/components/home/StatsCounterSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ReasonsSection } from "@/components/home/ReasonsSection";
 import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
+import { AskAiSection } from "@/components/home/AskAiSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
@@ -77,6 +78,7 @@ function Home() {
         <ErrorBoundary boundary="home:stats"><div className="cv-auto"><StatsCounterSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:categories"><div className="cv-auto"><CategoriesSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:reasons"><div className="cv-auto"><ReasonsSection /></div></ErrorBoundary>
+        <ErrorBoundary boundary="home:ask-ai"><div className="cv-auto"><AskAiSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:motto"><div className="cv-auto"><MottoPromiseSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:contact-prompt"><div className="cv-auto"><ContactPromptSection /></div></ErrorBoundary>
 
