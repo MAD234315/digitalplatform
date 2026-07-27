@@ -217,7 +217,7 @@ function ChatThreadPage() {
 /** Compact sticky header: identity + status on the left, actions on the right. */
 function ChatHeader({ onNew, onHistory }: { onNew: () => void; onHistory: () => void }) {
   return (
-    <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-card/95 px-3 py-2.5 backdrop-blur-xl sm:px-4">
+    <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-card/95 px-3 py-2.5 backdrop-blur-xl sm:px-5">
       <div className="flex min-w-0 items-center gap-2.5">
         <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-200 text-black">
           <Bot className="size-4.5" aria-hidden />
@@ -436,51 +436,56 @@ function ChatWindow({
 
       {/* Composer pinned to the bottom */}
       <div className="shrink-0 border-t border-border bg-card px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-5 sm:pt-3">
-        {showWhatsapp && (
-          <button
-            type="button"
-            onClick={openHandoff}
-            className="mb-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-[filter] hover:brightness-110 active:scale-[0.99] motion-reduce:transform-none"
-            style={{ backgroundColor: "var(--whatsapp)" }}
+        <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-col">
+          {showWhatsapp && (
+            <button
+              type="button"
+              onClick={openHandoff}
+              className="mb-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-[filter] hover:brightness-110 active:scale-[0.99] motion-reduce:transform-none"
+              style={{ backgroundColor: "var(--whatsapp)" }}
+            >
+              <WaGlyph />
+              Continue on WhatsApp
+            </button>
+          )}
+
+          <div
+            className={`w-full min-w-0 rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40 ${!isOnline ? "opacity-70" : ""}`}
           >
-            <WaGlyph />
-            Continue on WhatsApp
-          </button>
-        )}
-
-        <div
-          className={`mx-auto w-full max-w-3xl rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40 ${!isOnline ? "opacity-70" : ""}`}
-        >
-          <PromptInput onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}>
-            <PromptInputTextarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              rows={1}
-              disabled={!isOnline}
-              placeholder={
-                isOnline ? "Ask about any product..." : "You're offline. Reconnect to chat..."
-              }
-              className="!min-h-[44px] max-h-32 border-0 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm"
-            />
-            <PromptInputFooter className="justify-end pt-0">
-              <PromptInputSubmit
-                status={status}
-                disabled={(!input.trim() && !busy) || !isOnline}
-                className="size-10 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black transition-[filter] hover:brightness-110"
+            <PromptInput
+              onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}
+              className="w-full min-w-0 items-end gap-1 border-0 bg-transparent p-0 shadow-none"
+            >
+              <PromptInputTextarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                disabled={!isOnline}
+                placeholder={
+                  isOnline ? "Ask about any product..." : "You're offline. Reconnect to chat..."
+                }
+                className="!min-h-[44px] !max-h-[112px] w-full min-w-0 resize-none overflow-y-auto border-0 bg-transparent py-2.5 text-base leading-6 text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm"
               />
-            </PromptInputFooter>
-          </PromptInput>
+              <PromptInputFooter className="shrink-0 justify-end border-0 p-0 pb-1 pr-1 pt-0">
+                <PromptInputSubmit
+                  status={status}
+                  disabled={(!input.trim() && !busy) || !isOnline}
+                  className="size-10 shrink-0 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black transition-[filter] hover:brightness-110"
+                />
+              </PromptInputFooter>
+            </PromptInput>
+          </div>
+
+          <p className="mt-1.5 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+            AI-generated. Confirm today&apos;s price on{" "}
+            <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
+              WhatsApp
+            </a>
+            .
+          </p>
         </div>
-
-
-        <p className="mt-1.5 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-          AI-generated. Confirm today&apos;s price on{" "}
-          <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
-            WhatsApp
-          </a>
-          .
-        </p>
       </div>
+
 
       <HandoffDialog
         open={handoffOpen}
@@ -567,9 +572,9 @@ function WelcomeScreen({
   online: boolean;
 }) {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col py-4">
-      <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
-        👋 Welcome to <span className="text-amber">CREATOR AI</span>
+    <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-col py-4">
+      <h1 className="text-balance text-xl font-semibold text-foreground sm:text-2xl">
+        Welcome to <span className="text-amber">CREATOR AI</span>
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">I can help you with:</p>
       <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground sm:grid-cols-3">
