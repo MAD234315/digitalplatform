@@ -201,7 +201,12 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
-
+      <p className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-4 text-center text-xs text-muted-foreground">
+        Clear your doubts on{" "}
+        <Link to="/chat" className="font-medium text-foreground underline underline-offset-2 hover:text-amber transition-colors">
+          Ask AI — CREATOR AI
+        </Link>
+      </p>
 
       <ProductsFilterBar
         slot="search"
