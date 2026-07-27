@@ -10,11 +10,20 @@ export const CHAT_DESC =
 export const CHAT_QUICK_PROMPTS = [
   { label: "Latest offers", prompt: "What are your latest offers right now?" },
   { label: "AI tools", prompt: "Which AI tools do you have in stock?" },
-  { label: "More offers", prompt: "Show me more offers and bundles I might have missed." },
-  { label: "Gift cards", prompt: "Which gift cards do you sell and how are they delivered?" },
-  { label: "Delivery time", prompt: "How fast is delivery after I pay?" },
-  { label: "Warranty", prompt: "What warranty do you offer and how does it work?" },
-  { label: "How to order", prompt: "How do I place an order?" },
+  { label: "Subscriptions", prompt: "Which subscriptions do you sell?" },
+  { label: "Product search", prompt: "Help me find a product from your catalogue." },
+  { label: "Contact admin", prompt: "I would like to talk to the admin about an order." },
+];
+
+/** Suggested question chips under the welcome message. */
+export const CHAT_SUGGESTION_CHIPS = [
+  "Amazon Prime",
+  "Netflix",
+  "ChatGPT Plus",
+  "Canva Pro",
+  "Adobe",
+  "Latest Offers",
+  "Pricing",
 ];
 
 export const CHAT_SUGGESTIONS = CHAT_QUICK_PROMPTS.slice(0, 4).map((q) => q.prompt);
@@ -22,7 +31,7 @@ export const CHAT_SUGGESTIONS = CHAT_QUICK_PROMPTS.slice(0, 4).map((q) => q.prom
 export function ChatFrame({ children }: { children: React.ReactNode }) {
   return (
     <PageShell>
-      <section className="flex min-h-[calc(100dvh-64px-1px)] items-center justify-center bg-background px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-10">
+      <section className="flex items-stretch justify-center overflow-x-hidden bg-background px-0 pt-16 sm:px-4 sm:pb-6 sm:pt-24 lg:px-8">
         {children}
       </section>
     </PageShell>
