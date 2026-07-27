@@ -471,7 +471,6 @@ function ChatWindow({
         open={handoffOpen}
         onOpenChange={setHandoffOpen}
         text={handoffText}
-        messages={messages}
         chatLink={shareLink}
       />
 
