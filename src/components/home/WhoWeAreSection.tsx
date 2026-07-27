@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { Target } from "lucide-react";
 import { Eyebrow } from "@/components/ui-primitives";
 import { Reveal } from "@/components/reveal";
 
