@@ -336,7 +336,7 @@ function ChatWindow({
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:py-4"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pb-16 pt-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:pb-16 sm:pt-4"
         >
           {!hasMessages ? (
             <WelcomeScreen onPick={submit} busy={busy} />
