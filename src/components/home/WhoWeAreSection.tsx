@@ -27,10 +27,6 @@ export function WhoWeAreSection() {
               Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
               productivity software, creative tools and digital services — at affordable prices.
             </p>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              Our mission is simple: make premium digital services more accessible while delivering
-              reliable customer support and a smooth buying experience.
-            </p>
           </Reveal>
         </div>
       </div>
