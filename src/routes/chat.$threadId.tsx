@@ -577,6 +577,62 @@ function TypingIndicator() {
   );
 }
 
+function getReplySuggestions(text: string): string[] {
+  const lower = text.toLowerCase();
+
+  // Plan selection stage
+  if (lower.includes("which plan") || lower.includes("available plans") || lower.includes("choose a plan") || lower.includes("would you like to know more about")) {
+    return ["Tell me about the first plan", "Which plan is most popular?", "What are the prices?"];
+  }
+
+  // Details confirmation stage
+  if (lower.includes("would you like to know the complete features") || lower.includes("complete features, benefits, limitations") || lower.includes("explain the details")) {
+    return ["Yes, explain the features", "What is the validity?", "What are the limitations?"];
+  }
+
+  // Doubt-clearing stage
+  if (lower.includes("any questions") || lower.includes("is everything clear") || lower.includes("do you have any doubts") || lower.includes("other questions before purchasing")) {
+    return ["Yes, I have a question", "Everything is clear", "What is the price?"];
+  }
+
+  // Purchase confirmation stage
+  if (lower.includes("would you like to purchase") || lower.includes("want to purchase") || lower.includes("want to buy")) {
+    return ["Yes, I want to purchase", "I have a few more questions", "What is the price?"];
+  }
+
+  // Out of stock / alternatives
+  if (lower.includes("out of stock") || lower.includes("alternative") || lower.includes("similar product")) {
+    return ["Show me alternatives", "When will it be back?", "Contact Admin"];
+  }
+
+  // Welcome / greeting
+  if (lower.includes("how can i help you") || lower.includes("welcome") || lower.includes("hello!")) {
+    return ["Show me latest offers", "Tell me about AI tools", "What products do you have?"];
+  }
+
+  // Default fallback
+  return ["Tell me more", "What is the price?", "Connect on WhatsApp"];
+}
+
+function ReplySuggestions({ text, onPick }: { text: string; onPick: (text: string) => void }) {
+  const suggestions = useMemo(() => getReplySuggestions(text), [text]);
+
+  return (
+    <div className="mt-2 flex flex-wrap gap-2">
+      {suggestions.map((suggestion) => (
+        <button
+          key={suggestion}
+          type="button"
+          onClick={() => onPick(suggestion)}
+          className="inline-flex min-h-11 items-center rounded-full border border-amber/30 bg-amber/5 px-3.5 text-xs text-amber-200 transition-colors hover:border-amber/60 hover:bg-amber/10"
+        >
+          {suggestion}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function WelcomeScreen({
   onPick,
   busy,
