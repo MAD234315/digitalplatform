@@ -6,14 +6,14 @@ import { REASONS, type Reason } from "./data";
 export function ReasonsSection() {
   return (
     <section aria-labelledby="why-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-14 lg:py-16">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
         <Reveal className="max-w-3xl">
           <Eyebrow>Why choose us</Eyebrow>
           <h2 id="why-heading" className="mt-4 font-display text-3xl sm:text-4xl">
             Six reasons the return <em className="italic text-headline">customers come back.</em>
           </h2>
         </Reveal>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {REASONS.map((r, i) => (
             <Reveal key={r.n} delay={Math.min(i * 70, 350)}>
               <TiltCard className="h-full">

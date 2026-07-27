@@ -56,7 +56,7 @@ export function CategoriesSection() {
         }}
       />
 
-      <div className="relative mx-auto max-w-6xl px-5 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-14">
+      <div className="relative mx-auto max-w-6xl px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="grid min-w-0 gap-8 lg:grid-cols-12 lg:gap-10">
           <Reveal className="min-w-0 lg:col-span-4">
             <div className="flex min-w-0 flex-col items-start">
