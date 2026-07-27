@@ -209,3 +209,58 @@ export const deleteChatThread = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/** Owner-only: fetch the private share token for one of this visitor's threads. */
+export const getChatShareToken = createServerFn({ method: "POST" })
+  .inputValidator((input: { visitorId: string; threadId: string }) => ({
+    visitorId: assertVisitor(input.visitorId),
+    threadId: assertThreadId(input.threadId),
+  }))
+  .handler(async ({ data }): Promise<{ token: string } | null> => {
+    const db = await admin();
+    const { data: row, error } = await db
+      .from("chat_threads")
+      .select("share_token")
+      .eq("id", data.threadId)
+      .eq("visitor_id", data.visitorId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row?.share_token ? { token: row.share_token as string } : null;
+  });
+
+/**
+ * Read-only transcript for anyone holding the unguessable share token
+ * (used by the WhatsApp handoff link so the admin can read the chat).
+ */
+export const getSharedChatThread = createServerFn({ method: "POST" })
+  .inputValidator((input: { threadId: string; token: string }) => ({
+    threadId: assertThreadId(input.threadId),
+    token: assertThreadId(input.token),
+  }))
+  .handler(async ({ data }): Promise<{ thread: ChatThreadSummary; messages: StoredChatMessage[] } | null> => {
+    const db = await admin();
+    const { data: thread, error } = await db
+      .from("chat_threads")
+      .select("id, title, updated_at")
+      .eq("id", data.threadId)
+      .eq("share_token", data.token)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!thread) return null;
+
+    const { data: rows, error: msgError } = await db
+      .from("chat_messages")
+      .select("client_id, role, parts, seq")
+      .eq("thread_id", data.threadId)
+      .order("seq", { ascending: true });
+    if (msgError) throw new Error(msgError.message);
+
+    return {
+      thread: { id: thread.id, title: thread.title, updatedAt: thread.updated_at },
+      messages: (rows ?? []).map((r) => ({
+        id: r.client_id,
+        role: r.role as StoredChatMessage["role"],
+        parts: (r.parts ?? []) as StoredChatMessage["parts"],
+      })),
+    };
+  });
