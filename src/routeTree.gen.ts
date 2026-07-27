@@ -26,6 +26,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
@@ -119,6 +120,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatIndexRoute = ChatIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ChatRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -161,7 +167,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
+  '/chat': typeof ChatRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
   '/admin/': typeof AdminIndexRoute
+  '/chat/': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
@@ -186,7 +193,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
@@ -204,6 +210,7 @@ export interface FileRoutesByTo {
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
   '/admin': typeof AdminIndexRoute
+  '/chat': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
@@ -213,7 +220,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
+  '/chat': typeof ChatRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/privacy': typeof PrivacyRoute
@@ -231,6 +238,7 @@ export interface FileRoutesById {
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
   '/admin/': typeof AdminIndexRoute
+  '/chat/': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
@@ -259,6 +267,7 @@ export interface FileRouteTypes {
     | '/admin/setup'
     | '/api/chat'
     | '/admin/'
+    | '/chat/'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   fileRoutesByTo: FileRoutesByTo
@@ -266,7 +275,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
-    | '/chat'
     | '/contact'
     | '/faq'
     | '/privacy'
@@ -284,6 +292,7 @@ export interface FileRouteTypes {
     | '/admin/setup'
     | '/api/chat'
     | '/admin'
+    | '/chat'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   id:
@@ -310,6 +319,7 @@ export interface FileRouteTypes {
     | '/admin/setup'
     | '/api/chat'
     | '/admin/'
+    | '/chat/'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
   fileRoutesById: FileRoutesById
@@ -319,7 +329,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ChatRoute: typeof ChatRoute
+  ChatRoute: typeof ChatRouteWithChildren
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -458,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat/': {
+      id: '/chat/'
+      path: '/'
+      fullPath: '/chat/'
+      preLoaderRoute: typeof ChatIndexRouteImport
+      parentRoute: typeof ChatRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -526,12 +543,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface ChatRouteChildren {
+  ChatIndexRoute: typeof ChatIndexRoute
+}
+
+const ChatRouteChildren: ChatRouteChildren = {
+  ChatIndexRoute: ChatIndexRoute,
+}
+
+const ChatRouteWithChildren = ChatRoute._addFileChildren(ChatRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
-  ChatRoute: ChatRoute,
+  ChatRoute: ChatRouteWithChildren,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   PrivacyRoute: PrivacyRoute,
