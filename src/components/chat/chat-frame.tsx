@@ -29,9 +29,9 @@ export function ChatFrame({ children }: { children: React.ReactNode }) {
         eyebrow="AI assistant"
         title="Ask us"
         titleAccent="anything."
-        lede="Our assistant knows the live catalogue, delivery times, warranty and support hours. Your conversations are saved so you can pick up where you left off."
+        lede="Ask about products, prices, delivery, warranty or support. Your chats are saved."
       />
-      <section className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 pb-16">{children}</section>
+      <section className="mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-6 pb-8 sm:pb-10">{children}</section>
     </PageShell>
   );
 }
