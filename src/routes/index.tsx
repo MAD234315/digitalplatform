@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { HeroSection } from "@/components/home/HeroSection";
+import { HeroFaqBlock } from "@/components/home/HeroFaqBlock";
 import { WhoWeAreSection } from "@/components/home/WhoWeAreSection";
 import { StatsCounterSection } from "@/components/home/StatsCounterSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
