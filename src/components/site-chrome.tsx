@@ -92,7 +92,7 @@ export function SiteNav() {
         </Link>
 
 
-        <nav aria-label="Primary" className="hidden md:flex items-center gap-8 text-sm">
+        <nav aria-label="Primary" className="hidden lg:flex items-center gap-6 text-sm xl:gap-8">
           {LINKS.map((l) => {
             const active = pathname === l.to;
             return (
@@ -122,7 +122,7 @@ export function SiteNav() {
             href={WA_URL_GENERAL}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex items-center min-h-11 rounded-full px-5 text-sm font-medium transition hover:brightness-110 shadow-gold"
+            className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center min-h-11 rounded-full px-5 text-sm font-medium transition hover:brightness-110 shadow-gold"
             style={{ backgroundColor: "var(--amber)", color: "var(--amber-foreground)" }}
           >
             Get in touch
@@ -133,7 +133,7 @@ export function SiteNav() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground"
+            className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
               {open ? <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /> : <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />}
@@ -146,7 +146,7 @@ export function SiteNav() {
       <div
         id="mobile-nav"
         hidden={!open}
-        className="md:hidden border-t border-border bg-background/95 backdrop-blur"
+        className="lg:hidden border-t border-border bg-background/95 backdrop-blur"
       >
         <nav aria-label="Mobile" className="mx-auto max-w-7xl px-5 py-3 flex flex-col">
           {LINKS.map((l) => {
