@@ -6,8 +6,8 @@ import { PageShell } from "@/components/layout/PageShell";
 import { MessageResponse } from "@/components/ai-elements/message";
 import { getSharedChatThread, type StoredChatMessage } from "@/lib/chat-threads.functions";
 
-const TITLE = "Shared conversation — Digital Platform AI";
-const DESC = "Read-only transcript of a Digital Platform AI assistant conversation.";
+const TITLE = "Shared conversation — CREATOR AI";
+const DESC = "Read-only transcript of a CREATOR AI assistant conversation.";
 
 type Search = { t?: string };
 
@@ -99,7 +99,7 @@ function SharedChatPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="mb-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-                      {mine ? "Customer" : "Digital Platform AI"}
+                      {mine ? "Customer" : "CREATOR AI"}
                     </p>
                     <div className="prose-sm max-w-none break-words text-sm leading-relaxed">
                       <MessageResponse>{body}</MessageResponse>

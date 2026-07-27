@@ -82,7 +82,7 @@ function ChatIndex() {
             </span>
             <p className="text-sm font-medium text-foreground">You&apos;re offline</p>
             <p className="text-xs text-muted-foreground">
-              Please reconnect to the internet to chat with Digital Platform AI.
+              Please reconnect to the internet to chat with CREATOR AI.
             </p>
           </div>
         ) : failed ? (

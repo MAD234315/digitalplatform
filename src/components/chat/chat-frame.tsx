@@ -2,9 +2,9 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SITE_URL } from "@/lib/site-config";
 
 export const CHAT_URL = SITE_URL + "/chat";
-export const CHAT_TITLE = "Ask Digital Platform — AI catalogue & support assistant";
+export const CHAT_TITLE = "Ask CREATOR AI — AI catalogue & support assistant";
 export const CHAT_DESC =
-  "Chat with the Digital Platform assistant about subscriptions, AI tools, delivery, warranty and pricing — then finish your order on WhatsApp.";
+  "Chat with CREATOR AI about subscriptions, AI tools, delivery, warranty and pricing — then finish your order on WhatsApp.";
 
 /** Suggested question chips under the welcome message. */
 export const CHAT_SUGGESTION_CHIPS = [

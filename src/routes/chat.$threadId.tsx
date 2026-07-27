@@ -208,7 +208,7 @@ function ChatHeader({ onNew, onHistory }: { onNew: () => void; onHistory: () => 
           <Bot className="size-4.5" aria-hidden />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">Digital Platform AI</p>
+          <p className="truncate text-sm font-semibold text-foreground">CREATOR AI</p>
           <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-2 animate-ping rounded-full bg-emerald-400 opacity-60" />
@@ -501,7 +501,7 @@ function ChatBubble({
 
       <div className={`flex min-w-0 max-w-[86%] flex-col ${isUser ? "items-end" : "items-start"}`}>
         <span className="mb-1 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          {isUser ? "You" : "Digital Platform AI"}
+          {isUser ? "You" : "CREATOR AI"}
         </span>
         <div
           className={`min-w-0 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed [overflow-wrap:anywhere] ${
@@ -527,7 +527,7 @@ function TypingIndicator() {
         <Bot className="size-4" aria-hidden />
       </span>
       <div className="flex items-center gap-2 rounded-2xl rounded-tl-md bg-background/70 px-3.5 py-2.5 ring-1 ring-border">
-        <span className="text-xs text-muted-foreground">Digital Platform AI is typing</span>
+        <span className="text-xs text-muted-foreground">CREATOR AI is typing</span>
         <span className="flex gap-1" aria-hidden>
           {[0, 150, 300].map((delay) => (
             <span
@@ -554,7 +554,7 @@ function WelcomeScreen({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col py-4">
       <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
-        👋 Welcome to <span className="text-amber">Digital Platform AI</span>
+        👋 Welcome to <span className="text-amber">CREATOR AI</span>
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">I can help you with:</p>
       <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground sm:grid-cols-3">
