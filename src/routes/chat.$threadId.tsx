@@ -614,56 +614,74 @@ function getReplySuggestions(text: string): string[] {
   const question = extractLastQuestion(text);
   const planNames = extractPlanNames(text);
 
-  // Plan selection stage: offer actual plan names
-  if (question && (question.includes("which plan") || question.includes("available plans") || question.includes("choose a plan") || question.includes("know more about"))) {
+  // 1. Plan listing stage: offer actual plan names and a guidance chip.
+  const isPlanListing =
+    question &&
+    (/\b(which plan|available plans|plans available|choose a plan|select a plan|which one|interested in|know more about)\b/i.test(
+      question,
+    ) ||
+      /\b(plan|plans)\b/i.test(question));
+  if (isPlanListing && planNames.length >= 2) {
+    return [
+      `Tell me about ${planNames[0]}`,
+      `Tell me about ${planNames[1]}`,
+      "Which plan is best for me?",
+    ];
+  }
+  if (isPlanListing && planNames.length === 1) {
+    return [`Tell me about ${planNames[0]}`, "What is the validity?", "I have a question"];
+  }
+
+  // 2. Details confirmation stage: the AI asks if the customer wants full details.
+  if (question && /\b(complete features|benefits|limitations|details before purchasing|explain the details)\b/i.test(question)) {
+    return ["Yes, explain the features", "Any limitations?", "I have a question"];
+  }
+
+  // 3. Doubt-clearing stage: the AI asks if the customer has any questions.
+  if (
+    question &&
+    /\b(any questions|is everything clear|do you have any doubts|other questions before purchasing|questions before purchasing)\b/i.test(
+      question,
+    )
+  ) {
+    return ["Yes, I have a question", "No, everything is clear", "I'm ready to purchase"];
+  }
+
+  // 4. Purchase confirmation stage: only at this stage suggest buying.
+  if (
+    question &&
+    /\b(would you like to purchase|want to purchase|want to buy|purchase this plan|proceed with this plan)\b/i.test(question)
+  ) {
+    return ["Yes, I'd like to buy", "Not now", "I have a question"];
+  }
+
+  // 5. Out of stock / alternatives: suggest real alternatives, never Contact Admin.
+  if (lower.includes("out of stock") || lower.includes("unavailable") || lower.includes("alternative") || lower.includes("similar product")) {
     if (planNames.length >= 2) {
       return [
         `Tell me about ${planNames[0]}`,
         `Tell me about ${planNames[1]}`,
-        `What are the prices?`,
+        "What else do you have?",
       ];
     }
     if (planNames.length === 1) {
-      return [`Tell me about ${planNames[0]}`, `What is the price?`, `What is the validity?`];
+      return [`Tell me about ${planNames[0]}`, "What else do you have?", "I have a question"];
     }
-    return ["Tell me about the first plan", "What is the price?", "What is the validity?"];
+    return ["Show me alternatives", "When will it be back?", "What else do you have?"];
   }
 
-  // Details confirmation stage
-  if (question && (question.includes("complete features") || question.includes("benefits, limitations") || question.includes("explain the details"))) {
-    return ["Yes, explain the features", "What is the validity?", "What are the limitations?"];
+  // 6. Greeting / welcome.
+  if (question && /\b(how can i help you|what can i help|how may i assist|welcome to)\b/i.test(question)) {
+    return ["Show me products", "Latest offers", "AI tools"];
   }
 
-  // Doubt-clearing stage: use the actual question to offer relevant follow-ups
-  if (question && (question.includes("any questions") || question.includes("is everything clear") || question.includes("do you have any doubts") || question.includes("other questions"))) {
-    if (lower.includes("activation")) return ["How do I activate?", "How long does delivery take?", "I'm ready to purchase"];
-    if (lower.includes("price") || lower.includes("pricing") || lower.includes("cost") || lower.includes("₹")) return ["What is the final price?", "Is there any discount?", "I'm ready to purchase"];
-    return ["What is the activation process?", "How long does delivery take?", "I'm ready to purchase"];
-  }
-
-  // Purchase confirmation stage
-  if (question && (question.includes("would you like to purchase") || question.includes("want to purchase") || question.includes("want to buy") || question.includes("purchase this plan"))) {
-    return ["Yes, I want to purchase", "I have a few more questions", "What is the price?"];
-  }
-
-  // Out of stock / alternatives
-  if (lower.includes("out of stock") || lower.includes("alternative") || lower.includes("similar product")) {
-    if (planNames.length) return planNames.map((name) => `Tell me about ${name}`).concat(["Contact Admin"]).slice(0, 3);
-    return ["Show me alternatives", "When will it be back?", "Contact Admin"];
-  }
-
-  // Welcome / greeting
-  if (question && (question.includes("how can i help you") || question.includes("what can i help") || question.includes("welcome"))) {
-    return ["Show me latest offers", "Tell me about AI tools", "What products do you have?"];
-  }
-
-  // Default: if the AI asked a question, offer a direct yes/no/more answer
+  // 7. Default: if the AI asked a question, offer a direct continuation.
   if (question) {
-    return ["Yes, please", "Tell me more", "What is the price?"];
+    return ["Yes, please", "Tell me more", "I have a question"];
   }
 
-  // Default fallback
-  return ["Tell me more", "What is the price?", "Connect on WhatsApp"];
+  // 8. Default fallback.
+  return ["Tell me more", "I have a question", "Show me products"];
 }
 
 function ReplySuggestions({ text, onPick }: { text: string; onPick: (text: string) => void }) {
