@@ -20,8 +20,8 @@ export function MottoPromiseSection() {
         <Reveal className="lg:col-span-5" delay={140}>
           <div className="rounded-sm border border-border bg-card p-6 sm:p-8 transition-all duration-300 hover:border-amber/40 hover:shadow-gold">
             <Eyebrow>Customer promise</Eyebrow>
-            <h3 className="mt-3 font-display text-2xl">We are committed to:</h3>
-            <ul className="mt-6 space-y-3 text-sm">
+            <h3 className="mt-2 font-display text-2xl">We are committed to:</h3>
+            <ul className="mt-5 space-y-2.5 text-sm">
               {PROMISES.map((p, i) => (
                 <Reveal as="li" key={p} delay={200 + i * 60} y={6} className="flex items-start gap-3">
                   <AccentTile size="sm">✓</AccentTile>

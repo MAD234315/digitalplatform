@@ -40,7 +40,7 @@ export function ContactPromptSection() {
 
 function FinalCta() {
   return (
-    <div className="mt-14 rounded-sm border border-border bg-hero p-8 sm:p-10 lg:p-14">
+    <div className="mt-10 rounded-sm border border-border bg-hero p-6 sm:p-8 lg:p-10">
       <Eyebrow>Ready when you are</Eyebrow>
       <h3 className="mt-4 font-display text-3xl sm:text-4xl lg:text-5xl max-w-2xl">
         Ready to upgrade your <em className="italic text-headline">digital experience?</em>

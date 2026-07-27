@@ -278,7 +278,7 @@ export function SiteFooter() {
 
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} Digital Platform. Trusted since 2020.</span>
           <span>Premium digital solutions. Genuine sources.</span>
         </div>
