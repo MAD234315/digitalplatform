@@ -107,19 +107,34 @@ function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-/** Preview + edit the handoff note before opening WhatsApp. */
+/** Preview + edit the short handoff note, and download the full chat as a PDF. */
 export function HandoffDialog({
   open,
   onOpenChange,
   text,
   onTextChange,
+  messages = [],
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   text: string;
   onTextChange: (text: string) => void;
+  messages?: UIMessage[];
 }) {
   const href = `${CONTACT.WA_URL}?text=${encodeURIComponent(text)}`;
+  const [downloading, setDownloading] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
+
+  const downloadPdf = async () => {
+    setDownloading(true);
+    try {
+      const { downloadChatTranscriptPdf } = await import("@/lib/chat-transcript-pdf");
+      await downloadChatTranscriptPdf(messages);
+      setDownloaded(true);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -127,18 +142,36 @@ export function HandoffDialog({
         <DialogHeader>
           <DialogTitle>Send this summary to WhatsApp?</DialogTitle>
           <DialogDescription>
-            We&apos;ll pass along what you asked so our team can pick up right where the assistant
-            left off. Edit anything before you send.
+            We keep the message short — download the full conversation as a PDF and attach it in
+            WhatsApp if our team needs the details.
           </DialogDescription>
         </DialogHeader>
 
         <Textarea
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
-          rows={9}
+          rows={7}
           aria-label="WhatsApp handoff message"
           className="resize-none text-base sm:text-sm"
         />
+
+        <button
+          type="button"
+          onClick={downloadPdf}
+          disabled={downloading || messages.length === 0}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border px-5 text-sm font-medium transition-colors hover:border-amber/40 hover:bg-card disabled:opacity-50"
+        >
+          {downloading ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : downloaded ? (
+            <Check className="size-4 text-amber" aria-hidden />
+          ) : (
+            <FileDown className="size-4 text-amber" aria-hidden />
+          )}
+          {downloaded ? "Chat PDF saved" : "Download full chat as PDF"}
+        </button>
+
+
 
 
         <DialogFooter className="gap-2 sm:gap-2">
