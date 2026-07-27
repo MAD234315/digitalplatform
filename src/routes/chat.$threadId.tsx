@@ -513,11 +513,6 @@ function ChatBubble({
           )}
         </div>
 
-        {matched.length > 0 && (
-          <div className="w-full">
-            <ChatProductCards products={matched} onKnowMore={onKnowMore} />
-          </div>
-        )}
       </div>
     </div>
   );
