@@ -137,6 +137,15 @@ function ChatWindow({ initialMessages }: { initialMessages: UIMessage[] }) {
     focusInput();
   };
 
+  const [handoffOpen, setHandoffOpen] = useState(false);
+  const [handoffText, setHandoffText] = useState("");
+
+  const openHandoff = () => {
+    setHandoffText(buildHandoffSummary(messages));
+    setHandoffOpen(true);
+  };
+
+
   return (
     <div className="rounded-2xl border border-border bg-card shadow-soft">
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
