@@ -74,9 +74,20 @@ function messageText(message: UIMessage): string {
   return message.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
 }
 
-/** Buying intent — the only time the WhatsApp CTA appears. */
-const INTENT_RE =
-  /\b(price|pricing|cost|how much|buy|purchase|order|pay|payment|interested|admin|contact|subscribe|activate)\b/i;
+/**
+ * WhatsApp CTA appears only when the assistant has reached the final handoff
+ * stage and explicitly asks the customer to click the website's WhatsApp button.
+ */
+function isHandoffStage(messages: UIMessage[]): boolean {
+  const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  if (!lastAssistant) return false;
+  const text = messageText(lastAssistant).toLowerCase();
+  return (
+    text.includes("continue the chat on whatsapp") ||
+    text.includes("continue the conversation on whatsapp") ||
+    text.includes("click the button below")
+  );
+}
 
 function ChatThreadPage() {
   const { threadId } = Route.useParams();
