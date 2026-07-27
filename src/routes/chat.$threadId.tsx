@@ -391,9 +391,9 @@ function ChatWindow({
               onClick={() => submit(q.prompt)}
               disabled={busy}
               title={q.prompt}
-              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
+              className="inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
             >
-              <Sparkle className="size-3 text-amber" aria-hidden />
+              <Sparkle className="size-3 shrink-0 text-amber" aria-hidden />
               {q.label}
             </button>
           ))}
@@ -405,7 +405,9 @@ function ChatWindow({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about a product, price, delivery or warranty…"
+            className="text-base sm:text-sm"
           />
+
           <PromptInputFooter className="justify-end">
             <PromptInputSubmit status={status} disabled={!input.trim() && !busy} />
           </PromptInputFooter>
