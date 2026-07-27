@@ -381,8 +381,8 @@ function ChatWindow({
       <div className="shrink-0 border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
         <div
           aria-label="Quick questions"
+          className="-mx-1 mb-3 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
 
-          className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {CHAT_QUICK_PROMPTS.map((q) => (
             <button
