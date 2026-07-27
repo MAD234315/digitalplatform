@@ -14,7 +14,7 @@ import { Reveal } from "@/components/reveal";
 
 const TITLE = "FAQ — Digital Platform | Orders, Delivery, Warranty & Support";
 const DESC =
-  "Answers to the most common questions about our digital products, subscriptions, delivery process, warranty, and support at Digital Platform.";
+  "Answers about our digital products, subscriptions, delivery, warranty and support — plus how our prices and plans change based on demand and availability.";
 
 const slugifyCat = (name: string) =>
   name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
