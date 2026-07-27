@@ -236,14 +236,6 @@ ${faq}`;
           model: gateway("google/gemini-3.6-flash"),
           system,
           messages: await convertToModelMessages(messages as UIMessage[]),
-          onError: (error: any) => {
-            console.error("[chat] streamText error:", {
-              message: error.message,
-              statusCode: error.statusCode,
-              responseHeaders: error.responseHeaders,
-              cause: error.cause,
-            });
-          },
         });
 
         const response = result.toUIMessageStreamResponse({
