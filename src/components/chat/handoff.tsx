@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 
 /** Plain text of a UI message (text parts only). */
 function messageText(message: UIMessage): string {
@@ -110,21 +109,23 @@ function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-/** Preview + edit the short handoff note, and download the full chat as a PDF. */
+/** Show the handoff options (no transcript preview) and download the chat PDF. */
 export function HandoffDialog({
   open,
   onOpenChange,
   text,
-  onTextChange,
   messages = [],
+  chatLink,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   text: string;
-  onTextChange: (text: string) => void;
+  onTextChange?: (text: string) => void;
   messages?: UIMessage[];
+  chatLink?: string;
 }) {
-  const href = `${CONTACT.WA_URL}?text=${encodeURIComponent(text)}`;
+  const message = chatLink ? `${text}\n\nChat history link: ${chatLink}` : text;
+  const href = `${CONTACT.WA_URL}?text=${encodeURIComponent(message)}`;
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
 
@@ -143,20 +144,13 @@ export function HandoffDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90svh] w-[calc(100vw-1.5rem)] max-w-lg overflow-y-auto overscroll-contain">
         <DialogHeader>
-          <DialogTitle>Send this summary to WhatsApp?</DialogTitle>
+          <DialogTitle>Continue on WhatsApp?</DialogTitle>
           <DialogDescription>
             We keep the message short — download the full conversation as a PDF and attach it in
-            WhatsApp if our team needs the details.
+            WhatsApp if our admin needs the details.
           </DialogDescription>
         </DialogHeader>
 
-        <Textarea
-          value={text}
-          onChange={(e) => onTextChange(e.target.value)}
-          rows={7}
-          aria-label="WhatsApp handoff message"
-          className="resize-none text-base sm:text-sm"
-        />
 
         <button
           type="button"

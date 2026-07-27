@@ -459,9 +459,10 @@ function ChatWindow({
         open={handoffOpen}
         onOpenChange={setHandoffOpen}
         text={handoffText}
-        onTextChange={setHandoffText}
         messages={messages}
+        chatLink={typeof window !== "undefined" ? window.location.href : undefined}
       />
+
     </div>
   );
 }
