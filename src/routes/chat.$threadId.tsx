@@ -24,7 +24,6 @@ import { WaGlyph } from "@/components/products/wa-glyph";
 import {
   ChatFrame,
   CHAT_DESC,
-  CHAT_SUGGESTIONS,
   CHAT_QUICK_PROMPTS,
   CHAT_TITLE,
   CHAT_URL,
@@ -133,7 +132,7 @@ function ChatThreadPage() {
 
   return (
     <ChatFrame>
-      <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[230px_minmax(0,1fr)]">
+      <div className="relative flex h-[min(850px,calc(100dvh-120px))] w-full max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card shadow-gold-lg">
         <ThreadList
           threads={threads}
           activeId={threadId}
@@ -141,16 +140,16 @@ function ChatThreadPage() {
           onDelete={removeThread}
         />
         {initial === null ? (
-          <div className="ai-ethereal-glow order-first flex min-h-52 min-w-0 items-center justify-center rounded-xl border border-border bg-card text-sm text-muted-foreground shadow-gold-lg lg:order-none">
+          <div className="flex flex-1 items-center justify-center rounded-xl text-sm text-muted-foreground">
             Loading your conversation…
           </div>
         ) : (
-
           <ChatWindow
             key={threadId}
             threadId={threadId}
             visitorId={visitorId}
             initialMessages={initial}
+            onNew={newThread}
             onSaved={() => void refreshThreads(visitorId)}
           />
         )}
@@ -173,57 +172,74 @@ function ThreadList({
   return (
     <aside
       aria-label="Saved conversations"
-      className="min-w-0 rounded-xl border border-border bg-card p-2 sm:p-3 lg:sticky lg:top-24 lg:self-start"
+      className="hidden w-72 flex-col border-r border-border bg-black/40 backdrop-blur-xl lg:flex"
     >
+      <div className="p-6">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="inline-flex size-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-200">
+            <div className="size-7 rounded-full bg-black" />
+          </div>
+          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-amber/80">Digital AI</span>
+        </div>
 
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          <History className="size-3.5" aria-hidden />
-          Your chats
-        </span>
-        <button
-          type="button"
-          onClick={onNew}
-          aria-label="Start a new conversation"
-          className="inline-flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
-        >
-          <Plus className="size-4" aria-hidden />
-        </button>
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Your chats</h3>
+          <button
+            type="button"
+            onClick={onNew}
+            aria-label="Start a new conversation"
+            className="inline-flex size-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
+          >
+            <Plus className="size-4" aria-hidden />
+          </button>
+        </div>
+
+        <ul className="space-y-1 overflow-y-auto pr-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] lg:max-h-[420px]">
+          {threads.length === 0 && (
+            <li className="px-2 py-2 text-xs text-muted-foreground">No saved conversations yet.</li>
+          )}
+          {threads.map((t) => {
+            const active = t.id === activeId;
+            return (
+              <li
+                key={t.id}
+                className={`flex items-center gap-1 rounded-xl border px-1 transition-colors ${
+                  active ? "border-amber/20 bg-amber/5" : "border-transparent hover:bg-background"
+                }`}
+              >
+                <Link
+                  to="/chat/$threadId"
+                  params={{ threadId: t.id }}
+                  aria-current={active ? "page" : undefined}
+                  className="min-h-10 flex-1 truncate px-2 py-1.5 text-left text-sm"
+                >
+                  {t.title}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => onDelete(t.id)}
+                  aria-label={`Delete conversation: ${t.title}`}
+                  className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-destructive"
+                >
+                  <Trash2 className="size-4" aria-hidden />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
-      <ul className="max-h-56 space-y-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] lg:max-h-[360px]">
-        {threads.length === 0 && (
-          <li className="px-2 py-2 text-xs text-muted-foreground">No saved conversations yet.</li>
-        )}
-        {threads.map((t) => {
-          const active = t.id === activeId;
-          return (
-            <li
-              key={t.id}
-              className={`flex items-center gap-1 rounded-lg border px-1 transition-colors ${
-                active ? "border-amber/40 bg-background" : "border-transparent hover:bg-background"
-              }`}
-            >
-              <Link
-                to="/chat/$threadId"
-                params={{ threadId: t.id }}
-                aria-current={active ? "page" : undefined}
-                className="min-h-10 flex-1 truncate px-2 py-1.5 text-left text-sm"
-              >
-                {t.title}
-              </Link>
-              <button
-                type="button"
-                onClick={() => onDelete(t.id)}
-                aria-label={`Delete conversation: ${t.title}`}
-                className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-destructive"
-              >
-                <Trash2 className="size-4" aria-hidden />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="mt-auto border-t border-border p-6">
+        <div className="flex items-center gap-3">
+          <div className="size-9 rounded-full border border-border bg-muted">
+            <div className="size-full rounded-full bg-gradient-to-b from-amber/20 to-transparent" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-foreground">Guest visitor</p>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-amber/70">AI concierge</p>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 }
@@ -232,11 +248,13 @@ function ChatWindow({
   threadId,
   visitorId,
   initialMessages,
+  onNew,
   onSaved,
 }: {
   threadId: string;
   visitorId: string;
   initialMessages: UIMessage[];
+  onNew: () => void;
   onSaved: () => void;
 }) {
   const [input, setInput] = useState("");
@@ -309,95 +327,101 @@ function ChatWindow({
     setHandoffOpen(true);
   };
 
+  const hasMessages = messages.length > 0;
 
   return (
-    <div className="ai-ethereal-glow order-first flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-gold-lg lg:order-none">
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-3 py-2">
-        <div className="flex min-w-0 items-center gap-2.5 text-sm">
-          <div className="relative shrink-0">
-            <span className="ai-avatar-ring inline-flex size-8 items-center justify-center rounded-full bg-black">
-              <span className="inline-flex size-[calc(100%-3px)] items-center justify-center rounded-full bg-card text-amber">
-                <MessageSquare className="size-3.5" aria-hidden />
-              </span>
-            </span>
-            <span className="ai-status-dot absolute bottom-0 right-0 size-2.5 rounded-full bg-green-500" aria-hidden />
+    <main className="relative flex flex-1 flex-col bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-950/10 via-transparent to-transparent">
+      {/* Header */}
+      <header className="flex shrink-0 items-center justify-between px-4 py-4 sm:px-8 sm:py-6">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <span className="size-2.5 rounded-full bg-amber shadow-[0_0_10px_rgba(245,158,11,0.6)]" aria-hidden />
+            <span className="absolute inset-0 size-2.5 animate-ping rounded-full bg-amber opacity-50" aria-hidden />
           </div>
-          <div className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate font-medium">Digital Platform assistant</span>
-            <span className="text-[10px] uppercase tracking-wider text-amber/70">AI Online</span>
+          <span className="text-xs font-medium uppercase tracking-widest text-amber/80">AI Assistant Online</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onNew}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-amber/5 px-4 py-2 text-xs font-medium text-amber-200 transition-colors hover:bg-amber/10"
+          >
+            <Plus className="size-3.5" aria-hidden />
+            New dialogue
+          </button>
+        </div>
+      </header>
+
+      {/* Empty state hero */}
+      {!hasMessages && (
+        <div className="flex flex-1 flex-col items-center justify-center px-4 pb-4 text-center sm:px-8 lg:px-24">
+          <div className="mb-6 sm:mb-10">
+            <h1 className="font-display text-4xl font-normal text-foreground sm:text-5xl lg:text-6xl">
+              Ask us <span className="italic text-amber">anything.</span>
+            </h1>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Ask about products, prices, delivery, warranty or support. Our AI assistant is ready to help you find the right digital product.
+            </p>
+          </div>
+
+          <div className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            {CHAT_QUICK_PROMPTS.slice(0, 3).map((q) => (
+              <button
+                key={q.label}
+                type="button"
+                onClick={() => submit(q.prompt)}
+                disabled={busy}
+                className="group rounded-2xl border border-border bg-white/[0.02] p-4 text-left transition-colors hover:border-amber/30 hover:bg-amber/[0.03] disabled:opacity-50 sm:p-5"
+              >
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-amber">{q.label}</p>
+                <p className="text-sm text-muted-foreground group-hover:text-foreground">{q.prompt}</p>
+              </button>
+            ))}
           </div>
         </div>
-        <span className="shrink-0 text-[11px] text-muted-foreground">Saved</span>
-      </div>
+      )}
 
-      {/* Fixed, self-scrolling transcript on every browser:
-          - basis-auto/grow-0 stops flex-1 from overriding the height
-          - vh base height for older Safari/Firefox, svh where supported (no jump
-            when the iOS toolbar shows/hides) */}
-      <Conversation className="h-[clamp(300px,55vh,520px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [contain:layout_paint] [-webkit-overflow-scrolling:touch] [@supports(height:1svh)]:h-[clamp(300px,55svh,520px)]">
+      {/* Messages */}
+      {hasMessages && (
+        <Conversation className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-8 [-webkit-overflow-scrolling:touch] [contain:layout_paint]">
+          <ConversationContent className="gap-4 py-4">
+            {messages.map((message) => (
+              <Message key={message.id} from={message.role}>
+                <MessageContent className="min-w-0 max-w-full [overflow-wrap:anywhere]">
+                  {message.parts.map((part, i) =>
+                    part.type === "text" ? <MessageResponse key={i}>{part.text}</MessageResponse> : null,
+                  )}
+                </MessageContent>
+              </Message>
+            ))}
 
+            {status === "submitted" && (
+              <Message from="assistant">
+                <MessageContent>
+                  <Shimmer>Thinking...</Shimmer>
+                </MessageContent>
+              </Message>
+            )}
 
-
-        <ConversationContent className="gap-4 p-3 sm:p-4">
-          {messages.length === 0 && (
-            <div className="py-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Ask about any product, price, delivery time or warranty.
+            {error && (
+              <p role="alert" className="text-sm text-destructive">
+                Something went wrong. Please try again, or{" "}
+                <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
+                  message us on WhatsApp
+                </a>
+                .
               </p>
-              <div className="mt-3 flex flex-wrap justify-center gap-2">
-                {CHAT_SUGGESTIONS.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => submit(s)}
-                    className="min-h-9 rounded-full border border-border px-3 text-xs transition-colors hover:border-amber/40 hover:bg-background"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+            )}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+      )}
 
-          {messages.map((message) => (
-            <Message key={message.id} from={message.role}>
-              <MessageContent className="min-w-0 max-w-full [overflow-wrap:anywhere]">
-
-                {message.parts.map((part, i) =>
-                  part.type === "text" ? (
-                    <MessageResponse key={i}>{part.text}</MessageResponse>
-                  ) : null,
-                )}
-              </MessageContent>
-            </Message>
-          ))}
-
-          {status === "submitted" && (
-            <Message from="assistant">
-              <MessageContent>
-                <Shimmer>Thinking...</Shimmer>
-              </MessageContent>
-            </Message>
-          )}
-
-          {error && (
-            <p role="alert" className="text-sm text-destructive">
-              Something went wrong. Please try again, or{" "}
-              <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
-                message us on WhatsApp
-              </a>
-              .
-            </p>
-          )}
-        </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
-
-      <div className="shrink-0 border-t border-border p-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      {/* Composer + quick prompts + WhatsApp */}
+      <div className="shrink-0 border-t border-border p-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-6 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
         <div
           aria-label="Quick questions"
-          className="-mx-1 mb-2 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-
+          className="mb-3 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {CHAT_QUICK_PROMPTS.map((q) => (
             <button
@@ -406,7 +430,7 @@ function ChatWindow({
               onClick={() => submit(q.prompt)}
               disabled={busy}
               title={q.prompt}
-              className="inline-flex min-h-8 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-2.5 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
+              className="inline-flex min-h-8 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
             >
               <Sparkle className="size-3 shrink-0 text-amber" aria-hidden />
               {q.label}
@@ -414,25 +438,36 @@ function ChatWindow({
           ))}
         </div>
 
-        <PromptInput onSubmit={(message: PromptInputMessage) => submit(message.text ?? input)}>
-          <PromptInputTextarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about a product, price, delivery or warranty…"
-            className="text-base sm:text-sm"
-          />
-
-          <PromptInputFooter className="justify-end">
-            <PromptInputSubmit status={status} disabled={!input.trim() && !busy} />
-          </PromptInputFooter>
-        </PromptInput>
+        <div className="relative group">
+          <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber/20 to-amber-950/20 opacity-25 blur transition duration-1000 group-focus-within:opacity-100" />
+          <div className="relative flex items-end rounded-3xl border border-border bg-[#0a0a0a] p-3 shadow-2xl sm:p-4">
+            <PromptInput
+              onSubmit={(message: PromptInputMessage) => submit(message.text ?? input)}
+              className="flex-1"
+            >
+              <PromptInputTextarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about a product, price, delivery or warranty…"
+                className="min-h-[60px] border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:ring-0"
+              />
+              <PromptInputFooter className="justify-end pt-1">
+                <PromptInputSubmit
+                  status={status}
+                  disabled={!input.trim() && !busy}
+                  className="size-11 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all hover:brightness-110"
+                />
+              </PromptInputFooter>
+            </PromptInput>
+          </div>
+        </div>
 
         {messages.some((m) => m.role === "user") && (
           <button
             type="button"
             onClick={openHandoff}
-            className="mt-2 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-transform duration-200 hover:brightness-110 active:scale-[0.98] motion-reduce:transform-none"
+            className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-transform duration-200 hover:brightness-110 active:scale-[0.98] motion-reduce:transform-none"
             style={{ backgroundColor: "var(--whatsapp)" }}
           >
             <WaGlyph />
@@ -440,7 +475,7 @@ function ChatWindow({
           </button>
         )}
 
-        <p className="mt-1.5 text-center text-[11px] text-muted-foreground">
+        <p className="mt-2 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
           AI-generated. Confirm today&apos;s price on{" "}
           <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
             WhatsApp
@@ -456,7 +491,6 @@ function ChatWindow({
         onTextChange={setHandoffText}
         messages={messages}
       />
-
-    </div>
+    </main>
   );
 }
