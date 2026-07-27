@@ -300,9 +300,8 @@ function ChatWindow({
       setInput("");
       setVisibleCount((c) => c + 2);
       void sendMessage({ text: trimmed });
-      focusInput();
     },
-    [busy, sendMessage, focusInput],
+    [busy, sendMessage],
   );
 
   const [handoffOpen, setHandoffOpen] = useState(false);
