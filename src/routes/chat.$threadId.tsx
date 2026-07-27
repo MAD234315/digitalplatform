@@ -238,15 +238,18 @@ function ChatWindow({
   threadId,
   visitorId,
   initialMessages,
+  isOnline,
   onNew,
   onSaved,
 }: {
   threadId: string;
   visitorId: string;
   initialMessages: UIMessage[];
+  isOnline: boolean;
   onNew: () => void;
   onSaved: () => void;
 }) {
+
   const [input, setInput] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
