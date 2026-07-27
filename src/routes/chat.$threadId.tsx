@@ -26,7 +26,6 @@ import {
   CHAT_URL,
 } from "@/components/chat/chat-frame";
 import { ChatHistorySheet } from "@/components/chat/chat-history-sheet";
-import { ChatProductCards, matchChatProducts } from "@/components/chat/chat-product-cards";
 import { HandoffDialog, buildHandoffSummary } from "@/components/chat/handoff";
 import { getVisitorId } from "@/lib/chat-visitor";
 import { useOnlineStatus } from "@/hooks/use-online-status";
@@ -372,13 +371,9 @@ function ChatWindow({
               )}
 
               {visible.map((message) => (
-                <ChatBubble
-                  key={message.id}
-                  message={message}
-                  products={products}
-                  onKnowMore={submit}
-                />
+                <ChatBubble key={message.id} message={message} />
               ))}
+
 
               {status === "submitted" && <TypingIndicator />}
 
@@ -473,16 +468,11 @@ function ChatWindow({
 
 function ChatBubble({
   message,
-  products,
-  onKnowMore,
 }: {
   message: UIMessage;
-  products: Parameters<typeof matchChatProducts>[1];
-  onKnowMore: (prompt: string) => void;
 }) {
   const isUser = message.role === "user";
-  const text = messageText(message);
-  const matched = isUser ? [] : matchChatProducts(text, products);
+
 
   return (
     <div className={`flex w-full gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
@@ -513,11 +503,6 @@ function ChatBubble({
           )}
         </div>
 
-        {matched.length > 0 && (
-          <div className="w-full">
-            <ChatProductCards products={matched} onKnowMore={onKnowMore} />
-          </div>
-        )}
       </div>
     </div>
   );
