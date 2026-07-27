@@ -217,7 +217,7 @@ function ChatThreadPage() {
 /** Compact sticky header: identity + status on the left, actions on the right. */
 function ChatHeader({ onNew, onHistory }: { onNew: () => void; onHistory: () => void }) {
   return (
-    <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-card/95 px-3 py-2.5 backdrop-blur-xl sm:px-4">
+    <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-card/95 px-3 py-2.5 backdrop-blur-xl sm:px-5">
       <div className="flex min-w-0 items-center gap-2.5">
         <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-200 text-black">
           <Bot className="size-4.5" aria-hidden />
