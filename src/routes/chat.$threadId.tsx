@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MessageSquare, Plus, Trash2, History } from "lucide-react";
+import { MessageSquare, Plus, Trash2, History, Sparkle } from "lucide-react";
 import { CONTACT } from "@/components/site-chrome";
 import {
   Conversation,
@@ -23,6 +23,7 @@ import {
   ChatFrame,
   CHAT_DESC,
   CHAT_SUGGESTIONS,
+  CHAT_QUICK_PROMPTS,
   CHAT_TITLE,
   CHAT_URL,
 } from "@/components/chat/chat-frame";
@@ -355,6 +356,25 @@ function ChatWindow({
       </Conversation>
 
       <div className="border-t border-border p-3 sm:p-4">
+        <div
+          aria-label="Quick questions"
+          className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {CHAT_QUICK_PROMPTS.map((q) => (
+            <button
+              key={q.label}
+              type="button"
+              onClick={() => submit(q.prompt)}
+              disabled={busy}
+              title={q.prompt}
+              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
+            >
+              <Sparkle className="size-3 text-amber" aria-hidden />
+              {q.label}
+            </button>
+          ))}
+        </div>
+
         <PromptInput onSubmit={(message: PromptInputMessage) => submit(message.text ?? input)}>
           <PromptInputTextarea
             ref={textareaRef}
