@@ -358,6 +358,12 @@ function Products() {
         <p className="mt-10 text-center text-xs text-muted-foreground">
           Prices depend on stock &amp; demand — <span className="font-medium text-foreground">contact admin for detailed info.</span>
         </p>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          Clear your doubts on{" "}
+          <Link to="/chat" className="font-medium text-foreground underline underline-offset-2 hover:text-amber transition-colors">
+            Ask AI — CREATOR AI
+          </Link>
+        </p>
       </div>
     </PageShell>
   );
