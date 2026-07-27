@@ -34,31 +34,43 @@ export const Route = createFileRoute("/chat/")({
  */
 function ChatIndex() {
   const navigate = useNavigate();
-  const started = useRef(false);
+  const running = useRef(false);
   const isOnline = useOnlineStatus();
+  const [failed, setFailed] = useState(false);
+
+  const open = useCallback(async () => {
+    if (running.current) return;
+    running.current = true;
+    setFailed(false);
+
+    // Never leave the visitor on an endless spinner: if the round-trip stalls
+    // (slow network, cold worker), surface a retry instead.
+    const watchdog = setTimeout(() => setFailed(true), 9000);
+    try {
+      const visitorId = getVisitorId();
+      const threads = await listChatThreads({ data: { visitorId } });
+      const latest = threads[0];
+      const id = latest ? latest.id : (await createChatThread({ data: { visitorId } })).id;
+      clearTimeout(watchdog);
+      try {
+        await navigate({ to: "/chat/$threadId", params: { threadId: id }, replace: true });
+      } catch {
+        // Client router failed (stale bundle / preload crash) — hard navigate.
+        window.location.replace(`/chat/${id}`);
+      }
+    } catch {
+      clearTimeout(watchdog);
+      setFailed(true);
+    } finally {
+      running.current = false;
+    }
+  }, [navigate]);
 
   useEffect(() => {
-    if (!isOnline || started.current) return;
-    started.current = true;
-
-    let cancelled = false;
-    void (async () => {
-      const visitorId = getVisitorId();
-      try {
-        const threads = await listChatThreads({ data: { visitorId } });
-        const latest = threads[0];
-        const id = latest ? latest.id : (await createChatThread({ data: { visitorId } })).id;
-        if (!cancelled) void navigate({ to: "/chat/$threadId", params: { threadId: id }, replace: true });
-      } catch {
-        // History unavailable — keep the user on a usable page.
-        if (!cancelled) started.current = false;
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [navigate, isOnline]);
+    if (!isOnline) return;
+    void open();
+    // Run once per online transition; `open` guards against overlap.
+  }, [isOnline, open]);
 
   return (
     <ChatFrame>
@@ -73,6 +85,19 @@ function ChatIndex() {
               Please reconnect to the internet to chat with Digital Platform AI.
             </p>
           </div>
+        ) : failed ? (
+          <div className="flex max-w-xs flex-col items-center gap-3 px-6 text-center">
+            <span className="inline-flex size-12 items-center justify-center rounded-full bg-amber/10 text-amber">
+              <AlertCircle className="size-6" aria-hidden />
+            </span>
+            <p className="text-sm font-medium text-foreground">Couldn&apos;t open your conversation</p>
+            <p className="text-xs text-muted-foreground">
+              The assistant is taking longer than usual to respond. Please try again.
+            </p>
+            <Button size="sm" onClick={() => void open()} className="mt-1 min-h-11">
+              Try again
+            </Button>
+          </div>
         ) : (
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin text-amber" aria-hidden />
@@ -82,5 +107,6 @@ function ChatIndex() {
       </div>
     </ChatFrame>
   );
+
 }
 
