@@ -173,8 +173,9 @@ function ThreadList({
   return (
     <aside
       aria-label="Saved conversations"
-      className="rounded-2xl border border-border bg-card p-3 lg:sticky lg:top-24 lg:self-start"
+      className="min-w-0 rounded-2xl border border-border bg-card p-3 lg:sticky lg:top-24 lg:self-start"
     >
+
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           <History className="size-3.5" aria-hidden />
