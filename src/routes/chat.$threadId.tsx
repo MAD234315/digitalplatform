@@ -423,7 +423,6 @@ function ChatWindow({
         >
           <PromptInput onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}>
             <PromptInputTextarea
-              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
