@@ -97,7 +97,7 @@ export function StatsCounterSection() {
     <section aria-labelledby="stats-heading" className="cv-auto border-t border-border">
       <div
         ref={ref}
-        className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24"
+        className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 lg:py-14"
       >
         <h2 id="stats-heading" className="sr-only">
           Our numbers
@@ -122,7 +122,7 @@ export function StatsCounterSection() {
           </div>
         </Reveal>
         <Reveal>
-          <p className="mt-10 sm:mt-12 text-center text-sm sm:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="mt-7 sm:mt-8 text-center text-sm sm:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Trusted by customers across the{" "}
             <span className="text-foreground font-medium">
               USA, UK, Canada, UAE, Kuwait, Malaysia, Singapore, Australia, Ireland&nbsp;
