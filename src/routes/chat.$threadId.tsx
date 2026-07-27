@@ -173,10 +173,10 @@ function ThreadList({
   return (
     <aside
       aria-label="Saved conversations"
-      className="min-w-0 rounded-2xl border border-border bg-card p-3 lg:sticky lg:top-24 lg:self-start"
+      className="min-w-0 rounded-xl border border-border bg-card p-2 sm:p-3 lg:sticky lg:top-24 lg:self-start"
     >
 
-      <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="mb-1.5 flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           <History className="size-3.5" aria-hidden />
           Your chats
@@ -185,22 +185,22 @@ function ThreadList({
           type="button"
           onClick={onNew}
           aria-label="Start a new conversation"
-          className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
+          className="inline-flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
         >
           <Plus className="size-4" aria-hidden />
         </button>
       </div>
 
-      <ul className="max-h-64 space-y-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] lg:max-h-[420px]">
+      <ul className="max-h-56 space-y-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] lg:max-h-[360px]">
         {threads.length === 0 && (
-          <li className="px-2 py-3 text-xs text-muted-foreground">No saved conversations yet.</li>
+          <li className="px-2 py-2 text-xs text-muted-foreground">No saved conversations yet.</li>
         )}
         {threads.map((t) => {
           const active = t.id === activeId;
           return (
             <li
               key={t.id}
-              className={`flex items-center gap-1 rounded-xl border px-1 transition-colors ${
+              className={`flex items-center gap-1 rounded-lg border px-1 transition-colors ${
                 active ? "border-amber/40 bg-background" : "border-transparent hover:bg-background"
               }`}
             >
@@ -208,7 +208,7 @@ function ThreadList({
                 to="/chat/$threadId"
                 params={{ threadId: t.id }}
                 aria-current={active ? "page" : undefined}
-                className="min-h-11 flex-1 truncate px-2 py-2 text-left text-sm"
+                className="min-h-10 flex-1 truncate px-2 py-1.5 text-left text-sm"
               >
                 {t.title}
               </Link>
@@ -216,7 +216,7 @@ function ThreadList({
                 type="button"
                 onClick={() => onDelete(t.id)}
                 aria-label={`Delete conversation: ${t.title}`}
-                className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-destructive"
+                className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-destructive"
               >
                 <Trash2 className="size-4" aria-hidden />
               </button>
