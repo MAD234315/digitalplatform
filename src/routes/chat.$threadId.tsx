@@ -322,9 +322,12 @@ function ChatWindow({
         <span className="shrink-0 text-[11px] text-muted-foreground">Saved automatically</span>
       </div>
 
-      {/* basis-auto/grow-0 keeps the fixed height from being overridden by flex-1,
-          so long histories scroll inside this box instead of stretching the page. */}
-      <Conversation className="h-[clamp(320px,56svh,540px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+      {/* Fixed, self-scrolling transcript on every browser:
+          - basis-auto/grow-0 stops flex-1 from overriding the height
+          - vh base height for older Safari/Firefox, svh where supported (no jump
+            when the iOS toolbar shows/hides) */}
+      <Conversation className="h-[clamp(300px,52vh,540px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [contain:layout_paint] [-webkit-overflow-scrolling:touch] [@supports(height:1svh)]:h-[clamp(300px,52svh,540px)]">
+
 
 
         <ConversationContent className="gap-6 p-4 sm:p-5">
