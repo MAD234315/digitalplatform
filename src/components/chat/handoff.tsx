@@ -60,35 +60,10 @@ function productLine(product: HandoffProduct): string {
  * products.
  */
 export function buildHandoffSummary(
-  messages: UIMessage[],
-  products: HandoffProduct[] = [],
+  _messages: UIMessage[],
+  _products: HandoffProduct[] = [],
 ): string {
-  const questions = messages
-    .filter((m) => m.role === "user")
-    .map(messageText)
-    .filter(Boolean);
-  const lastAnswer = [...messages].reverse().find((m) => m.role === "assistant");
-  const answer = lastAnswer ? stripMarkdown(messageText(lastAnswer)) : "";
-  const question = questions.at(-1) ?? "";
-
-  const lines = [
-    "Hi Digital Platform! I was chatting with your website assistant and I'd like to continue here.",
-  ];
-
-  if (question) {
-    lines.push("", `My question: ${truncate(question, 220)}`);
-  }
-  if (answer) {
-    lines.push("", `Assistant said: ${truncate(answer, 280)}`);
-  }
-
-  const recommended = matchProducts(`${answer}\n${question}`, products);
-  if (recommended.length) {
-    lines.push("", "Products mentioned:", ...recommended.slice(0, 3).map(productLine));
-  }
-
-  lines.push("", "Could you confirm today's price and availability?");
-  return lines.join("\n");
+  return "Hi Creator! I was chatting with your website assistant and I'd like to continue here.\n\nCould you confirm today's price and availability?";
 }
 
 
@@ -117,7 +92,9 @@ export function HandoffDialog({
   text: string;
   chatLink?: string;
 }) {
-  const message = chatLink ? `${text}\n\nChat history link: ${chatLink}` : text;
+  const message = chatLink
+    ? `Hi Creator! I was chatting with your website assistant and I'd like to continue here.\n\nChat history link: ${chatLink}\n\nCould you confirm today's price and availability?`
+    : text;
   const href = `${CONTACT.WA_URL}?text=${encodeURIComponent(message)}`;
 
   return (
