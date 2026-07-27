@@ -1,4 +1,4 @@
-import { CtaLink } from "@/components/ui-primitives";
+import { CtaLink, CtaRouterLink } from "@/components/ui-primitives";
 import { CONTACT } from "@/components/site-chrome";
 import { Reveal } from "@/components/reveal";
 
