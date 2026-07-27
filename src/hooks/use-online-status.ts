@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
 export function useOnlineStatus() {
-  const [online, setOnline] = useState(() =>
-    typeof navigator !== "undefined" ? navigator.onLine : true,
-  );
+  // Default to true for SSR hydration consistency, then sync to the real
+  // browser state once the effect runs on the client.
+  const [online, setOnline] = useState(true);
 
   useEffect(() => {
+    setOnline(navigator.onLine);
+
     const onOnline = () => setOnline(true);
     const onOffline = () => setOnline(false);
 
@@ -20,3 +22,4 @@ export function useOnlineStatus() {
 
   return online;
 }
+
