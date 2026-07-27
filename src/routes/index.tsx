@@ -13,7 +13,7 @@ import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 
 const URL = SITE_URL + "/";
 const TITLE = "Digital Platform — Premium Digital Subscriptions & AI Tools";
-const DESC = "Trusted digital marketplace since 2020. 200+ premium subscriptions, AI tools, software licenses & gift cards — updated daily, priced honestly.";
+const DESC = "Trusted digital store since 2020. 200+ premium subscriptions, AI tools, software licenses & gift cards — our prices and plans change based on demand and availability.";
 
 /** Home-page structured data: WebPage tying together Organization + WebSite. */
 const HOME_JSON_LD = {
@@ -46,11 +46,11 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Digital Platform — premium digital marketplace" },
+      { property: "og:image:alt", content: "Digital Platform — premium digital products and AI tools" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESC },
       { name: "twitter:image", content: OG_IMAGE },
-      { name: "twitter:image:alt", content: "Digital Platform — premium digital marketplace" },
+      { name: "twitter:image:alt", content: "Digital Platform — premium digital products and AI tools" },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
