@@ -19,33 +19,81 @@ function messageText(message: UIMessage): string {
     .trim();
 }
 
+/** Minimal shape needed to recommend a product in the handoff note. */
+export type HandoffProduct = {
+  name: string;
+  plan?: string;
+  validity?: string;
+  availability?: string;
+};
+
 /**
- * Build the WhatsApp handoff note: a short recap of what the visitor asked
- * (and the assistant's last answer) so support has context before replying.
+ * Pick catalogue products the assistant actually mentioned in its final answer
+ * (falling back to the visitor's question), longest names first so
+ * "Canva Pro Team" wins over "Canva Pro".
  */
-export function buildHandoffSummary(messages: UIMessage[]): string {
+function matchProducts(haystack: string, products: HandoffProduct[]): HandoffProduct[] {
+  const text = haystack.toLowerCase();
+  const seen = new Set<string>();
+  const hits: HandoffProduct[] = [];
+
+  for (const product of [...products].sort((a, b) => b.name.length - a.name.length)) {
+    const name = product.name?.trim();
+    if (!name || name.length < 4) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key) || !text.includes(key)) continue;
+    seen.add(key);
+    hits.push(product);
+    if (hits.length >= 5) break;
+  }
+  return hits;
+}
+
+function productLine(product: HandoffProduct): string {
+  const details = [product.plan, product.validity].filter(Boolean).join(" · ");
+  return `• ${product.name}${details ? ` (${details})` : ""}`;
+}
+
+/**
+ * Build the WhatsApp handoff note: the visitor's exact question, the
+ * assistant's final answer, and any catalogue products it recommended.
+ */
+export function buildHandoffSummary(
+  messages: UIMessage[],
+  products: HandoffProduct[] = [],
+): string {
   const questions = messages
     .filter((m) => m.role === "user")
     .map(messageText)
     .filter(Boolean);
   const lastAnswer = [...messages].reverse().find((m) => m.role === "assistant");
+  const answer = lastAnswer ? stripMarkdown(messageText(lastAnswer)) : "";
+  const question = questions.at(-1) ?? "";
+  const earlier = questions.slice(0, -1).slice(-2);
 
-  const recent = questions.slice(-3);
   const lines = [
     "Hi Digital Platform! I was chatting with your website assistant and I'd like to continue here.",
-    "",
-    recent.length > 1 ? "What I asked:" : "My question:",
-    ...recent.map((q) => `• ${truncate(q, 220)}`),
   ];
 
-  const answer = lastAnswer ? messageText(lastAnswer) : "";
+  if (question) {
+    lines.push("", "My question:", truncate(question, 500));
+  }
+  if (earlier.length) {
+    lines.push("", "Earlier in the chat I asked:", ...earlier.map((q) => `• ${truncate(q, 160)}`));
+  }
   if (answer) {
-    lines.push("", "The assistant replied:", `"${truncate(stripMarkdown(answer), 320)}"`);
+    lines.push("", "The assistant's answer:", `"${truncate(answer, 700)}"`);
+  }
+
+  const recommended = matchProducts(`${answer}\n${question}`, products);
+  if (recommended.length) {
+    lines.push("", "Products mentioned:", ...recommended.map(productLine));
   }
 
   lines.push("", "Could you confirm today's price and availability?");
   return lines.join("\n");
 }
+
 
 function stripMarkdown(text: string): string {
   return text
