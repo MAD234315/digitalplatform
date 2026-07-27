@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { Check, FileDown, Loader2 } from "lucide-react";
 import type { UIMessage } from "ai";
 
 import { CONTACT } from "@/components/site-chrome";
@@ -59,8 +57,7 @@ function productLine(product: HandoffProduct): string {
 /**
  * Build a SHORT WhatsApp handoff note: only the visitor's latest question, a
  * trimmed version of the assistant's final answer and any recommended
- * products. The full conversation goes out as a PDF attachment instead, so the
- * WhatsApp message never becomes a wall of text.
+ * products.
  */
 export function buildHandoffSummary(
   messages: UIMessage[],
@@ -91,7 +88,6 @@ export function buildHandoffSummary(
   }
 
   lines.push("", "Could you confirm today's price and availability?");
-  lines.push("(Full chat transcript attached as a PDF.)");
   return lines.join("\n");
 }
 
@@ -109,36 +105,20 @@ function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-/** Show the handoff options (no transcript preview) and download the chat PDF. */
+/** Show the handoff options (no transcript preview). */
 export function HandoffDialog({
   open,
   onOpenChange,
   text,
-  messages = [],
   chatLink,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   text: string;
-  onTextChange?: (text: string) => void;
-  messages?: UIMessage[];
   chatLink?: string;
 }) {
   const message = chatLink ? `${text}\n\nChat history link: ${chatLink}` : text;
   const href = `${CONTACT.WA_URL}?text=${encodeURIComponent(message)}`;
-  const [downloading, setDownloading] = useState(false);
-  const [downloaded, setDownloaded] = useState(false);
-
-  const downloadPdf = async () => {
-    setDownloading(true);
-    try {
-      const { downloadChatTranscriptPdf } = await import("@/lib/chat-transcript-pdf");
-      await downloadChatTranscriptPdf(messages);
-      setDownloaded(true);
-    } finally {
-      setDownloading(false);
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -146,30 +126,9 @@ export function HandoffDialog({
         <DialogHeader>
           <DialogTitle>Continue on WhatsApp?</DialogTitle>
           <DialogDescription>
-            We keep the message short — download the full conversation as a PDF and attach it in
-            WhatsApp if our admin needs the details.
+            We keep the message short — the full chat history link is included below for our admin.
           </DialogDescription>
         </DialogHeader>
-
-
-        <button
-          type="button"
-          onClick={downloadPdf}
-          disabled={downloading || messages.length === 0}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border px-5 text-sm font-medium transition-colors hover:border-amber/40 hover:bg-card disabled:opacity-50"
-        >
-          {downloading ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-          ) : downloaded ? (
-            <Check className="size-4 text-amber" aria-hidden />
-          ) : (
-            <FileDown className="size-4 text-amber" aria-hidden />
-          )}
-          {downloaded ? "Chat PDF saved" : "Download full chat as PDF"}
-        </button>
-
-
-
 
         <DialogFooter className="gap-2 sm:gap-2">
           <button
