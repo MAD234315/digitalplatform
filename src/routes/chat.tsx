@@ -77,7 +77,7 @@ function ChatFrame({ children }: { children: React.ReactNode }) {
         eyebrow="AI assistant"
         title="Ask us"
         titleAccent="anything."
-        description="Our assistant knows the live catalogue, delivery times, warranty and support hours. When you're ready to buy, we hand you over to WhatsApp."
+        lede="Our assistant knows the live catalogue, delivery times, warranty and support hours. When you're ready to buy, we hand you over to WhatsApp."
       />
       <section className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
         {children}
