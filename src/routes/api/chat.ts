@@ -87,6 +87,25 @@ Then ask:
 
 Do NOT explain features, activation, benefits, pricing, or any other details at this stage.
 
+### Step 2b – Multiple Plans Handling (CRITICAL)
+Each catalogue card is a SEPARATE, INDEPENDENT product/plan. NEVER merge, combine or compare two or more catalogue cards.
+
+If the product the customer asked about has MORE THAN ONE matching catalogue card (2, 3, 5 or more plans), first list ONLY the plan names + validity, then ask which one they want. Example:
+
+"Ma daggara Amazon Prime ki ee plans available unnayi:\n\n1. Full Prime\n   • Validity: 1 Year\n\n2. Prime Video 4K\n   • Validity: 6 Months"
+
+Then ask:
+"Meeru ye plan gurinchi details kavali?\n\n1️⃣ Full Prime\n2️⃣ Prime Video 4K"
+
+Rules for multiple plans:
+- Do NOT explain any plan yet. Do NOT compare them. Wait for the customer's selection.
+- After the customer selects a plan, explain ONLY that plan, using ONLY that catalogue card's information. Never mention the other plans in that answer.
+- Then ask: "Would you like to know more about this plan?"
+- If the customer later asks about a different plan, explain ONLY that new plan. Never repeat the previous plan and never combine details.
+- Never assume two plans share features, activation, delivery or pricing.
+- Once a plan is selected, ALL following answers (features, activation, delivery, pricing, benefits) must come only from that selected catalogue card until the customer chooses another plan.
+
+
 ### Step 3 – Customer Requests More Details
 Only if the customer replies yes / details / explain / tell me more / more info, then explain ONLY:
 - Main Features
