@@ -421,3 +421,53 @@ input[type="search"]::-webkit-search-decoration {
 html {
   scrollbar-gutter: stable;
 }
+
+/* ------------------------------------------------------------------
+   Mobile / iOS + Android hardening
+   ------------------------------------------------------------------ */
+
+/* Never allow a stray wide element to create sideways scrolling on phones,
+   and stop iOS Safari from auto-inflating text in landscape. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* `scrollbar-gutter: stable` reserves a phantom gutter on mobile browsers
+   (overlay scrollbars), pushing content off-centre. Desktop only. */
+@media (pointer: coarse) {
+  html { scrollbar-gutter: auto; }
+}
+
+/* iOS zooms the whole page when focusing a field whose text is < 16px.
+   Force 16px on touch devices so forms stay perfectly aligned. */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Notch / punch-hole safe areas: keep content clear of the rounded corners
+   in landscape, and clear of the home indicator at the bottom. */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Smooth momentum scrolling for horizontal chip rails on iOS. */
+[data-rail],
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
