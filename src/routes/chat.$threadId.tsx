@@ -441,7 +441,7 @@ function ChatWindow({
 
         <div className="relative group">
           <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber/20 to-amber-950/20 opacity-25 blur transition duration-1000 group-focus-within:opacity-100" />
-          <div className="relative flex items-end rounded-3xl border border-border bg-[#0a0a0a] p-3 shadow-2xl sm:p-4">
+          <div className="relative flex items-end rounded-3xl border border-border bg-[#0a0a0a] p-2 shadow-2xl sm:p-3">
             <PromptInput
               onSubmit={(message: PromptInputMessage) => submit(message.text ?? input)}
               className="flex-1"
@@ -451,7 +451,7 @@ function ChatWindow({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about a product, price, delivery or warranty…"
-                className="min-h-[44px] border-0 sm:min-h-[56px] bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:ring-0"
+                className="!min-h-[44px] max-h-32 border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:ring-0"
               />
               <PromptInputFooter className="justify-end pt-1">
                 <PromptInputSubmit
