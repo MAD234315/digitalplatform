@@ -55,8 +55,10 @@ function productLine(product: HandoffProduct): string {
 }
 
 /**
- * Build the WhatsApp handoff note: the visitor's exact question, the
- * assistant's final answer, and any catalogue products it recommended.
+ * Build a SHORT WhatsApp handoff note: only the visitor's latest question, a
+ * trimmed version of the assistant's final answer and any recommended
+ * products. The full conversation goes out as a PDF attachment instead, so the
+ * WhatsApp message never becomes a wall of text.
  */
 export function buildHandoffSummary(
   messages: UIMessage[],
@@ -69,30 +71,28 @@ export function buildHandoffSummary(
   const lastAnswer = [...messages].reverse().find((m) => m.role === "assistant");
   const answer = lastAnswer ? stripMarkdown(messageText(lastAnswer)) : "";
   const question = questions.at(-1) ?? "";
-  const earlier = questions.slice(0, -1).slice(-2);
 
   const lines = [
     "Hi Digital Platform! I was chatting with your website assistant and I'd like to continue here.",
   ];
 
   if (question) {
-    lines.push("", "My question:", truncate(question, 500));
-  }
-  if (earlier.length) {
-    lines.push("", "Earlier in the chat I asked:", ...earlier.map((q) => `• ${truncate(q, 160)}`));
+    lines.push("", `My question: ${truncate(question, 220)}`);
   }
   if (answer) {
-    lines.push("", "The assistant's answer:", `"${truncate(answer, 700)}"`);
+    lines.push("", `Assistant said: ${truncate(answer, 280)}`);
   }
 
   const recommended = matchProducts(`${answer}\n${question}`, products);
   if (recommended.length) {
-    lines.push("", "Products mentioned:", ...recommended.map(productLine));
+    lines.push("", "Products mentioned:", ...recommended.slice(0, 3).map(productLine));
   }
 
   lines.push("", "Could you confirm today's price and availability?");
+  lines.push("(Full chat transcript attached as a PDF.)");
   return lines.join("\n");
 }
+
 
 
 function stripMarkdown(text: string): string {
