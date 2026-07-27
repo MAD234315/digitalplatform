@@ -87,6 +87,7 @@
   --gradient-headline: linear-gradient(180deg, oklch(0.92 0.12 86), oklch(0.78 0.15 78));
   --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.5), 0 20px 40px -20px oklch(0 0 0 / 0.6);
   --shadow-gold: 0 0 0 1px oklch(0.80 0.14 82 / 0.25), 0 10px 40px -10px oklch(0.80 0.14 82 / 0.35);
+  --shadow-gold-lg: 0 0 0 1px oklch(0.80 0.14 82 / 0.2), 0 20px 60px -20px oklch(0.80 0.14 82 / 0.25);
 }
 
 
@@ -108,6 +109,44 @@
   --amber: oklch(0.72 0.16 60);
   --amber-foreground: oklch(0.20 0.03 40);
   --gradient-hero: linear-gradient(180deg, oklch(0.97 0.02 85), oklch(0.94 0.03 80));
+}
+
+/* ============= AI ASSISTANT PAGE — Ethereal glow theme ============= */
+@utility ai-ethereal-glow {
+  position: relative;
+  isolation: isolate;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+  }
+  &::before {
+    top: -8%;
+    left: -8%;
+    width: 55%;
+    height: 45%;
+    background: oklch(0.80 0.14 82 / 0.12);
+  }
+  &::after {
+    bottom: -5%;
+    right: -5%;
+    width: 45%;
+    height: 35%;
+    background: oklch(0.75 0.12 78 / 0.08);
+  }
+}
+
+@utility ai-avatar-ring {
+  background: linear-gradient(135deg, var(--color-amber), var(--color-accent));
+  padding: 1.5px;
+}
+
+@utility ai-status-dot {
+  box-shadow: 0 0 0 2px var(--color-card), 0 0 8px oklch(0.72 0.17 148 / 0.8);
 }
 
 
