@@ -355,11 +355,11 @@ function ChatWindow({
       {/* Empty state hero */}
       {!hasMessages && (
         <div className="flex flex-1 flex-col items-center justify-center px-4 pb-4 text-center sm:px-8 lg:px-24">
-          <div className="mb-6 sm:mb-10">
-            <h1 className="font-display text-4xl font-normal text-foreground sm:text-5xl lg:text-6xl">
+          <div className="mb-6 max-w-full sm:mb-10">
+            <h1 className="max-w-full break-words font-display text-3xl font-normal text-foreground sm:text-5xl lg:text-6xl">
               Ask us <span className="italic text-amber">anything.</span>
             </h1>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className="mx-auto mt-3 max-w-full text-sm leading-relaxed text-muted-foreground sm:max-w-md sm:text-base">
               Ask about products, prices, delivery, warranty or support. Our AI assistant is ready to help you find the right digital product.
             </p>
           </div>
