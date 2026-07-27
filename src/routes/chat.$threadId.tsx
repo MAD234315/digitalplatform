@@ -398,10 +398,19 @@ function ChatWindow({
                 </button>
               )}
 
-              {visible.map((message) => (
-                <ChatBubble key={message.id} message={message} />
+              {visible.map((message, index) => (
+                <ChatBubble
+                  key={message.id}
+                  message={message}
+                  showSuggestions={
+                    index === visible.length - 1 &&
+                    message.role === "assistant" &&
+                    !busy &&
+                    !isHandoffStage(messages)
+                  }
+                  onPick={submit}
+                />
               ))}
-
 
               {status === "submitted" && <TypingIndicator />}
 
