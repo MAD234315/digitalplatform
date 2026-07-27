@@ -1,0 +1,2 @@
+ALTER TABLE public.chat_threads ADD COLUMN IF NOT EXISTS share_token uuid NOT NULL DEFAULT gen_random_uuid();
+CREATE INDEX IF NOT EXISTS chat_threads_share_token_idx ON public.chat_threads (share_token);
