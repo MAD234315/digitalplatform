@@ -343,11 +343,8 @@ function ChatWindow({
   const visible = messages.slice(Math.max(0, messages.length - visibleCount));
   const hiddenCount = messages.length - visible.length;
 
-  // WhatsApp CTA only appears when the conversation shows buying intent.
-  const showWhatsapp = useMemo(() => {
-    const recent = messages.slice(-4).map(messageText).join(" ");
-    return messages.some((m) => m.role === "user") && INTENT_RE.test(recent);
-  }, [messages]);
+  // WhatsApp CTA only appears at the final handoff stage.
+  const showWhatsapp = useMemo(() => isHandoffStage(messages), [messages]);
 
   return (
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
