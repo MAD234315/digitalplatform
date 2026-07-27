@@ -31,6 +31,7 @@ export function ChatHistorySheet({
   activeId,
   onNew,
   onDelete,
+  onDeleteAll,
   onRename,
 }: {
   open: boolean;
@@ -39,10 +40,13 @@ export function ChatHistorySheet({
   activeId: string;
   onNew: () => void;
   onDelete: (id: string) => void;
+  onDeleteAll: () => void;
   onRename: (id: string, title: string) => void;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [confirmAll, setConfirmAll] = useState(false);
+
 
   const groups: { label: string; items: ChatThreadSummary[] }[] = (
     ["Today", "Yesterday", "Older"] as const
@@ -66,7 +70,7 @@ export function ChatHistorySheet({
           <SheetTitle className="text-base">Chat history</SheetTitle>
         </SheetHeader>
 
-        <div className="shrink-0 px-4 py-3">
+        <div className="shrink-0 space-y-2 px-4 py-3">
           <button
             type="button"
             onClick={() => {
@@ -78,7 +82,41 @@ export function ChatHistorySheet({
             <Plus className="size-4" aria-hidden />
             New chat
           </button>
+
+          {threads.length > 0 &&
+            (confirmAll ? (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmAll(false);
+                    onDeleteAll();
+                  }}
+                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-destructive px-4 text-sm font-semibold text-destructive-foreground"
+                >
+                  <Trash2 className="size-4" aria-hidden />
+                  Delete all chats
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmAll(false)}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-4 text-sm text-muted-foreground"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmAll(true)}
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-border px-4 text-sm font-medium text-muted-foreground transition-colors hover:border-destructive/40 hover:text-destructive"
+              >
+                <Trash2 className="size-4" aria-hidden />
+                Delete all
+              </button>
+            ))}
         </div>
+
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-6 [-webkit-overflow-scrolling:touch]">
           {threads.length === 0 && (

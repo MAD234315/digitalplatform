@@ -264,3 +264,18 @@ export const getSharedChatThread = createServerFn({ method: "POST" })
       })),
     };
   });
+
+/** Delete every thread (and messages) owned by this visitor. */
+export const deleteAllChatThreads = createServerFn({ method: "POST" })
+  .inputValidator((input: { visitorId: string }) => ({
+    visitorId: assertVisitor(input.visitorId),
+  }))
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    const db = await admin();
+    const { error } = await db
+      .from("chat_threads")
+      .delete()
+      .eq("visitor_id", data.visitorId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
