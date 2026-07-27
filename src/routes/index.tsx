@@ -75,6 +75,7 @@ function Home() {
       <ErrorBoundary boundary="shell:nav" fallback={null}><SiteNav /></ErrorBoundary>
       <main id="main">
         <ErrorBoundary boundary="home:hero"><HeroSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:hero-faq"><div className="cv-auto"><HeroFaqBlock /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:who-we-are"><div className="cv-auto"><WhoWeAreSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:stats"><div className="cv-auto"><StatsCounterSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:categories"><div className="cv-auto"><CategoriesSection /></div></ErrorBoundary>
