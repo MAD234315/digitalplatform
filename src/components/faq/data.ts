@@ -57,7 +57,7 @@ export const FAQS: QA[] = [
   { cat: "Products", q: "Do you add new products regularly?", a: "Yes. We frequently add new products, AI tools, subscriptions, and software based on availability and customer demand." },
   { cat: "Products", q: "Why do some products become unavailable?", a: "Some products are available in limited quantities or depend on demand stock, so availability may change." },
   { cat: "Products", q: "Can I request a product that's not listed?", a: "Yes. If you can't find a product on our website, submit a product request or contact us directly. We'll check its availability." },
-  { cat: "Products", q: "How often are prices updated?", a: "Prices may change daily depending on stock availability and market conditions." },
+  { cat: "Products", q: "How often are prices updated?", a: "Our prices and plans change based on demand and availability." },
 
   { cat: "Orders & Delivery", q: "Can I order multiple products at once?", a: "Yes. You can purchase multiple products in a single order." },
   { cat: "Orders & Delivery", q: "Will I receive order confirmation?", a: "Yes. Once your payment is verified, we'll confirm your order and begin processing it." },
