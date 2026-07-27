@@ -337,6 +337,14 @@ function ChatWindow({
 
   return (
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      {!isOnline && (
+        <div className="shrink-0 border-b border-amber/20 bg-amber/10 px-3 py-2.5 sm:px-4">
+          <p className="flex items-center justify-center gap-2 text-center text-xs font-medium text-amber">
+            <WifiOff className="size-4" aria-hidden />
+            You&apos;re offline. Reconnect to continue chatting with Digital AI.
+          </p>
+        </div>
+      )}
       {/* Single vertical scroll container */}
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <div
@@ -344,8 +352,9 @@ function ChatWindow({
           className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pb-16 pt-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:pb-16 sm:pt-4"
         >
           {!hasMessages ? (
-            <WelcomeScreen onPick={submit} busy={busy} />
+            <WelcomeScreen onPick={submit} busy={busy} online={isOnline} />
           ) : (
+
             <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
               {hiddenCount > 0 && (
                 <button
