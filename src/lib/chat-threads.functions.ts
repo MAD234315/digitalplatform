@@ -149,14 +149,49 @@ export const saveChatMessages = createServerFn({ method: "POST" })
       .upsert(rows, { onConflict: "thread_id,client_id" });
     if (upsertError) throw new Error(upsertError.message);
 
+    // Keep a manual rename: only auto-title while the thread still has the
+    // default label (or the previously derived one).
+    const { data: current } = await db
+      .from("chat_threads")
+      .select("title, title_locked")
+      .eq("id", data.threadId)
+      .maybeSingle();
+
+    const patch: { updated_at: string; title?: string } = {
+      updated_at: new Date().toISOString(),
+    };
+    if (!current?.title_locked) {
+      patch.title = titleFrom(data.messages);
+    }
+
+
     const { error: touchError } = await db
       .from("chat_threads")
-      .update({ title: titleFrom(data.messages), updated_at: new Date().toISOString() })
+      .update(patch)
       .eq("id", data.threadId);
     if (touchError) throw new Error(touchError.message);
 
     return { ok: true };
   });
+
+/** Rename a thread owned by this visitor (locks it from auto-titling). */
+export const renameChatThread = createServerFn({ method: "POST" })
+  .inputValidator((input: { visitorId: string; threadId: string; title: string }) => ({
+    visitorId: assertVisitor(input.visitorId),
+    threadId: assertThreadId(input.threadId),
+    title: String(input.title ?? "").trim().slice(0, 80) || "New conversation",
+  }))
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    const db = await admin();
+    const { error } = await db
+      .from("chat_threads")
+      .update({ title: data.title, title_locked: true })
+      .eq("id", data.threadId)
+      .eq("visitor_id", data.visitorId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 
 /** Delete a thread (and its messages) owned by this visitor. */
 export const deleteChatThread = createServerFn({ method: "POST" })

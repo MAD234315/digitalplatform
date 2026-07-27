@@ -81,6 +81,7 @@ export type Database = {
           created_at: string
           id: string
           title: string
+          title_locked: boolean
           updated_at: string
           visitor_id: string
         }
@@ -88,6 +89,7 @@ export type Database = {
           created_at?: string
           id?: string
           title?: string
+          title_locked?: boolean
           updated_at?: string
           visitor_id: string
         }
@@ -95,6 +97,7 @@ export type Database = {
           created_at?: string
           id?: string
           title?: string
+          title_locked?: boolean
           updated_at?: string
           visitor_id?: string
         }

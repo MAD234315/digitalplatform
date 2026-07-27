@@ -1,17 +1,13 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Bot, History, Plus, User } from "lucide-react";
+
 import { getSheetProducts } from "@/lib/sheet-products.functions";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { MessageSquare, Plus, Trash2, History, Sparkle } from "lucide-react";
 import { CONTACT } from "@/components/site-chrome";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+import { MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -19,15 +15,17 @@ import {
   PromptInputSubmit,
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
-import { Shimmer } from "@/components/ai-elements/shimmer";
 import { WaGlyph } from "@/components/products/wa-glyph";
 import {
   ChatFrame,
   CHAT_DESC,
   CHAT_QUICK_PROMPTS,
+  CHAT_SUGGESTION_CHIPS,
   CHAT_TITLE,
   CHAT_URL,
 } from "@/components/chat/chat-frame";
+import { ChatHistorySheet } from "@/components/chat/chat-history-sheet";
+import { ChatProductCards, matchChatProducts } from "@/components/chat/chat-product-cards";
 import { HandoffDialog, buildHandoffSummary } from "@/components/chat/handoff";
 import { getVisitorId } from "@/lib/chat-visitor";
 import {
@@ -35,6 +33,7 @@ import {
   deleteChatThread,
   getChatThread,
   listChatThreads,
+  renameChatThread,
   saveChatMessages,
   type ChatThreadSummary,
   type StoredChatMessage,
@@ -70,6 +69,14 @@ function toStored(messages: UIMessage[]): StoredChatMessage[] {
   }));
 }
 
+function messageText(message: UIMessage): string {
+  return message.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+}
+
+/** Buying intent — the only time the WhatsApp CTA appears. */
+const INTENT_RE =
+  /\b(price|pricing|cost|how much|buy|purchase|order|pay|payment|interested|admin|contact|subscribe|activate)\b/i;
+
 function ChatThreadPage() {
   const { threadId } = Route.useParams();
   const navigate = useNavigate();
@@ -77,10 +84,12 @@ function ChatThreadPage() {
   const [visitorId, setVisitorId] = useState("");
   const [threads, setThreads] = useState<ChatThreadSummary[]>([]);
   const [initial, setInitial] = useState<UIMessage[] | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   useEffect(() => setVisitorId(getVisitorId()), []);
 
   const refreshThreads = useCallback(async (vid: string) => {
+    if (!vid) return;
     try {
       setThreads(await listChatThreads({ data: { visitorId: vid } }));
     } catch {
@@ -88,7 +97,6 @@ function ChatThreadPage() {
     }
   }, []);
 
-  // Load the thread named in the URL. Unknown/foreign threads bounce to /chat.
   useEffect(() => {
     if (!visitorId) return;
     let cancelled = false;
@@ -112,12 +120,12 @@ function ChatThreadPage() {
     };
   }, [visitorId, threadId, navigate, refreshThreads]);
 
-  const newThread = async () => {
+  const newThread = useCallback(async () => {
     if (!visitorId) return;
     const { id } = await createChatThread({ data: { visitorId } });
     await refreshThreads(visitorId);
     void navigate({ to: "/chat/$threadId", params: { threadId: id } });
-  };
+  }, [visitorId, refreshThreads, navigate]);
 
   const removeThread = async (id: string) => {
     if (!visitorId) return;
@@ -130,17 +138,23 @@ function ChatThreadPage() {
     }
   };
 
+  const rename = async (id: string, title: string) => {
+    if (!visitorId) return;
+    setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
+    try {
+      await renameChatThread({ data: { visitorId, threadId: id, title } });
+    } finally {
+      void refreshThreads(visitorId);
+    }
+  };
+
   return (
     <ChatFrame>
-      <div className="relative flex h-[min(600px,calc(100dvh-104px))] min-h-[420px] w-full min-w-0 max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card shadow-gold-lg">
-        <ThreadList
-          threads={threads}
-          activeId={threadId}
-          onNew={newThread}
-          onDelete={removeThread}
-        />
+      <div className="relative flex h-[calc(100dvh-64px)] w-full min-w-0 max-w-4xl flex-col overflow-hidden border-border bg-card shadow-gold-lg sm:h-[min(760px,calc(100dvh-128px))] sm:rounded-[1.75rem] sm:border">
+        <ChatHeader onNew={newThread} onHistory={() => setHistoryOpen(true)} />
+
         {initial === null ? (
-          <div className="flex flex-1 items-center justify-center rounded-xl text-sm text-muted-foreground">
+          <div className="flex min-h-0 flex-1 items-center justify-center text-sm text-muted-foreground">
             Loading your conversation…
           </div>
         ) : (
@@ -153,96 +167,65 @@ function ChatThreadPage() {
             onSaved={() => void refreshThreads(visitorId)}
           />
         )}
+
+        <ChatHistorySheet
+          open={historyOpen}
+          onOpenChange={setHistoryOpen}
+          threads={threads}
+          activeId={threadId}
+          onNew={() => void newThread()}
+          onDelete={(id) => void removeThread(id)}
+          onRename={(id, title) => void rename(id, title)}
+        />
       </div>
     </ChatFrame>
   );
 }
 
-function ThreadList({
-  threads,
-  activeId,
-  onNew,
-  onDelete,
-}: {
-  threads: ChatThreadSummary[];
-  activeId: string;
-  onNew: () => void;
-  onDelete: (id: string) => void;
-}) {
+/** Compact sticky header: identity + status on the left, actions on the right. */
+function ChatHeader({ onNew, onHistory }: { onNew: () => void; onHistory: () => void }) {
   return (
-    <aside
-      aria-label="Saved conversations"
-      className="hidden w-72 flex-col border-r border-border bg-black/40 backdrop-blur-xl lg:flex"
-    >
-      <div className="p-6">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="inline-flex size-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-200">
-            <div className="size-7 rounded-full bg-black" />
-          </div>
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-amber/80">Digital AI</span>
-        </div>
-
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Your chats</h3>
-          <button
-            type="button"
-            onClick={onNew}
-            aria-label="Start a new conversation"
-            className="inline-flex size-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
-          >
-            <Plus className="size-4" aria-hidden />
-          </button>
-        </div>
-
-        <ul className="space-y-1 overflow-y-auto pr-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] lg:max-h-[420px]">
-          {threads.length === 0 && (
-            <li className="px-2 py-2 text-xs text-muted-foreground">No saved conversations yet.</li>
-          )}
-          {threads.map((t) => {
-            const active = t.id === activeId;
-            return (
-              <li
-                key={t.id}
-                className={`flex items-center gap-1 rounded-xl border px-1 transition-colors ${
-                  active ? "border-amber/20 bg-amber/5" : "border-transparent hover:bg-background"
-                }`}
-              >
-                <Link
-                  to="/chat/$threadId"
-                  params={{ threadId: t.id }}
-                  aria-current={active ? "page" : undefined}
-                  className="min-h-10 flex-1 truncate px-2 py-1.5 text-left text-sm"
-                >
-                  {t.title}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => onDelete(t.id)}
-                  aria-label={`Delete conversation: ${t.title}`}
-                  className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-destructive"
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      <div className="mt-auto border-t border-border p-6">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-full border border-border bg-muted">
-            <div className="size-full rounded-full bg-gradient-to-b from-amber/20 to-transparent" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-foreground">Guest visitor</p>
-            <p className="text-[10px] font-medium uppercase tracking-wide text-amber/70">AI concierge</p>
-          </div>
+    <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-card/95 px-3 py-2.5 backdrop-blur-xl sm:px-4">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-200 text-black">
+          <Bot className="size-4.5" aria-hidden />
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">Digital Platform AI</p>
+          <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-2 animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
+            </span>
+            Online
+          </p>
         </div>
       </div>
-    </aside>
+
+      <div className="flex shrink-0 items-center gap-1.5">
+        <button
+          type="button"
+          onClick={onNew}
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-medium text-amber-200 transition-colors hover:border-amber/40 hover:bg-amber/5"
+        >
+          <Plus className="size-4" aria-hidden />
+          <span className="hidden xs:inline sm:inline">New chat</span>
+        </button>
+        <button
+          type="button"
+          onClick={onHistory}
+          aria-label="Open chat history"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
+        >
+          <History className="size-4" aria-hidden />
+          <span className="hidden sm:inline">History</span>
+        </button>
+      </div>
+    </header>
   );
 }
+
+const PAGE_SIZE = 20;
 
 function ChatWindow({
   threadId,
@@ -258,7 +241,10 @@ function ChatWindow({
   onSaved: () => void;
 }) {
   const [input, setInput] = useState("");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const { messages, sendMessage, status, error } = useChat({
     id: threadId,
@@ -266,7 +252,7 @@ function ChatWindow({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
-  // Persist the transcript to the visitor's saved history once a turn settles.
+  // Persist the transcript once a turn settles.
   const savedRef = useRef("");
   useEffect(() => {
     if (!visitorId || status === "streaming" || status === "submitted") return;
@@ -289,6 +275,11 @@ function ChatWindow({
     if (status === "ready") focusInput();
   }, [status, focusInput]);
 
+  // Keep the newest message in view without locking the scroll container.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [messages, status]);
+
   const busy = status === "submitted" || status === "streaming";
 
   const submit = useCallback(
@@ -296,6 +287,7 @@ function ChatWindow({
       const trimmed = text.trim();
       if (!trimmed || busy) return;
       setInput("");
+      setVisibleCount((c) => c + 2);
       void sendMessage({ text: trimmed });
       focusInput();
     },
@@ -305,178 +297,133 @@ function ChatWindow({
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffText, setHandoffText] = useState("");
 
-  // Catalogue names let the handoff note list the products the assistant recommended.
   const { data: catalogue } = useQuery({
     queryKey: ["sheet-products"],
     queryFn: () => getSheetProducts(),
     staleTime: 60_000,
   });
 
+  const products = useMemo(
+    () =>
+      (catalogue?.products ?? []).map((p) => ({
+        name: p.name,
+        plan: p.plan,
+        validity: p.validity,
+        availability: p.availability,
+        category: p.category,
+      })),
+    [catalogue],
+  );
+
   const openHandoff = () => {
-    setHandoffText(
-      buildHandoffSummary(
-        messages,
-        (catalogue?.products ?? []).map((p) => ({
-          name: p.name,
-          plan: p.plan,
-          validity: p.validity,
-          availability: p.availability,
-        })),
-      ),
-    );
+    setHandoffText(buildHandoffSummary(messages, products));
     setHandoffOpen(true);
   };
 
   const hasMessages = messages.length > 0;
+  const visible = messages.slice(Math.max(0, messages.length - visibleCount));
+  const hiddenCount = messages.length - visible.length;
+
+  // WhatsApp CTA only appears when the conversation shows buying intent.
+  const showWhatsapp = useMemo(() => {
+    const recent = messages.slice(-4).map(messageText).join(" ");
+    return messages.some((m) => m.role === "user") && INTENT_RE.test(recent);
+  }, [messages]);
 
   return (
-    <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-950/10 via-transparent to-transparent">
-
-      {/* Header */}
-      <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-4 py-3 sm:px-8 sm:py-5">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <span className="size-2.5 rounded-full bg-amber shadow-[0_0_10px_rgba(245,158,11,0.6)]" aria-hidden />
-            <span className="absolute inset-0 size-2.5 animate-ping rounded-full bg-amber opacity-50" aria-hidden />
-          </div>
-          <span className="text-xs font-medium uppercase tracking-widest text-amber/80">AI Assistant Online</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onNew}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-amber/5 px-4 py-2 text-xs font-medium text-amber-200 transition-colors hover:bg-amber/10"
-          >
-            <Plus className="size-3.5" aria-hidden />
-            New dialogue
-          </button>
-        </div>
-      </header>
-
-      {/* Empty state hero */}
-      {!hasMessages && (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-2 text-center [-webkit-overflow-scrolling:touch] sm:px-8 lg:px-24">
-          <div className="mb-4 max-w-full sm:mb-8">
-            <h1 className="max-w-full break-words font-display text-3xl font-normal text-foreground sm:text-5xl lg:text-6xl">
-              Ask us <span className="italic text-amber">anything.</span>
-            </h1>
-            <p className="mx-auto mt-3 max-w-full text-sm leading-relaxed text-muted-foreground sm:max-w-md sm:text-base">
-              Ask about products, prices, delivery, warranty or support. Our AI assistant is ready to help you find the right digital product.
-            </p>
-          </div>
-
-          <div className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-            {CHAT_QUICK_PROMPTS.slice(0, 3).map((q) => (
-              <button
-                key={q.label}
-                type="button"
-                onClick={() => submit(q.prompt)}
-                disabled={busy}
-                className="group rounded-2xl border border-border bg-white/[0.02] p-4 text-left transition-colors hover:border-amber/30 hover:bg-amber/[0.03] disabled:opacity-50 sm:p-5"
-              >
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-amber">{q.label}</p>
-                <p className="text-sm text-muted-foreground group-hover:text-foreground">{q.prompt}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Messages */}
-      {hasMessages && (
-        <Conversation className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 sm:px-8 [-webkit-overflow-scrolling:touch] [contain:layout_paint]">
-          <ConversationContent className="gap-4 py-4">
-            {messages.map((message) => (
-              <Message key={message.id} from={message.role}>
-                <MessageContent className="min-w-0 max-w-full [overflow-wrap:anywhere]">
-                  {message.parts.map((part, i) =>
-                    part.type === "text" ? <MessageResponse key={i}>{part.text}</MessageResponse> : null,
-                  )}
-                </MessageContent>
-              </Message>
-            ))}
-
-            {status === "submitted" && (
-              <Message from="assistant">
-                <MessageContent>
-                  <Shimmer>Thinking...</Shimmer>
-                </MessageContent>
-              </Message>
-            )}
-
-            {error && (
-              <p role="alert" className="text-sm text-destructive">
-                Something went wrong. Please try again, or{" "}
-                <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
-                  message us on WhatsApp
-                </a>
-                .
-              </p>
-            )}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
-      )}
-
-      {/* Composer + quick prompts + WhatsApp */}
-      <div className="shrink-0 border-t border-border p-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-6 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      {/* Single vertical scroll container */}
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <div
-          aria-label="Quick questions"
-          className="mb-3 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          ref={scrollRef}
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:py-4"
         >
-          {CHAT_QUICK_PROMPTS.map((q) => (
-            <button
-              key={q.label}
-              type="button"
-              onClick={() => submit(q.prompt)}
-              disabled={busy}
-              title={q.prompt}
-              className="inline-flex min-h-8 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
-            >
-              <Sparkle className="size-3 shrink-0 text-amber" aria-hidden />
-              {q.label}
-            </button>
-          ))}
-        </div>
+          {!hasMessages ? (
+            <WelcomeScreen onPick={submit} busy={busy} />
+          ) : (
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
+              {hiddenCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                  className="mx-auto inline-flex min-h-11 items-center rounded-full border border-border px-4 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground"
+                >
+                  Load {Math.min(hiddenCount, PAGE_SIZE)} earlier messages
+                </button>
+              )}
 
-        <div className="relative group">
-          <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber/20 to-amber-950/20 opacity-25 blur transition duration-1000 group-focus-within:opacity-100" />
-          <div className="relative flex items-end rounded-3xl border border-border bg-[#0a0a0a] p-2 shadow-2xl sm:p-3">
-            <PromptInput
-              onSubmit={(message: PromptInputMessage) => submit(message.text ?? input)}
-              className="flex-1"
-            >
-              <PromptInputTextarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about a product, price, delivery or warranty…"
-                className="!min-h-[44px] max-h-32 border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:ring-0"
-              />
-              <PromptInputFooter className="justify-end pt-1">
-                <PromptInputSubmit
-                  status={status}
-                  disabled={!input.trim() && !busy}
-                  className="size-11 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all hover:brightness-110"
+              {visible.map((message) => (
+                <ChatBubble
+                  key={message.id}
+                  message={message}
+                  products={products}
+                  onKnowMore={submit}
                 />
-              </PromptInputFooter>
-            </PromptInput>
-          </div>
+              ))}
+
+              {status === "submitted" && <TypingIndicator />}
+
+              {error && (
+                <p role="alert" className="text-sm text-destructive">
+                  Something went wrong. Please try again, or{" "}
+                  <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
+                    message us on WhatsApp
+                  </a>
+                  .
+                </p>
+              )}
+              <div ref={bottomRef} />
+            </div>
+          )}
         </div>
 
-        {messages.some((m) => m.role === "user") && (
+        {/* Floating new-chat button */}
+        <button
+          type="button"
+          onClick={onNew}
+          aria-label="Start a new chat"
+          className="absolute bottom-3 right-3 z-20 inline-flex size-12 items-center justify-center rounded-full bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_8px_24px_rgba(245,158,11,0.35)] transition-transform hover:brightness-110 active:scale-95 motion-reduce:transform-none"
+        >
+          <Plus className="size-5" aria-hidden />
+        </button>
+      </div>
+
+
+      {/* Composer pinned to the bottom */}
+      <div className="shrink-0 border-t border-border bg-card px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-5 sm:pt-3">
+        {showWhatsapp && (
           <button
             type="button"
             onClick={openHandoff}
-            className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-transform duration-200 hover:brightness-110 active:scale-[0.98] motion-reduce:transform-none"
+            className="mb-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-[filter] hover:brightness-110 active:scale-[0.99] motion-reduce:transform-none"
             style={{ backgroundColor: "var(--whatsapp)" }}
           >
             <WaGlyph />
-            Continue this chat on WhatsApp
+            Continue on WhatsApp
           </button>
         )}
 
-        <p className="mt-2 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+        <div className="mx-auto w-full max-w-3xl rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40">
+          <PromptInput onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}>
+            <PromptInputTextarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={1}
+              placeholder="Ask about any product..."
+              className="!min-h-[44px] max-h-32 border-0 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm"
+            />
+            <PromptInputFooter className="justify-end pt-0">
+              <PromptInputSubmit
+                status={status}
+                disabled={!input.trim() && !busy}
+                className="size-10 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black transition-[filter] hover:brightness-110"
+              />
+            </PromptInputFooter>
+          </PromptInput>
+        </div>
+
+        <p className="mt-1.5 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
           AI-generated. Confirm today&apos;s price on{" "}
           <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
             WhatsApp
@@ -492,6 +439,130 @@ function ChatWindow({
         onTextChange={setHandoffText}
         messages={messages}
       />
-    </main>
+    </div>
+  );
+}
+
+function ChatBubble({
+  message,
+  products,
+  onKnowMore,
+}: {
+  message: UIMessage;
+  products: Parameters<typeof matchChatProducts>[1];
+  onKnowMore: (prompt: string) => void;
+}) {
+  const isUser = message.role === "user";
+  const text = messageText(message);
+  const matched = isUser ? [] : matchChatProducts(text, products);
+
+  return (
+    <div className={`flex w-full gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+      <span
+        aria-hidden
+        className={`mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full ${
+          isUser
+            ? "border border-border bg-background text-muted-foreground"
+            : "bg-gradient-to-tr from-amber-600 to-amber-200 text-black"
+        }`}
+      >
+        {isUser ? <User className="size-4" /> : <Bot className="size-4" />}
+      </span>
+
+      <div className={`flex min-w-0 max-w-[86%] flex-col ${isUser ? "items-end" : "items-start"}`}>
+        <span className="mb-1 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          {isUser ? "You" : "Digital Platform AI"}
+        </span>
+        <div
+          className={`min-w-0 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed [overflow-wrap:anywhere] ${
+            isUser
+              ? "rounded-tr-md bg-amber/15 text-foreground ring-1 ring-amber/25"
+              : "rounded-tl-md bg-background/70 text-foreground ring-1 ring-border"
+          }`}
+        >
+          {message.parts.map((part, i) =>
+            part.type === "text" ? <MessageResponse key={i}>{part.text}</MessageResponse> : null,
+          )}
+        </div>
+
+        {matched.length > 0 && (
+          <div className="w-full">
+            <ChatProductCards products={matched} onKnowMore={onKnowMore} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-200 text-black">
+        <Bot className="size-4" aria-hidden />
+      </span>
+      <div className="flex items-center gap-2 rounded-2xl rounded-tl-md bg-background/70 px-3.5 py-2.5 ring-1 ring-border">
+        <span className="text-xs text-muted-foreground">Digital Platform AI is typing</span>
+        <span className="flex gap-1" aria-hidden>
+          {[0, 150, 300].map((delay) => (
+            <span
+              key={delay}
+              className="size-1.5 animate-bounce rounded-full bg-amber"
+              style={{ animationDelay: `${delay}ms` }}
+            />
+          ))}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; busy: boolean }) {
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col py-4">
+      <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
+        👋 Welcome to <span className="text-amber">Digital Platform AI</span>
+      </h1>
+      <p className="mt-2 text-sm text-muted-foreground">I can help you with:</p>
+      <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground sm:grid-cols-3">
+        {["Products", "Prices", "AI Tools", "Subscriptions", "Orders", "Support"].map((item) => (
+          <li key={item} className="flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-amber" aria-hidden />
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-5 grid gap-2 sm:grid-cols-2">
+        {CHAT_QUICK_PROMPTS.map((q) => (
+          <button
+            key={q.label}
+            type="button"
+            onClick={() => onPick(q.prompt)}
+            disabled={busy}
+            className="min-h-11 rounded-2xl border border-border bg-background/50 px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-amber/40 hover:bg-amber/5 disabled:opacity-50"
+          >
+            {q.label}
+          </button>
+        ))}
+      </div>
+
+      <p className="mt-5 text-[11px] font-bold uppercase tracking-widest text-amber/70">
+        Suggested questions
+      </p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {CHAT_SUGGESTION_CHIPS.map((chip) => (
+          <button
+            key={chip}
+            type="button"
+            onClick={() => onPick(`Tell me about ${chip}.`)}
+            disabled={busy}
+            className="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
+          >
+            {chip}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
