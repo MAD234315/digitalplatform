@@ -168,9 +168,11 @@ function ChatThreadPage() {
             threadId={threadId}
             visitorId={visitorId}
             initialMessages={initial}
+            isOnline={isOnline}
             onNew={newThread}
             onSaved={() => void refreshThreads(visitorId)}
           />
+
         )}
 
         <ChatHistorySheet
