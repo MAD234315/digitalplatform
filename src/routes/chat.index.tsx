@@ -4,7 +4,9 @@ import { Loader2, WifiOff } from "lucide-react";
 import { ChatFrame, CHAT_DESC, CHAT_TITLE, CHAT_URL } from "@/components/chat/chat-frame";
 
 import { getVisitorId } from "@/lib/chat-visitor";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 import { createChatThread, listChatThreads } from "@/lib/chat-threads.functions";
+
 
 export const Route = createFileRoute("/chat/")({
   head: () => ({

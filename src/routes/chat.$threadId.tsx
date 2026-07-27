@@ -29,6 +29,7 @@ import { ChatHistorySheet } from "@/components/chat/chat-history-sheet";
 import { ChatProductCards, matchChatProducts } from "@/components/chat/chat-product-cards";
 import { HandoffDialog, buildHandoffSummary } from "@/components/chat/handoff";
 import { getVisitorId } from "@/lib/chat-visitor";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 import {
   createChatThread,
   deleteChatThread,
@@ -39,6 +40,7 @@ import {
   type ChatThreadSummary,
   type StoredChatMessage,
 } from "@/lib/chat-threads.functions";
+
 
 export const Route = createFileRoute("/chat/$threadId")({
   head: () => ({
