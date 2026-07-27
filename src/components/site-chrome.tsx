@@ -191,8 +191,8 @@ export function SiteFooter() {
     "rounded-sm outline-none transition-colors hover:text-amber focus-visible:text-amber";
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-14 grid gap-10 sm:grid-cols-2 md:grid-cols-5">
-        <div className="md:col-span-2">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-14 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-5">
+        <div className="col-span-2 md:col-span-2">
           <div className="flex items-center gap-3">
             <span
               aria-hidden
