@@ -87,6 +87,7 @@
   --gradient-headline: linear-gradient(180deg, oklch(0.92 0.12 86), oklch(0.78 0.15 78));
   --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.5), 0 20px 40px -20px oklch(0 0 0 / 0.6);
   --shadow-gold: 0 0 0 1px oklch(0.80 0.14 82 / 0.25), 0 10px 40px -10px oklch(0.80 0.14 82 / 0.35);
+  --shadow-gold-lg: 0 0 0 1px oklch(0.80 0.14 82 / 0.2), 0 20px 60px -20px oklch(0.80 0.14 82 / 0.25);
 }
 
 
