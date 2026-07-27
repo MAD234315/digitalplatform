@@ -311,13 +311,21 @@ function ChatWindow({
 
 
   return (
-    <div className="order-first flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft lg:order-none">
+    <div className="ai-ethereal-glow order-first flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-gold-lg lg:order-none">
       <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-3 py-2">
-        <div className="flex min-w-0 items-center gap-2 text-sm">
-          <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber">
-            <MessageSquare className="size-3.5" aria-hidden />
-          </span>
-          <span className="truncate font-medium">Digital Platform assistant</span>
+        <div className="flex min-w-0 items-center gap-2.5 text-sm">
+          <div className="relative shrink-0">
+            <span className="ai-avatar-ring inline-flex size-8 items-center justify-center rounded-full bg-black">
+              <span className="inline-flex size-[calc(100%-3px)] items-center justify-center rounded-full bg-card text-amber">
+                <MessageSquare className="size-3.5" aria-hidden />
+              </span>
+            </span>
+            <span className="ai-status-dot absolute bottom-0 right-0 size-2.5 rounded-full bg-green-500" aria-hidden />
+          </div>
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate font-medium">Digital Platform assistant</span>
+            <span className="text-[10px] uppercase tracking-wider text-amber/70">AI Online</span>
+          </div>
         </div>
         <span className="shrink-0 text-[11px] text-muted-foreground">Saved</span>
       </div>
