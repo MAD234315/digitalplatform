@@ -567,9 +567,9 @@ function WelcomeScreen({
   online: boolean;
 }) {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col py-4">
-      <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
-        👋 Welcome to <span className="text-amber">CREATOR AI</span>
+    <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-col py-4">
+      <h1 className="text-balance text-xl font-semibold text-foreground sm:text-2xl">
+        Welcome to <span className="text-amber">CREATOR AI</span>
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">I can help you with:</p>
       <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground sm:grid-cols-3">
