@@ -31,6 +31,7 @@ export function ChatHistorySheet({
   activeId,
   onNew,
   onDelete,
+  onDeleteAll,
   onRename,
 }: {
   open: boolean;
@@ -39,10 +40,13 @@ export function ChatHistorySheet({
   activeId: string;
   onNew: () => void;
   onDelete: (id: string) => void;
+  onDeleteAll: () => void;
   onRename: (id: string, title: string) => void;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [confirmAll, setConfirmAll] = useState(false);
+
 
   const groups: { label: string; items: ChatThreadSummary[] }[] = (
     ["Today", "Yesterday", "Older"] as const
