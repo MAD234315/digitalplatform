@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
+import { useQuery } from "@tanstack/react-query";
+import { getSheetProducts } from "@/lib/sheet-products.functions";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MessageSquare, Plus, Trash2, History, Sparkle } from "lucide-react";
 import { CONTACT } from "@/components/site-chrome";
