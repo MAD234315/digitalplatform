@@ -1,5 +1,4 @@
 import { PageShell } from "@/components/layout/PageShell";
-import { PageHero } from "@/components/layout/PageHero";
 import { SITE_URL } from "@/lib/site-config";
 
 export const CHAT_URL = SITE_URL + "/chat";
@@ -20,18 +19,12 @@ export const CHAT_QUICK_PROMPTS = [
 
 export const CHAT_SUGGESTIONS = CHAT_QUICK_PROMPTS.slice(0, 4).map((q) => q.prompt);
 
-
 export function ChatFrame({ children }: { children: React.ReactNode }) {
   return (
     <PageShell>
-      <PageHero
-        compact
-        eyebrow="AI assistant"
-        title="Ask us"
-        titleAccent="anything."
-        lede="Ask about products, prices, delivery, warranty or support. Your chats are saved."
-      />
-      <section className="mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-6 pb-8 sm:pb-10">{children}</section>
+      <section className="flex min-h-[calc(100dvh-64px-1px)] items-center justify-center bg-background px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-10">
+        {children}
+      </section>
     </PageShell>
   );
 }
