@@ -103,7 +103,7 @@ export function StatsCounterSection() {
           Our numbers
         </h2>
         <Reveal>
-          <div className="grid grid-cols-2 gap-4 sm:gap-8 items-start">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-6 sm:gap-10 items-start">
             <Stat
               target={15}
               suffix="K+"
