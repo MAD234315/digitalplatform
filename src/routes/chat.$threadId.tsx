@@ -132,7 +132,7 @@ function ChatThreadPage() {
 
   return (
     <ChatFrame>
-      <div className="relative flex h-[min(850px,calc(100dvh-120px))] w-full max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card shadow-gold-lg">
+      <div className="relative flex h-[min(850px,calc(100dvh-120px))] w-full min-w-0 max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card shadow-gold-lg">
         <ThreadList
           threads={threads}
           activeId={threadId}
