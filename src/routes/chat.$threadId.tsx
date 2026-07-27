@@ -330,7 +330,19 @@ function ChatWindow({
   const openHandoff = () => {
     setHandoffText(buildHandoffSummary(messages, products));
     setHandoffOpen(true);
+    // Read-only transcript link the admin can open from WhatsApp.
+    if (visitorId) {
+      void saveChatMessages({ data: { visitorId, threadId, messages: toStored(messages) } })
+        .then(() => getChatShareToken({ data: { visitorId, threadId } }))
+        .then((res) => {
+          if (res?.token && typeof window !== "undefined") {
+            setShareLink(`${window.location.origin}/chat/share/${threadId}?t=${res.token}`);
+          }
+        })
+        .catch(() => setShareLink(undefined));
+    }
   };
+
 
   const hasMessages = messages.length > 0;
   const visible = messages.slice(Math.max(0, messages.length - visibleCount));
