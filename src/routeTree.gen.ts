@@ -26,6 +26,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
@@ -117,6 +118,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSetupRoute = AdminSetupRouteImport.update({
   id: '/setup',
   path: '/setup',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/api/chat': typeof ApiChatRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/api/chat': typeof ApiChatRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/api/chat': typeof ApiChatRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/admin/diagnostics'
     | '/admin/login'
     | '/admin/setup'
+    | '/api/chat'
     | '/admin/'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/admin/diagnostics'
     | '/admin/login'
     | '/admin/setup'
+    | '/api/chat'
     | '/admin'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/admin/diagnostics'
     | '/admin/login'
     | '/admin/setup'
+    | '/api/chat'
     | '/admin/'
     | '/api/public/revalidate-reviews'
     | '/api/public/health/supabase'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   SetupRoute: typeof SetupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ApiChatRoute: typeof ApiChatRoute
   ApiPublicRevalidateReviewsRoute: typeof ApiPublicRevalidateReviewsRoute
   ApiPublicHealthSupabaseRoute: typeof ApiPublicHealthSupabaseRoute
 }
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/setup': {
       id: '/admin/setup'
       path: '/setup'
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetupRoute: SetupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ApiChatRoute: ApiChatRoute,
   ApiPublicRevalidateReviewsRoute: ApiPublicRevalidateReviewsRoute,
   ApiPublicHealthSupabaseRoute: ApiPublicHealthSupabaseRoute,
 }

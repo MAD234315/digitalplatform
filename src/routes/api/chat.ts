@@ -83,7 +83,7 @@ ${faq}`;
         const result = streamText({
           model: gateway("google/gemini-3.6-flash"),
           system,
-          messages: convertToModelMessages(messages as UIMessage[]),
+          messages: await convertToModelMessages(messages as UIMessage[]),
         });
 
         const response = result.toUIMessageStreamResponse({
