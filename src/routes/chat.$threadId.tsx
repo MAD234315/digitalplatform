@@ -372,13 +372,9 @@ function ChatWindow({
               )}
 
               {visible.map((message) => (
-                <ChatBubble
-                  key={message.id}
-                  message={message}
-                  products={products}
-                  onKnowMore={submit}
-                />
+                <ChatBubble key={message.id} message={message} />
               ))}
+
 
               {status === "submitted" && <TypingIndicator />}
 
