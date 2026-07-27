@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -199,13 +199,14 @@ function ThreadList({
                 active ? "border-amber/40 bg-background" : "border-transparent hover:bg-background"
               }`}
             >
-              <a
-                href={`/chat/${t.id}`}
+              <Link
+                to="/chat/$threadId"
+                params={{ threadId: t.id }}
                 aria-current={active ? "page" : undefined}
                 className="min-h-11 flex-1 truncate px-2 py-2 text-left text-sm"
               >
                 {t.title}
-              </a>
+              </Link>
               <button
                 type="button"
                 onClick={() => onDelete(t.id)}
