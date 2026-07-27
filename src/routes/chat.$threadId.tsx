@@ -26,7 +26,6 @@ import {
   CHAT_URL,
 } from "@/components/chat/chat-frame";
 import { ChatHistorySheet } from "@/components/chat/chat-history-sheet";
-import { ChatProductCards, matchChatProducts } from "@/components/chat/chat-product-cards";
 import { HandoffDialog, buildHandoffSummary } from "@/components/chat/handoff";
 import { getVisitorId } from "@/lib/chat-visitor";
 import { useOnlineStatus } from "@/hooks/use-online-status";
