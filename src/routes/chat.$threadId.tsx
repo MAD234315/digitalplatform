@@ -311,38 +311,38 @@ function ChatWindow({
 
 
   return (
-    <div className="order-first flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft lg:order-none">
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-3">
+    <div className="order-first flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft lg:order-none">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-3 py-2">
         <div className="flex min-w-0 items-center gap-2 text-sm">
           <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber">
             <MessageSquare className="size-3.5" aria-hidden />
           </span>
           <span className="truncate font-medium">Digital Platform assistant</span>
         </div>
-        <span className="shrink-0 text-[11px] text-muted-foreground">Saved automatically</span>
+        <span className="shrink-0 text-[11px] text-muted-foreground">Saved</span>
       </div>
 
       {/* Fixed, self-scrolling transcript on every browser:
           - basis-auto/grow-0 stops flex-1 from overriding the height
           - vh base height for older Safari/Firefox, svh where supported (no jump
             when the iOS toolbar shows/hides) */}
-      <Conversation className="h-[clamp(300px,52vh,540px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [contain:layout_paint] [-webkit-overflow-scrolling:touch] [@supports(height:1svh)]:h-[clamp(300px,52svh,540px)]">
+      <Conversation className="h-[clamp(240px,42vh,420px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [contain:layout_paint] [-webkit-overflow-scrolling:touch] [@supports(height:1svh)]:h-[clamp(240px,42svh,420px)]">
 
 
 
-        <ConversationContent className="gap-6 p-4 sm:p-5">
+        <ConversationContent className="gap-4 p-3 sm:p-4">
           {messages.length === 0 && (
-            <div className="py-6 text-center">
+            <div className="py-4 text-center">
               <p className="text-sm text-muted-foreground">
                 Ask about any product, price, delivery time or warranty.
               </p>
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <div className="mt-3 flex flex-wrap justify-center gap-2">
                 {CHAT_SUGGESTIONS.map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => submit(s)}
-                    className="min-h-11 rounded-full border border-border px-4 text-xs transition-colors hover:border-amber/40 hover:bg-background"
+                    className="min-h-9 rounded-full border border-border px-3 text-xs transition-colors hover:border-amber/40 hover:bg-background"
                   >
                     {s}
                   </button>
@@ -385,10 +385,10 @@ function ChatWindow({
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="shrink-0 border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="shrink-0 border-t border-border p-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div
           aria-label="Quick questions"
-          className="-mx-1 mb-3 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-1 mb-2 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
 
         >
           {CHAT_QUICK_PROMPTS.map((q) => (
@@ -398,7 +398,7 @@ function ChatWindow({
               onClick={() => submit(q.prompt)}
               disabled={busy}
               title={q.prompt}
-              className="inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
+              className="inline-flex min-h-8 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-2.5 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
             >
               <Sparkle className="size-3 shrink-0 text-amber" aria-hidden />
               {q.label}
@@ -424,7 +424,7 @@ function ChatWindow({
           <button
             type="button"
             onClick={openHandoff}
-            className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-transform duration-200 hover:brightness-110 active:scale-[0.98] motion-reduce:transform-none"
+            className="mt-2 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-transform duration-200 hover:brightness-110 active:scale-[0.98] motion-reduce:transform-none"
             style={{ backgroundColor: "var(--whatsapp)" }}
           >
             <WaGlyph />
@@ -432,8 +432,8 @@ function ChatWindow({
           </button>
         )}
 
-        <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Answers are AI-generated. Confirm today&apos;s price on{" "}
+        <p className="mt-1.5 text-center text-[11px] text-muted-foreground">
+          AI-generated. Confirm today&apos;s price on{" "}
           <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
             WhatsApp
           </a>
