@@ -74,11 +74,11 @@ function Home() {
       <ErrorBoundary boundary="shell:nav" fallback={null}><SiteNav /></ErrorBoundary>
       <main id="main">
         <ErrorBoundary boundary="home:hero"><HeroSection /></ErrorBoundary>
+        <ErrorBoundary boundary="home:ask-ai"><div className="cv-auto"><AskAiSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:who-we-are"><div className="cv-auto"><WhoWeAreSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:stats"><div className="cv-auto"><StatsCounterSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:categories"><div className="cv-auto"><CategoriesSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:reasons"><div className="cv-auto"><ReasonsSection /></div></ErrorBoundary>
-        <ErrorBoundary boundary="home:ask-ai"><div className="cv-auto"><AskAiSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:motto"><div className="cv-auto"><MottoPromiseSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:contact-prompt"><div className="cv-auto"><ContactPromptSection /></div></ErrorBoundary>
 
