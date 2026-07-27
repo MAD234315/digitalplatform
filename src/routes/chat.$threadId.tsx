@@ -311,18 +311,19 @@ function ChatWindow({
 
 
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-soft">
-      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="inline-flex size-7 items-center justify-center rounded-full bg-amber/15 text-amber">
+    <div className="order-first flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft lg:order-none">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div className="flex min-w-0 items-center gap-2 text-sm">
+          <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber">
             <MessageSquare className="size-3.5" aria-hidden />
           </span>
-          <span className="font-medium">Digital Platform assistant</span>
+          <span className="truncate font-medium">Digital Platform assistant</span>
         </div>
-        <span className="text-[11px] text-muted-foreground">Saved automatically</span>
+        <span className="shrink-0 text-[11px] text-muted-foreground">Saved automatically</span>
       </div>
 
-      <Conversation className="h-[min(60vh,540px)]">
+      <Conversation className="h-[clamp(320px,56svh,540px)] overscroll-contain [-webkit-overflow-scrolling:touch]">
+
         <ConversationContent className="gap-6 p-4 sm:p-5">
           {messages.length === 0 && (
             <div className="py-6 text-center">
