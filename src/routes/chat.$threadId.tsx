@@ -509,11 +509,14 @@ function ChatWindow({
 
 function ChatBubble({
   message,
+  showSuggestions,
+  onPick,
 }: {
   message: UIMessage;
+  showSuggestions?: boolean;
+  onPick?: (text: string) => void;
 }) {
   const isUser = message.role === "user";
-
 
   return (
     <div className={`flex w-full gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
@@ -544,6 +547,9 @@ function ChatBubble({
           )}
         </div>
 
+        {!isUser && showSuggestions && onPick && (
+          <ReplySuggestions text={messageText(message)} onPick={onPick} />
+        )}
       </div>
     </div>
   );
