@@ -133,7 +133,7 @@ function ChatThreadPage() {
 
   return (
     <ChatFrame>
-      <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
         <ThreadList
           threads={threads}
           activeId={threadId}
@@ -141,10 +141,11 @@ function ChatThreadPage() {
           onDelete={removeThread}
         />
         {initial === null ? (
-          <div className="flex min-h-60 items-center justify-center rounded-2xl border border-border bg-card text-sm text-muted-foreground">
+          <div className="order-first flex min-h-60 min-w-0 items-center justify-center rounded-2xl border border-border bg-card text-sm text-muted-foreground lg:order-none">
             Loading your conversation…
           </div>
         ) : (
+
           <ChatWindow
             key={threadId}
             threadId={threadId}
