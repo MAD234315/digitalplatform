@@ -235,6 +235,19 @@ function ChatWindow({ initialMessages }: { initialMessages: UIMessage[] }) {
             <PromptInputSubmit status={status} disabled={!input.trim() && !busy} />
           </PromptInputFooter>
         </PromptInput>
+
+        {messages.some((m) => m.role === "user") && (
+          <button
+            type="button"
+            onClick={openHandoff}
+            className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-transform duration-200 hover:brightness-110 active:scale-[0.98] motion-reduce:transform-none"
+            style={{ backgroundColor: "var(--whatsapp)" }}
+          >
+            <WaGlyph className="size-4" />
+            Continue this chat on WhatsApp
+          </button>
+        )}
+
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
           Answers are AI-generated. Confirm today&apos;s price on{" "}
           <a href={CONTACT.WA_URL} target="_blank" rel="noreferrer" className="underline">
@@ -243,6 +256,14 @@ function ChatWindow({ initialMessages }: { initialMessages: UIMessage[] }) {
           .
         </p>
       </div>
+
+      <HandoffDialog
+        open={handoffOpen}
+        onOpenChange={setHandoffOpen}
+        text={handoffText}
+        onTextChange={setHandoffText}
+      />
     </div>
   );
+
 }
