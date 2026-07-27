@@ -440,7 +440,9 @@ function ChatWindow({
         onOpenChange={setHandoffOpen}
         text={handoffText}
         onTextChange={setHandoffText}
+        messages={messages}
       />
+
     </div>
   );
 }
