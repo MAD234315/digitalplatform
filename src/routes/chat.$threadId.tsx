@@ -74,9 +74,20 @@ function messageText(message: UIMessage): string {
   return message.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
 }
 
-/** Buying intent — the only time the WhatsApp CTA appears. */
-const INTENT_RE =
-  /\b(price|pricing|cost|how much|buy|purchase|order|pay|payment|interested|admin|contact|subscribe|activate)\b/i;
+/**
+ * WhatsApp CTA appears only when the assistant has reached the final handoff
+ * stage and explicitly asks the customer to click the website's WhatsApp button.
+ */
+function isHandoffStage(messages: UIMessage[]): boolean {
+  const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  if (!lastAssistant) return false;
+  const text = messageText(lastAssistant).toLowerCase();
+  return (
+    text.includes("continue the chat on whatsapp") ||
+    text.includes("continue the conversation on whatsapp") ||
+    text.includes("click the button below")
+  );
+}
 
 function ChatThreadPage() {
   const { threadId } = Route.useParams();
@@ -332,11 +343,8 @@ function ChatWindow({
   const visible = messages.slice(Math.max(0, messages.length - visibleCount));
   const hiddenCount = messages.length - visible.length;
 
-  // WhatsApp CTA only appears when the conversation shows buying intent.
-  const showWhatsapp = useMemo(() => {
-    const recent = messages.slice(-4).map(messageText).join(" ");
-    return messages.some((m) => m.role === "user") && INTENT_RE.test(recent);
-  }, [messages]);
+  // WhatsApp CTA only appears at the final handoff stage.
+  const showWhatsapp = useMemo(() => isHandoffStage(messages), [messages]);
 
   return (
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
