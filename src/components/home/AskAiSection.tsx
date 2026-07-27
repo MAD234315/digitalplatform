@@ -11,9 +11,9 @@ const POINTS = [
 export function AskAiSection() {
   return (
     <section aria-labelledby="ask-ai-heading" className="cv-auto border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 lg:py-14">
         <Reveal>
-          <div className="rounded-sm border border-amber/25 bg-card p-8 sm:p-10 lg:p-12 shadow-[0_0_60px_-30px_hsl(var(--amber)/0.6)]">
+          <div className="rounded-sm border border-amber/25 bg-card p-5 sm:p-8 lg:p-10 shadow-[0_0_60px_-30px_hsl(var(--amber)/0.6)]">
             <Eyebrow>Ask AI</Eyebrow>
             <h2 id="ask-ai-heading" className="mt-4 font-display text-3xl sm:text-4xl max-w-2xl">
               Doubts? Ask <em className="italic text-headline">CREATOR AI.</em>
