@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { Check, FileDown, Loader2 } from "lucide-react";
 import type { UIMessage } from "ai";
+
 import { CONTACT } from "@/components/site-chrome";
 import { WaGlyph } from "@/components/products/wa-glyph";
 import {
@@ -55,8 +58,10 @@ function productLine(product: HandoffProduct): string {
 }
 
 /**
- * Build the WhatsApp handoff note: the visitor's exact question, the
- * assistant's final answer, and any catalogue products it recommended.
+ * Build a SHORT WhatsApp handoff note: only the visitor's latest question, a
+ * trimmed version of the assistant's final answer and any recommended
+ * products. The full conversation goes out as a PDF attachment instead, so the
+ * WhatsApp message never becomes a wall of text.
  */
 export function buildHandoffSummary(
   messages: UIMessage[],
@@ -69,30 +74,28 @@ export function buildHandoffSummary(
   const lastAnswer = [...messages].reverse().find((m) => m.role === "assistant");
   const answer = lastAnswer ? stripMarkdown(messageText(lastAnswer)) : "";
   const question = questions.at(-1) ?? "";
-  const earlier = questions.slice(0, -1).slice(-2);
 
   const lines = [
     "Hi Digital Platform! I was chatting with your website assistant and I'd like to continue here.",
   ];
 
   if (question) {
-    lines.push("", "My question:", truncate(question, 500));
-  }
-  if (earlier.length) {
-    lines.push("", "Earlier in the chat I asked:", ...earlier.map((q) => `• ${truncate(q, 160)}`));
+    lines.push("", `My question: ${truncate(question, 220)}`);
   }
   if (answer) {
-    lines.push("", "The assistant's answer:", `"${truncate(answer, 700)}"`);
+    lines.push("", `Assistant said: ${truncate(answer, 280)}`);
   }
 
   const recommended = matchProducts(`${answer}\n${question}`, products);
   if (recommended.length) {
-    lines.push("", "Products mentioned:", ...recommended.map(productLine));
+    lines.push("", "Products mentioned:", ...recommended.slice(0, 3).map(productLine));
   }
 
   lines.push("", "Could you confirm today's price and availability?");
+  lines.push("(Full chat transcript attached as a PDF.)");
   return lines.join("\n");
 }
+
 
 
 function stripMarkdown(text: string): string {
@@ -107,19 +110,34 @@ function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-/** Preview + edit the handoff note before opening WhatsApp. */
+/** Preview + edit the short handoff note, and download the full chat as a PDF. */
 export function HandoffDialog({
   open,
   onOpenChange,
   text,
   onTextChange,
+  messages = [],
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   text: string;
   onTextChange: (text: string) => void;
+  messages?: UIMessage[];
 }) {
   const href = `${CONTACT.WA_URL}?text=${encodeURIComponent(text)}`;
+  const [downloading, setDownloading] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
+
+  const downloadPdf = async () => {
+    setDownloading(true);
+    try {
+      const { downloadChatTranscriptPdf } = await import("@/lib/chat-transcript-pdf");
+      await downloadChatTranscriptPdf(messages);
+      setDownloaded(true);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -127,18 +145,36 @@ export function HandoffDialog({
         <DialogHeader>
           <DialogTitle>Send this summary to WhatsApp?</DialogTitle>
           <DialogDescription>
-            We&apos;ll pass along what you asked so our team can pick up right where the assistant
-            left off. Edit anything before you send.
+            We keep the message short — download the full conversation as a PDF and attach it in
+            WhatsApp if our team needs the details.
           </DialogDescription>
         </DialogHeader>
 
         <Textarea
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
-          rows={9}
+          rows={7}
           aria-label="WhatsApp handoff message"
           className="resize-none text-base sm:text-sm"
         />
+
+        <button
+          type="button"
+          onClick={downloadPdf}
+          disabled={downloading || messages.length === 0}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border px-5 text-sm font-medium transition-colors hover:border-amber/40 hover:bg-card disabled:opacity-50"
+        >
+          {downloading ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : downloaded ? (
+            <Check className="size-4 text-amber" aria-hidden />
+          ) : (
+            <FileDown className="size-4 text-amber" aria-hidden />
+          )}
+          {downloaded ? "Chat PDF saved" : "Download full chat as PDF"}
+        </button>
+
+
 
 
         <DialogFooter className="gap-2 sm:gap-2">
