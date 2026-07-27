@@ -32,6 +32,7 @@ import {
   createChatThread,
   deleteChatThread,
   getChatThread,
+  getChatShareToken,
   listChatThreads,
   renameChatThread,
   saveChatMessages,
@@ -471,7 +472,7 @@ function ChatWindow({
         onOpenChange={setHandoffOpen}
         text={handoffText}
         messages={messages}
-        chatLink={typeof window !== "undefined" ? window.location.href : undefined}
+        chatLink={shareLink}
       />
 
     </div>
