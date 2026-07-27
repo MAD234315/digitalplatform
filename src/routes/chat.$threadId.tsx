@@ -330,7 +330,8 @@ function ChatWindow({
   const hasMessages = messages.length > 0;
 
   return (
-    <main className="relative flex flex-1 flex-col bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-950/10 via-transparent to-transparent">
+    <main className="relative flex min-w-0 flex-1 flex-col bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-950/10 via-transparent to-transparent">
+
       {/* Header */}
       <header className="flex shrink-0 items-center justify-between px-4 py-4 sm:px-8 sm:py-6">
         <div className="flex items-center gap-3">
