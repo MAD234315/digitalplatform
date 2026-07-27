@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { UIMessage } from "ai";
+import type { Json } from "@/integrations/supabase/types";
 
 /**
  * Saved chat history for the public AI assistant.
@@ -10,6 +11,13 @@ import type { UIMessage } from "ai";
  * these server functions with the service-role client and is always scoped
  * to the caller's visitor id.
  */
+
+/** Serializable message shape crossing the server-fn boundary. */
+export type StoredChatMessage = {
+  id: string;
+  role: "user" | "assistant" | "system";
+  parts: { type: string; text?: string }[];
+};
 
 export type ChatThreadSummary = {
   id: string;
@@ -36,7 +44,7 @@ async function admin() {
 }
 
 /** First line of the first user message, used as the thread label. */
-function titleFrom(messages: UIMessage[]): string {
+function titleFrom(messages: StoredChatMessage[]): string {
   const first = messages.find((m) => m.role === "user");
   if (!first) return "New conversation";
   const text = first.parts
@@ -83,7 +91,7 @@ export const getChatThread = createServerFn({ method: "POST" })
     visitorId: assertVisitor(input.visitorId),
     threadId: assertThreadId(input.threadId),
   }))
-  .handler(async ({ data }): Promise<{ thread: ChatThreadSummary; messages: UIMessage[] } | null> => {
+  .handler(async ({ data }): Promise<{ thread: ChatThreadSummary; messages: StoredChatMessage[] } | null> => {
     const db = await admin();
     const { data: thread, error } = await db
       .from("chat_threads")
@@ -104,15 +112,15 @@ export const getChatThread = createServerFn({ method: "POST" })
       thread: { id: thread.id, title: thread.title, updatedAt: thread.updated_at },
       messages: (rows ?? []).map((r) => ({
         id: r.client_id,
-        role: r.role as UIMessage["role"],
-        parts: (r.parts ?? []) as UIMessage["parts"],
+        role: r.role as StoredChatMessage["role"],
+        parts: (r.parts ?? []) as StoredChatMessage["parts"],
       })),
     };
   });
 
 /** Persist the full transcript of a thread (idempotent upsert by message id). */
 export const saveChatMessages = createServerFn({ method: "POST" })
-  .inputValidator((input: { visitorId: string; threadId: string; messages: UIMessage[] }) => ({
+  .inputValidator((input: { visitorId: string; threadId: string; messages: StoredChatMessage[] }) => ({
     visitorId: assertVisitor(input.visitorId),
     threadId: assertThreadId(input.threadId),
     messages: Array.isArray(input.messages) ? input.messages.slice(0, 200) : [],
@@ -133,7 +141,7 @@ export const saveChatMessages = createServerFn({ method: "POST" })
       thread_id: data.threadId,
       client_id: String(m.id ?? `msg-${i}`),
       role: m.role,
-      parts: (m.parts ?? []) as unknown as object,
+      parts: (m.parts ?? []) as unknown as Json,
       seq: i,
     }));
 
