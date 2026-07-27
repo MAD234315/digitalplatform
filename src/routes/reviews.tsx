@@ -361,13 +361,18 @@ function ReviewsSkeleton() {
 
 
 function Reviews() {
+  // Seed from the loader result so the first client render matches the
+  // server-rendered HTML (no hydration mismatch in Safari/Firefox/Chrome).
+  const loaderData = Route.useLoaderData();
   const { data } = useQuery({
     ...reviewsQueryOptions,
+    initialData: loaderData,
     refetchInterval: 120_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
+
 
   const reviews = data?.reviews ?? [];
   const hasReviews = reviews.length > 0;
@@ -420,11 +425,8 @@ function Reviews() {
         eyebrow="Customer Reviews"
         title="Trusted by thousands,"
         titleAccent="rated by real people."
-        lede={
-          hasReviews
-            ? `Average rating ${avg} / 5 across verified purchases. Here's what customers say about ordering premium digital services with us.`
-            : `Here's what customers say about ordering premium digital services with us.`
-        }
+        lede="Here's what customers say about ordering premium digital services with us."
+
       />
 
       <section className="border-t border-border" aria-labelledby="reviews-heading">
