@@ -358,7 +358,7 @@ function ChatWindow({
         <div className="shrink-0 border-b border-amber/20 bg-amber/10 px-3 py-2.5 sm:px-4">
           <p className="flex items-center justify-center gap-2 text-center text-xs font-medium text-amber">
             <WifiOff className="size-4" aria-hidden />
-            You&apos;re offline. Reconnect to continue chatting with Digital AI.
+            You&apos;re offline. Reconnect to continue chatting with CREATOR AI.
           </p>
         </div>
       )}
