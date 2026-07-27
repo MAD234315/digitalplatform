@@ -123,7 +123,7 @@ export function HandoffDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-h-[90svh] w-[calc(100vw-1.5rem)] max-w-lg overflow-y-auto overscroll-contain">
         <DialogHeader>
           <DialogTitle>Send this summary to WhatsApp?</DialogTitle>
           <DialogDescription>
@@ -137,8 +137,9 @@ export function HandoffDialog({
           onChange={(e) => onTextChange(e.target.value)}
           rows={9}
           aria-label="WhatsApp handoff message"
-          className="resize-none text-sm"
+          className="resize-none text-base sm:text-sm"
         />
+
 
         <DialogFooter className="gap-2 sm:gap-2">
           <button

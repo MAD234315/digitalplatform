@@ -133,7 +133,7 @@ function ChatThreadPage() {
 
   return (
     <ChatFrame>
-      <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
         <ThreadList
           threads={threads}
           activeId={threadId}
@@ -141,10 +141,11 @@ function ChatThreadPage() {
           onDelete={removeThread}
         />
         {initial === null ? (
-          <div className="flex min-h-60 items-center justify-center rounded-2xl border border-border bg-card text-sm text-muted-foreground">
+          <div className="order-first flex min-h-60 min-w-0 items-center justify-center rounded-2xl border border-border bg-card text-sm text-muted-foreground lg:order-none">
             Loading your conversation…
           </div>
         ) : (
+
           <ChatWindow
             key={threadId}
             threadId={threadId}
@@ -172,8 +173,9 @@ function ThreadList({
   return (
     <aside
       aria-label="Saved conversations"
-      className="rounded-2xl border border-border bg-card p-3 lg:sticky lg:top-24 lg:self-start"
+      className="min-w-0 rounded-2xl border border-border bg-card p-3 lg:sticky lg:top-24 lg:self-start"
     >
+
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           <History className="size-3.5" aria-hidden />
@@ -189,7 +191,7 @@ function ThreadList({
         </button>
       </div>
 
-      <ul className="max-h-64 space-y-1 overflow-y-auto lg:max-h-[420px]">
+      <ul className="max-h-64 space-y-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] lg:max-h-[420px]">
         {threads.length === 0 && (
           <li className="px-2 py-3 text-xs text-muted-foreground">No saved conversations yet.</li>
         )}
@@ -309,18 +311,19 @@ function ChatWindow({
 
 
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-soft">
-      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="inline-flex size-7 items-center justify-center rounded-full bg-amber/15 text-amber">
+    <div className="order-first flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft lg:order-none">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div className="flex min-w-0 items-center gap-2 text-sm">
+          <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber">
             <MessageSquare className="size-3.5" aria-hidden />
           </span>
-          <span className="font-medium">Digital Platform assistant</span>
+          <span className="truncate font-medium">Digital Platform assistant</span>
         </div>
-        <span className="text-[11px] text-muted-foreground">Saved automatically</span>
+        <span className="shrink-0 text-[11px] text-muted-foreground">Saved automatically</span>
       </div>
 
-      <Conversation className="h-[min(60vh,540px)]">
+      <Conversation className="h-[clamp(320px,56svh,540px)] overscroll-contain [-webkit-overflow-scrolling:touch]">
+
         <ConversationContent className="gap-6 p-4 sm:p-5">
           {messages.length === 0 && (
             <div className="py-6 text-center">
@@ -344,7 +347,8 @@ function ChatWindow({
 
           {messages.map((message) => (
             <Message key={message.id} from={message.role}>
-              <MessageContent>
+              <MessageContent className="min-w-0 max-w-full [overflow-wrap:anywhere]">
+
                 {message.parts.map((part, i) =>
                   part.type === "text" ? (
                     <MessageResponse key={i}>{part.text}</MessageResponse>
@@ -375,10 +379,11 @@ function ChatWindow({
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="border-t border-border p-3 sm:p-4">
+      <div className="shrink-0 border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
         <div
           aria-label="Quick questions"
-          className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-1 mb-3 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+
         >
           {CHAT_QUICK_PROMPTS.map((q) => (
             <button
@@ -387,9 +392,9 @@ function ChatWindow({
               onClick={() => submit(q.prompt)}
               disabled={busy}
               title={q.prompt}
-              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
+              className="inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
             >
-              <Sparkle className="size-3 text-amber" aria-hidden />
+              <Sparkle className="size-3 shrink-0 text-amber" aria-hidden />
               {q.label}
             </button>
           ))}
@@ -401,7 +406,9 @@ function ChatWindow({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about a product, price, delivery or warranty…"
+            className="text-base sm:text-sm"
           />
+
           <PromptInputFooter className="justify-end">
             <PromptInputSubmit status={status} disabled={!input.trim() && !busy} />
           </PromptInputFooter>
