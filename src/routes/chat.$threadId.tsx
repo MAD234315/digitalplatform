@@ -322,7 +322,10 @@ function ChatWindow({
         <span className="shrink-0 text-[11px] text-muted-foreground">Saved automatically</span>
       </div>
 
-      <Conversation className="h-[clamp(320px,56svh,540px)] overscroll-contain [-webkit-overflow-scrolling:touch]">
+      {/* basis-auto/grow-0 keeps the fixed height from being overridden by flex-1,
+          so long histories scroll inside this box instead of stretching the page. */}
+      <Conversation className="h-[clamp(320px,56svh,540px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+
 
         <ConversationContent className="gap-6 p-4 sm:p-5">
           {messages.length === 0 && (
