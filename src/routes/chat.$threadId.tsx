@@ -326,7 +326,7 @@ function ChatWindow({
           - basis-auto/grow-0 stops flex-1 from overriding the height
           - vh base height for older Safari/Firefox, svh where supported (no jump
             when the iOS toolbar shows/hides) */}
-      <Conversation className="h-[clamp(240px,42vh,420px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [contain:layout_paint] [-webkit-overflow-scrolling:touch] [@supports(height:1svh)]:h-[clamp(240px,42svh,420px)]">
+      <Conversation className="h-[clamp(300px,55vh,520px)] min-h-0 shrink-0 grow-0 basis-auto overscroll-contain [contain:layout_paint] [-webkit-overflow-scrolling:touch] [@supports(height:1svh)]:h-[clamp(300px,55svh,520px)]">
 
 
 
