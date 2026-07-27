@@ -540,7 +540,15 @@ function TypingIndicator() {
   );
 }
 
-function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; busy: boolean }) {
+function WelcomeScreen({
+  onPick,
+  busy,
+  online,
+}: {
+  onPick: (prompt: string) => void;
+  busy: boolean;
+  online: boolean;
+}) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col py-4">
       <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
@@ -562,7 +570,7 @@ function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; bus
             key={q.label}
             type="button"
             onClick={() => onPick(q.prompt)}
-            disabled={busy}
+            disabled={busy || !online}
             className="min-h-11 rounded-2xl border border-border bg-background/50 px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-amber/40 hover:bg-amber/5 disabled:opacity-50"
           >
             {q.label}
@@ -579,7 +587,7 @@ function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; bus
             key={chip}
             type="button"
             onClick={() => onPick(`Tell me about ${chip}.`)}
-            disabled={busy}
+            disabled={busy || !online}
             className="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
           >
             {chip}
@@ -589,3 +597,4 @@ function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; bus
     </div>
   );
 }
+
