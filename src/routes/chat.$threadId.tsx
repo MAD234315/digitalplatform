@@ -473,16 +473,11 @@ function ChatWindow({
 
 function ChatBubble({
   message,
-  products,
-  onKnowMore,
 }: {
   message: UIMessage;
-  products: Parameters<typeof matchChatProducts>[1];
-  onKnowMore: (prompt: string) => void;
 }) {
   const isUser = message.role === "user";
-  const text = messageText(message);
-  const matched = isUser ? [] : matchChatProducts(text, products);
+
 
   return (
     <div className={`flex w-full gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
