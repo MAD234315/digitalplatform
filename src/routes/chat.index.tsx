@@ -56,9 +56,9 @@ function ChatIndex() {
 
   return (
     <ChatFrame>
-      <div className="flex min-h-52 items-center justify-center rounded-xl border border-border bg-card">
+      <div className="ai-ethereal-glow flex min-h-52 items-center justify-center rounded-xl border border-border bg-card shadow-gold-lg">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin" aria-hidden />
+          <Loader2 className="size-4 animate-spin text-amber" aria-hidden />
           Opening your conversation…
         </p>
       </div>
