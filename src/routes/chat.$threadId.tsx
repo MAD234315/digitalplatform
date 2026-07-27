@@ -191,7 +191,7 @@ function ThreadList({
         </button>
       </div>
 
-      <ul className="max-h-64 space-y-1 overflow-y-auto lg:max-h-[420px]">
+      <ul className="max-h-64 space-y-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] lg:max-h-[420px]">
         {threads.length === 0 && (
           <li className="px-2 py-3 text-xs text-muted-foreground">No saved conversations yet.</li>
         )}
