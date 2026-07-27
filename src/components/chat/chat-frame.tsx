@@ -13,8 +13,8 @@ export const CHAT_SUGGESTION_CHIPS = [
   "ChatGPT Plus",
   "Canva Pro",
   "Adobe",
-  "AI Tools",
-  "Support",
+  "Latest Offers",
+  "Pricing",
 ];
 
 export function ChatFrame({ children }: { children: React.ReactNode }) {
