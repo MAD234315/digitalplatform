@@ -577,37 +577,89 @@ function TypingIndicator() {
   );
 }
 
+function extractPlanNames(text: string): string[] {
+  const names: string[] = [];
+  // Match lines like: Plan 1 – Canva Pro (1 Year Validity) — ₹299
+  const planLinePattern = /Plan\s*\d+[\s–\-—]+(.+?)(?:\s*[\(\[]|₹|Rs\.?|Validity|Price|\.\s*\n|\n|$)/gi;
+  let match: RegExpExecArray | null;
+  while ((match = planLinePattern.exec(text)) !== null) {
+    const raw = match[1].trim();
+    // Strip trailing price/validity fragments after common separators
+    const cleaned = raw
+      .split(/\s*(?:[-—]\s*(?:₹|Rs\.?|Validity|Price)|\||\*)/)[0]
+      .trim();
+    if (cleaned && !names.includes(cleaned)) names.push(cleaned);
+  }
+  // Fallback: bullet/numbered lines that mention a plan name (before price or validity)
+  if (names.length === 0) {
+    const fallbackPattern = /(?:^|\n)\s*(?:\d+\.\s*|[\*\-•]\s*)(.+?)(?:\s*[\(\[]|₹|Rs\.?|Validity|Price|\.\s*\n|\n|$)/gi;
+    while ((match = fallbackPattern.exec(text)) !== null) {
+      const cleaned = match[1].trim().split(/\s*(?:[-—]\s*(?:₹|Rs\.?|Validity|Price)|\||\*)/)[0].trim();
+      if (cleaned && !names.includes(cleaned) && !cleaned.toLowerCase().startsWith("plan")) names.push(cleaned);
+    }
+  }
+  return names.slice(0, 3);
+}
+
+function extractLastQuestion(text: string): string | null {
+  // Find the last sentence ending with a question mark
+  const questions = [...text.matchAll(/[^.!?\n]*\?/g)];
+  if (!questions.length) return null;
+  const last = questions[questions.length - 1][0].trim();
+  return last.replace(/[^\w\s?]+$/g, "").trim();
+}
+
 function getReplySuggestions(text: string): string[] {
   const lower = text.toLowerCase();
+  const question = extractLastQuestion(text);
+  const planNames = extractPlanNames(text);
 
-  // Plan selection stage
-  if (lower.includes("which plan") || lower.includes("available plans") || lower.includes("choose a plan") || lower.includes("would you like to know more about")) {
-    return ["Tell me about the first plan", "Which plan is most popular?", "What are the prices?"];
+  // Plan selection stage: offer actual plan names
+  if (question && (question.includes("which plan") || question.includes("available plans") || question.includes("choose a plan") || question.includes("know more about"))) {
+    if (planNames.length >= 2) {
+      return [
+        `Tell me about ${planNames[0]}`,
+        `Tell me about ${planNames[1]}`,
+        `What are the prices?`,
+      ];
+    }
+    if (planNames.length === 1) {
+      return [`Tell me about ${planNames[0]}`, `What is the price?`, `What is the validity?`];
+    }
+    return ["Tell me about the first plan", "What is the price?", "What is the validity?"];
   }
 
   // Details confirmation stage
-  if (lower.includes("would you like to know the complete features") || lower.includes("complete features, benefits, limitations") || lower.includes("explain the details")) {
+  if (question && (question.includes("complete features") || question.includes("benefits, limitations") || question.includes("explain the details"))) {
     return ["Yes, explain the features", "What is the validity?", "What are the limitations?"];
   }
 
-  // Doubt-clearing stage
-  if (lower.includes("any questions") || lower.includes("is everything clear") || lower.includes("do you have any doubts") || lower.includes("other questions before purchasing")) {
-    return ["Yes, I have a question", "Everything is clear", "What is the price?"];
+  // Doubt-clearing stage: use the actual question to offer relevant follow-ups
+  if (question && (question.includes("any questions") || question.includes("is everything clear") || question.includes("do you have any doubts") || question.includes("other questions"))) {
+    if (lower.includes("activation")) return ["How do I activate?", "How long does delivery take?", "I'm ready to purchase"];
+    if (lower.includes("price") || lower.includes("pricing") || lower.includes("cost") || lower.includes("₹")) return ["What is the final price?", "Is there any discount?", "I'm ready to purchase"];
+    return ["What is the activation process?", "How long does delivery take?", "I'm ready to purchase"];
   }
 
   // Purchase confirmation stage
-  if (lower.includes("would you like to purchase") || lower.includes("want to purchase") || lower.includes("want to buy")) {
+  if (question && (question.includes("would you like to purchase") || question.includes("want to purchase") || question.includes("want to buy") || question.includes("purchase this plan"))) {
     return ["Yes, I want to purchase", "I have a few more questions", "What is the price?"];
   }
 
   // Out of stock / alternatives
   if (lower.includes("out of stock") || lower.includes("alternative") || lower.includes("similar product")) {
+    if (planNames.length) return planNames.map((name) => `Tell me about ${name}`).concat(["Contact Admin"]).slice(0, 3);
     return ["Show me alternatives", "When will it be back?", "Contact Admin"];
   }
 
   // Welcome / greeting
-  if (lower.includes("how can i help you") || lower.includes("welcome") || lower.includes("hello!")) {
+  if (question && (question.includes("how can i help you") || question.includes("what can i help") || question.includes("welcome"))) {
     return ["Show me latest offers", "Tell me about AI tools", "What products do you have?"];
+  }
+
+  // Default: if the AI asked a question, offer a direct yes/no/more answer
+  if (question) {
+    return ["Yes, please", "Tell me more", "What is the price?"];
   }
 
   // Default fallback
