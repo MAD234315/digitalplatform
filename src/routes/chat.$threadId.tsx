@@ -3,7 +3,8 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, History, Plus, User } from "lucide-react";
+import { Bot, History, Plus, User, WifiOff } from "lucide-react";
+
 
 import { getSheetProducts } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
@@ -28,6 +29,7 @@ import { ChatHistorySheet } from "@/components/chat/chat-history-sheet";
 import { ChatProductCards, matchChatProducts } from "@/components/chat/chat-product-cards";
 import { HandoffDialog, buildHandoffSummary } from "@/components/chat/handoff";
 import { getVisitorId } from "@/lib/chat-visitor";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 import {
   createChatThread,
   deleteChatThread,
@@ -38,6 +40,7 @@ import {
   type ChatThreadSummary,
   type StoredChatMessage,
 } from "@/lib/chat-threads.functions";
+
 
 export const Route = createFileRoute("/chat/$threadId")({
   head: () => ({
@@ -85,8 +88,10 @@ function ChatThreadPage() {
   const [threads, setThreads] = useState<ChatThreadSummary[]>([]);
   const [initial, setInitial] = useState<UIMessage[] | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => setVisitorId(getVisitorId()), []);
+
 
   const refreshThreads = useCallback(async (vid: string) => {
     if (!vid) return;
@@ -163,9 +168,11 @@ function ChatThreadPage() {
             threadId={threadId}
             visitorId={visitorId}
             initialMessages={initial}
+            isOnline={isOnline}
             onNew={newThread}
             onSaved={() => void refreshThreads(visitorId)}
           />
+
         )}
 
         <ChatHistorySheet
@@ -231,15 +238,18 @@ function ChatWindow({
   threadId,
   visitorId,
   initialMessages,
+  isOnline,
   onNew,
   onSaved,
 }: {
   threadId: string;
   visitorId: string;
   initialMessages: UIMessage[];
+  isOnline: boolean;
   onNew: () => void;
   onSaved: () => void;
 }) {
+
   const [input, setInput] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -332,6 +342,14 @@ function ChatWindow({
 
   return (
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      {!isOnline && (
+        <div className="shrink-0 border-b border-amber/20 bg-amber/10 px-3 py-2.5 sm:px-4">
+          <p className="flex items-center justify-center gap-2 text-center text-xs font-medium text-amber">
+            <WifiOff className="size-4" aria-hidden />
+            You&apos;re offline. Reconnect to continue chatting with Digital AI.
+          </p>
+        </div>
+      )}
       {/* Single vertical scroll container */}
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <div
@@ -339,8 +357,9 @@ function ChatWindow({
           className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pb-16 pt-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:pb-16 sm:pt-4"
         >
           {!hasMessages ? (
-            <WelcomeScreen onPick={submit} busy={busy} />
+            <WelcomeScreen onPick={submit} busy={busy} online={isOnline} />
           ) : (
+
             <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
               {hiddenCount > 0 && (
                 <button
@@ -406,25 +425,31 @@ function ChatWindow({
           </button>
         )}
 
-        <div className="mx-auto w-full max-w-3xl rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40">
+        <div
+          className={`mx-auto w-full max-w-3xl rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40 ${!isOnline ? "opacity-70" : ""}`}
+        >
           <PromptInput onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}>
             <PromptInputTextarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
-              placeholder="Ask about any product..."
+              disabled={!isOnline}
+              placeholder={
+                isOnline ? "Ask about any product..." : "You're offline. Reconnect to chat..."
+              }
               className="!min-h-[44px] max-h-32 border-0 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm"
             />
             <PromptInputFooter className="justify-end pt-0">
               <PromptInputSubmit
                 status={status}
-                disabled={!input.trim() && !busy}
+                disabled={(!input.trim() && !busy) || !isOnline}
                 className="size-10 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black transition-[filter] hover:brightness-110"
               />
             </PromptInputFooter>
           </PromptInput>
         </div>
+
 
         <p className="mt-1.5 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
           AI-generated. Confirm today&apos;s price on{" "}
@@ -520,7 +545,15 @@ function TypingIndicator() {
   );
 }
 
-function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; busy: boolean }) {
+function WelcomeScreen({
+  onPick,
+  busy,
+  online,
+}: {
+  onPick: (prompt: string) => void;
+  busy: boolean;
+  online: boolean;
+}) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col py-4">
       <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
@@ -542,7 +575,7 @@ function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; bus
             key={q.label}
             type="button"
             onClick={() => onPick(q.prompt)}
-            disabled={busy}
+            disabled={busy || !online}
             className="min-h-11 rounded-2xl border border-border bg-background/50 px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-amber/40 hover:bg-amber/5 disabled:opacity-50"
           >
             {q.label}
@@ -559,7 +592,7 @@ function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; bus
             key={chip}
             type="button"
             onClick={() => onPick(`Tell me about ${chip}.`)}
-            disabled={busy}
+            disabled={busy || !online}
             className="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-xs text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:opacity-50"
           >
             {chip}
@@ -569,3 +602,4 @@ function WelcomeScreen({ onPick, busy }: { onPick: (prompt: string) => void; bus
     </div>
   );
 }
+

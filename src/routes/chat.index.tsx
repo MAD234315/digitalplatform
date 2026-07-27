@@ -1,9 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { ChatFrame, CHAT_DESC, CHAT_TITLE, CHAT_URL } from "@/components/chat/chat-frame";
+
 import { getVisitorId } from "@/lib/chat-visitor";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 import { createChatThread, listChatThreads } from "@/lib/chat-threads.functions";
+
 
 export const Route = createFileRoute("/chat/")({
   head: () => ({
@@ -30,9 +33,10 @@ export const Route = createFileRoute("/chat/")({
 function ChatIndex() {
   const navigate = useNavigate();
   const started = useRef(false);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => {
-    if (started.current) return;
+    if (!isOnline || started.current) return;
     started.current = true;
 
     let cancelled = false;
@@ -52,16 +56,29 @@ function ChatIndex() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, isOnline]);
 
   return (
     <ChatFrame>
       <div className="relative flex h-[calc(100dvh-64px)] w-full max-w-4xl items-center justify-center overflow-hidden border-border bg-card shadow-gold-lg sm:h-[min(760px,calc(100dvh-128px))] sm:rounded-[1.75rem] sm:border">
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin text-amber" aria-hidden />
-          Opening your conversation…
-        </p>
+        {!isOnline ? (
+          <div className="flex max-w-xs flex-col items-center gap-3 px-6 text-center">
+            <span className="inline-flex size-12 items-center justify-center rounded-full bg-amber/10 text-amber">
+              <WifiOff className="size-6" aria-hidden />
+            </span>
+            <p className="text-sm font-medium text-foreground">You&apos;re offline</p>
+            <p className="text-xs text-muted-foreground">
+              Please reconnect to the internet to chat with Digital Platform AI.
+            </p>
+          </div>
+        ) : (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin text-amber" aria-hidden />
+            Opening your conversation…
+          </p>
+        )}
       </div>
     </ChatFrame>
   );
 }
+
