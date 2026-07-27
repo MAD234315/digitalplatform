@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 
 /** Plain text of a UI message (text parts only). */
 function messageText(message: UIMessage): string {
