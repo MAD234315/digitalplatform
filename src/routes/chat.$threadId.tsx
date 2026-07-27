@@ -141,7 +141,7 @@ function ChatThreadPage() {
           onDelete={removeThread}
         />
         {initial === null ? (
-          <div className="order-first flex min-h-52 min-w-0 items-center justify-center rounded-2xl border border-border bg-card text-sm text-muted-foreground lg:order-none">
+          <div className="ai-ethereal-glow order-first flex min-h-52 min-w-0 items-center justify-center rounded-xl border border-border bg-card text-sm text-muted-foreground shadow-gold-lg lg:order-none">
             Loading your conversation…
           </div>
         ) : (
