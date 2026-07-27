@@ -32,6 +32,7 @@ import {
   createChatThread,
   deleteChatThread,
   getChatThread,
+  getChatShareToken,
   listChatThreads,
   renameChatThread,
   saveChatMessages,
@@ -306,6 +307,8 @@ function ChatWindow({
 
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffText, setHandoffText] = useState("");
+  const [shareLink, setShareLink] = useState<string | undefined>(undefined);
+
 
   const { data: catalogue } = useQuery({
     queryKey: ["sheet-products"],
@@ -328,7 +331,19 @@ function ChatWindow({
   const openHandoff = () => {
     setHandoffText(buildHandoffSummary(messages, products));
     setHandoffOpen(true);
+    // Read-only transcript link the admin can open from WhatsApp.
+    if (visitorId) {
+      void saveChatMessages({ data: { visitorId, threadId, messages: toStored(messages) } })
+        .then(() => getChatShareToken({ data: { visitorId, threadId } }))
+        .then((res) => {
+          if (res?.token && typeof window !== "undefined") {
+            setShareLink(`${window.location.origin}/chat/share/${threadId}?t=${res.token}`);
+          }
+        })
+        .catch(() => setShareLink(undefined));
+    }
   };
+
 
   const hasMessages = messages.length > 0;
   const visible = messages.slice(Math.max(0, messages.length - visibleCount));
@@ -457,7 +472,7 @@ function ChatWindow({
         onOpenChange={setHandoffOpen}
         text={handoffText}
         messages={messages}
-        chatLink={typeof window !== "undefined" ? window.location.href : undefined}
+        chatLink={shareLink}
       />
 
     </div>
