@@ -54,14 +54,14 @@ export function HeroFaqBlock() {
                         {cta.label}
                       </CtaLink>
                     ) : (
-                      <CtaLink
-                        href={cta.to}
+                      <CtaRouterLink
+                        to={cta.to}
                         size="md"
                         variant="outline"
                         className="w-full sm:w-auto"
                       >
                         {cta.label}
-                      </CtaLink>
+                      </CtaRouterLink>
                     )}
                   </div>
                 </div>
