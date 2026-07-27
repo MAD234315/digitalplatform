@@ -313,7 +313,7 @@ export function ProductsFilterBar({
             aria-activedescendant={showList && highlight >= 0 ? `${listboxId}-opt-${highlight}` : undefined}
             autoComplete="off"
             autoCorrect="off"
-            autoCapitalize="off"
+            autoCapitalize="none"
             spellCheck={false}
             name="products-search"
             data-1p-ignore

@@ -336,7 +336,7 @@ function ChatWindow({
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:py-4"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pb-16 pt-3 [-webkit-overflow-scrolling:touch] sm:px-5 sm:pb-16 sm:pt-4"
         >
           {!hasMessages ? (
             <WelcomeScreen onPick={submit} busy={busy} />
@@ -377,15 +377,18 @@ function ChatWindow({
           )}
         </div>
 
-        {/* Floating new-chat button */}
-        <button
-          type="button"
-          onClick={onNew}
-          aria-label="Start a new chat"
-          className="absolute bottom-3 right-3 z-20 inline-flex size-12 items-center justify-center rounded-full bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_8px_24px_rgba(245,158,11,0.35)] transition-transform hover:brightness-110 active:scale-95 motion-reduce:transform-none"
-        >
-          <Plus className="size-5" aria-hidden />
-        </button>
+        {/* Floating new-chat button (welcome screen already has one in the header) */}
+        {hasMessages && (
+          <button
+            type="button"
+            onClick={onNew}
+            aria-label="Start a new chat"
+            className="absolute bottom-3 right-3 z-20 inline-flex size-12 items-center justify-center rounded-full bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_8px_24px_rgba(245,158,11,0.35)] transition-transform hover:brightness-110 active:scale-95 motion-reduce:transform-none"
+          >
+            <Plus className="size-5" aria-hidden />
+          </button>
+        )}
+
       </div>
 
 
