@@ -261,7 +261,6 @@ function ChatWindow({
 
   const [input, setInput] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -286,13 +285,6 @@ function ChatWindow({
       });
   }, [messages, status, visitorId, threadId, onSaved]);
 
-  const focusInput = useCallback(() => textareaRef.current?.focus(), []);
-  useEffect(() => {
-    focusInput();
-  }, [focusInput, threadId]);
-  useEffect(() => {
-    if (status === "ready") focusInput();
-  }, [status, focusInput]);
 
   // Keep the newest message in view without locking the scroll container.
   useEffect(() => {
@@ -308,9 +300,8 @@ function ChatWindow({
       setInput("");
       setVisibleCount((c) => c + 2);
       void sendMessage({ text: trimmed });
-      focusInput();
     },
-    [busy, sendMessage, focusInput],
+    [busy, sendMessage],
   );
 
   const [handoffOpen, setHandoffOpen] = useState(false);
@@ -432,7 +423,6 @@ function ChatWindow({
         >
           <PromptInput onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}>
             <PromptInputTextarea
-              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
