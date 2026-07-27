@@ -31,6 +31,7 @@ import { useOnlineStatus } from "@/hooks/use-online-status";
 import {
   createChatThread,
   deleteChatThread,
+  deleteAllChatThreads,
   getChatThread,
   getChatShareToken,
   listChatThreads,
@@ -205,6 +206,7 @@ function ChatThreadPage() {
           activeId={threadId}
           onNew={() => void newThread()}
           onDelete={(id) => void removeThread(id)}
+          onDeleteAll={() => void removeAllThreads()}
           onRename={(id, title) => void rename(id, title)}
         />
       </div>
