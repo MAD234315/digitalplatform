@@ -22,7 +22,7 @@ export function AskAiSection() {
               CREATOR AI is our in-house assistant. It clears your doubts about our products in seconds — and
               when you're ready to order, it connects you straight to our Admin on WhatsApp.
             </p>
-            <ul className="mt-6 grid gap-3 max-w-2xl">
+            <ul className="mt-5 grid gap-2.5 max-w-2xl">
               {POINTS.map((p) => (
                 <li key={p} className="flex gap-3 text-sm text-muted-foreground">
                   <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber" />
@@ -30,7 +30,7 @@ export function AskAiSection() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8">
+            <div className="mt-6">
               <CtaRouterLink to="/chat" size="md">Ask CREATOR AI</CtaRouterLink>
             </div>
           </div>
