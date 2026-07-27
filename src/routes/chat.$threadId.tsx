@@ -377,15 +377,18 @@ function ChatWindow({
           )}
         </div>
 
-        {/* Floating new-chat button */}
-        <button
-          type="button"
-          onClick={onNew}
-          aria-label="Start a new chat"
-          className="absolute bottom-3 right-3 z-20 inline-flex size-12 items-center justify-center rounded-full bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_8px_24px_rgba(245,158,11,0.35)] transition-transform hover:brightness-110 active:scale-95 motion-reduce:transform-none"
-        >
-          <Plus className="size-5" aria-hidden />
-        </button>
+        {/* Floating new-chat button (welcome screen already has one in the header) */}
+        {hasMessages && (
+          <button
+            type="button"
+            onClick={onNew}
+            aria-label="Start a new chat"
+            className="absolute bottom-3 right-3 z-20 inline-flex size-12 items-center justify-center rounded-full bg-gradient-to-b from-amber to-amber-600 text-black shadow-[0_8px_24px_rgba(245,158,11,0.35)] transition-transform hover:brightness-110 active:scale-95 motion-reduce:transform-none"
+          >
+            <Plus className="size-5" aria-hidden />
+          </button>
+        )}
+
       </div>
 
 
