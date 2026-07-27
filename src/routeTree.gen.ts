@@ -32,6 +32,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
+import { Route as ChatShareThreadIdRouteImport } from './routes/chat.share.$threadId'
 import { Route as ApiPublicRevalidateReviewsRouteImport } from './routes/api/public/revalidate-reviews'
 import { Route as ApiPublicHealthSupabaseRouteImport } from './routes/api/public/health.supabase'
 
@@ -150,6 +151,11 @@ const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
   path: '/diagnostics',
   getParentRoute: () => AdminRoute,
 } as any)
+const ChatShareThreadIdRoute = ChatShareThreadIdRouteImport.update({
+  id: '/chat/share/$threadId',
+  path: '/chat/share/$threadId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRevalidateReviewsRoute =
   ApiPublicRevalidateReviewsRouteImport.update({
     id: '/api/public/revalidate-reviews',
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
+  '/chat/share/$threadId': typeof ChatShareThreadIdRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
 export interface FileRoutesByTo {
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/chat': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
+  '/chat/share/$threadId': typeof ChatShareThreadIdRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
 export interface FileRoutesById {
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
+  '/chat/share/$threadId': typeof ChatShareThreadIdRoute
   '/api/public/health/supabase': typeof ApiPublicHealthSupabaseRoute
 }
 export interface FileRouteTypes {
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/chat/'
     | '/api/public/revalidate-reviews'
+    | '/chat/share/$threadId'
     | '/api/public/health/supabase'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/chat'
     | '/api/public/revalidate-reviews'
+    | '/chat/share/$threadId'
     | '/api/public/health/supabase'
   id:
     | '__root__'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/chat/'
     | '/api/public/revalidate-reviews'
+    | '/chat/share/$threadId'
     | '/api/public/health/supabase'
   fileRoutesById: FileRoutesById
 }
@@ -347,6 +359,7 @@ export interface RootRouteChildren {
   ChatThreadIdRoute: typeof ChatThreadIdRoute
   ChatIndexRoute: typeof ChatIndexRoute
   ApiPublicRevalidateReviewsRoute: typeof ApiPublicRevalidateReviewsRoute
+  ChatShareThreadIdRoute: typeof ChatShareThreadIdRoute
   ApiPublicHealthSupabaseRoute: typeof ApiPublicHealthSupabaseRoute
 }
 
@@ -513,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDiagnosticsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/chat/share/$threadId': {
+      id: '/chat/share/$threadId'
+      path: '/chat/share/$threadId'
+      fullPath: '/chat/share/$threadId'
+      preLoaderRoute: typeof ChatShareThreadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/revalidate-reviews': {
       id: '/api/public/revalidate-reviews'
       path: '/api/public/revalidate-reviews'
@@ -567,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatThreadIdRoute: ChatThreadIdRoute,
   ChatIndexRoute: ChatIndexRoute,
   ApiPublicRevalidateReviewsRoute: ApiPublicRevalidateReviewsRoute,
+  ChatShareThreadIdRoute: ChatShareThreadIdRoute,
   ApiPublicHealthSupabaseRoute: ApiPublicHealthSupabaseRoute,
 }
 export const routeTree = rootRouteImport
