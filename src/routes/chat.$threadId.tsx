@@ -306,6 +306,8 @@ function ChatWindow({
 
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffText, setHandoffText] = useState("");
+  const [shareLink, setShareLink] = useState<string | undefined>(undefined);
+
 
   const { data: catalogue } = useQuery({
     queryKey: ["sheet-products"],
