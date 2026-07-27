@@ -283,10 +283,28 @@ function ChatWindow({
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffText, setHandoffText] = useState("");
 
+  // Catalogue names let the handoff note list the products the assistant recommended.
+  const { data: catalogue } = useQuery({
+    queryKey: ["sheet-products"],
+    queryFn: () => getSheetProducts(),
+    staleTime: 60_000,
+  });
+
   const openHandoff = () => {
-    setHandoffText(buildHandoffSummary(messages));
+    setHandoffText(
+      buildHandoffSummary(
+        messages,
+        (catalogue?.products ?? []).map((p) => ({
+          name: p.name,
+          plan: p.plan,
+          validity: p.validity,
+          availability: p.availability,
+        })),
+      ),
+    );
     setHandoffOpen(true);
   };
+
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-soft">
