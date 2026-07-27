@@ -420,25 +420,31 @@ function ChatWindow({
           </button>
         )}
 
-        <div className="mx-auto w-full max-w-3xl rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40">
+        <div
+          className={`mx-auto w-full max-w-3xl rounded-3xl border border-border bg-background/70 p-1.5 focus-within:border-amber/40 ${!isOnline ? "opacity-70" : ""}`}
+        >
           <PromptInput onSubmit={(m: PromptInputMessage) => submit(m.text ?? input)}>
             <PromptInputTextarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
-              placeholder="Ask about any product..."
+              disabled={!isOnline}
+              placeholder={
+                isOnline ? "Ask about any product..." : "You're offline. Reconnect to chat..."
+              }
               className="!min-h-[44px] max-h-32 border-0 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm"
             />
             <PromptInputFooter className="justify-end pt-0">
               <PromptInputSubmit
                 status={status}
-                disabled={!input.trim() && !busy}
+                disabled={(!input.trim() && !busy) || !isOnline}
                 className="size-10 rounded-2xl bg-gradient-to-b from-amber to-amber-600 text-black transition-[filter] hover:brightness-110"
               />
             </PromptInputFooter>
           </PromptInput>
         </div>
+
 
         <p className="mt-1.5 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
           AI-generated. Confirm today&apos;s price on{" "}
