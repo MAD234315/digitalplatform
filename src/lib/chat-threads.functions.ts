@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { UIMessage } from "ai";
 import type { Json } from "@/integrations/supabase/types";
 
 /**
