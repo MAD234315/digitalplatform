@@ -6,15 +6,6 @@ export const CHAT_TITLE = "Ask Digital Platform — AI catalogue & support assis
 export const CHAT_DESC =
   "Chat with the Digital Platform assistant about subscriptions, AI tools, delivery, warranty and pricing — then finish your order on WhatsApp.";
 
-/** Quick prompts shown above the composer so a visitor can start in one tap. */
-export const CHAT_QUICK_PROMPTS = [
-  { label: "Latest offers", prompt: "What are your latest offers right now?" },
-  { label: "AI tools", prompt: "Which AI tools do you have in stock?" },
-  { label: "Subscriptions", prompt: "Which subscriptions do you sell?" },
-  { label: "Product search", prompt: "Help me find a product from your catalogue." },
-  { label: "Contact admin", prompt: "I would like to talk to the admin about an order." },
-];
-
 /** Suggested question chips under the welcome message. */
 export const CHAT_SUGGESTION_CHIPS = [
   "Amazon Prime",
@@ -25,8 +16,6 @@ export const CHAT_SUGGESTION_CHIPS = [
   "Latest Offers",
   "Pricing",
 ];
-
-export const CHAT_SUGGESTIONS = CHAT_QUICK_PROMPTS.slice(0, 4).map((q) => q.prompt);
 
 export function ChatFrame({ children }: { children: React.ReactNode }) {
   return (

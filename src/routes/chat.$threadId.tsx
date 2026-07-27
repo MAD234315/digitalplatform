@@ -20,7 +20,6 @@ import { WaGlyph } from "@/components/products/wa-glyph";
 import {
   ChatFrame,
   CHAT_DESC,
-  CHAT_QUICK_PROMPTS,
   CHAT_SUGGESTION_CHIPS,
   CHAT_TITLE,
   CHAT_URL,
@@ -555,19 +554,6 @@ function WelcomeScreen({
         ))}
       </ul>
 
-      <div className="mt-5 grid gap-2 sm:grid-cols-2">
-        {CHAT_QUICK_PROMPTS.map((q) => (
-          <button
-            key={q.label}
-            type="button"
-            onClick={() => onPick(q.prompt)}
-            disabled={busy || !online}
-            className="min-h-11 rounded-2xl border border-border bg-background/50 px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-amber/40 hover:bg-amber/5 disabled:opacity-50"
-          >
-            {q.label}
-          </button>
-        ))}
-      </div>
 
       <p className="mt-5 text-[11px] font-bold uppercase tracking-widest text-amber/70">
         Suggested questions
