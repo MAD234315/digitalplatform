@@ -347,7 +347,8 @@ function ChatWindow({
 
           {messages.map((message) => (
             <Message key={message.id} from={message.role}>
-              <MessageContent>
+              <MessageContent className="min-w-0 max-w-full [overflow-wrap:anywhere]">
+
                 {message.parts.map((part, i) =>
                   part.type === "text" ? (
                     <MessageResponse key={i}>{part.text}</MessageResponse>
