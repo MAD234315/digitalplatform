@@ -8,7 +8,6 @@
  * Blank, NO, FALSE, 0 — or a missing PUBLISHED column — hides the row.
  */
 import { createServerFn } from "@tanstack/react-start";
-import * as XLSX from "xlsx";
 
 const DEFAULT_REVIEWS_URL = "";
 
@@ -125,6 +124,7 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
         // Sniff for CSV vs xlsx (PK zip magic): 0x50 0x4B
         const head = new Uint8Array(buf.slice(0, 2));
         if (head[0] === 0x50 && head[1] === 0x4b) {
+          const XLSX = await import("xlsx");
           const wb = XLSX.read(buf, { type: "array" });
           const ws = wb.Sheets[wb.SheetNames[0]];
           rows = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1, blankrows: false, defval: "" }) as string[][];
