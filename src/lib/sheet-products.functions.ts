@@ -342,6 +342,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
       const type = (row[6] || "").trim();
       const supports = (row[9] || "").trim();
       const warranty = (row[10] || "").trim();
+      const description = (descriptionIdx >= 0 ? row[descriptionIdx] || "" : row[11] || "").trim();
 
       const statusVal = status || "IN-STOCK";
       const isOut = /\b(out\s*of\s*stock|not\s*in\s*stock|sold\s*out|unavailable)\b/i.test(
