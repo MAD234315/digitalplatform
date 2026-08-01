@@ -308,6 +308,9 @@ async function loadFromSheet(): Promise<ProductsPayload> {
     const products: SheetProduct[] = [];
     let currentCategory = "General";
     let idx = 0;
+    // Located dynamically from the table header row so the sheet can add the
+    // `description` column anywhere without breaking the fixed column map.
+    let descriptionIdx = -1;
 
     for (const row of rows) {
       if (!row || row.every((c) => !(c || "").trim())) continue;
@@ -316,9 +319,14 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         currentCategory = (row[0] || "").trim();
         continue;
       }
-      if (isTableHeader(row)) continue;
+      if (isTableHeader(row)) {
+        const found = row.findIndex((c) => /^\s*(description|details|full\s*info)\s*$/i.test(c || ""));
+        if (found >= 0) descriptionIdx = found;
+        continue;
+      }
 
       const status = (row[0] || "").trim();
+
       const name = (row[2] || "").trim();
       if (!name) continue;
       if (name.length > 60) continue;
