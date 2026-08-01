@@ -230,6 +230,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_published_proof_object: { Args: { _name: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin"
