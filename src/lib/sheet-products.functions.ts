@@ -72,6 +72,8 @@ export type SheetProduct = {
   type: string;
   supports: string;
   warranty: string;
+  /** Full product details from the sheet's `description` column (may be empty). */
+  description: string;
   inStock: boolean;
   loot: boolean;
   availability: Availability;
