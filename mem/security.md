@@ -5,7 +5,9 @@ type: constraint
 ---
 # Anon-executable SECURITY DEFINER functions (intentional)
 
-Two `public` SECURITY DEFINER functions are intentionally granted EXECUTE to `anon` and must stay that way. Do NOT flag or "fix" them:
+Three `public` SECURITY DEFINER functions are intentionally granted EXECUTE to `anon` and must stay that way. Do NOT flag or "fix" them:
+
+- `public.is_published_proof_object(text)` — boolean only; used inside the storage.objects SELECT policy so anon/authenticated can read proof files that belong to a *published* proof. Unpublished proof files stay admin-only.
 
 - `public.get_public_app_settings()` — returns only whitelisted safe columns (sheet_url, site_online, reviews_sheet_url). Powers anon SSR loading of catalogue + reviews.
 - `public.get_admin_bootstrap_status()` — returns only `(admin_exists boolean, admin_count int)`. Powers /admin/setup pre-auth gating.
