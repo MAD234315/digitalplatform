@@ -5,14 +5,16 @@
  * Only the visual layer is redesigned: gold-bordered glass surface, iconified
  * spec rows, animated availability pill, and premium CTAs.
  */
-import { createContext, memo, useContext } from "react";
-import { Calendar, Clock, Tag, Monitor, ShieldCheck, Info, Lock, Star } from "lucide-react";
+import { createContext, memo, useContext, useState } from "react";
+import { Calendar, Clock, Info, Lock, Star, FileText } from "lucide-react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { WaGlyph } from "./wa-glyph";
 import { Badge } from "./badge";
 import { formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 import { LogoMark } from "./logo-mark";
+import { ProductInfoDialog } from "./product-info-dialog";
+
 
 /** Injects the current dataUpdatedAt into cards without breaking memoisation. */
 export const UpdatedAtContext = createContext<number>(0);
