@@ -220,6 +220,27 @@ export const ProductCard = memo(function ProductCard({
         ))}
       </dl>
 
+      <div className="px-5 pt-3">
+        <button
+          type="button"
+          onClick={() => setInfoOpen(true)}
+          aria-label={`View full info about ${p.name}`}
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-colors"
+          style={{
+            background: "color-mix(in oklab, var(--primary) 10%, transparent)",
+            color: "var(--primary)",
+            border: "1px solid color-mix(in oklab, var(--primary) 38%, transparent)",
+          }}
+        >
+          <FileText size={15} aria-hidden />
+          View Full Info
+        </button>
+      </div>
+
+      {infoOpen && <ProductInfoDialog product={p} onClose={() => setInfoOpen(false)} />}
+
+
+
       {/* Info card */}
       <div
         className="mx-5 mt-4 flex items-start gap-2 rounded-xl px-3 py-2.5 text-[11px] leading-snug text-muted-foreground"
