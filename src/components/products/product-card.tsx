@@ -126,14 +126,13 @@ export const ProductCard = memo(function ProductCard({
 
   const initials = initialsFor(p.name);
   const isOut = p.availability === "out";
+  const [infoOpen, setInfoOpen] = useState(false);
 
   const specs: Array<{ icon: typeof Calendar; label: string; value: string } | null> = [
     p.plan ? { icon: Calendar, label: "Plan", value: p.plan } : null,
     p.validity ? { icon: Clock, label: "Validity", value: p.validity } : null,
-    { icon: Tag, label: "Type", value: p.type || "—" },
-    { icon: Monitor, label: "Supports", value: p.supports || "—" },
-    p.warranty ? { icon: ShieldCheck, label: "Warranty", value: p.warranty } : null,
   ];
+
 
   return (
     <article
