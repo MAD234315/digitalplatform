@@ -72,6 +72,8 @@ export type SheetProduct = {
   type: string;
   supports: string;
   warranty: string;
+  /** Full product details from the sheet's `description` column (may be empty). */
+  description: string;
   inStock: boolean;
   loot: boolean;
   availability: Availability;
@@ -306,6 +308,9 @@ async function loadFromSheet(): Promise<ProductsPayload> {
     const products: SheetProduct[] = [];
     let currentCategory = "General";
     let idx = 0;
+    // Located dynamically from the table header row so the sheet can add the
+    // `description` column anywhere without breaking the fixed column map.
+    let descriptionIdx = -1;
 
     for (const row of rows) {
       if (!row || row.every((c) => !(c || "").trim())) continue;
@@ -314,9 +319,14 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         currentCategory = (row[0] || "").trim();
         continue;
       }
-      if (isTableHeader(row)) continue;
+      if (isTableHeader(row)) {
+        const found = row.findIndex((c) => /^\s*(description|details|full\s*info)\s*$/i.test(c || ""));
+        if (found >= 0) descriptionIdx = found;
+        continue;
+      }
 
       const status = (row[0] || "").trim();
+
       const name = (row[2] || "").trim();
       if (!name) continue;
       if (name.length > 60) continue;
@@ -332,6 +342,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
       const type = (row[6] || "").trim();
       const supports = (row[9] || "").trim();
       const warranty = (row[10] || "").trim();
+      const description = (descriptionIdx >= 0 ? row[descriptionIdx] || "" : row[11] || "").trim();
 
       const statusVal = status || "IN-STOCK";
       const isOut = /\b(out\s*of\s*stock|not\s*in\s*stock|sold\s*out|unavailable)\b/i.test(
@@ -359,6 +370,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         type,
         supports,
         warranty,
+        description,
         inStock: inStock || (!isOut && !isLimited),
         loot,
         availability,

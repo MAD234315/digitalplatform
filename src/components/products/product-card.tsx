@@ -5,14 +5,16 @@
  * Only the visual layer is redesigned: gold-bordered glass surface, iconified
  * spec rows, animated availability pill, and premium CTAs.
  */
-import { createContext, memo, useContext } from "react";
-import { Calendar, Clock, Tag, Monitor, ShieldCheck, Info, Lock, Star } from "lucide-react";
+import { createContext, memo, useContext, useState } from "react";
+import { Calendar, Clock, Info, Lock, Star, FileText } from "lucide-react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { CONTACT } from "@/components/site-chrome";
 import { WaGlyph } from "./wa-glyph";
 import { Badge } from "./badge";
 import { formatRelative, gradientFor, initialsFor } from "@/lib/product-visuals";
 import { LogoMark } from "./logo-mark";
+import { ProductInfoDialog } from "./product-info-dialog";
+
 
 /** Injects the current dataUpdatedAt into cards without breaking memoisation. */
 export const UpdatedAtContext = createContext<number>(0);
@@ -124,14 +126,13 @@ export const ProductCard = memo(function ProductCard({
 
   const initials = initialsFor(p.name);
   const isOut = p.availability === "out";
+  const [infoOpen, setInfoOpen] = useState(false);
 
   const specs: Array<{ icon: typeof Calendar; label: string; value: string } | null> = [
     p.plan ? { icon: Calendar, label: "Plan", value: p.plan } : null,
     p.validity ? { icon: Clock, label: "Validity", value: p.validity } : null,
-    { icon: Tag, label: "Type", value: p.type || "—" },
-    { icon: Monitor, label: "Supports", value: p.supports || "—" },
-    p.warranty ? { icon: ShieldCheck, label: "Warranty", value: p.warranty } : null,
   ];
+
 
   return (
     <article
@@ -218,6 +219,27 @@ export const ProductCard = memo(function ProductCard({
           <SpecRow key={i} icon={s!.icon} label={s!.label} value={s!.value} />
         ))}
       </dl>
+
+      <div className="px-5 pt-3">
+        <button
+          type="button"
+          onClick={() => setInfoOpen(true)}
+          aria-label={`View full info about ${p.name}`}
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-colors"
+          style={{
+            background: "color-mix(in oklab, var(--primary) 10%, transparent)",
+            color: "var(--primary)",
+            border: "1px solid color-mix(in oklab, var(--primary) 38%, transparent)",
+          }}
+        >
+          <FileText size={15} aria-hidden />
+          View Full Info
+        </button>
+      </div>
+
+      {infoOpen && <ProductInfoDialog product={p} onClose={() => setInfoOpen(false)} />}
+
+
 
       {/* Info card */}
       <div
