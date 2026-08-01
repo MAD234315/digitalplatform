@@ -370,6 +370,7 @@ async function loadFromSheet(): Promise<ProductsPayload> {
         type,
         supports,
         warranty,
+        description,
         inStock: inStock || (!isOut && !isLimited),
         loot,
         availability,
