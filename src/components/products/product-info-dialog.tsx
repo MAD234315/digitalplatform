@@ -4,8 +4,13 @@
  * Renders the raw `description` value from the spreadsheet with whitespace
  * preserved (paragraphs, line breaks, bullets, numbered lists), plus the
  * Type / Supports / Warranty rows that were removed from the card face.
+ *
+ * The dialog is portaled to document.body so it escapes any ancestor stacking
+ * contexts (transforms, overflow-hidden) and stays perfectly centered on the
+ * viewport.
  */
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 
@@ -49,38 +54,39 @@ export function ProductInfoDialog({
 
   if (!product) return null;
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={`${product.name} full information`}
     >
-      <button
-        type="button"
-        aria-label="Close"
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 animate-fade-in bg-black/80"
+        style={{ backdropFilter: "blur(10px) saturate(120%)" }}
         onClick={onClose}
-        className="absolute inset-0 h-full w-full cursor-default animate-fade-in bg-black/70"
-        style={{ backdropFilter: "blur(8px) saturate(120%)" }}
+        aria-hidden="true"
       />
 
+      {/* Modal */}
       <div
-        className="relative flex w-full max-w-lg flex-col overflow-hidden animate-scale-in"
+        className="relative z-[1] flex w-full max-w-lg flex-col overflow-hidden animate-scale-in"
         style={{
           borderRadius: "18px",
-          maxHeight: "min(80vh, 80svh)",
+          maxHeight: "min(85vh, 85svh)",
           background:
-            "linear-gradient(160deg, color-mix(in oklab, var(--card) 96%, transparent) 0%, color-mix(in oklab, var(--background) 98%, transparent) 100%)",
+            "linear-gradient(160deg, color-mix(in oklab, var(--card) 98%, transparent) 0%, color-mix(in oklab, var(--background) 99%, transparent) 100%)",
           border: "1px solid color-mix(in oklab, var(--primary) 32%, transparent)",
           boxShadow:
-            "0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent), 0 30px 70px -30px rgba(0,0,0,0.8)",
+            "0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent), 0 40px 90px -30px rgba(0,0,0,0.85)",
         }}
       >
         <header
-          className="flex items-start gap-3 px-5 py-4"
+          className="flex items-start gap-3 px-5 py-4 sm:px-6 sm:py-5"
           style={{ borderBottom: "1px solid color-mix(in oklab, var(--primary) 18%, transparent)" }}
         >
-          <h2 className="min-w-0 flex-1 font-display text-lg leading-snug tracking-tight text-foreground">
+          <h2 className="min-w-0 flex-1 font-display text-lg leading-snug tracking-tight text-foreground sm:text-xl">
             {product.name}
           </h2>
           <button
@@ -88,16 +94,16 @@ export function ProductInfoDialog({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="-mr-1 -mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+            className="-mr-1 -mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary"
             style={{ border: "1px solid color-mix(in oklab, var(--primary) 22%, transparent)" }}
           >
-            <X size={16} aria-hidden />
+            <X size={18} aria-hidden />
           </button>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
           <section>
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               Product details
             </h3>
             <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground">
@@ -109,7 +115,7 @@ export function ProductInfoDialog({
             className="mt-5 pt-4"
             style={{ borderTop: "1px dashed color-mix(in oklab, var(--primary) 25%, transparent)" }}
           >
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               Product information
             </h3>
             <div
@@ -124,13 +130,13 @@ export function ProductInfoDialog({
         </div>
 
         <footer
-          className="px-5 py-4"
+          className="px-5 py-4 sm:px-6 sm:pb-5"
           style={{ borderTop: "1px solid color-mix(in oklab, var(--primary) 18%, transparent)" }}
         >
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-semibold transition-colors"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-semibold transition-colors hover:bg-primary/20 focus-visible:ring-2 focus-visible:ring-primary"
             style={{
               background: "color-mix(in oklab, var(--primary) 14%, transparent)",
               color: "var(--primary)",
@@ -143,4 +149,7 @@ export function ProductInfoDialog({
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }
+
