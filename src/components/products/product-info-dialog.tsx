@@ -104,7 +104,7 @@ export function ProductInfoDialog({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
           <section>
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-              Product details
+              PRODUCT INFORMATION
             </h3>
             <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground">
               {product.description?.trim() || EMPTY_DESCRIPTION}
@@ -116,7 +116,7 @@ export function ProductInfoDialog({
             style={{ borderTop: "1px dashed color-mix(in oklab, var(--primary) 25%, transparent)" }}
           >
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-              Product information
+              PRODUCT DETAILS
             </h3>
             <div
               className="mt-1 divide-y"
