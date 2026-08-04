@@ -21,7 +21,7 @@ export function RecentlyAdded({
       aria-labelledby="recently-added-heading"
       className="border-b border-border bg-hero"
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 sm:py-6">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-3 sm:py-4">
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="text-[10px] sm:text-xs uppercase tracking-[0.22em] text-muted-foreground">
@@ -29,7 +29,7 @@ export function RecentlyAdded({
             </div>
             <h2
               id="recently-added-heading"
-              className="mt-1 font-display text-lg sm:text-xl"
+              className="mt-0.5 font-display text-base sm:text-lg"
             >
               Recently added
             </h2>
