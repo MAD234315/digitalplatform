@@ -172,7 +172,7 @@ function LiveStatusCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-6 sm:p-7 shadow-soft backdrop-blur-xl"
+      className="relative overflow-hidden rounded-2xl border border-amber/25 bg-card/60 p-4 sm:p-5 shadow-soft backdrop-blur-xl"
       aria-busy={isRefreshing}
       style={{
         backgroundImage:
@@ -197,13 +197,13 @@ function LiveStatusCard({
         )}
       </div>
 
-      <div className="mt-2 text-sm font-medium text-foreground">
+      <div className="mt-1.5 text-sm font-medium text-foreground">
         Synced with stock sheet
       </div>
 
       {/* Last-updated pill */}
       <div
-        className="mt-1.5 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2 py-0.5 text-[10px] text-muted-foreground min-h-[22px]"
+        className="mt-1 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/70 bg-background/40 px-2 py-0.5 text-[10px] text-muted-foreground min-h-[20px]"
         suppressHydrationWarning
       >
         <RefreshCw aria-hidden className={`h-2.5 w-2.5 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -219,10 +219,10 @@ function LiveStatusCard({
       </div>
 
       {/* Focal count */}
-      <div className="mt-5 flex items-baseline gap-2">
+      <div className="mt-3 flex items-baseline gap-2">
         <div
           ref={total.ref}
-          className={`font-display text-4xl leading-none tracking-tight ${pulseCls}`}
+          className={`font-display text-3xl leading-none tracking-tight ${pulseCls}`}
           aria-label={`${productCount} products listed`}
         >
           {total.value}
@@ -232,9 +232,8 @@ function LiveStatusCard({
         </div>
       </div>
 
-
       {/* Stock availability progress */}
-      <div className="mt-4" aria-hidden={productCount === 0}>
+      <div className="mt-3" aria-hidden={productCount === 0}>
         <div className="flex items-center justify-between text-[10px] text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -251,7 +250,7 @@ function LiveStatusCard({
           aria-valuemax={100}
           aria-valuenow={inStockPct}
           aria-label="Stock availability"
-          className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
+          className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted/40"
         >
           <div
             className="h-full rounded-full transition-[width] duration-500 ease-out"
@@ -266,7 +265,7 @@ function LiveStatusCard({
       </div>
 
       {/* Dashboard-style stat cards */}
-      <dl className="mt-5 grid grid-cols-3 gap-2.5">
+      <dl className="mt-3 grid grid-cols-3 gap-2">
         <StatCard
           icon={<Package className="h-3 w-3" />}
           label="Total"
@@ -296,14 +295,13 @@ function LiveStatusCard({
         </StatCard>
       </dl>
 
-
       {/* Latest CTA */}
       {onShowLatest && (
         <button
           type="button"
           onClick={onShowLatest}
           aria-label={`Show ${latestCount} product${latestCount === 1 ? "" : "s"} added in the last 7 days.`}
-          className="group mt-5 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3.5 py-2.5 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
+          className="group mt-3 flex w-full items-center justify-between gap-2 rounded-xl border border-amber/30 bg-gradient-to-r from-amber/10 via-transparent to-transparent px-3 py-2 text-left text-xs transition hover:border-amber/60 hover:shadow-[0_0_0_1px_var(--amber),0_8px_24px_-12px_var(--amber)]"
         >
           <span className="flex min-w-0 items-center gap-2">
             <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-amber" />
@@ -323,7 +321,7 @@ function LiveStatusCard({
         <div
           role="status"
           title="These products have limited stock left. Order soon to avoid disappointment."
-          className="mt-4 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2 text-xs"
+          className="mt-3 flex items-center gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-1.5 text-xs"
         >
           <span aria-hidden className="flex h-2 w-2">
             <span className="inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: "var(--amber)" }} />
