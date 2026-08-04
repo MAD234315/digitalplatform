@@ -139,7 +139,7 @@ export const ProductCard = memo(function ProductCard({
       id={`product-${p.id}`}
       className="relative flex h-full flex-col overflow-hidden scroll-mt-32"
       style={{
-        borderRadius: "20px",
+        borderRadius: "16px",
         background:
           "linear-gradient(160deg, color-mix(in oklab, var(--card) 92%, transparent) 0%, color-mix(in oklab, var(--background) 96%, transparent) 100%)",
         border: "1px solid color-mix(in oklab, var(--primary) 28%, transparent)",
@@ -149,22 +149,22 @@ export const ProductCard = memo(function ProductCard({
       }}
     >
       {/* Header */}
-      <div className="relative flex items-start gap-3 p-5 pb-4">
+      <div className="relative flex items-start gap-3 p-4 pb-3">
         <div
           aria-hidden
-          className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl"
+          className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl"
           style={{
             background: gradientFor(p.name),
             boxShadow: "0 6px 18px -6px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08)",
           }}
         >
-          <LogoMark name={p.name} size={32} />
+          <LogoMark name={p.name} size={28} />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em]"
               style={{
                 background: "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--accent) 18%, transparent))",
                 color: "var(--primary)",
@@ -173,7 +173,7 @@ export const ProductCard = memo(function ProductCard({
             >
               <span
                 aria-hidden
-                className="inline-flex h-3.5 min-w-3.5 items-center justify-center rounded px-1 font-display text-[9px]"
+                className="inline-flex h-3 min-w-3 items-center justify-center rounded px-1 font-display text-[8px]"
                 style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
               >
                 {initials}
@@ -181,7 +181,7 @@ export const ProductCard = memo(function ProductCard({
               <span className="truncate">{p.category}</span>
             </span>
           </div>
-          <h3 className="mt-2 font-display text-[1.4rem] leading-tight tracking-tight text-foreground line-clamp-2 min-h-[3.4rem]">
+          <h3 className="mt-1.5 font-display text-[1.15rem] leading-tight tracking-tight text-foreground line-clamp-2 min-h-[2.8rem]">
             {p.name}
           </h3>
         </div>
@@ -190,13 +190,13 @@ export const ProductCard = memo(function ProductCard({
           type="button"
           aria-label="Favourite (coming soon)"
           disabled
-          className="shrink-0 rounded-full p-1.5 text-muted-foreground opacity-60"
+          className="shrink-0 rounded-full p-1 text-muted-foreground opacity-60"
         >
-          <Star size={16} aria-hidden />
+          <Star size={15} aria-hidden />
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 px-5">
+      <div className="flex flex-wrap items-center gap-1.5 px-4">
         <AvailabilityPill availability={p.availability} />
         {p.badges.includes("new") && <Badge tone="new">🆕 New</Badge>}
         {p.badges.includes("high-demand") && <Badge tone="hot">🔥 Hot</Badge>}
@@ -204,64 +204,62 @@ export const ProductCard = memo(function ProductCard({
       </div>
 
       {/* Specs */}
-      <dl className="mt-3 flex-1 divide-y px-5" style={{ borderColor: "color-mix(in oklab, var(--primary) 12%, transparent)" }}>
+      <dl className="mt-2 flex-1 divide-y px-4" style={{ borderColor: "color-mix(in oklab, var(--primary) 12%, transparent)" }}>
         {specs.filter(Boolean).map((s, i) => (
           <SpecRow key={i} icon={s!.icon} label={s!.label} value={s!.value} />
         ))}
       </dl>
 
-      <div className="px-5 pt-3">
+      <div className="px-4 pt-2">
         <button
           type="button"
           onClick={() => setInfoOpen(true)}
           aria-label={`View full info about ${p.name}`}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold"
+          className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl px-3 text-[13px] font-semibold"
           style={{
             background: "color-mix(in oklab, var(--primary) 10%, transparent)",
             color: "var(--primary)",
             border: "1px solid color-mix(in oklab, var(--primary) 38%, transparent)",
           }}
         >
-          <FileText size={15} aria-hidden />
+          <FileText size={14} aria-hidden />
           View Full Info
         </button>
       </div>
 
       {infoOpen && <ProductInfoDialog product={p} onClose={() => setInfoOpen(false)} />}
 
-
-
       {/* Info card */}
       <div
-        className="mx-5 mt-4 flex items-start gap-2 rounded-xl px-3 py-2.5 text-[11px] leading-snug text-muted-foreground"
+        className="mx-4 mt-3 flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-snug text-muted-foreground"
         style={{
           background: "color-mix(in oklab, var(--primary) 5%, transparent)",
           border: "1px dashed color-mix(in oklab, var(--primary) 32%, transparent)",
         }}
       >
-        <Info size={14} className="mt-0.5 shrink-0" style={{ color: "var(--primary)" }} aria-hidden />
+        <Info size={13} className="mt-0.5 shrink-0" style={{ color: "var(--primary)" }} aria-hidden />
         <div>
-          <div className="font-semibold text-foreground">Need more information?</div>
-          <div>Contact us on WhatsApp for complete details.</div>
+          <div className="font-semibold text-foreground">Need more info?</div>
+          <div>WhatsApp us for complete details.</div>
         </div>
       </div>
 
       {/* CTA + footer */}
-      <div className="p-5 pt-4">
+      <div className="p-4 pt-3">
         {isOut ? (
           <button
             type="button"
             disabled
             aria-disabled="true"
             aria-label={`${p.name} is out of stock`}
-            className="inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold"
+            className="inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-semibold"
             style={{
               background: "color-mix(in oklab, var(--muted) 70%, transparent)",
               color: "var(--muted-foreground)",
               border: "1px solid color-mix(in oklab, var(--foreground) 10%, transparent)",
             }}
           >
-            <Lock size={15} aria-hidden />
+            <Lock size={14} aria-hidden />
             Currently Out of Stock
           </button>
         ) : (
@@ -271,7 +269,7 @@ export const ProductCard = memo(function ProductCard({
             rel="noreferrer"
             onClick={() => onView?.(p)}
             aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-            className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white"
+            className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-3 py-2.5 text-[13px] font-semibold text-white"
             style={{
               background: "linear-gradient(135deg, #25d366 0%, #128c7e 100%)",
               boxShadow: "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)",
@@ -282,7 +280,7 @@ export const ProductCard = memo(function ProductCard({
           </a>
         )}
 
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-2 flex items-center justify-between">
           <LastUpdatedLine />
         </div>
       </div>
