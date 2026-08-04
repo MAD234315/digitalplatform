@@ -215,7 +215,7 @@ export const ProductCard = memo(function ProductCard({
           type="button"
           onClick={() => setInfoOpen(true)}
           aria-label={`View full info about ${p.name}`}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-colors"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold"
           style={{
             background: "color-mix(in oklab, var(--primary) 10%, transparent)",
             color: "var(--primary)",
