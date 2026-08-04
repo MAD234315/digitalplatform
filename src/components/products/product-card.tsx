@@ -190,7 +190,7 @@ export const ProductCard = memo(function ProductCard({
           type="button"
           aria-label="Favourite (coming soon)"
           disabled
-          className="shrink-0 rounded-full p-1.5 text-muted-foreground opacity-60 transition hover:text-primary hover:opacity-100"
+          className="shrink-0 rounded-full p-1.5 text-muted-foreground opacity-60"
         >
           <Star size={16} aria-hidden />
         </button>
