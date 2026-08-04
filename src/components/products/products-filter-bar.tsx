@@ -282,17 +282,17 @@ export function ProductsFilterBar({
 
   return (
     <div className="border-b border-border bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-2 lg:py-3 flex flex-col gap-2">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-1.5 lg:py-2 flex flex-col gap-1.5">
         {/* Row 1: search */}
         {slot !== "controls" && (
         <div ref={wrapRef} className="group relative w-full">
           <label htmlFor="products-search" className="sr-only">Search products</label>
           <span
             aria-hidden
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 ease-out group-focus-within:scale-110 group-focus-within:-rotate-6"
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2"
             style={{ color: "var(--amber)" }}
           >
-            <svg viewBox="0 0 24 24" className="h-[19px] w-[19px] drop-shadow-[0_0_6px_color-mix(in_oklab,var(--amber)_50%,transparent)]" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <svg viewBox="0 0 24 24" className="h-[17px] w-[17px] drop-shadow-[0_0_6px_color-mix(in_oklab,var(--amber)_50%,transparent)]" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.5-3.5" strokeLinecap="round" />
             </svg>
@@ -319,7 +319,7 @@ export function ProductsFilterBar({
             data-1p-ignore
             data-lpignore="true"
             data-form-type="other"
-            className="w-full rounded-full border-[1.5px] bg-card/80 pl-12 pr-12 min-h-[56px] text-[15px] outline-none shadow-[0_6px_20px_-10px_rgba(0,0,0,0.5)] placeholder:text-foreground/60 transition-all duration-300 focus:bg-card focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--amber)_22%,transparent),0_14px_40px_-14px_color-mix(in_oklab,var(--amber)_65%,transparent)] focus-visible:outline-none"
+            className="w-full rounded-full border-[1.5px] bg-card/80 pl-10 pr-10 min-h-[48px] text-[14px] outline-none shadow-[0_6px_20px_-10px_rgba(0,0,0,0.5)] placeholder:text-foreground/60 transition-all duration-200 focus:bg-card focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--amber)_22%,transparent)] focus-visible:outline-none"
             style={{
               borderColor: "color-mix(in oklab, var(--amber) 55%, transparent)",
             }}
@@ -332,7 +332,7 @@ export function ProductsFilterBar({
               type="button"
               onClick={() => { onQueryChange(""); setOpen(false); inputRef.current?.focus(); }}
               aria-label="Clear search"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                 <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
