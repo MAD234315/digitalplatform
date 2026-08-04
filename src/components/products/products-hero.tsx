@@ -357,7 +357,7 @@ function StatCard({
   const id = useId();
   return (
     <div
-      className={`group relative rounded-xl border p-2.5 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
+      className={`group relative rounded-xl border p-2 transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-14px_color-mix(in_oklab,var(--amber)_60%,transparent)] ${
         highlight
           ? "border-amber/40 bg-gradient-to-br from-amber/10 to-transparent"
           : "border-border/70 bg-card/60 hover:border-amber/40"
@@ -381,7 +381,7 @@ function StatCard({
 
       <div
         ref={countRef}
-        className={`mt-1 font-display text-xl leading-none ${valueClass ?? ""}`}
+        className={`mt-1 font-display text-lg leading-none ${valueClass ?? ""}`}
       >
         {children}
       </div>
