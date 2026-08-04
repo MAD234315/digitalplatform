@@ -20,11 +20,11 @@ export function RecentlyViewed({
   onClear: () => void;
 }) {
   return (
-    <section aria-labelledby="recently-viewed-heading" className="mb-10 rounded-2xl border border-border bg-card/60 p-5">
+    <section aria-labelledby="recently-viewed-heading" className="mb-6 rounded-xl border border-border bg-card/60 p-3">
       <div className="flex items-center justify-between gap-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Continue where you left off</div>
-          <h2 id="recently-viewed-heading" className="mt-1 font-display text-xl">Recently viewed</h2>
+          <h2 id="recently-viewed-heading" className="mt-0.5 font-display text-lg">Recently viewed</h2>
         </div>
         <button
           type="button"
@@ -35,7 +35,7 @@ export function RecentlyViewed({
         </button>
       </div>
 
-      <ul className="scroll-slim mt-4 flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+      <ul className="scroll-slim mt-3 flex gap-2 overflow-x-auto pb-1.5 -mx-1 px-1">
         {items.map(({ recent, product }) => {
           const initials = initialsFor(product.name);
           return (
@@ -43,11 +43,11 @@ export function RecentlyViewed({
               <button
                 type="button"
                 onClick={() => onJump(recent.id)}
-                className="group flex w-56 items-center gap-3 rounded-xl border border-border bg-background p-3 text-left transition hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20"
+                className="group flex w-52 items-center gap-2.5 rounded-lg border border-border bg-background p-2.5 text-left transition hover:-translate-y-0.5 hover:shadow-soft hover:border-foreground/20"
               >
                 <span
                   aria-hidden
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-display text-sm text-white shadow-soft"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-display text-sm text-white shadow-soft"
                   style={{ background: gradientFor(product.name) }}
                 >
                   {initials}
