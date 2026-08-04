@@ -137,7 +137,7 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex h-full flex-col overflow-hidden scroll-mt-32 transition duration-300 ease-out hover:-translate-y-1"
+      className="relative flex h-full flex-col overflow-hidden scroll-mt-32"
       style={{
         borderRadius: "20px",
         background:
@@ -146,16 +146,6 @@ export const ProductCard = memo(function ProductCard({
         boxShadow:
           "0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent), 0 10px 30px -18px rgba(0,0,0,0.55)",
         backdropFilter: "blur(12px) saturate(140%)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent), 0 20px 50px -20px color-mix(in oklab, var(--primary) 55%, transparent), 0 0 40px -12px color-mix(in oklab, var(--primary) 35%, transparent)";
-        e.currentTarget.style.borderColor = "color-mix(in oklab, var(--primary) 55%, transparent)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent), 0 10px 30px -18px rgba(0,0,0,0.55)";
-        e.currentTarget.style.borderColor = "color-mix(in oklab, var(--primary) 28%, transparent)";
       }}
     >
       {/* Header */}
@@ -200,7 +190,7 @@ export const ProductCard = memo(function ProductCard({
           type="button"
           aria-label="Favourite (coming soon)"
           disabled
-          className="shrink-0 rounded-full p-1.5 text-muted-foreground opacity-60 transition hover:text-primary hover:opacity-100"
+          className="shrink-0 rounded-full p-1.5 text-muted-foreground opacity-60"
         >
           <Star size={16} aria-hidden />
         </button>
@@ -225,7 +215,7 @@ export const ProductCard = memo(function ProductCard({
           type="button"
           onClick={() => setInfoOpen(true)}
           aria-label={`View full info about ${p.name}`}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-colors"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold"
           style={{
             background: "color-mix(in oklab, var(--primary) 10%, transparent)",
             color: "var(--primary)",
@@ -281,18 +271,10 @@ export const ProductCard = memo(function ProductCard({
             rel="noreferrer"
             onClick={() => onView?.(p)}
             aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-            className="group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-colors"
+            className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white"
             style={{
               background: "linear-gradient(135deg, #25d366 0%, #128c7e 100%)",
               boxShadow: "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                "0 12px 30px -8px rgba(37,211,102,0.75), 0 0 30px -6px rgba(37,211,102,0.5), inset 0 0 0 1px rgba(255,255,255,0.18)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)";
             }}
           >
             <WaGlyph />
