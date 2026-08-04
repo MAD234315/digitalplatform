@@ -451,8 +451,8 @@ export function ProductsFilterBar({
 
         {/* Row 2: categories | sort | filters */}
         {slot !== "search" && (
-        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
-          <div className="relative min-w-0 sm:w-56">
+        <div className="grid grid-cols-1 gap-1.5 sm:flex sm:flex-wrap sm:items-center">
+          <div className="relative min-w-0 sm:w-52">
 
             <label htmlFor="products-category" className="sr-only">Category</label>
             <select
@@ -472,7 +472,7 @@ export function ProductsFilterBar({
             <span className="sr-only">Currently showing {activeCategoryCount} products</span>
           </div>
 
-          <div className="relative min-w-0 sm:w-44">
+          <div className="relative min-w-0 sm:w-40">
             <label htmlFor="products-sort" className="sr-only">Sort</label>
             <select
               id="products-sort"
@@ -489,7 +489,7 @@ export function ProductsFilterBar({
             {chevron}
           </div>
 
-          <div className="relative min-w-0 sm:w-48">
+          <div className="relative min-w-0 sm:w-44">
             <label htmlFor="products-stock" className="sr-only">Filter by availability</label>
             <select
               id="products-stock"
