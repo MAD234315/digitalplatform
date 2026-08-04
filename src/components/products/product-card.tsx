@@ -271,18 +271,10 @@ export const ProductCard = memo(function ProductCard({
             rel="noreferrer"
             onClick={() => onView?.(p)}
             aria-label={`Quick DM for offer price on WhatsApp about ${p.name}`}
-            className="group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-colors"
+            className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-4 py-3 text-sm font-semibold text-white"
             style={{
               background: "linear-gradient(135deg, #25d366 0%, #128c7e 100%)",
               boxShadow: "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                "0 12px 30px -8px rgba(37,211,102,0.75), 0 0 30px -6px rgba(37,211,102,0.5), inset 0 0 0 1px rgba(255,255,255,0.18)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)";
             }}
           >
             <WaGlyph />
