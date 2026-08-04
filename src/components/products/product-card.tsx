@@ -137,7 +137,7 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex h-full flex-col overflow-hidden scroll-mt-32"
+      className="relative flex h-full flex-col overflow-hidden scroll-mt-32"
       style={{
         borderRadius: "20px",
         background:
