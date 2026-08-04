@@ -137,7 +137,7 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article
       id={`product-${p.id}`}
-      className="group relative flex h-full flex-col overflow-hidden scroll-mt-32 transition duration-300 ease-out hover:-translate-y-1"
+      className="group relative flex h-full flex-col overflow-hidden scroll-mt-32"
       style={{
         borderRadius: "20px",
         background:
@@ -146,16 +146,6 @@ export const ProductCard = memo(function ProductCard({
         boxShadow:
           "0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent), 0 10px 30px -18px rgba(0,0,0,0.55)",
         backdropFilter: "blur(12px) saturate(140%)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent), 0 20px 50px -20px color-mix(in oklab, var(--primary) 55%, transparent), 0 0 40px -12px color-mix(in oklab, var(--primary) 35%, transparent)";
-        e.currentTarget.style.borderColor = "color-mix(in oklab, var(--primary) 55%, transparent)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent), 0 10px 30px -18px rgba(0,0,0,0.55)";
-        e.currentTarget.style.borderColor = "color-mix(in oklab, var(--primary) 28%, transparent)";
       }}
     >
       {/* Header */}
