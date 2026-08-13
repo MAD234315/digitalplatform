@@ -19,11 +19,11 @@ const EMPTY_DESCRIPTION = "Detailed information is not available for this produc
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="py-2.5">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+    <div className="flex items-start justify-between gap-3 py-2">
+      <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
-      </div>
-      <div className="mt-1 break-words text-sm text-foreground">{value || "—"}</div>
+      </span>
+      <span className="break-words text-right text-sm text-foreground">{value || "—"}</span>
     </div>
   );
 }
