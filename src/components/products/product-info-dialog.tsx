@@ -44,12 +44,33 @@ export function ProductInfoDialog({
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
+
+    // Lock scrolling on the background page, including iOS Safari.
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevBodyTouchAction = document.body.style.touchAction;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const scrollY = window.scrollY;
+
     document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+    document.documentElement.style.overflow = "hidden";
+
+    const preventTouchMove = (e: TouchEvent) => {
+      // Allow scrolling inside the modal content only.
+      const target = e.target as HTMLElement;
+      if (target?.closest("[data-dialog-scrollable]")) return;
+      e.preventDefault();
+    };
+    document.addEventListener("touchmove", preventTouchMove, { passive: false });
+
     closeRef.current?.focus();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      document.removeEventListener("touchmove", preventTouchMove);
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.touchAction = prevBodyTouchAction;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      window.scrollTo(0, scrollY);
     };
   }, [open, onClose]);
 
@@ -102,7 +123,10 @@ export function ProductInfoDialog({
           </button>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
+        <div
+          data-dialog-scrollable
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5"
+        >
           <section>
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               PRODUCT DETAILS
