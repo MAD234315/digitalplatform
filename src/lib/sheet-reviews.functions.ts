@@ -221,20 +221,33 @@ async function loadFromSheet(): Promise<ReviewsPayload> {
     const parseWhen = (v: string): number => {
       const t = v.trim();
       if (!t) return -Infinity;
-      // Native parse first (handles ISO + US m/d/y hh:mm:ss — Google Forms default)
+      // Sheet format is DD/MM/YYYY [hh:mm[:ss]] [AM/PM] — parse it first so that
+      // dates like 05/08/2026 are read as 5 August, not 8 May.
+      const m = t.match(
+        /^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp][Mm])?)?/,
+      );
+      if (m) {
+        const [, d, mo, y, hh = "0", mm = "0", ss = "0", ap] = m;
+        let hours = Number(hh);
+        if (ap) {
+          const pm = ap.toLowerCase() === "pm";
+          hours = hours % 12 + (pm ? 12 : 0);
+        }
+        const year = Number(y) < 100 ? 2000 + Number(y) : Number(y);
+        const day = Number(d);
+        const month = Number(mo);
+        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+          const dt = new Date(year, month - 1, day, hours, Number(mm), Number(ss));
+          const ms = dt.getTime();
+          if (Number.isFinite(ms)) return ms;
+        }
+      }
+      // ISO / other native-parseable formats
       const n = Date.parse(t);
       if (Number.isFinite(n)) return n;
-      // dd/mm/yyyy [hh:mm[:ss]] fallback
-      const m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-      if (m) {
-        const [, d, mo, y, hh = "0", mm = "0", ss = "0"] = m;
-        const year = Number(y) < 100 ? 2000 + Number(y) : Number(y);
-        const dt = new Date(year, Number(mo) - 1, Number(d), Number(hh), Number(mm), Number(ss));
-        const ms = dt.getTime();
-        if (Number.isFinite(ms)) return ms;
-      }
       return -Infinity;
     };
+
 
     const reviews: (SheetReview & { _row: number; _when: number })[] = [];
     for (let r = 1; r < rows.length; r++) {
