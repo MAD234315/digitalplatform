@@ -123,7 +123,10 @@ export function ProductInfoDialog({
           </button>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
+        <div
+          data-dialog-scrollable
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5"
+        >
           <section>
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               PRODUCT DETAILS
