@@ -2,8 +2,9 @@
  * "View Full Info" modal for a catalogue product.
  *
  * Renders the raw `description` value from the spreadsheet with whitespace
- * preserved (paragraphs, line breaks, bullets, numbered lists), plus the
- * Type / Supports / Warranty rows that were removed from the card face.
+ * preserved (paragraphs, line breaks, bullets, numbered lists), plus all
+ * catalogue fields (Category, Status, Plan, Validity, Type, Supports, Warranty)
+ * that were removed from the card face.
  *
  * The dialog is portaled to document.body so it escapes any ancestor stacking
  * contexts (transforms, overflow-hidden) and stays perfectly centered on the
@@ -110,6 +111,10 @@ export function ProductInfoDialog({
               className="mt-1 divide-y"
               style={{ borderColor: "color-mix(in oklab, var(--primary) 12%, transparent)" }}
             >
+              <InfoRow label="Category" value={product.category} />
+              <InfoRow label="Status" value={product.status} />
+              <InfoRow label="Plan" value={product.plan} />
+              <InfoRow label="Validity" value={product.validity} />
               <InfoRow label="Type" value={product.type} />
               <InfoRow label="Supports" value={product.supports} />
               <InfoRow label="Warranty" value={product.warranty} />
