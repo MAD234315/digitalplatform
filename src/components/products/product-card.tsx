@@ -45,10 +45,14 @@ function SpecRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-2.5 py-2 text-sm">
-      <Icon size={14} className="mt-0.5 shrink-0" style={{ color: "var(--primary)" }} aria-hidden />
-      <span className="shrink-0 text-muted-foreground">{label}</span>
-      <span className="ml-auto text-right font-medium text-foreground break-words">{value}</span>
+    <div className="flex items-start justify-between gap-3 py-2 text-sm">
+      <div className="flex items-center gap-2">
+        <Icon size={13} className="shrink-0" style={{ color: "var(--primary)" }} aria-hidden />
+        <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          {label}
+        </span>
+      </div>
+      <span className="break-words text-right font-medium text-foreground">{value}</span>
     </div>
   );
 }
