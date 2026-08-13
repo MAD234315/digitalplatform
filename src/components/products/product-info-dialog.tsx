@@ -111,6 +111,10 @@ export function ProductInfoDialog({
               className="mt-1 divide-y"
               style={{ borderColor: "color-mix(in oklab, var(--primary) 12%, transparent)" }}
             >
+              <InfoRow label="Category" value={product.category} />
+              <InfoRow label="Status" value={product.status} />
+              <InfoRow label="Plan" value={product.plan} />
+              <InfoRow label="Validity" value={product.validity} />
               <InfoRow label="Type" value={product.type} />
               <InfoRow label="Supports" value={product.supports} />
               <InfoRow label="Warranty" value={product.warranty} />
