@@ -301,6 +301,7 @@ function Products() {
 
 
 
+      {!isMaintenance && (
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-3 sm:py-4">
         {data.rateLimited && data.products.length > 0 && (
           <div className="mb-4 rounded-xl border border-amber/40 bg-amber/10 p-3 text-sm">
