@@ -19,6 +19,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorListeners } from "../lib/client-error-listeners";
 import { ORG_ID, SITE_URL, WEBSITE_ID } from "../lib/site-config";
 import { supabase } from "@/integrations/supabase/client";
+import { MaintenanceGate } from "@/components/layout/MaintenanceGate";
 
 
 function NotFoundComponent() {
