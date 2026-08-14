@@ -10,8 +10,16 @@ import { getSiteStatus } from "@/lib/admin.functions";
  */
 const ALWAYS_ALLOWED = ["/admin", "/auth", "/reset-password", "/setup"];
 
+/** Pages that remain reachable during maintenance so they can render their own
+ *  contextual maintenance notice instead of the generic full-page gate. */
+const CONTEXTUAL_MAINTENANCE_PAGES = ["/products"];
+
 function isAllowed(pathname: string) {
   return ALWAYS_ALLOWED.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
+
+function isContextualMaintenancePage(pathname: string) {
+  return CONTEXTUAL_MAINTENANCE_PAGES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
 
 /**
