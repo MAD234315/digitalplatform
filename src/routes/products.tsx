@@ -280,22 +280,24 @@ function Products() {
       )}
 
 
-      <ProductsFilterBar
-        slot="controls"
-        categories={data.categories.map((c) => c.name)}
-        totalCount={data.products.length}
-        categoryCounts={categoryCounts}
-        active={active}
-        onActiveChange={setActive}
-        query={q}
-        onQueryChange={setQ}
-        stock={stock}
-        onStockChange={setStock}
-        stockCounts={stockCounts}
-        sort={sort}
-        onSortChange={setSort}
-        products={data.products}
-      />
+      {!isMaintenance && (
+        <ProductsFilterBar
+          slot="controls"
+          categories={data.categories.map((c) => c.name)}
+          totalCount={data.products.length}
+          categoryCounts={categoryCounts}
+          active={active}
+          onActiveChange={setActive}
+          query={q}
+          onQueryChange={setQ}
+          stock={stock}
+          onStockChange={setStock}
+          stockCounts={stockCounts}
+          sort={sort}
+          onSortChange={setSort}
+          products={data.products}
+        />
+      )}
 
 
 
