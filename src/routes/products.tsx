@@ -408,6 +408,7 @@ function Products() {
           Prices depend on stock &amp; demand — <span className="font-medium text-foreground">contact admin for detailed info.</span>
         </p>
       </div>
+      )}
     </PageShell>
   );
 }
