@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
+import { getSiteStatus } from "@/lib/admin.functions";
 import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
