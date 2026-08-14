@@ -1240,14 +1240,15 @@ function WebsiteStatusCard() {
   async function toggle(next: boolean) {
     if (busy || online === next) return;
     setBusy(true);
-    const t = toast.loading(next ? "Bringing site online…" : "Switching site to offline…");
+    const t = toast.loading(next ? "Turning Maintenance Mode off…" : "Turning Maintenance Mode on…");
     try {
       const r = await setStatus({ data: { online: next } });
       setOnline(r.online);
       setUpdatedAt(new Date().toISOString());
       // Refresh the customer catalogue cache so visitors see the change quickly.
       qc.invalidateQueries({ queryKey: ["sheet-products"] });
-      toast.success(next ? "Website is now Online" : "Website is now Offline", { id: t });
+      qc.invalidateQueries({ queryKey: ["site-status"] });
+      toast.success(next ? "Maintenance Mode is OFF" : "Maintenance Mode is ON", { id: t });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to update status", { id: t });
     } finally {
@@ -1283,10 +1284,14 @@ function WebsiteStatusCard() {
             </span>
           </span>
           <div>
-            <h2 className="font-display text-2xl">Website Status</h2>
+            <h2 className="font-display text-2xl">Maintenance Mode</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Control whether the customer-facing catalogue is live. While offline,
-              the spreadsheet is not scanned and visitors see a maintenance page.
+              Current status:{" "}
+              <span className={`font-semibold ${isOnline ? "text-emerald-400" : "text-amber"}`}>
+                {isLoading ? "Checking…" : isOnline ? "OFF — website live" : "ON — website hidden"}
+              </span>
+              . While Maintenance Mode is ON, the spreadsheet is not scanned and
+              visitors see a maintenance page instead of the catalogue.
               Admins keep full access to <span className="font-medium text-foreground">/admin</span>.
             </p>
             {updatedAt && (
@@ -1299,7 +1304,7 @@ function WebsiteStatusCard() {
 
         <div
           role="radiogroup"
-          aria-label="Website status"
+          aria-label="Maintenance mode"
           className="inline-flex shrink-0 rounded-full border border-border bg-background/60 p-1"
         >
           <button
@@ -1314,7 +1319,7 @@ function WebsiteStatusCard() {
                 : "text-muted-foreground hover:text-foreground"
             } disabled:opacity-50`}
           >
-            <Eye className="h-4 w-4" /> Online
+            <Eye className="h-4 w-4" /> OFF
           </button>
           <button
             type="button"
@@ -1328,15 +1333,15 @@ function WebsiteStatusCard() {
                 : "text-muted-foreground hover:text-foreground"
             } disabled:opacity-50`}
           >
-            <EyeOff className="h-4 w-4" /> Offline
+            <EyeOff className="h-4 w-4" /> ON
           </button>
         </div>
       </div>
 
       {online === false && (
         <div className="mt-6 rounded-xl border border-amber/40 bg-amber/10 p-4 text-sm text-amber">
-          Site is currently <span className="font-semibold">Offline</span>. Visitors to the catalogue
-          see a maintenance page and no spreadsheet requests are made.
+          Maintenance Mode is <span className="font-semibold">ON</span>. Visitors see the
+          maintenance page and no spreadsheet requests are made. Admins keep full access to /admin.
         </div>
       )}
     </PremiumCard>
