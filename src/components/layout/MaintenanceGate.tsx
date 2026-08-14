@@ -45,6 +45,8 @@ export function MaintenanceGate({ children }: { children: ReactNode }) {
   });
 
   if (allowed || data?.online !== false) return <>{children}</>;
+  // Catalogue pages render their own in-page maintenance notice.
+  if (isContextualMaintenancePage(pathname)) return <>{children}</>;
   return <MaintenancePage />;
 }
 
