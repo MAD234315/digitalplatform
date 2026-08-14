@@ -219,24 +219,54 @@ function Products() {
         </Link>
       </p>
 
-      <ProductsFilterBar
-        slot="search"
-        categories={data.categories.map((c) => c.name)}
-        totalCount={data.products.length}
-        categoryCounts={categoryCounts}
-        active={active}
-        onActiveChange={setActive}
-        query={q}
-        onQueryChange={setQ}
-        stock={stock}
-        onStockChange={setStock}
-        stockCounts={stockCounts}
-        sort={sort}
-        onSortChange={setSort}
-        products={data.products}
-      />
+      {isMaintenance && (
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-8 sm:py-12">
+          <div className="rounded-2xl border border-amber/30 bg-gradient-to-br from-amber/10 to-transparent p-6 sm:p-10 text-center">
+            <span className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-amber/40 bg-amber/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-amber">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber opacity-70" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-amber" />
+              </span>
+              Maintenance
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl leading-tight">
+              Catalogue Under Maintenance
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+              We&rsquo;re updating the catalogue right now. Please check back shortly, or message us on WhatsApp for urgent requests.
+            </p>
+            <a
+              href="https://wa.me/919652191369?text=Hi%20Digital%20Platform%21%20The%20catalogue%20is%20under%20maintenance%20and%20I%27d%20like%20to%20ask%20about%20a%20product."
+              className="mt-5 inline-flex items-center justify-center rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-amber-foreground transition hover:bg-amber/90"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Message on WhatsApp
+            </a>
+          </div>
+        </div>
+      )}
 
-      {stock !== "latest" && (
+      {!isMaintenance && (
+        <ProductsFilterBar
+          slot="search"
+          categories={data.categories.map((c) => c.name)}
+          totalCount={data.products.length}
+          categoryCounts={categoryCounts}
+          active={active}
+          onActiveChange={setActive}
+          query={q}
+          onQueryChange={setQ}
+          stock={stock}
+          onStockChange={setStock}
+          stockCounts={stockCounts}
+          sort={sort}
+          onSortChange={setSort}
+          products={data.products}
+        />
+      )}
+
+      {!isMaintenance && stock !== "latest" && (
         <ErrorBoundary boundary="products:recently-added" fallback={null}>
           <RecentlyAdded
             products={recentlyUpdatedProducts}
