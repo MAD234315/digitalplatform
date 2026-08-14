@@ -159,6 +159,15 @@ function ProductsNotFound() {
 
 function Products() {
   const { data, dataUpdatedAt, isFetching } = useSuspenseQuery(productsQueryOptions);
+  const statusFn = useServerFn(getSiteStatus);
+  const { data: siteStatus } = useQuery({
+    queryKey: ["site-status"],
+    queryFn: () => statusFn(),
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
+  const isMaintenance = siteStatus?.online === false;
+
   const { active, setActive, q, setQ, stock, setStock, sort, setSort, stockCounts, filtered, categoryCounts, recentlyUpdatedProducts, latestIds } = useProductsFilter(
     data.products,
     data.categories,
