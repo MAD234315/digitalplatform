@@ -20,6 +20,7 @@ const LINKS = [
   { to: "/reviews", label: "Reviews" },
   { to: "/about", label: "About" },
   { to: "/faq", label: "FAQ" },
+  { to: "/global-customers", label: "Global" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
@@ -214,6 +215,7 @@ export function SiteFooter() {
             <li><Link to="/products" className={linkCls}><strong>Catalogue</strong></Link></li>
             <li><Link to="/about" className={linkCls}>About</Link></li>
             <li><Link to="/faq" className={linkCls}>FAQ</Link></li>
+            <li><Link to="/global-customers" className={linkCls}>Global Customers</Link></li>
             <li><Link to="/product-request" className={linkCls}>Product request</Link></li>
             <li><Link to="/contact" className={linkCls}>Contact</Link></li>
           </ul>
