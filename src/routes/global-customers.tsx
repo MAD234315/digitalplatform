@@ -118,8 +118,7 @@ function GlobalCustomers() {
 function IntroBlock({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-amber/30 bg-amber/5 p-5 sm:p-6">
-      <div className="flex items-start gap-3">
-        <span className="text-xl shrink-0">{"\n"}</span>
+      <div className="flex items-start">
         <p className="text-foreground">{children}</p>
       </div>
     </div>
