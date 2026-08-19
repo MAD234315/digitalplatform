@@ -23,7 +23,7 @@ export function FaqItem({ f }: { f: QA }) {
           </svg>
         </span>
       </summary>
-      <div className="px-5 pb-5 -mt-1 text-sm leading-relaxed text-muted-foreground">
+      <div className="px-5 pb-5 -mt-1 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
         {f.a}
       </div>
     </details>
