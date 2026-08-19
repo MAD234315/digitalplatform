@@ -107,7 +107,7 @@ function GlobalCustomers() {
       <section className="border-t border-border">
         <div className="mx-auto max-w-3xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 text-center">
           <p className="text-sm text-muted-foreground">
-            🙏 Thank you for providing your country information in advance and for helping us ensure that you receive a suitable plan for your region.
+            &nbsp;Thank you for providing your country information in advance and for helping us ensure that you receive a suitable plan for your region.
           </p>
         </div>
       </section>
