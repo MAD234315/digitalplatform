@@ -19,6 +19,7 @@ import { Route as ProofGalleryRouteImport } from './routes/proof-gallery'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProductRequestRouteImport } from './routes/product-request'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as GlobalCustomersRouteImport } from './routes/global-customers'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -84,6 +85,11 @@ const ProductRequestRoute = ProductRequestRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlobalCustomersRoute = GlobalCustomersRouteImport.update({
+  id: '/global-customers',
+  path: '/global-customers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/global-customers': typeof GlobalCustomersRoute
   '/privacy': typeof PrivacyRoute
   '/product-request': typeof ProductRequestRoute
   '/products': typeof ProductsRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/global-customers': typeof GlobalCustomersRoute
   '/privacy': typeof PrivacyRoute
   '/product-request': typeof ProductRequestRoute
   '/products': typeof ProductsRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/global-customers': typeof GlobalCustomersRoute
   '/privacy': typeof PrivacyRoute
   '/product-request': typeof ProductRequestRoute
   '/products': typeof ProductsRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/faq'
+    | '/global-customers'
     | '/privacy'
     | '/product-request'
     | '/products'
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/faq'
+    | '/global-customers'
     | '/privacy'
     | '/product-request'
     | '/products'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/faq'
+    | '/global-customers'
     | '/privacy'
     | '/product-request'
     | '/products'
@@ -345,6 +357,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  GlobalCustomersRoute: typeof GlobalCustomersRoute
   PrivacyRoute: typeof PrivacyRoute
   ProductRequestRoute: typeof ProductRequestRoute
   ProductsRoute: typeof ProductsRoute
@@ -433,6 +446,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/global-customers': {
+      id: '/global-customers'
+      path: '/global-customers'
+      fullPath: '/global-customers'
+      preLoaderRoute: typeof GlobalCustomersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -573,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  GlobalCustomersRoute: GlobalCustomersRoute,
   PrivacyRoute: PrivacyRoute,
   ProductRequestRoute: ProductRequestRoute,
   ProductsRoute: ProductsRoute,
