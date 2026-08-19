@@ -10,6 +10,7 @@ Digital Platform is a small-team digital reseller based in India. We source prem
 - [Products](/products): Live catalogue of every subscription, software license, AI tool, and gift card we currently stock. Prices depend on live stock and demand — DM us for today's rate.
 - [About](/about): Our story, mission, and the motto — premium digital solutions, genuine sources, trusted service.
 - [FAQ](/faq): Answers to the most common questions about orders, delivery, warranty, refunds, and support.
+- [Global Customers](/global-customers): Country-specific availability, compatibility checks, and payment notices for international orders.
 - [Contact](/contact): WhatsApp, email, support hours, and what to include in your message for the fastest reply.
 
 ## Optional
