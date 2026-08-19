@@ -17,7 +17,8 @@ export type Category =
   | "Website"
   | "Business"
   | "Security"
-  | "Contact";
+  | "Contact"
+  | "Global Customers";
 
 export interface QA {
   q: string;
