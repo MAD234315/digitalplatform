@@ -136,4 +136,5 @@ export const CATEGORIES: readonly ("All" | Category)[] = [
   "Business",
   "Security",
   "Contact",
+  "Global Customers",
 ] as const;
