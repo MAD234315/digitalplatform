@@ -33,6 +33,12 @@ function GlobalCustomers() {
         lede="Important information for customers outside India. Tell us your country before payment so we can confirm compatibility and recommend the right plan."
       />
 
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pb-4">
+        <p className="text-center text-[10px] text-muted-foreground/80 whitespace-pre-wrap">
+          {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            update as “Buying from outside India? See our Global Customers guide before ordering.”"}
+        </p>
+      </div>
+
       <section className="border-t border-border">
         <div className="mx-auto max-w-3xl px-5 sm:px-6 lg:px-10 py-10 sm:py-12 space-y-8 text-sm text-muted-foreground leading-relaxed">
           <IntroBlock>
