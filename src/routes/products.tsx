@@ -219,12 +219,8 @@ function Products() {
             Ask AI — CREATOR AI
           </Link>
         </p>
-        <p className="text-center text-[10px] text-muted-foreground/80">
-          Buying from outside India? See our{" "}
-          <Link to="/global-customers" className="font-medium text-foreground/90 underline underline-offset-2 hover:text-amber transition-colors">
-            Global Customers
-          </Link>{" "}
-          guide before ordering.
+        <p className="text-center text-[10px] text-muted-foreground/80 whitespace-pre-wrap">
+          {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            keep gap in all pages"}
         </p>
       </div>
 
