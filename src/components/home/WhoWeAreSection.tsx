@@ -31,10 +31,6 @@ export function WhoWeAreSection() {
               Digital Platform (𝙋𝙍𝙊 𝙎𝙌𝙐𝘼𝘿) is a trusted marketplace for premium digital products and AI tools.
               Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
               productivity software, creative tools and digital services — at affordable prices.
-            <p className="mt-5 text-muted-foreground leading-relaxed">
-              Digital Platform (𝙋𝙍𝙊 𝙎𝙌𝙐𝘼𝘿) is a trusted marketplace for premium digital products and AI tools.
-              Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
-              productivity software, creative tools and digital services — at affordable prices.
             </p>
             <p className="mt-4 text-xs text-muted-foreground/80 leading-relaxed italic">
               Buying from outside India? See our{" "}
