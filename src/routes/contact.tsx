@@ -38,7 +38,7 @@ function Contact() {
     <PageShell>
       <PageHero
         compact
-        eyebrow="Contact"
+        eyebrow="CONTACT"
         title={<>Let&apos;s <em className="text-headline">talk.</em></>}
         lede="The fastest way to reach us is WhatsApp — we typically reply at earliest with live pricing and stock updates."
       />

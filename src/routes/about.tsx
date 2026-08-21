@@ -35,7 +35,7 @@ function About() {
     <PageShell>
       <PageHero
         compact
-        eyebrow="About us"
+        eyebrow="ABOUT US"
         title={<>{"\n"}One Person,</>}
         titleAccent="Countless possibilities."
         lede="Digital Platform (𝙋𝙍𝙊 𝙎𝙌𝙐𝘼𝘿) is independently built and managed by a single creator. Since 2020, I've helped thousands of customers access premium digital subscriptions, AI tools, productivity software, creative tools, and digital services at affordable prices. Every product, update, and customer interaction is handled with care to ensure quality and reliability."
