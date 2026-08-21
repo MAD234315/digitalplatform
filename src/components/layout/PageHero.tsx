@@ -31,11 +31,11 @@ export function PageHero({
 }) {
   const wrap = compact
     ? size === "wide"
-      ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-20 sm:pt-24 pb-6 sm:pb-8"
-      : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-20 pb-6 sm:pt-24 sm:pb-8 lg:pt-28 lg:pb-10"
+      ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-24 sm:pt-28 pb-6 sm:pb-8"
+      : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-24 pb-6 sm:pt-28 sm:pb-8 lg:pt-32 lg:pb-10"
     : size === "wide"
-      ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-32 sm:pt-36 pb-10 sm:pb-12"
-      : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-32 pb-12 sm:pt-40 sm:pb-14 lg:pt-48 lg:pb-20";
+      ? "mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-36 sm:pt-40 pb-10 sm:pb-12"
+      : "mx-auto max-w-5xl px-5 sm:px-6 lg:px-10 pt-36 pb-12 sm:pt-44 sm:pb-14 lg:pt-52 lg:pb-20";
 
   return (
     <section className="relative bg-hero">
