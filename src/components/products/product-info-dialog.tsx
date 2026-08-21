@@ -101,7 +101,7 @@ export function ProductInfoDialog({
             "linear-gradient(160deg, color-mix(in oklab, var(--card) 98%, transparent) 0%, color-mix(in oklab, var(--background) 99%, transparent) 100%)",
           border: "1px solid color-mix(in oklab, var(--primary) 32%, transparent)",
           boxShadow:
-            "0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent), 0 40px 90px -30px rgba(0,0,0,0.85)",
+            "0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent)",
         }}
       >
         <header
