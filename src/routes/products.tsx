@@ -212,12 +212,21 @@ function Products() {
         onShowLatest={() => setStock("latest")}
       />
 
-      <p className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-4 text-center text-xs text-muted-foreground">
-        Clear your doubts on{" "}
-        <Link to="/chat" className="font-medium text-foreground underline underline-offset-2 hover:text-amber transition-colors">
-          Ask AI — CREATOR AI
-        </Link>
-      </p>
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 pt-4 flex flex-col items-center gap-1">
+        <p className="text-center text-xs text-muted-foreground">
+          Clear your doubts on{" "}
+          <Link to="/chat" className="font-medium text-foreground underline underline-offset-2 hover:text-amber transition-colors">
+            Ask AI — CREATOR AI
+          </Link>
+        </p>
+        <p className="text-center text-[10px] text-muted-foreground/80">
+          Buying from outside India? See our{" "}
+          <Link to="/global-customers" className="font-medium text-foreground/90 underline underline-offset-2 hover:text-amber transition-colors">
+            Global Customers
+          </Link>{" "}
+          guide before ordering.
+        </p>
+      </div>
 
       {isMaintenance && (
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10 py-8 sm:py-12">
