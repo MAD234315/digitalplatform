@@ -9,6 +9,7 @@ import { MottoPromiseSection } from "@/components/home/MottoPromiseSection";
 import { AskAiSection } from "@/components/home/AskAiSection";
 import { ContactPromptSection } from "@/components/home/ContactPromptSection";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { GlobalCustomerNotice } from "@/components/home/GlobalCustomerNotice";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 
