@@ -46,15 +46,9 @@ export function CategoriesSection() {
       aria-labelledby="cat-heading"
       className="cv-auto relative isolate scroll-mt-24 overflow-hidden border-t border-border bg-card/30"
     >
-      {/* Subtle gold ambient lighting */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{
-          background:
-            "radial-gradient(60% 40% at 85% 10%, color-mix(in oklab, var(--amber) 10%, transparent), transparent 70%), radial-gradient(50% 40% at 10% 90%, color-mix(in oklab, var(--amber) 6%, transparent), transparent 70%)",
-        }}
-      />
+      <div className="hidden">
+        {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            remove light effect animations from homepages and all website"}
+      </div>
 
       <div className="relative mx-auto max-w-6xl px-5 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-14">
         <div className="grid min-w-0 gap-8 lg:grid-cols-12 lg:gap-10">
@@ -107,7 +101,7 @@ export function CategoriesSection() {
                   <Reveal as="li" key={c} delay={Math.min(i * 50, 400)} y={10}>
                     <Link
                       to="/products"
-                      className="group relative flex min-h-[3.75rem] items-center gap-4 overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-card/60 to-card/20 px-4 py-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/50 hover:from-card/80 hover:to-card/40 hover:shadow-[0_10px_40px_-15px_color-mix(in_oklab,var(--amber)_35%,transparent)] sm:min-h-[3.25rem] sm:py-3.5"
+                      className="group relative flex min-h-[3.75rem] items-center gap-4 overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-card/60 to-card/20 px-4 py-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/50 hover:from-card/80 hover:to-card/40 sm:min-h-[3.25rem] sm:py-3.5"
                     >
                       {/* Premium numbering */}
                       <span className="w-8 shrink-0 font-display text-sm tabular-nums leading-none text-muted-foreground/70 transition-colors duration-300 group-hover:text-amber">

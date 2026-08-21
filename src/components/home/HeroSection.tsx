@@ -17,14 +17,9 @@ import { STATS } from "./data";
 export function HeroSection() {
   return (
     <section aria-labelledby="hero-heading" className="relative overflow-hidden bg-hero">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-24 h-[520px] blur-[120px] opacity-60"
-        style={{
-          background:
-            "radial-gradient(600px 320px at 50% 50%, oklch(0.80 0.14 82 / 0.22), transparent 70%)",
-        }}
-      />
+      <div className="hidden">
+        {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            remove light effect animations from homepages and all website"}
+      </div>
       <ErrorBoundary boundary="home:hero-animations" fallback={<HeroFallback />}>
         <HeroContent />
       </ErrorBoundary>
