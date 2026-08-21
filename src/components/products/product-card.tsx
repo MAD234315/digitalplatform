@@ -64,7 +64,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
         className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white"
         style={{
           background: "linear-gradient(135deg, #e5484d, #b3261e)",
-          boxShadow: "0 0 18px -4px rgba(229,72,77,0.55), 0 0 0 1px rgba(229,72,77,0.35)",
+          border: "1px solid rgba(229,72,77,0.35)",
         }}
       >
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
@@ -79,7 +79,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
         style={{
           background: "linear-gradient(135deg, #f4b740, #d68a10)",
           color: "#2a1a00",
-          boxShadow: "0 0 18px -4px rgba(244,183,64,0.5), 0 0 0 1px rgba(244,183,64,0.35)",
+          border: "1px solid rgba(244,183,64,0.35)",
         }}
       >
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-black/80" />
@@ -92,7 +92,7 @@ function AvailabilityPill({ availability }: { availability: SheetProduct["availa
       className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white"
       style={{
         background: "linear-gradient(135deg, #22c55e, #15803d)",
-        boxShadow: "0 0 18px -4px rgba(34,197,94,0.55), 0 0 0 1px rgba(34,197,94,0.35)",
+        border: "1px solid rgba(34,197,94,0.35)",
       }}
     >
       <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
@@ -148,7 +148,7 @@ export const ProductCard = memo(function ProductCard({
           "linear-gradient(160deg, color-mix(in oklab, var(--card) 92%, transparent) 0%, color-mix(in oklab, var(--background) 96%, transparent) 100%)",
         border: "1px solid color-mix(in oklab, var(--primary) 28%, transparent)",
         boxShadow:
-          "0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent), 0 10px 30px -18px rgba(0,0,0,0.55)",
+          "0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent)",
         backdropFilter: "blur(12px) saturate(140%)",
       }}
     >
@@ -159,7 +159,7 @@ export const ProductCard = memo(function ProductCard({
           className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl"
           style={{
             background: gradientFor(p.name),
-            boxShadow: "0 6px 18px -6px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
           <LogoMark name={p.name} size={28} />
@@ -276,7 +276,7 @@ export const ProductCard = memo(function ProductCard({
             className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-3 py-2.5 text-[13px] font-semibold text-white"
             style={{
               background: "linear-gradient(135deg, #25d366 0%, #128c7e 100%)",
-              boxShadow: "0 8px 24px -10px rgba(37,211,102,0.55), inset 0 0 0 1px rgba(255,255,255,0.1)",
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
             <WaGlyph />
