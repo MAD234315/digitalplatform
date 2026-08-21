@@ -1,5 +1,6 @@
 import { Eyebrow } from "@/components/ui-primitives";
 import { Reveal } from "@/components/reveal";
+import { Link } from "@tanstack/react-router";
 
 
 export function WhoWeAreSection() {
@@ -30,6 +31,20 @@ export function WhoWeAreSection() {
               Digital Platform (𝙋𝙍𝙊 𝙎𝙌𝙐𝘼𝘿) is a trusted marketplace for premium digital products and AI tools.
               Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
               productivity software, creative tools and digital services — at affordable prices.
+            <p className="mt-5 text-muted-foreground leading-relaxed">
+              Digital Platform (𝙋𝙍𝙊 𝙎𝙌𝙐𝘼𝘿) is a trusted marketplace for premium digital products and AI tools.
+              Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
+              productivity software, creative tools and digital services — at affordable prices.
+            </p>
+            <p className="mt-4 text-xs text-muted-foreground/80 leading-relaxed italic">
+              Buying from outside India? See our{" "}
+              <Link
+                to="/global-customers"
+                className="font-medium text-foreground/90 underline underline-offset-2 hover:text-amber transition-colors"
+              >
+                Global Customers
+              </Link>{" "}
+              guide before ordering.
             </p>
           </Reveal>
 
