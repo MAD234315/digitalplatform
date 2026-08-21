@@ -33,6 +33,13 @@ export function AskAiSection() {
             <div className="mt-6">
               <CtaRouterLink to="/chat" size="md">Ask CREATOR AI</CtaRouterLink>
             </div>
+            <p className="mt-4 text-[10px] text-muted-foreground/80">
+              Buying from outside India? See our{" "}
+              <a href="/global-customers" className="font-medium text-foreground/90 underline underline-offset-2 hover:text-amber transition-colors">
+                Global Customers
+              </a>{" "}
+              guide.
+            </p>
           </div>
         </Reveal>
       </div>
