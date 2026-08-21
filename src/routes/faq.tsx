@@ -105,7 +105,7 @@ function FAQPage() {
     <PageShell>
       <PageHero
         compact
-        eyebrow="Frequently asked questions"
+        eyebrow="FREQUENTLY ASKED QUESTIONS"
         title="Everything you need"
         titleAccent="to know before purchasing."
         lede={<>Answers to the most common questions about our digital products, subscriptions, delivery, warranty, and support. Can&apos;t find what you&apos;re looking for? Message us — we usually reply within minutes.</>}
