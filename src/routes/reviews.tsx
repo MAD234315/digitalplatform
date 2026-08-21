@@ -422,11 +422,10 @@ function Reviews() {
   return (
     <PageShell>
       <PageHero
-        eyebrow="Customer Reviews"
+        eyebrow="CUSTOMER REVIEWS"
         title="Trusted by thousands,"
         titleAccent="rated by real people."
         lede="Here's what customers say about ordering premium digital services with us."
-
       />
 
       <section className="border-t border-border" aria-labelledby="reviews-heading">
