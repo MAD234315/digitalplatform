@@ -33,7 +33,7 @@ export function WhoWeAreSection() {
               productivity software, creative tools and digital services — at affordable prices.
             </p>
             <p className="mt-4 text-[10px] text-muted-foreground/80 leading-relaxed italic whitespace-pre-wrap">
-              {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            remove light effect animations from homepages and all website"}
+              {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            fix this"}
             </p>
           </Reveal>
 
