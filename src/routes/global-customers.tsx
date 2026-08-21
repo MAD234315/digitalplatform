@@ -28,7 +28,7 @@ function GlobalCustomers() {
     <PageShell>
       <PageHero
         compact
-        eyebrow="International Orders"
+        eyebrow="INTERNATIONAL ORDERS"
         title={<>Global <em className="text-headline">Customers.</em></>}
         lede="Important information for customers outside India. Tell us your country before payment so we can confirm compatibility and recommend the right plan."
       />

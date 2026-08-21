@@ -245,7 +245,7 @@ function ReviewsSkeleton() {
     <PageShell>
       {/* Hero skeleton */}
       <section className="relative overflow-hidden border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-20 sm:py-28 lg:py-36">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-24 sm:py-32 lg:py-40">
           <div className="max-w-3xl">
             <div className="mb-5 h-4 w-32 animate-pulse rounded-full bg-muted/50" />
             <div className="mb-4 h-10 sm:h-12 w-3/4 animate-pulse rounded-lg bg-muted/50" />
@@ -422,11 +422,10 @@ function Reviews() {
   return (
     <PageShell>
       <PageHero
-        eyebrow="Customer Reviews"
+        eyebrow="CUSTOMER REVIEWS"
         title="Trusted by thousands,"
         titleAccent="rated by real people."
         lede="Here's what customers say about ordering premium digital services with us."
-
       />
 
       <section className="border-t border-border" aria-labelledby="reviews-heading">

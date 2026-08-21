@@ -34,7 +34,7 @@ export function HeroSection() {
 
 function HeroContent() {
   return (
-    <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-28 sm:pt-36 lg:pt-44 pb-16 sm:pb-20 lg:pb-24 text-center">
+    <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-10 pt-32 sm:pt-40 lg:pt-48 pb-16 sm:pb-20 lg:pb-24 text-center">
 
       <div>
         <LiveBadge>TRUSTED MARKETPLACE · SINCE 2020</LiveBadge>

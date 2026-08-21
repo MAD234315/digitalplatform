@@ -29,7 +29,7 @@ export function ProductsHero({
       <PageHero
         size="wide"
         compact
-        eyebrow="The catalogue"
+        eyebrow="THE CATALOGUE"
         title="Every product,"
         titleAccent="live from our shelf."
         lede={<>Updated in real-time from our internal stock sheet. Prices depend on stock availability and demand — DM us for today&apos;s rate.</>}
