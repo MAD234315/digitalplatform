@@ -22,7 +22,7 @@ function ProductRequest() {
     <PageShell>
       <PageHero
         compact
-        eyebrow="Product request"
+        eyebrow="PRODUCT REQUEST"
         title="Can't find it?"
         titleAccent="Just ask."
         lede="Tell us what you're looking for — a subscription, an AI tool, a software license, a gift card. We'll check availability, source it if we can, and reply with pricing."
