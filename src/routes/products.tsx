@@ -220,7 +220,7 @@ function Products() {
           </Link>
         </p>
         <p className="text-center text-[10px] text-muted-foreground/80 whitespace-pre-wrap">
-          {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            actually i want to global customers message in homepage and catalgoue"}
+          {"\n"}
         </p>
       </div>
 
