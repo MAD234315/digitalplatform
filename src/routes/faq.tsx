@@ -108,7 +108,7 @@ function FAQPage() {
         eyebrow="FREQUENTLY ASKED QUESTIONS"
         title="Everything you need"
         titleAccent="to know before purchasing."
-        lede={<>Answers to the most common questions about our digital products, subscriptions, delivery, warranty, and support. Can&apos;t find what you&apos;re looking for? Message us — we usually reply within minutes.</>}
+        lede={<>{"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            remove repated FAQ"}</>}
       />
 
 
