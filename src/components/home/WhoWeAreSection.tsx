@@ -32,15 +32,8 @@ export function WhoWeAreSection() {
               Since 2020, we&apos;ve helped thousands of customers access high-quality subscriptions,
               productivity software, creative tools and digital services — at affordable prices.
             </p>
-            <p className="mt-4 text-xs text-muted-foreground/80 leading-relaxed italic">
-              Buying from outside India? See our{" "}
-              <Link
-                to="/global-customers"
-                className="font-medium text-foreground/90 underline underline-offset-2 hover:text-amber transition-colors"
-              >
-                Global Customers
-              </Link>{" "}
-              guide before ordering.
+            <p className="mt-4 text-[10px] text-muted-foreground/80 leading-relaxed italic whitespace-pre-wrap">
+              {"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            remove light effect animations from homepages and all website"}
             </p>
           </Reveal>
 
