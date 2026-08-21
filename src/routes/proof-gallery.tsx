@@ -38,7 +38,7 @@ function ProofGalleryPage() {
     <PageShell>
       <PageHero
         compact
-        eyebrow="Trust & transparency"
+        eyebrow="TRUST & TRANSPARENCY"
         title="Proof Gallery"
         lede="Verified screenshots of orders delivered, customer chats and delivery confirmations."
       />
