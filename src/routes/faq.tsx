@@ -108,7 +108,7 @@ function FAQPage() {
         eyebrow="FREQUENTLY ASKED QUESTIONS"
         title="Everything you need"
         titleAccent="to know before purchasing."
-        lede={<>{"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Implement a logo grid or carousel for my Global Customers page so users can browse customer brands easily."}</>}
+        lede={<>{"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Add a plans/details section on my Explore Plans flow with pricing, validity, delivery info, and a clear contact/WhatsApp next step."}</>}
       />
 
 
