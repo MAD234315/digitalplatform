@@ -106,6 +106,42 @@ export type Database = {
         }
         Relationships: []
       }
+      offer_banner: {
+        Row: {
+          cta_link: string | null
+          cta_text: string | null
+          enabled: boolean
+          headline: string | null
+          id: number
+          media_path: string | null
+          media_type: string
+          subline: string | null
+          updated_at: string
+        }
+        Insert: {
+          cta_link?: string | null
+          cta_text?: string | null
+          enabled?: boolean
+          headline?: string | null
+          id?: number
+          media_path?: string | null
+          media_type?: string
+          subline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cta_link?: string | null
+          cta_text?: string | null
+          enabled?: boolean
+          headline?: string | null
+          id?: number
+          media_path?: string | null
+          media_type?: string
+          subline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       proofs: {
         Row: {
           created_at: string

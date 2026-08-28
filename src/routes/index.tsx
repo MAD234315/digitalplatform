@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { HeroSection } from "@/components/home/HeroSection";
+import { OfferBanner } from "@/components/home/OfferBanner";
 import { WhoWeAreSection } from "@/components/home/WhoWeAreSection";
 import { StatsCounterSection } from "@/components/home/StatsCounterSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
@@ -12,6 +14,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
+import { getOfferBanner } from "@/lib/admin.functions";
 
 const URL = SITE_URL + "/";
 const TITLE = "Digital Platform — Premium Digital Subscriptions & AI Tools";
@@ -34,6 +37,12 @@ const HOME_JSON_LD = {
     height: 630,
   },
   inLanguage: "en",
+};
+
+const offerBannerQueryOptions = {
+  queryKey: ["offer-banner"],
+  queryFn: () => getOfferBanner(),
+  staleTime: 1000 * 60 * 5,
 };
 
 export const Route = createFileRoute("/")({
@@ -62,10 +71,19 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(offerBannerQueryOptions);
+  },
   component: Home,
 });
 
 function Home() {
+  const { data: banner } = useQuery({
+    queryKey: ["offer-banner"],
+    queryFn: () => getOfferBanner(),
+    staleTime: 1000 * 60 * 5,
+  });
+
   // Each section is wrapped in its own boundary so a runtime failure in one
   // (bad data, DOM/intersection API misuse, etc.) degrades that panel only —
   // the rest of the landing page keeps rendering. TanStack's route-level
@@ -75,7 +93,16 @@ function Home() {
       <ErrorBoundary boundary="shell:nav" fallback={null}><SiteNav /></ErrorBoundary>
       <main id="main">
         <ErrorBoundary boundary="home:hero"><HeroSection /></ErrorBoundary>
-        
+        {banner?.enabled && (
+          <ErrorBoundary boundary="home:offer-banner" fallback={null}>
+            <div className="cv-auto">
+              <section className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-10">
+                <OfferBanner banner={banner} />
+              </section>
+            </div>
+          </ErrorBoundary>
+        )}
+
         <ErrorBoundary boundary="home:ask-ai"><div className="cv-auto"><AskAiSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:who-we-are"><div className="cv-auto"><WhoWeAreSection /></div></ErrorBoundary>
         <ErrorBoundary boundary="home:stats"><div className="cv-auto"><StatsCounterSection /></div></ErrorBoundary>

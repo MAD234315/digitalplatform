@@ -920,3 +920,127 @@ export const setSiteOnline = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true, online: data.online };
   });
+
+// ---------- Homepage Offer Banner ----------
+
+export type OfferBanner = {
+  id: number;
+  enabled: boolean;
+  mediaType: "image" | "video";
+  mediaPath: string | null;
+  mediaUrl: string | null;
+  headline: string | null;
+  subline: string | null;
+  ctaText: string | null;
+  ctaLink: string | null;
+  updatedAt: string;
+};
+
+const BANNER_SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
+
+async function signBannerUrl(
+  client: ReturnType<typeof serverPublicClient>,
+  path: string | null,
+): Promise<string | null> {
+  if (!path) return null;
+  const { data, error } = await client.storage
+    .from("offer-banners")
+    .createSignedUrl(path, BANNER_SIGNED_URL_TTL);
+  if (error || !data?.signedUrl) {
+    console.error("[signBannerUrl] failed:", error);
+    return null;
+  }
+  return data.signedUrl;
+}
+
+/** Public: returns the active homepage offer banner with a fresh signed media URL. */
+export const getOfferBanner = createServerFn({ method: "GET" }).handler(async () => {
+  const client = serverPublicClient();
+  const { data, error } = await client
+    .from("offer_banner")
+    .select("*")
+    .eq("enabled", true)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) {
+    return {
+      id: 1,
+      enabled: false,
+      mediaType: "image" as const,
+      mediaPath: null,
+      mediaUrl: null,
+      headline: null,
+      subline: null,
+      ctaText: null,
+      ctaLink: null,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  const row = data as {
+    id: number;
+    enabled: boolean;
+    media_type: string;
+    media_path: string | null;
+    headline: string | null;
+    subline: string | null;
+    cta_text: string | null;
+    cta_link: string | null;
+    updated_at: string;
+  };
+  return {
+    id: row.id,
+    enabled: row.enabled,
+    mediaType: row.media_type === "video" ? "video" : "image",
+    mediaPath: row.media_path,
+    mediaUrl: await signBannerUrl(client, row.media_path),
+    headline: row.headline,
+    subline: row.subline,
+    ctaText: row.cta_text,
+    ctaLink: row.cta_link,
+    updatedAt: row.updated_at,
+  };
+});
+
+const offerBannerSchema = z.object({
+  enabled: z.boolean(),
+  mediaType: z.enum(["image", "video"]),
+  mediaPath: z.string().min(1).nullable(),
+  headline: z.string().max(120).nullable(),
+  subline: z.string().max(240).nullable(),
+  ctaText: z.string().max(60).nullable(),
+  ctaLink: z.string().max(500).nullable(),
+});
+
+/** Admin-only: update the homepage offer banner settings. */
+export const upsertOfferBanner = createServerFn({ method: "POST" })
+  .middleware([requireBackendAuth])
+  .inputValidator((raw: unknown) => offerBannerSchema.parse(raw))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+
+    // Clean up old media if the path changed.
+    const { data: existing } = await context.supabase
+      .from("offer_banner")
+      .select("media_path")
+      .eq("id", 1)
+      .maybeSingle();
+    const oldPath = (existing as { media_path?: string | null } | null)?.media_path;
+    if (oldPath && oldPath !== data.mediaPath) {
+      await context.supabase.storage.from("offer-banners").remove([oldPath]).catch(() => {});
+    }
+
+    const { error } = await context.supabase
+      .from("offer_banner")
+      .update({
+        enabled: data.enabled,
+        media_type: data.mediaType,
+        media_path: data.mediaPath,
+        headline: data.headline,
+        subline: data.subline,
+        cta_text: data.ctaText,
+        cta_link: data.ctaLink,
+      })
+      .eq("id", 1);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
