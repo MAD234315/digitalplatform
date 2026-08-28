@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { HeroSection } from "@/components/home/HeroSection";
+import { OfferBanner } from "@/components/home/OfferBanner";
 import { WhoWeAreSection } from "@/components/home/WhoWeAreSection";
 import { StatsCounterSection } from "@/components/home/StatsCounterSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
@@ -12,6 +14,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
+import { getOfferBanner } from "@/lib/admin.functions";
 
 const URL = SITE_URL + "/";
 const TITLE = "Digital Platform — Premium Digital Subscriptions & AI Tools";
