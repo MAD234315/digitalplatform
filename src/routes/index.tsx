@@ -39,6 +39,12 @@ const HOME_JSON_LD = {
   inLanguage: "en",
 };
 
+const offerBannerQueryOptions = {
+  queryKey: ["offer-banner"],
+  queryFn: () => getOfferBanner(),
+  staleTime: 1000 * 60 * 5,
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -65,6 +71,9 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(offerBannerQueryOptions);
+  },
   component: Home,
 });
 
