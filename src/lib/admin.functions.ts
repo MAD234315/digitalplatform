@@ -955,27 +955,39 @@ async function signBannerUrl(
 
 /** Public: returns the active homepage offer banner with a fresh signed media URL. */
 export const getOfferBanner = createServerFn({ method: "GET" }).handler(async () => {
+  const disabledFallback = {
+    id: 1,
+    enabled: false as const,
+    mediaType: "image" as const,
+    mediaPath: null as string | null,
+    mediaUrl: null as string | null,
+    headline: null as string | null,
+    subline: null as string | null,
+    ctaText: null as string | null,
+    ctaLink: null as string | null,
+    updatedAt: new Date().toISOString(),
+  };
   const client = serverPublicClient();
   const { data, error } = await client
     .from("offer_banner")
     .select("*")
     .eq("enabled", true)
     .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) {
-    return {
-      id: 1,
-      enabled: false,
-      mediaType: "image" as const,
-      mediaPath: null,
-      mediaUrl: null,
-      headline: null,
-      subline: null,
-      ctaText: null,
-      ctaLink: null,
-      updatedAt: new Date().toISOString(),
-    };
+  if (error) {
+    // PGRST205 (schema cache) or 42501 (RLS/has_role) should not crash the homepage.
+    // Return disabled fallback so the banner simply doesn't render until DB is fixed.
+    const code = (error as { code?: string }).code;
+    const msg = (error as { message?: string }).message ?? String(error);
+    const isSchemaCacheMiss =
+      code === "PGRST205" || /schema cache/i.test(msg) || /Could not find the table/i.test(msg);
+    const isPermissionDenied = code === "42501" || /permission denied/i.test(msg);
+    if (isSchemaCacheMiss || isPermissionDenied) {
+      console.warn("[getOfferBanner] suppressed DB error, returning disabled fallback:", { code, msg });
+      return disabledFallback;
+    }
+    throw new Error(msg);
   }
+  if (!data) return disabledFallback;
   const row = data as {
     id: number;
     enabled: boolean;
@@ -1029,9 +1041,9 @@ export const upsertOfferBanner = createServerFn({ method: "POST" })
       await context.supabase.storage.from("offer-banners").remove([oldPath]).catch(() => {});
     }
 
-    const { error } = await context.supabase
-      .from("offer_banner")
-      .update({
+    const { error } = await context.supabase.from("offer_banner").upsert(
+      {
+        id: 1,
         enabled: data.enabled,
         media_type: data.mediaType,
         media_path: data.mediaPath,
@@ -1039,8 +1051,9 @@ export const upsertOfferBanner = createServerFn({ method: "POST" })
         subline: data.subline,
         cta_text: data.ctaText,
         cta_link: data.ctaLink,
-      })
-      .eq("id", 1);
+      },
+      { onConflict: "id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true };
   });
