@@ -1,0 +1,4 @@
+- [ ] Inspect reference cards and details.
+- [ ] Update catalogue cards only and add separate product details URLs.
+- [ ] Verify direct URLs, gallery, no-price presentation, and WhatsApp messages.
+- [ ] Apply required dependency security fixes and verify the app.
