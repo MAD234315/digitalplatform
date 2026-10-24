@@ -28,6 +28,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ProductProductSlugRouteImport } from './routes/product.$productSlug'
 import { Route as ChatThreadIdRouteImport } from './routes/chat.$threadId'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
@@ -132,6 +133,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ProductProductSlugRoute = ProductProductSlugRouteImport.update({
+  id: '/product/$productSlug',
+  path: '/product/$productSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatThreadIdRoute = ChatThreadIdRouteImport.update({
   id: '/chat/$threadId',
   path: '/chat/$threadId',
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof ChatThreadIdRoute
+  '/product/$productSlug': typeof ProductProductSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
@@ -225,6 +232,7 @@ export interface FileRoutesByTo {
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof ChatThreadIdRoute
+  '/product/$productSlug': typeof ProductProductSlugRoute
   '/admin': typeof AdminIndexRoute
   '/chat': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/admin/setup': typeof AdminSetupRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof ChatThreadIdRoute
+  '/product/$productSlug': typeof ProductProductSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/api/public/revalidate-reviews': typeof ApiPublicRevalidateReviewsRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/admin/setup'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/product/$productSlug'
     | '/admin/'
     | '/chat/'
     | '/api/public/revalidate-reviews'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/admin/setup'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/product/$productSlug'
     | '/admin'
     | '/chat'
     | '/api/public/revalidate-reviews'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/admin/setup'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/product/$productSlug'
     | '/admin/'
     | '/chat/'
     | '/api/public/revalidate-reviews'
@@ -370,6 +382,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
   ChatThreadIdRoute: typeof ChatThreadIdRoute
+  ProductProductSlugRoute: typeof ProductProductSlugRoute
   ChatIndexRoute: typeof ChatIndexRoute
   ApiPublicRevalidateReviewsRoute: typeof ApiPublicRevalidateReviewsRoute
   ChatShareThreadIdRoute: typeof ChatShareThreadIdRoute
@@ -511,6 +524,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/product/$productSlug': {
+      id: '/product/$productSlug'
+      path: '/product/$productSlug'
+      fullPath: '/product/$productSlug'
+      preLoaderRoute: typeof ProductProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat/$threadId': {
       id: '/chat/$threadId'
       path: '/chat/$threadId'
@@ -606,6 +626,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
   ChatThreadIdRoute: ChatThreadIdRoute,
+  ProductProductSlugRoute: ProductProductSlugRoute,
   ChatIndexRoute: ChatIndexRoute,
   ApiPublicRevalidateReviewsRoute: ApiPublicRevalidateReviewsRoute,
   ChatShareThreadIdRoute: ChatShareThreadIdRoute,
