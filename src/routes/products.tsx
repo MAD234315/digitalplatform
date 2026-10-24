@@ -2,9 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { getSheetProducts, type Availability, type SheetProduct } from "@/lib/sheet-products.functions";
+import { getSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { getSiteStatus } from "@/lib/admin.functions";
-import { TiltCard } from "@/components/tilt-card";
 import { OG_IMAGE, ORG_ID, SITE_URL, WEBSITE_ID } from "@/lib/site-config";
 import { useRecentlyViewed, type RecentItem } from "@/lib/recently-viewed";
 import { ProductCard, UpdatedAtContext } from "@/components/products/product-card";
@@ -39,12 +38,6 @@ const PRODUCTS_URL = SITE_URL + "/products";
 const PRODUCTS_TITLE = "Digital Subscriptions & Software — Digital Platform";
 const PRODUCTS_DESC = "Live catalogue of premium subscriptions, AI tools, software licenses and gift cards. Updated daily from our stock sheet. DM for live pricing.";
 
-function availabilityToSchema(a: Availability): string {
-  if (a === "out") return "https://schema.org/OutOfStock";
-  if (a === "limited") return "https://schema.org/LimitedAvailability";
-  return "https://schema.org/InStock";
-}
-
 export const Route = createFileRoute("/products")({
   head: ({ loaderData }: { loaderData?: { products?: SheetProduct[] } }) => {
     const items = loaderData?.products?.slice(0, 20) ?? [];
@@ -62,14 +55,7 @@ export const Route = createFileRoute("/products")({
           name: p.name + (p.plan ? ` — ${p.plan}` : ""),
           category: p.category,
           brand: { "@type": "Brand", name: "Digital Platform" },
-          offers: {
-            "@type": "Offer",
-            availability: availabilityToSchema(p.availability),
-            priceCurrency: "INR",
-            price: "0",
-            url: PRODUCTS_URL,
-            seller: { "@id": ORG_ID },
-          },
+
         },
       })),
     };
@@ -83,6 +69,7 @@ export const Route = createFileRoute("/products")({
         { property: "og:type", content: "website" },
         { property: "og:image", content: OG_IMAGE },
         { property: "og:image:alt", content: "Digital Platform — live product catalogue" },
+        { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: PRODUCTS_TITLE },
         { name: "twitter:description", content: PRODUCTS_DESC },
         { name: "twitter:image", content: OG_IMAGE },
@@ -399,9 +386,7 @@ function Products() {
               <div className="grid gap-3 sm:gap-4 lg:gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
-                    <TiltCard max={4}>
-                      <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
-                    </TiltCard>
+                    <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
                   </ErrorBoundary>
                 ))}
               </div>
