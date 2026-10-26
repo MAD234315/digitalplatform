@@ -1,4 +1,4 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { reportLovableError } from "./lovable-error-reporting";
 
@@ -8,7 +8,8 @@ import { reportLovableError } from "./lovable-error-reporting";
  * (not in __root.tsx) avoids circular imports and lets any route reuse them.
  */
 
-export function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+export function DefaultErrorComponent({ error: rawError, reset }: ErrorComponentProps) {
+  const error = rawError instanceof Error ? rawError : new Error(String(rawError));
   console.error(error);
   const router = useRouter();
   useEffect(() => {

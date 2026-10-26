@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, type ErrorComponentProps } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -112,7 +112,8 @@ export const Route = createFileRoute("/products")({
   notFoundComponent: ProductsNotFound,
 });
 
-function ProductsError({ error, reset }: { error: Error; reset: () => void }) {
+function ProductsError({ error: rawError, reset }: ErrorComponentProps) {
+  const error = rawError instanceof Error ? rawError : new Error(String(rawError));
   console.error(error);
   return (
     <PageShell>
