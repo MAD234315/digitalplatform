@@ -1,4 +1,5 @@
-- [ ] Inspect reference cards and details.
-- [ ] Update catalogue cards only and add separate product details URLs.
-- [ ] Verify direct URLs, gallery, no-price presentation, and WhatsApp messages.
-- [ ] Apply required dependency security fixes and verify the app.
+- [x] Inspect reference cards and details.
+- [x] Update catalogue cards only and add separate product details URLs.
+- [x] Verify direct URLs, gallery, no-price presentation, and WhatsApp messages.
+- [x] Apply required dependency security fixes and verify the app.
+- [ ] Add the offer banner management card to the admin console (upload photo/video, headline, CTA, on-off switch).

@@ -7,3 +7,4 @@ type: constraint
 - Match the supplied Full Shop Flow Preview's product cards and details, without redesigning other pages, header, footer, search, filters, timer, navigation, or admin functionality.
 - Use existing catalogue information only; do not invent products, descriptions, stock quantities, sales counts, or images.
 - Each product needs a separate working details URL that survives direct opening and refresh.
+- Catalogue grid shows two product cards side by side on phones and four across on laptops.

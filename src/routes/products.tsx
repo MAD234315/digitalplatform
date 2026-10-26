@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, type ErrorComponentProps } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -112,7 +112,8 @@ export const Route = createFileRoute("/products")({
   notFoundComponent: ProductsNotFound,
 });
 
-function ProductsError({ error, reset }: { error: Error; reset: () => void }) {
+function ProductsError({ error: rawError, reset }: ErrorComponentProps) {
+  const error = rawError instanceof Error ? rawError : new Error(String(rawError));
   console.error(error);
   return (
     <PageShell>
@@ -383,7 +384,7 @@ function Products() {
         ) : (
           <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
             <UpdatedAtContext.Provider value={dataUpdatedAt}>
-              <div className="grid gap-3 sm:gap-4 lg:gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 lg:gap-5">
                 {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
                     <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
