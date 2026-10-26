@@ -266,6 +266,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_active_offer_banner_object: {
+        Args: { obj_name: string }
+        Returns: boolean
+      }
       is_published_proof_object: { Args: { _name: string }; Returns: boolean }
     }
     Enums: {

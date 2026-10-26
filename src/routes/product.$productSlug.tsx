@@ -69,7 +69,7 @@ function ProductDetails() {
           <p className={`shop-stock mt-3 ${product.availability === "out" ? "shop-stock-out" : product.availability === "limited" ? "shop-stock-low" : "shop-stock-available"}`}>{product.availability === "out" ? "Out of stock" : product.availability === "limited" ? "Limited stock" : "In stock"}</p>
           {description && <section className="mt-6"><h2 className="shop-section-heading">Description &amp; features</h2><p className="mt-3 whitespace-pre-wrap break-words text-sm text-muted-foreground">{description}</p></section>}
           {fields.length > 0 && <section className="mt-6"><h2 className="shop-section-heading">Product information</h2><dl className="shop-info-list mt-3">{fields.map(({ label, value, icon: Icon }) => <div key={label} className="shop-info-row"><Icon size={18} aria-hidden="true" /><div className="min-w-0"><dt className="text-sm font-semibold">{label}</dt><dd className="break-words text-sm text-muted-foreground">{value}</dd></div></div>)}</dl></section>}
-          <div className="mt-6 flex"><PricingEnquiry name={product.name} /></div>
+          <div className="mt-6 flex"><PricingEnquiry name={product.name} soldOut={product.availability === "out"} /></div>
         </div>
         {expanded && <div role="dialog" aria-modal="true" aria-label={`${name} artwork`} className="shop-artwork-dialog fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setExpanded(false)} onKeyDown={(e) => { if (e.key === "Escape") setExpanded(false); }}><div className="w-full max-w-3xl"><ProductTile product={product} large /><Button autoFocus variant="outline" className="mt-4 min-h-11 w-full" onClick={() => setExpanded(false)}>Close</Button></div></div>}
       </div>
