@@ -6,9 +6,9 @@ import { pricingEnquiryUrl } from "@/lib/product-presentation";
 export function PricingEnquiry({ name, onClick, soldOut = false }: { name: string; onClick?: () => void; soldOut?: boolean }) {
   if (soldOut) {
     return (
-      <span className="shop-whatsapp-button shop-whatsapp-sold-out inline-flex h-auto min-h-11 min-w-0 flex-1 items-center justify-center gap-2 whitespace-normal px-3 py-2.5 text-xs" aria-disabled="true" title="Sold out — enquiries on WhatsApp are paused for this product">
+      <span className="shop-whatsapp-button shop-whatsapp-sold-out inline-flex h-auto min-h-11 min-w-0 flex-1 items-center justify-center gap-2 whitespace-normal px-3 py-2.5 text-xs" aria-disabled="true" title="Sold out — WhatsApp enquiries are paused for this product">
         <WaGlyph />
-        <span>Sold out</span>
+        <span>DM on WhatsApp</span>
       </span>
     );
   }
