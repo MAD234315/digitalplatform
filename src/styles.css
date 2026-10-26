@@ -561,6 +561,7 @@ body {
 .shop-stock-out { color: var(--shop-muted-soft); }
 .shop-whatsapp-button { background: var(--whatsapp); color: var(--whatsapp-foreground); border-radius: 10px; }
 .shop-whatsapp-button:hover { background: var(--whatsapp); }
+.shop-whatsapp-sold-out { background: var(--muted); color: var(--muted-foreground); opacity: 0.75; cursor: not-allowed; border-radius: 10px; }
 .shop-cart-symbol { background: var(--shop-card); border-color: var(--shop-line); color: var(--shop-muted); border-radius: 10px; }
 .shop-cart-symbol:hover { background: var(--shop-card); color: var(--shop-text); }
 .shop-detail-heading { font-size: 18px; font-weight: 800; }
