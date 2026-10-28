@@ -9,6 +9,11 @@ export const Route = createFileRoute("/setup")({
   head: () => ({
     meta: [
       { title: "Setup — Digital Platform" },
+      { name: "description", content: "Get started with Digital Platform administrator setup." },
+      { property: "og:title", content: "Setup — Digital Platform" },
+      { property: "og:description", content: "Get started with Digital Platform administrator setup." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

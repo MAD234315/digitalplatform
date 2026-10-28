@@ -2,6 +2,6 @@
 - [x] Update catalogue cards only and add separate product details URLs.
 - [x] Verify direct URLs, gallery, no-price presentation, and WhatsApp messages.
 - [x] Apply required dependency security fixes and verify the app.
-- [ ] Add the offer banner management card to the admin console (upload photo/video, headline, CTA, on-off switch).
+- [x] Add the offer banner management card to the admin console (upload photo/video, headline, CTA, on-off switch).
 - [ ] Verify signed-in banner upload, save and homepage read-back (waiting for the user to sign in to the preview).
-- [ ] Recheck sold-out WhatsApp buttons and the mobile/laptop catalogue grid.
+- [x] Recheck sold-out WhatsApp buttons and the mobile/laptop catalogue grid.

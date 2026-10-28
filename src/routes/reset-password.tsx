@@ -8,6 +8,11 @@ export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
       { title: "Reset password — Digital Platform Admin" },
+      { name: "description", content: "Recover access to your Digital Platform administrator account." },
+      { property: "og:title", content: "Reset password — Digital Platform Admin" },
+      { property: "og:description", content: "Recover access to your Digital Platform administrator account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

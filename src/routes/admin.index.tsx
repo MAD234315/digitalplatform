@@ -64,6 +64,11 @@ export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
       { title: "Admin — Digital Platform" },
+      { name: "description", content: "Manage Digital Platform catalogue, proofs and homepage offers." },
+      { property: "og:title", content: "Admin — Digital Platform" },
+      { property: "og:description", content: "Manage Digital Platform catalogue, proofs and homepage offers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

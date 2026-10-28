@@ -26,7 +26,12 @@ export const Route = createFileRoute("/admin/diagnostics")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Diagnostics — Admin" },
+      { title: "Admin Diagnostics — Digital Platform" },
+      { name: "description", content: "Check Digital Platform service health and administrator access." },
+      { property: "og:title", content: "Admin Diagnostics — Digital Platform" },
+      { property: "og:description", content: "Check Digital Platform service health and administrator access." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
