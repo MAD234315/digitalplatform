@@ -9,7 +9,11 @@ import { claimFirstAdmin, getAdminBootstrapStatus, getMyRole } from "@/lib/admin
 export const Route = createFileRoute("/admin/setup")({
   head: () => ({
     meta: [
-      { title: "Admin Setup — Claim First Admin" },
+      { title: "First Admin Setup — Digital Platform" },
+      { property: "og:title", content: "First Admin Setup — Digital Platform" },
+      { property: "og:description", content: "One-time setup for the first Digital Platform administrator." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "One-time setup to claim the first admin role for this site." },
       { name: "robots", content: "noindex, nofollow" },
     ],

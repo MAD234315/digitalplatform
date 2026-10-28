@@ -11,6 +11,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { hasBackendConfig, requireBackendAuth, serverPublicClient } from "@/lib/lovable-cloud-auth";
 import type { Database } from "@/integrations/supabase/types";
+import { offerBannerSchema } from "@/lib/offer-banner";
 
 // ---------- Shared types ----------
 export type ProofRecord = {
@@ -1013,15 +1014,17 @@ export const getOfferBanner = createServerFn({ method: "GET" }).handler(async ()
   };
 });
 
-const offerBannerSchema = z.object({
-  enabled: z.boolean(),
-  mediaType: z.enum(["image", "video"]),
-  mediaPath: z.string().min(1).nullable(),
-  headline: z.string().max(120).nullable(),
-  subline: z.string().max(240).nullable(),
-  ctaText: z.string().max(60).nullable(),
-  ctaLink: z.string().max(500).nullable(),
-});
+/** Admin read includes disabled drafts, which the public read deliberately excludes. */
+export const getAdminOfferBanner = createServerFn({ method: "GET" })
+  .middleware([requireBackendAuth])
+  .handler(async ({ context }): Promise<OfferBanner | null> => {
+    await assertAdmin(context);
+    const { data, error } = await context.supabase.from("offer_banner").select("*").eq("id", 1).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) return null;
+    const row = data as { id: number; enabled: boolean; media_type: string; media_path: string | null; headline: string | null; subline: string | null; cta_text: string | null; cta_link: string | null; updated_at: string };
+    return { id: row.id, enabled: row.enabled, mediaType: row.media_type === "video" ? "video" : "image", mediaPath: row.media_path, mediaUrl: await signBannerUrl(context.supabase, row.media_path), headline: row.headline, subline: row.subline, ctaText: row.cta_text, ctaLink: row.cta_link, updatedAt: row.updated_at };
+  });
 
 /** Admin-only: update the homepage offer banner settings. */
 export const upsertOfferBanner = createServerFn({ method: "POST" })
@@ -1037,9 +1040,6 @@ export const upsertOfferBanner = createServerFn({ method: "POST" })
       .eq("id", 1)
       .maybeSingle();
     const oldPath = (existing as { media_path?: string | null } | null)?.media_path;
-    if (oldPath && oldPath !== data.mediaPath) {
-      await context.supabase.storage.from("offer-banners").remove([oldPath]).catch(() => {});
-    }
 
     const { error } = await context.supabase.from("offer_banner").upsert(
       {
@@ -1055,5 +1055,9 @@ export const upsertOfferBanner = createServerFn({ method: "POST" })
       { onConflict: "id" },
     );
     if (error) throw new Error(error.message);
+    // Never delete the currently saved file before its replacement is committed.
+    if (oldPath && oldPath !== data.mediaPath) {
+      await context.supabase.storage.from("offer-banners").remove([oldPath]).catch(() => {});
+    }
     return { ok: true };
   });

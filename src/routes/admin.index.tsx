@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
+import { OfferBannerCard } from "@/components/admin/offer-banner-card";
 import {
   getMyRole,
   getAdminBootstrapStatus,
@@ -63,6 +64,11 @@ export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
       { title: "Admin — Digital Platform" },
+      { name: "description", content: "Manage Digital Platform catalogue, proofs and homepage offers." },
+      { property: "og:title", content: "Admin — Digital Platform" },
+      { property: "og:description", content: "Manage Digital Platform catalogue, proofs and homepage offers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -1184,6 +1190,7 @@ function WebsitePanel() {
   return (
     <div className="space-y-6">
       <WebsiteStatusCard />
+      <OfferBannerCard />
       <PremiumCard>
         <div className="flex items-start gap-3">
           <span className="grid h-10 w-10 place-items-center rounded-xl border border-amber/40 bg-amber/10 text-amber">
@@ -1515,7 +1522,6 @@ function FuturePanel() {
     { title: "Analytics", desc: "Track visits, top products and conversions." },
     { title: "Orders", desc: "Log manual orders and export reports." },
     { title: "Team", desc: "Invite moderators with limited access." },
-    { title: "Announcements", desc: "Push a homepage banner from the dashboard." },
   ];
   return (
     <div className="grid gap-4 sm:grid-cols-2">
