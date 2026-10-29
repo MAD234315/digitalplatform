@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ShoppingCart } from "lucide-react";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { Button } from "@/components/ui/button";
-import { ProductTile } from "./product-tile";
+import { ProductArtwork } from "./product-artwork";
 import { PricingEnquiry } from "./pricing-enquiry";
 import { productSlug, withoutPricing } from "@/lib/product-presentation";
 
@@ -22,7 +22,7 @@ export const ProductCard = memo(function ProductCard({ p, onView }: {
   return (
     <article id={`product-${p.id}`} className="shop-product-card relative flex h-full flex-col overflow-hidden scroll-mt-32">
       <Link to="/product/$productSlug" params={{ productSlug: slug }} onClick={() => onView?.(p)} className="block flex-1" aria-label={`View details for ${name}`}>
-        <ProductTile product={p} />
+        <ProductArtwork product={p} className="rounded-t-[15px]" />
         <div className="shop-product-body">
           <h3 className="shop-product-name">{name}</h3>
           {details && <p className="shop-product-meta">{details}</p>}
