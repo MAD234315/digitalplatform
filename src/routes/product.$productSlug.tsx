@@ -3,7 +3,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Clock, Layers, Monitor, ShieldCheck, Tag } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
-import { ProductTile } from "@/components/products/product-tile";
+import { ProductArtwork } from "@/components/products/product-artwork";
 import { PricingEnquiry } from "@/components/products/pricing-enquiry";
 import { getSheetProducts } from "@/lib/sheet-products.functions";
 import { productSlug, withoutPricing } from "@/lib/product-presentation";
@@ -60,8 +60,8 @@ function ProductDetails() {
           <div><p className="shop-detail-heading">Product details</p><p className="text-xs text-muted-foreground">Digital Platform</p></div>
         </header>
         <section aria-label={`${name} image gallery`}>
-          <Button variant="ghost" className="block h-auto w-full overflow-hidden rounded-2xl p-0" onClick={() => setExpanded(true)} aria-label={`Enlarge ${name} artwork`}><ProductTile product={product} large /></Button>
-          <div className="mt-3 flex gap-2"><Button variant="outline" className="h-14 w-20 overflow-hidden p-0" aria-label={`View ${name} artwork`} aria-pressed="true" onClick={() => setExpanded(true)}><ProductTile product={product} /></Button></div>
+          <Button variant="ghost" className="block h-auto w-full overflow-hidden rounded-2xl p-0" onClick={() => setExpanded(true)} aria-label={`Enlarge ${name} artwork`}><ProductArtwork product={product} size="large" /></Button>
+          <div className="mt-3 flex gap-2"><Button variant="outline" className="h-14 w-20 overflow-hidden p-0" aria-label={`View ${name} artwork`} aria-pressed="true" onClick={() => setExpanded(true)}><ProductArtwork product={product} size="thumb" /></Button></div>
         </section>
         <div className="pt-5">
           <h1 className="shop-detail-name">{name}</h1>
@@ -71,7 +71,7 @@ function ProductDetails() {
           {fields.length > 0 && <section className="mt-6"><h2 className="shop-section-heading">Product information</h2><dl className="shop-info-list mt-3">{fields.map(({ label, value, icon: Icon }) => <div key={label} className="shop-info-row"><Icon size={18} aria-hidden="true" /><div className="min-w-0"><dt className="text-sm font-semibold">{label}</dt><dd className="break-words text-sm text-muted-foreground">{value}</dd></div></div>)}</dl></section>}
           <div className="mt-6 flex"><PricingEnquiry name={product.name} soldOut={product.availability === "out"} /></div>
         </div>
-        {expanded && <div role="dialog" aria-modal="true" aria-label={`${name} artwork`} className="shop-artwork-dialog fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setExpanded(false)} onKeyDown={(e) => { if (e.key === "Escape") setExpanded(false); }}><div className="w-full max-w-3xl"><ProductTile product={product} large /><Button autoFocus variant="outline" className="mt-4 min-h-11 w-full" onClick={() => setExpanded(false)}>Close</Button></div></div>}
+        {expanded && <div role="dialog" aria-modal="true" aria-label={`${name} artwork`} className="shop-artwork-dialog fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setExpanded(false)} onKeyDown={(e) => { if (e.key === "Escape") setExpanded(false); }}><div className="w-full max-w-3xl"><ProductArtwork product={product} size="large" /><Button autoFocus variant="outline" className="mt-4 min-h-11 w-full" onClick={() => setExpanded(false)}>Close</Button></div></div>}
       </div>
     </PageShell>
   );
