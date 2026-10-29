@@ -101,7 +101,7 @@ export function brandMark(name: string): string {
   // "WINDOWS10" reads better as "WINDOWS 10" when digits end the brand name.
   if (picked.length === 1) {
     const split = /^([A-Z]{4,})(\d{1,3})$/.exec(picked[0]);
-    if (split) picked.push(split[2]);
+    if (split) picked.splice(0, 1, split[1], split[2]);
   }
   if (!picked.length) return (name || "").replace(/[^A-Za-z]/g, "").slice(0, 2).toUpperCase();
   const mark = picked.join(" ").trim();
