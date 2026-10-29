@@ -20,7 +20,7 @@ export type ArtworkKey =
   | "ai-new";
 
 /** Number of gold emblems the artwork rotates between. */
-export const EMBLEM_COUNT = 8;
+export const EMBLEM_COUNT = 16;
 
 const EXACT_CATEGORY_KEYS: Record<string, ArtworkKey> = {
   "ENTERTAINMENT TOOLS": "entertainment",
@@ -83,6 +83,9 @@ function isWordy(token: string): boolean {
   return !STOP_WORDS.has(token.toUpperCase());
 }
 
+/** Longest wordmark that still fits the artwork. */
+const MAX_MARK = 20;
+
 /**
  * Short brand wordmark for the artwork, e.g. "Netflix Premium 1 Month" ->
  * "NETFLIX". Keeps no digits, currency symbols or price fragments.
@@ -94,9 +97,15 @@ export function brandMark(name: string): string {
     .filter(Boolean)
     .filter(isWordy)
     .map((w) => w.toUpperCase());
-  const mark = words.slice(0, 2).join(" ").trim();
-  if (!mark) return (name || "").replace(/[^A-Za-z]/g, "").slice(0, 2).toUpperCase();
-  return mark.length > 18 ? mark.slice(0, 18).trim() : mark;
+  const picked = words.slice(0, 2);
+  // "WINDOWS10" reads better as "WINDOWS 10" when digits end the brand name.
+  if (picked.length === 1) {
+    const split = /^([A-Z]{4,})(\d{1,3})$/.exec(picked[0]);
+    if (split) picked.push(split[2]);
+  }
+  if (!picked.length) return (name || "").replace(/[^A-Za-z]/g, "").slice(0, 2).toUpperCase();
+  const mark = picked.join(" ").trim();
+  return mark.length > MAX_MARK ? picked[0].slice(0, MAX_MARK) : mark;
 }
 
 /** Stable 0..EMBLEM_COUNT-1 index so a product always keeps the same emblem. */

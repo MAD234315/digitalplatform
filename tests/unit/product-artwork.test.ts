@@ -59,6 +59,9 @@ describe("product artwork", () => {
     expect(brandMark("CHATGPT PLUS")).toBe("CHATGPT");
     expect(brandMark("Twitter ( X )")).toBe("TWITTER");
     expect(brandMark("BOLT.NEW")).toBe("BOLT NEW");
+    expect(brandMark("Windows10 Pro")).toBe("WINDOWS 10");
+    expect(brandMark("Infosys Certificates")).toBe("INFOSYS CERTIFICATES");
+    expect(brandMark("PDF2GO")).toBe("PDF2GO");
     expect(brandMark("")).toBe("");
   });
 
