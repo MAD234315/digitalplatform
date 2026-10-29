@@ -47,6 +47,40 @@ const EMBLEMS: ReactNode[] = [
     <path d="M24 7v9M24 32v9M7 24h9M32 24h9M12 12l6.4 6.4M29.6 29.6L36 36M36 12l-6.4 6.4M18.4 29.6L12 36" />
     <circle cx="24" cy="24" r="3.4" fill="currentColor" stroke="none" />
   </>,
+  <>
+    <circle cx="24" cy="24" r="13" />
+    <path d="M24 15v18M15 24h18" />
+  </>,
+  <>
+    <path d="M24 8.5 L39.5 24 L24 39.5 L8.5 24 Z" />
+    <path d="M24 17 L31 24 L24 31 L17 24 Z" />
+  </>,
+  <>
+    <path d="M9 32h30" />
+    <path d="M14 32a10 10 0 0 1 20 0" />
+    <path d="M24 11v5M12 17l3 3M36 17l-3 3" />
+  </>,
+  <>
+    <path d="M15 34V20M24 34V12M33 34V25" />
+    <path d="M10 38h28" />
+  </>,
+  <>
+    <circle cx="24" cy="18" r="7" />
+    <circle cx="18" cy="28" r="7" />
+    <circle cx="30" cy="28" r="7" />
+  </>,
+  <>
+    <rect x="15" y="22" width="18" height="15" rx="3" />
+    <path d="M19 22v-4a5 5 0 0 1 10 0v4" />
+  </>,
+  <>
+    <path d="M11 31a13 13 0 0 1 26 0" />
+    <path d="M17 31a7 7 0 0 1 14 0" />
+    <circle cx="24" cy="31" r="2" fill="currentColor" stroke="none" />
+  </>,
+  <>
+    <path d="M14 11h20L24 24 34 37H14l10-13z" />
+  </>,
 ];
 
 /**
