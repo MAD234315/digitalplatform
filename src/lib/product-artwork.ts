@@ -39,7 +39,7 @@ const EXACT_CATEGORY_KEYS: Record<string, ArtworkKey> = {
 const KEYWORD_KEYS: [RegExp, ArtworkKey][] = [
   [/MUSIC|AUDIO|SONG/i, "music"],
   [/GIFT|VOUCHER CARD/i, "gift-cards"],
-  [/EDIT|DESIGN|VIDEO/i, "editing"],
+  [/EDIT|DESIGN|VIDEO|STOCK|FOOTAGE|PHOTO/i, "editing"],
   [/DEVELOP|CODE|DEVOPS/i, "developer"],
   [/CREDIT|TOKEN|VOUCHER/i, "ai-credits"],
   [/MINI|TRIAL/i, "mini-packs"],
