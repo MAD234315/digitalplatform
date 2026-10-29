@@ -40,20 +40,18 @@ describe("product artwork", () => {
   });
 
   it("keeps pricing out of the artwork wordmark", () => {
-    const names = [
-      "LAKME SALOON 1500/- Gift Card",
-      "GOOGLE AI PRO (GEMINI Ai + 5TB......)",
-      "PDF2GO(480 credits)",
-      "Confluent Cloud(500 Dollars Credit)",
-      "₹99 Trial Pack",
+    const cases: [string, string][] = [
+      ["LAKME SALOON 1500/- Gift Card", "LAKME SALOON"],
+      ["GOOGLE AI PRO (GEMINI Ai + 5TB......)", "GOOGLE AI"],
+      ["PDF2GO(480 credits)", "PDF2GO"],
+      ["Confluent Cloud(500 Dollars Credit)", "CONFLUENT CLOUD"],
+      ["₹99 Trial Pack", "TRIAL"],
     ];
-    for (const name of names) {
-      const mark = brandMark(name);
-      expect(mark).not.toMatch(/[0-9]/);
+    for (const [name, mark] of cases) {
+      expect(brandMark(name)).toBe(mark);
       expect(mark).not.toMatch(/[₹$€£]/);
-      expect(mark).not.toContain("CREDIT");
+      expect(mark).not.toMatch(/\b(1500|480|500|99|5TB|DOLLARS|CREDIT|RUPEES)\b/);
     }
-    expect(brandMark("LAKME SALOON 1500/- Gift Card")).toBe("LAKME SALOON");
   });
 
   it("shows a short readable brand wordmark", () => {

@@ -65,7 +65,11 @@ const STOP_WORDS = new Set([
   "GIFT","GIFTS","CARD","CARDS","WITH","FOR","THE","AND","OF","IN","AT","PER",
   "OFFERS","OFFER","DEAL","DEALS","SALE","SALES","CODE","CODES","KEY","KEYS",
   "ACCOUNT","ACCOUNTS","SEAT","SEATS","USER","USERS","DEVICE","DEVICES",
-  "UNLIMITED","UNLIMTED","YEARLY","WARRANTY","WARRANTIED","WARRANTIED)",
+  "UNLIMITED","UNLIMTED","YEARLY","WARRANTY","WARRANTIED",
+  // Plan tiers never belong in a wordmark: "Netflix Premium" reads as "Netflix".
+  "PREMIUM","STANDARD","BASIC","PRO","PLUS","BUSINESS","ELITE","GOLD","MAX","MIN",
+  "CORE","STARTER","ENTERPRISE","CREATOR","TEAM","TEAMS","ULTRA","FAMILY",
+  "INDIVIDUAL","PERSONAL","STUDENT","SINGLE","DOUBLE","SUSCRIPTION",
 ]);
 
 /** Words that only carry a price or a quantity — never shown on artwork. */
