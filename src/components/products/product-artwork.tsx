@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { BACKDROPS } from "@/assets/product-art";
 import { artworkFor } from "@/lib/product-artwork";
-import type { Product } from "@/lib/products";
+import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { cn } from "@/lib/utils";
 
 /** Gold emblems rotated deterministically per product name. */
@@ -59,7 +59,7 @@ export function ProductArtwork({
   size = "card",
   className,
 }: {
-  product: Product;
+  product: SheetProduct;
   size?: "card" | "large" | "thumb";
   className?: string;
 }) {
