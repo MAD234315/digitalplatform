@@ -5,3 +5,5 @@
 - [x] Add the offer banner management card to the admin console (upload photo/video, headline, CTA, on-off switch).
 - [ ] Verify signed-in banner upload, save and homepage read-back (waiting for the user to sign in to the preview).
 - [x] Recheck sold-out WhatsApp buttons and the mobile/laptop catalogue grid.
+- [ ] Give every product card distinct artwork that matches its details page.
+- [ ] Verify updated artwork on mobile and laptop, details and placeholder states.
