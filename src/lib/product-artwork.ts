@@ -7,6 +7,9 @@
  */
 
 /** Backdrop artwork keys — one per themed section of the catalogue. */
+import { productSlug } from "./product-presentation";
+import { ARTWORK_CATALOGUE } from "./product-artwork-catalogue";
+
 export type ArtworkKey =
   | "entertainment"
   | "gift-cards"
@@ -132,4 +135,26 @@ export function artworkFor(product: { name: string; category?: string }): Produc
     mark: brandMark(product.name),
     emblem: emblemIndexFor(product.name),
   };
+}
+
+export type ArtworkProductIdentity = {
+  id?: string;
+  name: string;
+  category: string;
+  plan: string;
+  validity: string;
+  type: string;
+};
+
+/** Separate identical sheet rows without making normal artwork depend on row order. */
+export function pictureKeyForIdentity(slug: string, rowId?: string): string | null {
+  const rows = ARTWORK_CATALOGUE[slug];
+  if (!rows) return null;
+  if (rows.length === 1) return slug;
+  const duplicateId = rowId && rows.includes(rowId) ? rowId : rows[0];
+  return `${slug}:${duplicateId}`;
+}
+
+export function pictureKeyFor(product: ArtworkProductIdentity): string | null {
+  return pictureKeyForIdentity(productSlug(product), product.id);
 }

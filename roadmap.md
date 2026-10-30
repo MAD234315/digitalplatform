@@ -3,5 +3,7 @@
 - [x] Verify direct URLs, gallery, no-price presentation, and WhatsApp messages.
 - [x] Apply required dependency security fixes and verify the app.
 - [x] Add the offer banner management card to the admin console (upload photo/video, headline, CTA, on-off switch).
-- [ ] Verify signed-in banner upload, save and homepage read-back (waiting for the user to sign in to the preview).
+- [ ] Verify signed-in banner upload, save and homepage read-back (blocked: no admin session; automatic sign-in could not match the user's account).
 - [x] Recheck sold-out WhatsApp buttons and the mobile/laptop catalogue grid.
+- [x] Give every product card distinct artwork that matches its details page.
+- [ ] Verify updated artwork on mobile and laptop, details and placeholder states.
