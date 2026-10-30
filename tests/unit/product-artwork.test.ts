@@ -5,7 +5,9 @@ import {
   brandMark,
   emblemIndexFor,
   EMBLEM_COUNT,
+  pictureKeyForIdentity,
 } from "@/lib/product-artwork";
+import { ARTWORK_CATALOGUE } from "@/lib/product-artwork-catalogue";
 
 /** Section headings exactly as they appear in the live catalogue sheet. */
 const LIVE_CATEGORIES = [
@@ -22,6 +24,22 @@ const LIVE_CATEGORIES = [
 ];
 
 describe("product artwork", () => {
+  it("assigns a different picture to every one of the 248 current catalogue cards", () => {
+    const keys = Object.entries(ARTWORK_CATALOGUE).flatMap(([slug, rows]) => rows.map((id) => pictureKeyForIdentity(slug, id)));
+    expect(keys).toHaveLength(248);
+    expect(keys).not.toContain(null);
+    expect(new Set(keys).size).toBe(248);
+  });
+
+  it("keeps normal product artwork unchanged when spreadsheet row positions change", () => {
+    expect(pictureKeyForIdentity("sonyliv-1j1pjuj", "p-2")).toBe("sonyliv-1j1pjuj");
+    expect(pictureKeyForIdentity("sonyliv-1j1pjuj", "p-999")).toBe("sonyliv-1j1pjuj");
+    expect(pictureKeyForIdentity("sonyliv-km3lr3", "p-3")).not.toBe(pictureKeyForIdentity("sonyliv-1j1pjuj", "p-2"));
+  });
+
+  it("uses a placeholder for products without a generated picture", () => {
+    expect(pictureKeyForIdentity("new-unknown-product", "p-249")).toBeNull();
+  });
   it("gives every live catalogue section its own backdrop", () => {
     for (const category of LIVE_CATEGORIES) {
       expect(artworkKeyForCategory(category)).not.toBeNull();

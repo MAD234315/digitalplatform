@@ -1,93 +1,12 @@
-import type { ReactNode } from "react";
-import { BACKDROPS } from "@/assets/product-art";
-import { artworkFor } from "@/lib/product-artwork";
+import { useEffect, useState } from "react";
+import { ImageIcon } from "lucide-react";
+import { PRODUCT_PICTURES } from "@/assets/product-art/pictures";
+import { brandMark, pictureKeyFor } from "@/lib/product-artwork";
+import { withoutPricing } from "@/lib/product-presentation";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { cn } from "@/lib/utils";
 
-/** Gold emblems rotated deterministically per product name. */
-const EMBLEMS: ReactNode[] = [
-  <>
-    <circle cx="24" cy="24" r="13" />
-    <circle cx="24" cy="24" r="6.5" />
-  </>,
-  <>
-    <polygon points="24,8.5 37.5,16.25 37.5,31.75 24,39.5 10.5,31.75 10.5,16.25" />
-    <circle cx="24" cy="24" r="3.2" fill="currentColor" stroke="none" />
-  </>,
-  <>
-    <path d="M24 9 L38.5 36.5 L9.5 36.5 Z" />
-    <circle cx="24" cy="28.5" r="2.6" fill="currentColor" stroke="none" />
-  </>,
-  <>
-    <path d="M24 8.5 L39.5 24 L24 39.5 L8.5 24 Z" />
-    <path d="M15 24 H33" />
-  </>,
-  <>
-    <path d="M11 21 L24 12 L37 21" />
-    <path d="M11 29 L24 20 L37 29" />
-    <path d="M11 37 L24 28 L37 37" />
-  </>,
-  <>
-    <circle cx="14" cy="14" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="24" cy="14" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="34" cy="14" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="14" cy="24" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="24" cy="24" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="34" cy="24" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="14" cy="34" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="24" cy="34" r="2.3" fill="currentColor" stroke="none" />
-    <circle cx="34" cy="34" r="2.3" fill="currentColor" stroke="none" />
-  </>,
-  <>
-    <path d="M9 19c5-7 9-7 14 0s9 7 15 0" />
-    <path d="M9 27c5-7 9-7 14 0s9 7 15 0" />
-    <path d="M9 35c5-7 9-7 14 0s9 7 15 0" />
-  </>,
-  <>
-    <path d="M24 7v9M24 32v9M7 24h9M32 24h9M12 12l6.4 6.4M29.6 29.6L36 36M36 12l-6.4 6.4M18.4 29.6L12 36" />
-    <circle cx="24" cy="24" r="3.4" fill="currentColor" stroke="none" />
-  </>,
-  <>
-    <circle cx="24" cy="24" r="13" />
-    <path d="M24 15v18M15 24h18" />
-  </>,
-  <>
-    <path d="M24 8.5 L39.5 24 L24 39.5 L8.5 24 Z" />
-    <path d="M24 17 L31 24 L24 31 L17 24 Z" />
-  </>,
-  <>
-    <path d="M9 32h30" />
-    <path d="M14 32a10 10 0 0 1 20 0" />
-    <path d="M24 11v5M12 17l3 3M36 17l-3 3" />
-  </>,
-  <>
-    <path d="M15 34V20M24 34V12M33 34V25" />
-    <path d="M10 38h28" />
-  </>,
-  <>
-    <circle cx="24" cy="18" r="7" />
-    <circle cx="18" cy="28" r="7" />
-    <circle cx="30" cy="28" r="7" />
-  </>,
-  <>
-    <rect x="15" y="22" width="18" height="15" rx="3" />
-    <path d="M19 22v-4a5 5 0 0 1 10 0v4" />
-  </>,
-  <>
-    <path d="M11 31a13 13 0 0 1 26 0" />
-    <path d="M17 31a7 7 0 0 1 14 0" />
-    <circle cx="24" cy="31" r="2" fill="currentColor" stroke="none" />
-  </>,
-  <>
-    <path d="M14 11h20L24 24 34 37H14l10-13z" />
-  </>,
-];
-
-/**
- * The picture on a product card and details page: the section's branded
- * backdrop, a gold emblem unique to the product, and the brand wordmark.
- * Falls back to a plain onyx placeholder when no backdrop matches.
- */
+/** Individual product illustration shared by cards, details, thumbnails and zoom. */
 export function ProductArtwork({
   product,
   size = "card",
@@ -97,48 +16,23 @@ export function ProductArtwork({
   size?: "card" | "large" | "thumb";
   className?: string;
 }) {
-  const art = artworkFor(product);
-  const backdrop = art.key ? BACKDROPS[art.key] : undefined;
-  const plan = product.plan?.trim();
+  const key = pictureKeyFor(product);
+  const picture = key ? PRODUCT_PICTURES[key] : undefined;
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [picture]);
+  const plan = withoutPricing(product.plan);
+  const name = withoutPricing(product.name) || "Product";
   return (
     <div
-      className={cn(
-        "shop-artwork",
-        size === "large" && "shop-artwork-large",
-        size === "thumb" && "shop-artwork-thumb",
-        className,
-      )}
-      data-category={art.key ?? "placeholder"}
+      className={cn("shop-artwork", size === "large" && "shop-artwork-large", size === "thumb" && "shop-artwork-thumb", className)}
+      data-artwork-key={key ?? "placeholder"}
     >
-      {backdrop ? (
-        <img
-          src={backdrop}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          width={512}
-          height={512}
-          className="shop-artwork-bg"
-        />
+      {picture && !failed ? (
+        <img src={picture} alt={`${name} artwork`} loading={size === "large" ? "eager" : "lazy"} width={320} height={320} className="shop-artwork-picture" onError={() => setFailed(true)} />
       ) : (
-        <span className="shop-artwork-placeholder" aria-hidden="true" />
+        <span className="shop-artwork-placeholder" role="img" aria-label={`${name} picture unavailable`}><ImageIcon aria-hidden="true" /></span>
       )}
-      <span className="shop-artwork-scrim" aria-hidden="true" />
-      <span className="shop-artwork-center">
-        <svg
-          className="shop-artwork-emblem"
-          viewBox="0 0 48 48"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.7}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          {EMBLEMS[art.emblem] ?? EMBLEMS[0]}
-        </svg>
-        <span className="shop-artwork-mark">{art.mark}</span>
-      </span>
+      <span className="shop-artwork-mark">{brandMark(product.name)}</span>
       {plan ? <span className="shop-plan-tag">{plan}</span> : null}
       {product.availability === "out" ? <span className="shop-sold-tag">Sold out</span> : null}
     </div>
