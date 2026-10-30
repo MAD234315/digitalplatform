@@ -8,10 +8,14 @@ import { PricingEnquiry } from "@/components/products/pricing-enquiry";
 import { getSheetProducts } from "@/lib/sheet-products.functions";
 import { productSlug, withoutPricing } from "@/lib/product-presentation";
 import { useState } from "react";
+import { ARTWORK_CATALOGUE } from "@/lib/product-artwork-catalogue";
 
 const catalogueQuery = queryOptions({ queryKey: ["sheet-products"], queryFn: () => getSheetProducts(), staleTime: 5 * 60_000 });
 
 export const Route = createFileRoute("/product/$productSlug")({
+  validateSearch: (search: Record<string, unknown>): { artworkRow?: string } => ({
+    artworkRow: typeof search.artworkRow === "string" ? search.artworkRow : undefined,
+  }),
   loader: async ({ context, params }) => {
     const data = await context.queryClient.ensureQueryData(catalogueQuery);
     if (data.error && !data.products.length) throw new Error("The catalogue is temporarily unavailable. Please try again.");
@@ -40,7 +44,10 @@ function ProductUnavailable({ retry }: { retry?: () => void }) {
 }
 
 function ProductDetails() {
-  const { product } = Route.useLoaderData();
+  const { product: loadedProduct } = Route.useLoaderData();
+  const { artworkRow } = Route.useSearch();
+  const rows = ARTWORK_CATALOGUE[productSlug(loadedProduct)];
+  const product = artworkRow && rows?.includes(artworkRow) ? { ...loadedProduct, id: artworkRow } : loadedProduct;
   const [expanded, setExpanded] = useState(false);
   const name = withoutPricing(product.name) || "Product";
   const description = withoutPricing(product.description);

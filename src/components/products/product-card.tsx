@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ProductArtwork } from "./product-artwork";
 import { PricingEnquiry } from "./pricing-enquiry";
 import { productSlug, withoutPricing } from "@/lib/product-presentation";
+import { pictureKeyFor } from "@/lib/product-artwork";
 
 // Preserved for the catalogue's existing provider and refresh logic.
 export const UpdatedAtContext = createContext<number>(0);
@@ -16,12 +17,14 @@ export const ProductCard = memo(function ProductCard({ p, onView }: {
   isLatest?: boolean;
 }) {
   const slug = productSlug(p);
+  const pictureKey = pictureKeyFor(p);
+  const search = pictureKey?.includes(":") ? { artworkRow: p.id } : {};
   const name = withoutPricing(p.name) || "Product";
   const details = [withoutPricing(p.plan), withoutPricing(p.validity)].filter(Boolean).join(" · ");
   const description = withoutPricing(p.description);
   return (
     <article id={`product-${p.id}`} className="shop-product-card relative flex h-full flex-col overflow-hidden scroll-mt-32">
-      <Link to="/product/$productSlug" params={{ productSlug: slug }} onClick={() => onView?.(p)} className="block flex-1" aria-label={`View details for ${name}`}>
+      <Link to="/product/$productSlug" params={{ productSlug: slug }} search={search} onClick={() => onView?.(p)} className="block flex-1" aria-label={`View details for ${name}`}>
         <ProductArtwork product={p} className="rounded-t-[15px]" />
         <div className="shop-product-body">
           <h3 className="shop-product-name">{name}</h3>
@@ -35,7 +38,7 @@ export const ProductCard = memo(function ProductCard({ p, onView }: {
       <div className="flex items-stretch gap-2 px-3 pb-3">
         <PricingEnquiry name={p.name} onClick={() => onView?.(p)} soldOut={p.availability === "out"} />
         <Button asChild variant="outline" size="icon" className="shop-cart-symbol h-11 w-11 shrink-0" title="View product details">
-          <Link to="/product/$productSlug" params={{ productSlug: slug }} onClick={() => onView?.(p)} aria-label={`View ${name} product details`}><ShoppingCart aria-hidden="true" /></Link>
+          <Link to="/product/$productSlug" params={{ productSlug: slug }} search={search} onClick={() => onView?.(p)} aria-label={`View ${name} product details`}><ShoppingCart aria-hidden="true" /></Link>
         </Button>
       </div>
     </article>

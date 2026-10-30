@@ -545,8 +545,7 @@ body {
 .shop-artwork-placeholder { position: absolute; inset: 0; display: grid; place-items: center; background: var(--shop-artwork-placeholder); color: var(--shop-muted); }
 .shop-artwork-placeholder > svg { width: 36px; height: 36px; }
 .shop-artwork-mark { position: absolute; left: 8px; top: 8px; max-width: calc(100% - 16px); padding: 4px 7px; border-radius: 4px; background: var(--shop-artwork-caption); color: var(--shop-artwork-text); font: 700 11px/1.3 var(--font-body); letter-spacing: 0; overflow-wrap: anywhere; }
-.shop-artwork-large { height: 260px; border-radius: 20px; }
-.shop-artwork-large { aspect-ratio: auto; height: auto; width: 100%; }
+.shop-artwork-large { aspect-ratio: auto; min-height: 260px; height: auto; width: 100%; border-radius: 20px; }
 .shop-artwork-large .shop-artwork-picture { max-height: 380px; object-fit: contain; }
 .shop-artwork-large .shop-artwork-mark { font-size: 14px; }
 .shop-artwork-thumb { height: 100%; width: 100%; }
