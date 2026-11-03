@@ -15,3 +15,4 @@
 - Keep shop visual tokens scoped to product cards and details so shared site styling stays unchanged.
 - Route error components must take `ErrorComponentProps` and normalize `error` (typed `unknown`) to an `Error` before use, because the router's `ErrorRouteComponent` type rejects narrower inline prop shapes.
 - Offer banner management lives in a focused admin component with authenticated draft reads; save settings before deleting replaced media so failed saves preserve the current banner.
+- Product artwork is generated as SVG from each product's identity (colours, pattern, wordmark, section icon), so it is sharp at any size and new sheet products get artwork automatically; details page shows a single picture.
