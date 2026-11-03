@@ -75,8 +75,8 @@ export function ProductArtwork({
         <rect width="600" height="600" fill={`url(#l${uid})`} />
         <text x="300" y="420" textAnchor="middle" fontSize={fontSize} fontWeight="800" fill="hsl(0 0% 100%)" letterSpacing="2" style={{ fontFamily: "inherit" }}>{mark}</text>
       </svg>
-      <span className="pointer-events-none absolute left-1/2 top-[34%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/20 p-[9%] backdrop-blur-sm">
-        <Icon className="h-auto w-[18cqw] min-w-6 text-primary-foreground" strokeWidth={1.6} aria-hidden="true" />
+      <span className="pointer-events-none absolute left-1/2 top-[34%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/20 p-[5cqw] backdrop-blur-sm">
+        <Icon style={{ width: "16cqw", height: "16cqw", color: "var(--shop-artwork-text)" }} strokeWidth={1.6} aria-hidden="true" />
       </span>
       {plan ? <span className="shop-plan-tag">{plan}</span> : null}
       {product.availability === "out" ? <span className="shop-sold-tag">Sold out</span> : null}
