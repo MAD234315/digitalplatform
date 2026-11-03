@@ -68,7 +68,6 @@ function ProductDetails() {
         </header>
         <section aria-label={`${name} image gallery`}>
           <Button variant="ghost" className="block h-auto w-full overflow-hidden rounded-2xl p-0" onClick={() => setExpanded(true)} aria-label={`Enlarge ${name} artwork`}><ProductArtwork product={product} size="large" /></Button>
-          <div className="mt-3 flex gap-2"><Button variant="outline" className="h-14 w-20 overflow-hidden p-0" aria-label={`View ${name} artwork`} aria-pressed="true" onClick={() => setExpanded(true)}><ProductArtwork product={product} size="thumb" /></Button></div>
         </section>
         <div className="pt-5">
           <h1 className="shop-detail-name">{name}</h1>
