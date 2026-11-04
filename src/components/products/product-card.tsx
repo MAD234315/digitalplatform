@@ -33,9 +33,9 @@ export const ProductCard = memo(function ProductCard({ p, onView }: {
           </p>
         </div>
       </Link>
-      <div className="flex items-stretch gap-1.5 px-2 pb-2">
+      <div className="flex items-stretch gap-1.5 px-1.5 pb-1.5">
         <PricingEnquiry name={p.name} onClick={() => onView?.(p)} soldOut={p.availability === "out"} />
-        <Button asChild variant="outline" size="icon" className="shop-cart-symbol h-9 w-9 shrink-0" title="View product details">
+        <Button asChild variant="outline" size="icon" className="shop-cart-symbol h-8 w-8 shrink-0" title="View product details">
           <Link to="/product/$productSlug" params={{ productSlug: slug }} search={search} onClick={() => onView?.(p)} aria-label={`View ${name} product details`}><ShoppingCart aria-hidden="true" /></Link>
         </Button>
       </div>
