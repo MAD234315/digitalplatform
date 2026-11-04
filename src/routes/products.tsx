@@ -384,7 +384,7 @@ function Products() {
         ) : (
           <ErrorBoundary boundary="products:grid" resetKeys={[active, stock, q]}>
             <UpdatedAtContext.Provider value={dataUpdatedAt}>
-              <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 lg:gap-5">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-4">
                 {filtered.map((p) => (
                   <ErrorBoundary key={p.id} boundary="products:card" fallback={null}>
                     <ProductCard p={p} onView={track} isLatest={latestIds.has(p.id)} />
