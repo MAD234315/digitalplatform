@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter, useCanGoBack } from "@tanstack/react-router";
 import { queryOptions } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Clock, Layers, Monitor, ShieldCheck, Tag } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
@@ -63,7 +63,7 @@ function ProductDetails() {
     <PageShell>
       <div className="shop-product-details mx-auto max-w-3xl px-5 pb-16 pt-28 sm:px-6 sm:pt-32">
         <header className="mb-5 flex items-center gap-3">
-          <Button asChild variant="outline" size="icon" className="h-11 w-11 shrink-0" aria-label="Back to catalogue"><Link to="/products"><ArrowLeft /></Link></Button>
+          <Button asChild variant="outline" size="icon" className="h-11 w-11 shrink-0" aria-label="Back to catalogue"><Link to="/products" onClick={(e) => { if (canGoBack) { e.preventDefault(); router.history.back(); } }}><ArrowLeft /></Link></Button>
           <div><p className="shop-detail-heading">Product details</p><p className="text-xs text-muted-foreground">Digital Platform</p></div>
         </header>
         <section aria-label={`${name} image gallery`}>
