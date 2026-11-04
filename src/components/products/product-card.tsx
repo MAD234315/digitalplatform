@@ -21,7 +21,6 @@ export const ProductCard = memo(function ProductCard({ p, onView }: {
   const search = pictureKey?.includes(":") ? { artworkRow: p.id } : {};
   const name = withoutPricing(p.name) || "Product";
   const details = [withoutPricing(p.plan), withoutPricing(p.validity)].filter(Boolean).join(" · ");
-  const description = withoutPricing(p.description);
   return (
     <article id={`product-${p.id}`} className="shop-product-card relative flex h-full flex-col overflow-hidden scroll-mt-32">
       <Link to="/product/$productSlug" params={{ productSlug: slug }} search={search} onClick={() => onView?.(p)} className="block flex-1" aria-label={`View details for ${name}`}>
