@@ -49,6 +49,8 @@ function ProductDetails() {
   const rows = ARTWORK_CATALOGUE[productSlug(loadedProduct)];
   const product = artworkRow && rows?.includes(artworkRow) ? { ...loadedProduct, id: artworkRow } : loadedProduct;
   const [expanded, setExpanded] = useState(false);
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
   const name = withoutPricing(product.name) || "Product";
   const description = withoutPricing(product.description);
   const fields = [
