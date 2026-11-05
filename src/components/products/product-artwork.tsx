@@ -28,7 +28,7 @@ function hash(text: string, seed: number): number {
 
 export function ProductArtwork({
   product, size = "card", className,
-}: { product: SheetProduct; size?: "card" | "large" | "thumb"; className?: string }) {
+}: { product: SheetProduct; size?: "card" | "large" | "thumb" | "detail"; className?: string }) {
   const uid = useId().replace(/:/g, "");
   const identity = productSlug(product) + "|" + product.name;
   const r = (n: number) => hash(identity, n);
@@ -49,7 +49,7 @@ export function ProductArtwork({
 
   return (
     <div
-      className={cn("shop-artwork", size === "large" && "shop-artwork-large", size === "thumb" && "shop-artwork-thumb", className)}
+      className={cn("shop-artwork", size === "large" && "shop-artwork-large", size === "thumb" && "shop-artwork-thumb", size === "detail" && "shop-artwork-detail", className)}
       data-artwork-key={key ?? "placeholder"}
       role="img"
       aria-label={`${name} artwork`}

@@ -68,13 +68,15 @@ function ProductDetails() {
           <Button asChild variant="outline" size="icon" className="h-11 w-11 shrink-0" aria-label="Back to catalogue"><Link to="/products" onClick={(e) => { if (canGoBack) { e.preventDefault(); router.history.back(); } }}><ArrowLeft /></Link></Button>
           <div><p className="shop-detail-heading">Product details</p><p className="text-xs text-muted-foreground">Digital Platform</p></div>
         </header>
-        <section aria-label={`${name} image gallery`}>
-          <Button variant="ghost" className="block h-auto w-full overflow-hidden rounded-2xl p-0" onClick={() => setExpanded(true)} aria-label={`Enlarge ${name} artwork`}><ProductArtwork product={product} size="large" /></Button>
+        <section aria-label={`${name} picture`} className="flex items-start gap-4">
+          <Button variant="ghost" className="block h-auto shrink-0 overflow-hidden rounded-[14px] p-0" onClick={() => setExpanded(true)} aria-label={`Enlarge ${name} artwork`}><ProductArtwork product={product} size="detail" /></Button>
+          <div className="min-w-0 pt-1">
+            <h1 className="shop-detail-name">{name}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{[withoutPricing(product.plan), withoutPricing(product.validity)].filter(Boolean).join(" · ")}</p>
+            <p className={`shop-stock mt-3 ${product.availability === "out" ? "shop-stock-out" : product.availability === "limited" ? "shop-stock-low" : "shop-stock-available"}`}>{product.availability === "out" ? "Out of stock" : product.availability === "limited" ? "Limited stock" : "In stock"}</p>
+          </div>
         </section>
-        <div className="pt-5">
-          <h1 className="shop-detail-name">{name}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{[withoutPricing(product.plan), withoutPricing(product.validity)].filter(Boolean).join(" · ")}</p>
-          <p className={`shop-stock mt-3 ${product.availability === "out" ? "shop-stock-out" : product.availability === "limited" ? "shop-stock-low" : "shop-stock-available"}`}>{product.availability === "out" ? "Out of stock" : product.availability === "limited" ? "Limited stock" : "In stock"}</p>
+        <div>
           {description && <section className="mt-6"><h2 className="shop-section-heading">Description &amp; features</h2><p className="mt-3 whitespace-pre-wrap break-words text-sm text-muted-foreground">{description}</p></section>}
           {fields.length > 0 && <section className="mt-6"><h2 className="shop-section-heading">Product information</h2><dl className="shop-info-list mt-3">{fields.map(({ label, value, icon: Icon }) => <div key={label} className="shop-info-row"><Icon size={18} aria-hidden="true" /><div className="min-w-0"><dt className="text-sm font-semibold">{label}</dt><dd className="break-words text-sm text-muted-foreground">{value}</dd></div></div>)}</dl></section>}
           <div className="mt-6 flex"><PricingEnquiry name={product.name} soldOut={product.availability === "out"} /></div>
