@@ -76,7 +76,7 @@ function ProductDetails() {
             <p className={`shop-stock mt-3 ${product.availability === "out" ? "shop-stock-out" : product.availability === "limited" ? "shop-stock-low" : "shop-stock-available"}`}>{product.availability === "out" ? "Out of stock" : product.availability === "limited" ? "Limited stock" : "In stock"}</p>
           </div>
         </section>
-        <div className="pt-5">
+        <div>
           {description && <section className="mt-6"><h2 className="shop-section-heading">Description &amp; features</h2><p className="mt-3 whitespace-pre-wrap break-words text-sm text-muted-foreground">{description}</p></section>}
           {fields.length > 0 && <section className="mt-6"><h2 className="shop-section-heading">Product information</h2><dl className="shop-info-list mt-3">{fields.map(({ label, value, icon: Icon }) => <div key={label} className="shop-info-row"><Icon size={18} aria-hidden="true" /><div className="min-w-0"><dt className="text-sm font-semibold">{label}</dt><dd className="break-words text-sm text-muted-foreground">{value}</dd></div></div>)}</dl></section>}
           <div className="mt-6 flex"><PricingEnquiry name={product.name} soldOut={product.availability === "out"} /></div>
