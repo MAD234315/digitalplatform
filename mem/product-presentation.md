@@ -10,3 +10,4 @@ type: constraint
 - Catalogue grid shows two product cards side by side on phones and four across on laptops.
 - Every product card must have different automatically created artwork, also shown on its details page. Use a simple placeholder when artwork is unavailable.
 - Sold-out products have gray, non-clickable WhatsApp enquiry buttons on cards and details pages.
+- On the product details page the picture stays small and compact (a thumbnail beside the product name), never a large hero image; tapping it may open a bigger view.
