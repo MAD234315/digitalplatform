@@ -24,7 +24,7 @@ export const ProductCard = memo(function ProductCard({ p, onView }: {
   return (
     <article id={`product-${p.id}`} className="shop-product-card relative flex h-full flex-col overflow-hidden scroll-mt-32">
       <Link to="/product/$productSlug" params={{ productSlug: slug }} search={search} onClick={() => onView?.(p)} className="block flex-1" aria-label={`View details for ${name}`}>
-        <ProductArtwork product={p} className="rounded-t-[11px]" />
+        <ProductArtwork product={p} />
         <div className="shop-product-body">
           <h3 className="shop-product-name">{name}</h3>
           {details && <p className="shop-product-meta line-clamp-1">{details}</p>}
