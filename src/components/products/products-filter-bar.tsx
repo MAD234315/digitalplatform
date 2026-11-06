@@ -451,8 +451,31 @@ export function ProductsFilterBar({
 
         {/* Row 2: categories | sort | filters */}
         {slot !== "search" && (
-        <div className="grid grid-cols-1 gap-1.5 sm:flex sm:flex-wrap sm:items-center">
-          <div className="relative min-w-0 sm:w-52">
+        <>
+        <div className="shop-category-rail" role="tablist" aria-label="Product categories">
+          {["All", ...categories].map((name) => {
+            const isOn = active === name;
+            const count = name === "All" ? totalCount : categoryCounts.get(name) ?? 0;
+            return (
+              <button
+                key={name}
+                type="button"
+                role="tab"
+                aria-selected={isOn}
+                onClick={() => onActiveChange(name)}
+                className={`shop-category-chip ${isOn ? "shop-category-chip-on" : ""}`}
+              >
+                <span className="shop-category-icon" aria-hidden style={{ backgroundImage: gradientFor(name) }}>
+                  {name === "All" ? "★" : initialsFor(name)}
+                </span>
+                <span className="shop-category-label">{name === "All" ? "All" : name}</span>
+                <span className="shop-category-count">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap sm:items-center">
+          <div className="relative min-w-0 hidden">
 
             <label htmlFor="products-category" className="sr-only">Category</label>
             <select
@@ -507,6 +530,7 @@ export function ProductsFilterBar({
             <span className="sr-only">{activeStockCount > 0 ? `${activeStockCount} filter active` : "No filter active"}</span>
           </div>
         </div>
+        </>
         )}
       </div>
     </div>
