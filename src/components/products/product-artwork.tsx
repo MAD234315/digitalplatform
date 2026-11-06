@@ -1,9 +1,9 @@
 import { useId } from "react";
 import {
-  Bot, Clapperboard, Code2, Gift, Music, Package, Palette, Sparkles, Tag, Zap,
+  Bot, Clapperboard, Code2, Gift, Monitor, Music, Package, Palette, Sparkles, Tag, Zap,
   type LucideIcon,
 } from "lucide-react";
-import { artworkKeyForCategory, brandMark, type ArtworkKey } from "@/lib/product-artwork";
+import { artworkKeyForProduct, brandMark, type ArtworkKey } from "@/lib/product-artwork";
 import { productSlug, withoutPricing } from "@/lib/product-presentation";
 import type { SheetProduct } from "@/lib/sheet-products.functions";
 import { cn } from "@/lib/utils";
@@ -14,10 +14,10 @@ import { cn } from "@/lib/utils";
  * Being SVG it stays razor sharp at any size, and new sheet products get
  * artwork automatically with no uploads or AI credits.
  */
-const ICONS: Record<ArtworkKey, LucideIcon> = {
+const ICONS: Record<ArtworkKey | "software", LucideIcon> = {
   entertainment: Clapperboard, "gift-cards": Gift, editing: Palette,
   "ai-productivity": Bot, "new-offers": Tag, developer: Code2,
-  "ai-credits": Zap, music: Music, "mini-packs": Package, "ai-new": Sparkles,
+  "ai-credits": Zap, music: Music, "mini-packs": Package, "ai-new": Sparkles, software: Monitor,
 };
 
 function hash(text: string, seed: number): number {
@@ -36,7 +36,7 @@ export function ProductArtwork({
   const hue2 = (hue + 30 + Math.floor(r(2) * 120)) % 360;
   const pattern = Math.floor(r(3) * 4);
   const angle = Math.floor(r(4) * 360);
-  const key = artworkKeyForCategory(product.category ?? "");
+  const key = artworkKeyForProduct(product);
   const Icon = key ? ICONS[key] : Sparkles;
   const mark = brandMark(product.name);
   const plan = withoutPricing(product.plan);
