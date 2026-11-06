@@ -7,3 +7,4 @@
 - [x] Recheck sold-out WhatsApp buttons and the mobile/laptop catalogue grid.
 - [x] Give every product card distinct artwork that matches its details page.
 - [ ] Verify updated artwork on mobile and laptop, details and placeholder states.
+- [ ] Make cards smaller with three phone columns, readable complete plan details, and correct software icons; verify phone and laptop views.

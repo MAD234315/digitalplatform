@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import {
   artworkFor,
   artworkKeyForCategory,
+  artworkKeyForProduct,
   brandMark,
   emblemIndexFor,
   EMBLEM_COUNT,
@@ -24,6 +25,12 @@ const LIVE_CATEGORIES = [
 ];
 
 describe("product artwork", () => {
+  it("uses software artwork for Windows 10 even in the entertainment section", () => {
+    expect(artworkKeyForProduct({ name: "Windows10 Pro", category: "ENTERTAINMENT TOOLS" })).toBe("software");
+  });
+  it("uses software artwork for Microsoft Office even in the entertainment section", () => {
+    expect(artworkKeyForProduct({ name: "Microsoft Office 2021", category: "ENTERTAINMENT TOOLS" })).toBe("software");
+  });
   it("assigns a different picture to every one of the 248 current catalogue cards", () => {
     const keys = Object.entries(ARTWORK_CATALOGUE).flatMap(([slug, rows]) => rows.map((id) => pictureKeyForIdentity(slug, id)));
     expect(keys).toHaveLength(248);

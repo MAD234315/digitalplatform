@@ -61,6 +61,12 @@ export function artworkKeyForCategory(category: string): ArtworkKey | null {
   return null;
 }
 
+/** Product identity overrides a broad sheet section for software licences. */
+export function artworkKeyForProduct(product: { name: string; category?: string }): ArtworkKey | "software" | null {
+  if (/\b(?:windows\s*\d*|microsoft\s+(?:office|365)|office\s*(?:365|20\d{2}))\b/i.test(product.name)) return "software";
+  return artworkKeyForCategory(product.category ?? "");
+}
+
 /** Words that describe a plan or a validity, never the product itself. */
 const STOP_WORDS = new Set([
   "PLAN","PLANS","PACK","PACKS","MONTH","MONTHS","MONTHLY","YEAR","YEARS","ANNUAL",
