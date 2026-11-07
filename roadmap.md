@@ -8,4 +8,4 @@
 - [x] Give every product card distinct artwork that matches its details page.
 - [ ] Verify updated artwork on mobile and laptop, details and placeholder states.
 - [ ] Make cards smaller with three phone columns, readable complete plan details, and correct software icons; verify phone and laptop views.
-- [ ] Add and verify polished product opening and back animations without changing scroll restoration.
+- [x] Add and verify polished product opening and back animations without changing scroll restoration (top arrow and browser back, reduced motion, phone/laptop screens).
