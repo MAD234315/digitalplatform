@@ -597,6 +597,7 @@ body {
 .shop-product-name { -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; min-height: 31px; }
 
 /* Native app-like product navigation; scrolling remains owned by the router. */
+.shop-catalogue-content { overflow-anchor: none; }
 ::view-transition-old(root), ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
