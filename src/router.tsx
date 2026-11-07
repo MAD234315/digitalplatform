@@ -21,6 +21,17 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    // Animate only catalogue/detail navigation, including native history back.
+    defaultViewTransition: {
+      types: ({ fromLocation, toLocation }) => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+        const from = fromLocation?.pathname ?? "";
+        const to = toLocation.pathname;
+        if (to.startsWith("/product/") && from === "/products") return ["product-open"];
+        if (from.startsWith("/product/") && to === "/products") return ["product-back"];
+        return false;
+      },
+    },
     // Preload route code + data on hover/focus so intra-site nav feels instant.
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
